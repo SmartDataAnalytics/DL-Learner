@@ -1,0 +1,106 @@
+2015-09-24 21:32:51,102 ERROR [Worker-3] - System.err - [org.eclipse.debug.core] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.debug.core.model.IDebugModelProvider
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-09-24 21:33:15,571 ERROR [Worker-4] - System.err - [org.eclipse.debug.core] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.debug.core.model.IDebugModelProvider
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-09-24 21:35:26,536 ERROR [Worker-1] - System.err - [org.eclipse.debug.core] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.debug.core.model.IDebugModelProvider
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-09-24 21:36:23,604 ERROR [Worker-0] - System.err - [org.eclipse.jdt.launching] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.internal.launching.JREContainerInitializer
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-09-24 21:44:09,173 ERROR [main] - System.err - [org.eclipse.jdt.junit] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.internal.junit.ui.JUnitQuickFixProcessor
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-09-24 21:44:13,851 ERROR [main] - System.err - [org.eclipse.jdt.debug.ui] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.internal.debug.ui.actions.RetargettableActionAdapterFactory
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:13:30,936 ERROR [main] - System.err - [org.eclipse.jdt.launching] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.launching.JavaRuntime
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:13:30,996 ERROR [main] - System.err - [org.eclipse.debug.core] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.debug.core.ILaunchesListener
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:13:36,028 ERROR [main] - System.err - [org.eclipse.jdt.junit] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.internal.junit.ui.JUnitQuickFixProcessor
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:13:53,611 ERROR [main] - System.err - [org.eclipse.jdt.debug.ui] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.internal.debug.ui.actions.RetargettableActionAdapterFactory
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:33:35,234 ERROR [main] - System.err - [org.eclipse.jdt.launching] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.jdt.launching.JavaRuntime
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-10-05 10:33:35,277 ERROR [main] - System.err - [org.eclipse.debug.core] error can't determine modifiers of missing type org.eclipse.pde.internal.ui.wizards.imports.PluginImportHelper
+when weaving type org.eclipse.debug.core.ILaunchesListener
+when weaving classes 
+when weaving 
+ [Xlint:cantFindType]
+2015-11-24 11:31:35,118 ERROR [HelpSearchIndexer] - System.err - java.net.URISyntaxException: Illegal character in path at index 56: localhelp:/org.eclipse.mylyn.wikitext.help.ui/help/Mylyn WikiText User Guide.html?lang=en_US
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.fail(URI.java:2829)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.checkChars(URI.java:3002)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.parseHierarchical(URI.java:3086)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.parse(URI.java:3034)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URI.<init>(URI.java:595)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at java.net.URL.toURI(URL.java:936)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getProxy(ProxyUtil.java:57)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getConnection(ProxyUtil.java:108)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getStream(ProxyUtil.java:124)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.HTMLSearchParticipant.isXHTML(HTMLSearchParticipant.java:109)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.HTMLSearchParticipant.addDocument(HTMLSearchParticipant.java:46)
+2015-11-24 11:31:35,119 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchIndex.addDocument(SearchIndex.java:236)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.addDocuments(IndexingOperation.java:252)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.addNewDocuments(IndexingOperation.java:159)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.execute(IndexingOperation.java:106)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.updateIndex(LocalSearchManager.java:628)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.ensureIndexUpdated(LocalSearchManager.java:602)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.search(LocalSearchManager.java:547)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchManager.searchLocal(SearchManager.java:103)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchManager.search(SearchManager.java:94)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchProgressMonitor$2.run(SearchProgressMonitor.java:162)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.lang.Thread.run(Thread.java:722)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - java.net.URISyntaxException: Illegal character in path at index 56: localhelp:/org.eclipse.mylyn.wikitext.help.ui/help/Mylyn WikiText User Guide.html?lang=en_US
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.fail(URI.java:2829)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.checkChars(URI.java:3002)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.parseHierarchical(URI.java:3086)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URI$Parser.parse(URI.java:3034)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URI.<init>(URI.java:595)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.net.URL.toURI(URL.java:936)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getProxy(ProxyUtil.java:57)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getConnection(ProxyUtil.java:108)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.base.util.ProxyUtil.getStream(ProxyUtil.java:124)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.search.SearchParticipantXML.addDocument(SearchParticipantXML.java:296)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.HTMLSearchParticipant.addDocument(HTMLSearchParticipant.java:52)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchIndex.addDocument(SearchIndex.java:236)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.addDocuments(IndexingOperation.java:252)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.addNewDocuments(IndexingOperation.java:159)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.IndexingOperation.execute(IndexingOperation.java:106)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.updateIndex(LocalSearchManager.java:628)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.ensureIndexUpdated(LocalSearchManager.java:602)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.LocalSearchManager.search(LocalSearchManager.java:547)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchManager.searchLocal(SearchManager.java:103)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchManager.search(SearchManager.java:94)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at org.eclipse.help.internal.search.SearchProgressMonitor$2.run(SearchProgressMonitor.java:162)
+2015-11-24 11:31:35,120 ERROR [HelpSearchIndexer] - System.err - at java.lang.Thread.run(Thread.java:722)

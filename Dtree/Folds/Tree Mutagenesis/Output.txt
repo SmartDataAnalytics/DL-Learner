@@ -1,0 +1,98 @@
+test set errors pos: [f6, d197]
+test set errors neg: []
+fold 0:
+  training: 11 positive and 195 negative examples  testing: 0/2 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 91.667% (94.66% on training set)
+  length: 9
+  runtime: 12.556s
+
+test set errors pos: [e1]
+test set errors neg: []
+fold 1:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.854s
+
+test set errors pos: [e27]
+test set errors neg: []
+fold 2:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.672s
+
+test set errors pos: [f3, e2]
+test set errors neg: []
+fold 3:
+  training: 11 positive and 196 negative examples  testing: 0/2 correct positives, 21/21 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 91.304% (94.686% on training set)
+  length: 9
+  runtime: 10.71s
+
+test set errors pos: [f5]
+test set errors neg: []
+fold 4:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.776s
+
+test set errors pos: [d190]
+test set errors neg: []
+fold 5:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.732s
+
+test set errors pos: [f2, d194]
+test set errors neg: []
+fold 6:
+  training: 11 positive and 196 negative examples  testing: 0/2 correct positives, 21/21 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 91.304% (94.686% on training set)
+  length: 9
+  runtime: 10.887s
+
+test set errors pos: [f4]
+test set errors neg: []
+fold 7:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.817s
+
+test set errors pos: [d191]
+test set errors neg: []
+fold 8:
+  training: 12 positive and 195 negative examples  testing: 0/1 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.652% (94.203% on training set)
+  length: 9
+  runtime: 10.743s
+
+test set errors pos: [f1]
+test set errors neg: []
+fold 9:
+  training: 12 positive and 196 negative examples  testing: 0/1 correct positives, 21/21 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 95.455% (94.231% on training set)
+  length: 9
+  runtime: 10.75s
+
+
+Finished 10-folds cross-validation.
+runtime: av. 10.95s (deviation 0.568s; min 10.672s; max 12.556s)
+length: av. 9 (deviation 0; min 9; max 9)
+F-Measure on training set: av. 0% (deviation 0%; min 0%; max 0%)
+F-Measure: av. 0% (deviation 0%; min 0%; max 0%)
+predictive accuracy on training set: av. 94.348% (deviation 0.228%; min 94.203%; max 94.686%)
+predictive accuracy: av. 94.364% (deviation 2.032%; min 91.304%; max 95.652%)

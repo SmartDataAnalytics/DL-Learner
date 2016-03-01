@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="http://www.semanticweb.org/hajira/ontologies/2016/0/untitled-ontology-30" uri="EarthMaterialClass_ComponentRank.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass_ComponentRelation.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass_RockComponent.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass_RockDummy.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass_RockName.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1453384337396" name="duplicate:http://www.semanticweb.org/owl/owlapi/turtle" uri="EarthMaterialClass_RockComposite.owl"/>
+    </group>
+</catalog>

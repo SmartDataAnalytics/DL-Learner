@@ -1,0 +1,19 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon unit shape types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Unit Shape Types"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/ShapeType> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/ShapeType> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://www.w3.org/2000/01/rdf-schema#label> "Channel Fill"@en .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/CHANL> <http://www.w3.org/2000/01/rdf-schema#comment> "Channel Fill"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/ShapeType> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/ShapeType> .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://www.w3.org/2000/01/rdf-schema#label> "Not entered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/ShapeType/NotEntered> <http://www.w3.org/2000/01/rdf-schema#comment> "We have not assigned a value yet (and it might not be applicable)"@en .

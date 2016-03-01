@@ -1,0 +1,40 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon definition status"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Definition statii"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://www.w3.org/2000/01/rdf-schema#label> "Full"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULL> <http://www.w3.org/2000/01/rdf-schema#comment> "Full (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://www.w3.org/2000/01/rdf-schema#label> "Full, pending ratification"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLPR> <http://www.w3.org/2000/01/rdf-schema#comment> "Full, pending ratification (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://www.w3.org/2000/01/rdf-schema#label> "Full, without ratification"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/FULLWR> <http://www.w3.org/2000/01/rdf-schema#comment> "Full, without ratification (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://www.w3.org/2000/01/rdf-schema#label> "Index Level"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/INDEX> <http://www.w3.org/2000/01/rdf-schema#comment> "Index Level (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://www.w3.org/2000/01/rdf-schema#label> "Pending Upgrade"@en .
+<http://data.bgs.ac.uk/id/Lexicon/DefinitionStatus/PNDUPG> <http://www.w3.org/2000/01/rdf-schema#comment> "Pending Upgrade (needs enhancement)"@en .

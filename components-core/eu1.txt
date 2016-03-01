@@ -1,0 +1,49 @@
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnn
+classes in ontology: 11
+classes with at least 3 instances: 4
+class expressions tested: av. 12,826.125 (deviation 2,605.536; min 9,245; max 17,201; count 8)
+approximation difference: av. 0 (deviation 0; min 0; max 0; count 80)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 4)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 4)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 8
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 8
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 8)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 8)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+

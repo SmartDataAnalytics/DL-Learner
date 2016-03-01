@@ -1,0 +1,38 @@
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/title> "Earth Material Component Rank Types"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://www.w3.org/2000/01/rdf-schema#label> "Relative proportion that a rock component part takes within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/description> "Relative proportions that a rock component part may take within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/created> "2008-07-01"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/modified> "2008-01-23"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/2000/01/rdf-schema#label> "Main"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/2004/02/skos/core#prefLabel> "Main"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/2004/02/skos/core#definition> "MAIN"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Main> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/2000/01/rdf-schema#label> "Subsidiary"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/2004/02/skos/core#prefLabel> "Subsidiary"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/2004/02/skos/core#definition> "SUBSIDIARY"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Subsidiary> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/2000/01/rdf-schema#label> "Trace"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/2004/02/skos/core#prefLabel> "Trace"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/2004/02/skos/core#definition> "TRACE"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRank/Trace> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .

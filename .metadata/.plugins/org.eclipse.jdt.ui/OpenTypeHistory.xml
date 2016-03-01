@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.refinementoperators{RhoDRDown.java[RhoDRDown" modifiers="1" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.core{ReasonerComponent.java[ReasonerComponent" modifiers="513" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.algorithms.decisiontrees.tdt.model{DLTree.java[DLTree" modifiers="1" timestamp="1456764922000"/>
+<typeInfo handle="=interfaces/src\/main\/java&lt;org.dllearner.cli{ConfFileOption.java[ConfFileOption" modifiers="1" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/\/home\/hajira\/.m2\/repository\/com\/hazelcast\/hazelcast-all\/3.2.5\/hazelcast-all-3.2.5.jar&lt;com.hazelcast.config(ConfigBuilder.class[ConfigBuilder" modifiers="1537" timestamp="1439205994000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.reasoning{OWLAPIReasoner.java[OWLAPIReasoner" modifiers="1" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.algorithms.celoe{CELOE.java[CELOE" modifiers="1" timestamp="1456764922000"/>
+<typeInfo handle="=components-core/src\/test\/java&lt;org.dllearner.learningproblems{OntologyEngineering.java[OntologyEngineering" modifiers="1" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.core{Reasoner.java[Reasoner" modifiers="513" timestamp="1456749520000"/>
+<typeInfo handle="=components-core/src\/test\/java&lt;org.dllearner.core{FatherExample.java[FatherExample" modifiers="1" timestamp="1456764922000"/>
+<typeInfo handle="=components-core/src\/main\/java&lt;org.dllearner.learningproblems{ClassLearningProblem.java[ClassLearningProblem" modifiers="1" timestamp="1456764922000"/>
+</typeInfoHistroy>

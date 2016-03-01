@@ -1,0 +1,849 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:mushroom="http://dllearner.org/mushroom/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/mushroom/canEat -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/canEat"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/has -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/has"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasAColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasAColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasASurface -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasASurface"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasBColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasBColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasBSurface -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasBSurface"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasBruise -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasBruise"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasCColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasCColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasCShape -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasCShape"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasCSurface -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasCSurface"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasGColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasGColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasGillSpacing -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasGillSpacing"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasGillattachment -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasGillattachment"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasGillsize -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasGillsize"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasHabitat -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasHabitat"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasNumber -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasNumber"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasOdor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasOdor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasPtype -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasPtype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasRngtype -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasRngtype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasRoottype -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasRoottype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasSColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasSColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasSShape -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasSShape"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasVColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasVColor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/hasVtype -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/mushroom/hasVtype"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/mushroom/Attachmentype -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Attachmentype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Bruises -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Bruises"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Cap -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Cap"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capcolor -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Capcolor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capshape -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Capshape"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capsurface -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Capsurface"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Colorabove -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Colorabove"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Colorbelow -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Colorbelow"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Condition -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Condition"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gill -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Gill"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gillcolor -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Gillcolor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gillsize -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Gillsize"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ring -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Ring"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ringno -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Ringno"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ringtype -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Ringtype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Roottype -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Roottype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Shape -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Shape"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Spacingtype -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Spacingtype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Spore -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Spore"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Sporeprint -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Sporeprint"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Stalk -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Stalk"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Stalkshape -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Stalkshape"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Surface -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Surface"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veil -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Veil"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veilcolor -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Veilcolor"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veiltype -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/Veiltype"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/surfaceAbove -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/surfaceAbove"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/surfaceBelow -->
+
+    <Class rdf:about="http://dllearner.org/mushroom/surfaceBelow"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/mushroom/Attachmentype -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Attachmentype">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Attachmentype"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Bruises -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Bruises">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Bruises"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Cap -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Cap">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Cap"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Capcolor"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Capshape"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Capsurface"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Colorabove"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Colorbelow"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/surfaceAbove"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/surfaceBelow"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capcolor -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Capcolor">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Capcolor"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capshape -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Capshape">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Capshape"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Capsurface -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Capsurface">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Capsurface"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Colorabove -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Colorabove">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Colorabove"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Colorbelow -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Colorbelow">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Colorbelow"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Condition -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Condition">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Condition"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Bruises"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gill -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Gill">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Gill"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Attachmentype"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Gillcolor"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Gillsize"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Spacingtype"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gillcolor -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Gillcolor">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Gillcolor"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Gillsize -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Gillsize">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Gillsize"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ring -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Ring">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Ring"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Ringno"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Ringtype"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ringno -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Ringno">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Ringno"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Ringtype -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Ringtype">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Ringtype"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Roottype -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Roottype">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Roottype"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Shape -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Shape">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Shape"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Cap"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Gill"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Ring"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Spore"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Stalk"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Veil"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Spacingtype -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Spacingtype">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Spacingtype"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Spore -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Spore">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Spore"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Sporeprint"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Sporeprint -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Sporeprint">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Sporeprint"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Stalk -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Stalk">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Stalk"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Roottype"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Stalkshape"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Stalkshape -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Stalkshape">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Stalkshape"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Surface -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Surface">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Surface"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Cap"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Condition"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veil -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Veil">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Veil"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Veilcolor"/>
+        <mushroom:has rdf:resource="http://dllearner.org/mushroom/Veiltype"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veilcolor -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Veilcolor">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Veilcolor"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/Veiltype -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/Veiltype">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/Veiltype"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/almond -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/almond"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/black -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/black"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/broad -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/broad"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/brown -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/brown"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/close -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/close"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/club -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/club"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/convex -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/convex"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/edible -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/edible"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/enlarging -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/enlarging"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/equal -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/equal"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/free -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/free"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/grass -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/grass"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/ind0 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/ind0">
+        <mushroom:hasGColor rdf:resource="http://dllearner.org/mushroom/black"/>
+        <mushroom:hasSColor rdf:resource="http://dllearner.org/mushroom/black"/>
+        <mushroom:hasCColor rdf:resource="http://dllearner.org/mushroom/brown"/>
+        <mushroom:hasGillSpacing rdf:resource="http://dllearner.org/mushroom/close"/>
+        <mushroom:hasCShape rdf:resource="http://dllearner.org/mushroom/convex"/>
+        <mushroom:hasSShape rdf:resource="http://dllearner.org/mushroom/enlarging"/>
+        <mushroom:hasRoottype rdf:resource="http://dllearner.org/mushroom/equal"/>
+        <mushroom:hasGillattachment rdf:resource="http://dllearner.org/mushroom/free"/>
+        <mushroom:hasGillsize rdf:resource="http://dllearner.org/mushroom/narrow"/>
+        <mushroom:hasVtype rdf:resource="http://dllearner.org/mushroom/partial"/>
+        <mushroom:hasRngtype rdf:resource="http://dllearner.org/mushroom/pend"/>
+        <mushroom:canEat rdf:resource="http://dllearner.org/mushroom/poisonous"/>
+        <mushroom:hasOdor rdf:resource="http://dllearner.org/mushroom/pungent"/>
+        <mushroom:hasPtype rdf:resource="http://dllearner.org/mushroom/scattered"/>
+        <mushroom:hasCSurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasASurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasBSurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasHabitat rdf:resource="http://dllearner.org/mushroom/urban"/>
+        <mushroom:hasAColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasVColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasBColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasBruise rdf:resource="http://dllearner.org/mushroom/yes"/>
+        <mushroom:hasNumber rdf:resource="http://dllearner.org/mushroom/1"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/ind1 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/ind1">
+        <mushroom:hasOdor rdf:resource="http://dllearner.org/mushroom/almond"/>
+        <mushroom:hasGColor rdf:resource="http://dllearner.org/mushroom/black"/>
+        <mushroom:hasGillsize rdf:resource="http://dllearner.org/mushroom/broad"/>
+        <mushroom:hasSColor rdf:resource="http://dllearner.org/mushroom/brown"/>
+        <mushroom:hasGillSpacing rdf:resource="http://dllearner.org/mushroom/close"/>
+        <mushroom:hasRoottype rdf:resource="http://dllearner.org/mushroom/club"/>
+        <mushroom:hasCShape rdf:resource="http://dllearner.org/mushroom/convex"/>
+        <mushroom:canEat rdf:resource="http://dllearner.org/mushroom/edible"/>
+        <mushroom:hasSShape rdf:resource="http://dllearner.org/mushroom/enlarging"/>
+        <mushroom:hasGillattachment rdf:resource="http://dllearner.org/mushroom/free"/>
+        <mushroom:hasHabitat rdf:resource="http://dllearner.org/mushroom/grass"/>
+        <mushroom:hasPtype rdf:resource="http://dllearner.org/mushroom/numerous"/>
+        <mushroom:hasVtype rdf:resource="http://dllearner.org/mushroom/partial"/>
+        <mushroom:hasRngtype rdf:resource="http://dllearner.org/mushroom/pend"/>
+        <mushroom:hasASurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasBSurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasCSurface rdf:resource="http://dllearner.org/mushroom/smooth"/>
+        <mushroom:hasVColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasAColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasBColor rdf:resource="http://dllearner.org/mushroom/white"/>
+        <mushroom:hasCColor rdf:resource="http://dllearner.org/mushroom/yellow"/>
+        <mushroom:hasBruise rdf:resource="http://dllearner.org/mushroom/yes"/>
+        <mushroom:hasNumber rdf:resource="http://dllearner.org/mushroom/1"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/narrow -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/narrow"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/numerous -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/numerous"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/partial -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/partial"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/pend -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/pend"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/poisonous -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/poisonous"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/pungent -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/pungent"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/scattered -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/scattered"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/smooth -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/smooth"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/surfaceAbove -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/surfaceAbove">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/surfaceAbove"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/surfaceBelow -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/surfaceBelow">
+        <rdf:type rdf:resource="http://dllearner.org/mushroom/surfaceBelow"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/mushroom/urban -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/urban"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/white -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/white"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/yellow -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/yellow"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/yes -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/yes"/>
+    
+
+
+    <!-- http://dllearner.org/mushroom/1 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/mushroom/1"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.4) http://owlapi.sourceforge.net -->
+

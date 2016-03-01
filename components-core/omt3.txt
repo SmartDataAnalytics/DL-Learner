@@ -1,0 +1,49 @@
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnn
+classes in ontology: 28
+classes with at least 3 instances: 19
+class expressions tested: av. 2,281.158 (deviation 139.885; min 2,028; max 2,627; count 38)
+approximation difference: av. 0.112 (deviation 0.051; min 0.002; max 0.134; count 12)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 1
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 1
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.134 (deviation 0.266; min 0.003; max 0.991; count 19)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.991 (deviation 0; min 0.991; max 0.991; count 1)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 2
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 2
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.248 (deviation 0.313; min 0.013; max 0.998; count 19)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.962 (deviation 0.051; min 0.926; max 0.998; count 2)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 3
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 3
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.191 (deviation 0.292; min 0.003; max 0.998; count 38)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.972 (deviation 0.04; min 0.926; max 0.998; count 3)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+

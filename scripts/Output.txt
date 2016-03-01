@@ -1,0 +1,81 @@
+test set errors pos: []
+test set errors neg: []
+fold 0:
+  training: 72 positive and 60 negative examples  testing: 9/9 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.457s
+
+test set errors pos: []
+test set errors neg: []
+fold 1:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.444s
+
+test set errors pos: []
+test set errors neg: []
+fold 2:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.46s
+
+test set errors pos: []
+test set errors neg: []
+fold 3:
+  training: 73 positive and 61 negative examples  testing: 8/8 correct positives, 6/6 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.489s
+
+test set errors pos: []
+test set errors neg: []
+fold 4:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.426s
+
+test set errors pos: []
+test set errors neg: []
+fold 5:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.437s
+
+test set errors pos: []
+test set errors neg: []
+fold 6:
+  training: 73 positive and 61 negative examples  testing: 8/8 correct positives, 6/6 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.439s
+
+test set errors pos: []
+test set errors neg: []
+fold 7:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.447s
+
+test set errors pos: []
+test set errors neg: []
+fold 8:
+  training: 73 positive and 60 negative examples  testing: 8/8 correct positives, 7/7 correct negatives
+  concept: Target2_Metastases
+  accuracy: 100% (100% on training set)
+  length: 1
+  runtime: 10.436s
+

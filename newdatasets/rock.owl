@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/owl/owlapi/turtle#"
+     xml:base="http://www.semanticweb.org/owl/owlapi/turtle"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/accessRights -->
+
+    <owl:AnnotationProperty rdf:about="&terms;accessRights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#broader -->
+
+    <owl:AnnotationProperty rdf:about="&skos;broader"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#inScheme -->
+
+    <owl:AnnotationProperty rdf:about="&skos;inScheme"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#narrower -->
+
+    <owl:AnnotationProperty rdf:about="&skos;narrower"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Concept -->
+
+    <owl:Class rdf:about="&skos;Concept"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <owl:Class rdf:about="&skos;ConceptScheme"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Aeolian: sand dunes, loess</rdfs:label>
+        <rdfs:comment xml:lang="en">Aeolian: sand dunes, loess</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/AEOLD</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Shallow marine calcareous mudstone</rdfs:label>
+        <rdfs:comment xml:lang="en">Shallow marine calcareous mudstone</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/CALC</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Shallow marine carbonate: shelves, ramps, includes shallow marine evaporites</rdfs:label>
+        <rdfs:comment xml:lang="en">Shallow marine carbonate: shelves, ramps, includes shallow marine evaporites</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/CARB</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Clastic shoreline: beach, barrier island</rdfs:label>
+        <rdfs:comment xml:lang="en">Clastic shoreline: beach, barrier island</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/CLSH</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Deep marine clastic (turbidite deposits)</rdfs:label>
+        <rdfs:comment xml:lang="en">Deep marine clastic (turbidite deposits)</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/DCLST</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Extrusive igneous rocks</rdfs:label>
+        <rdfs:comment xml:lang="en">Extrusive igneous rocks</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/EXT</terms:identifier>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA"/>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Intrusive magmatism: mainly felsic</rdfs:label>
+        <rdfs:comment xml:lang="en">Intrusive magmatism: mainly felsic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/FINT</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Lavas: felsic</rdfs:label>
+        <rdfs:comment xml:lang="en">Lavas: felsic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/FLAVA</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Alluvial: alluvial fans, fluviatile</rdfs:label>
+        <rdfs:comment xml:lang="en">Alluvial: alluvial fans, fluviatile</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/FLUV</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Intrusive magmatism: felsic and mafic</rdfs:label>
+        <rdfs:comment xml:lang="en">Intrusive magmatism: felsic and mafic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/FMINT</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Glacial</rdfs:label>
+        <rdfs:comment xml:lang="en">Glacial</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/GLACI</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Intrusive magmatism</rdfs:label>
+        <rdfs:comment xml:lang="en">Intrusive magmatism</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/INT</terms:identifier>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT"/>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Lacustrine, including playa lakes, lagoons, and coastal sabkha evaporites</rdfs:label>
+        <rdfs:comment xml:lang="en">Lacustrine, including playa lakes, lagoons, and coastal sabkha evaporites</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/LDE</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Shallow marine siliciclastic</rdfs:label>
+        <rdfs:comment xml:lang="en">Shallow marine siliciclastic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/MCLST</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Metamorphic rocks</rdfs:label>
+        <rdfs:comment xml:lang="en">Metamorphic rocks</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/MET</terms:identifier>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD"/>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Regional metamorphism: high grade, dominantly intrusive igneous (felsic &amp; mafic) protolith</rdfs:label>
+        <rdfs:comment xml:lang="en">Regional metamorphism: high grade, dominantly intrusive igneous (felsic &amp; mafic) protolith</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/METIG</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Metamorphic overprint</rdfs:label>
+        <rdfs:comment xml:lang="en">Metamorphic overprint</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/METOP</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Regional metamorphism: high grade, sedimentary protolith</rdfs:label>
+        <rdfs:comment xml:lang="en">Regional metamorphism: high grade, sedimentary protolith</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/METSD</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Intrusive magmatism: mainly mafic</rdfs:label>
+        <rdfs:comment xml:lang="en">Intrusive magmatism: mainly mafic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/MINT</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Lavas: mafic</rdfs:label>
+        <rdfs:comment xml:lang="en">Lavas: mafic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/MLAVA</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Paralic: deltaic, estuarine</rdfs:label>
+        <rdfs:comment xml:lang="en">Paralic: deltaic, estuarine</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/PARA</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Pelagic and hemipelagic (suspension deposits), including chalk</rdfs:label>
+        <rdfs:comment xml:lang="en">Pelagic and hemipelagic (suspension deposits), including chalk</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/PELG</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Residual deposits</rdfs:label>
+        <rdfs:comment xml:lang="en">Residual deposits</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/RESID</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Root of Hierarchy</rdfs:label>
+        <rdfs:comment xml:lang="en">Root of Hierarchy</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/ROOT</terms:identifier>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:broader rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Sedimentary environments</rdfs:label>
+        <rdfs:comment xml:lang="en">Sedimentary environments</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/SED</terms:identifier>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG"/>
+        <skos:narrower rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID"/>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Volcaniclastic</rdfs:label>
+        <rdfs:comment xml:lang="en">Volcaniclastic</rdfs:comment>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/Lexicon/Theme/VOLC</terms:identifier>
+        <skos:broader rdf:resource="http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT"/>
+        <skos:inScheme rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <rdfs:isDefinedBy rdf:resource="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType"/>
+        <skos:narrower rdf:resource="&rdf;nil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lithogenesis types</rdfs:label>
+        <terms:title xml:lang="en">Lithogenesis types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

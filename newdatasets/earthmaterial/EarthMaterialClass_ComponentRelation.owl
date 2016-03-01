@@ -1,0 +1,677 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY ref "http://data.bgs.ac.uk/ref/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/owl/owlapi/turtle#"
+     xml:base="http://www.semanticweb.org/owl/owlapi/turtle"
+     xmlns:ref="http://data.bgs.ac.uk/ref/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/hasCurrentStatus -->
+
+    <owl:AnnotationProperty rdf:about="&ref;hasCurrentStatus"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/accessRights -->
+
+    <owl:AnnotationProperty rdf:about="&terms;accessRights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/created -->
+
+    <owl:AnnotationProperty rdf:about="&terms;created"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="&terms;creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="&terms;description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/modified -->
+
+    <owl:AnnotationProperty rdf:about="&terms;modified"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+    <owl:AnnotationProperty rdf:about="&terms;publisher"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#definition -->
+
+    <owl:AnnotationProperty rdf:about="&skos;definition"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#inScheme -->
+
+    <owl:AnnotationProperty rdf:about="&skos;inScheme"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="&skos;prefLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="&xsd;date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Concept -->
+
+    <owl:Class rdf:about="&skos;Concept"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <owl:Class rdf:about="&skos;ConceptScheme"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/AMXD -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/AMXD">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Admixed</rdfs:label>
+        <skos:definition xml:lang="en">ADMIXED</skos:definition>
+        <skos:prefLabel xml:lang="en">Admixed</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/BAND0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/BAND0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains bands</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS BANDS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains bands</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/BAND1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/BAND1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Bands</rdfs:label>
+        <skos:definition xml:lang="en">BANDS</skos:definition>
+        <skos:prefLabel xml:lang="en">Bands</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CLST0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CLST0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains clasts</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS CLASTS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains clasts</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CLST1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CLST1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Clasts</rdfs:label>
+        <skos:definition xml:lang="en">CLASTS</skos:definition>
+        <skos:prefLabel xml:lang="en">Clasts</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPC -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPC">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Core of composite intrusion</rdfs:label>
+        <skos:definition xml:lang="en">CORE OF COMPOSITE INTRUSION</skos:definition>
+        <skos:prefLabel xml:lang="en">Core of composite intrusion</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPI -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPI">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">[part of] composite intrusion</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">[PART OF] COMPOSITE INTRUSION</skos:definition>
+        <skos:prefLabel xml:lang="en">[part of] composite intrusion</skos:prefLabel>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPM -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/COMPM">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Margin of composite intrusion</rdfs:label>
+        <skos:definition xml:lang="en">MARGIN OF COMPOSITE INTRUSION</skos:definition>
+        <skos:prefLabel xml:lang="en">Margin of composite intrusion</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CONC0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CONC0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains concretions</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS CONCRETIONS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains concretions</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CONC1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CONC1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Concretions</rdfs:label>
+        <skos:definition xml:lang="en">CONCRETIONS</skos:definition>
+        <skos:prefLabel xml:lang="en">Concretions</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CYCLE -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/CYCLE">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Part of cycle</rdfs:label>
+        <skos:definition xml:lang="en">PART OF CYCLE</skos:definition>
+        <skos:prefLabel xml:lang="en">Part of cycle</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/HBRID -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/HBRID">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Hybridised</rdfs:label>
+        <skos:definition xml:lang="en">HYBRIDISED</skos:definition>
+        <skos:prefLabel xml:lang="en">Hybridised</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/IBED0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/IBED0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains interbeds</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS INTERBEDS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains interbeds</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/IBED1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/IBED1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Interbeds</rdfs:label>
+        <skos:definition xml:lang="en">INTERBEDS</skos:definition>
+        <skos:prefLabel xml:lang="en">Interbeds</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/INTBDD -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/INTBDD">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Interbedded</rdfs:label>
+        <skos:definition xml:lang="en">INTERBEDDED</skos:definition>
+        <skos:prefLabel xml:lang="en">Interbedded</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/INTBND -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/INTBND">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Interbanded</rdfs:label>
+        <skos:definition xml:lang="en">INTERBANDED</skos:definition>
+        <skos:prefLabel xml:lang="en">Interbanded</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/LENS0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/LENS0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains lenses</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS LENSES</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains lenses</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/LENS1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/LENS1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Lenses</rdfs:label>
+        <skos:definition xml:lang="en">LENSES</skos:definition>
+        <skos:prefLabel xml:lang="en">Lenses</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/MATRIX -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/MATRIX">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Forms rock matrix</rdfs:label>
+        <skos:definition xml:lang="en">FORMS ROCK MATRIX</skos:definition>
+        <skos:prefLabel xml:lang="en">Forms rock matrix</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/NODL0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/NODL0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains nodules</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS NODULES</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains nodules</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/NODL1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/NODL1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Nodules</rdfs:label>
+        <skos:definition xml:lang="en">NODULES</skos:definition>
+        <skos:prefLabel xml:lang="en">Nodules</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/PPVA -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/PPVA">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Potential part of variable admixture</rdfs:label>
+        <skos:definition xml:lang="en">POTENTIAL PART OF VARIABLE ADMIXTURE</skos:definition>
+        <skos:prefLabel xml:lang="en">Potential part of variable admixture</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/RAFT0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/RAFT0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains rafts</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS RAFTS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains rafts</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/RAFT1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/RAFT1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Rafts</rdfs:label>
+        <skos:definition xml:lang="en">RAFTS</skos:definition>
+        <skos:prefLabel xml:lang="en">Rafts</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/SEDSQ -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/SEDSQ">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Part of mixed sedimentary rock sequence</rdfs:label>
+        <skos:definition xml:lang="en">PART OF MIXED SEDIMENTARY ROCK SEQUENCE</skos:definition>
+        <skos:prefLabel xml:lang="en">Part of mixed sedimentary rock sequence</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/SEPC -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/SEPC">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Subequal part of composite</rdfs:label>
+        <skos:definition xml:lang="en">SUBEQUAL PART OF COMPOSITE</skos:definition>
+        <skos:prefLabel xml:lang="en">Subequal part of composite</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/TECT -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/TECT">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Juxtaposed tectonically</rdfs:label>
+        <skos:definition xml:lang="en">JUXTAPOSED TECTONICALLY</skos:definition>
+        <skos:prefLabel xml:lang="en">Juxtaposed tectonically</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/VEIN0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/VEIN0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains veins</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS VEINS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains veins</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/VEIN1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/VEIN1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Veins</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">VEINS</skos:definition>
+        <skos:prefLabel xml:lang="en">Veins</skos:prefLabel>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XENO0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XENO0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains xenoliths</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS XENOLITHS</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains xenoliths</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XENO1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XENO1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Xenoliths</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">XENOLITHS</skos:definition>
+        <skos:prefLabel xml:lang="en">Xenoliths</skos:prefLabel>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XOTIC0 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XOTIC0">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Contains exotic material</rdfs:label>
+        <skos:definition xml:lang="en">CONTAINS EXOTIC MATERIAL</skos:definition>
+        <skos:prefLabel xml:lang="en">Contains exotic material</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XOTIC1 -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/ComponentRelation/XOTIC1">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Is exotic</rdfs:label>
+        <skos:definition xml:lang="en">IS EXOTIC</skos:definition>
+        <skos:prefLabel xml:lang="en">Is exotic</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/ComponentRelation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation -->
+
+    <owl:NamedIndividual rdf:about="&ref;EarthMaterialClass/ComponentRelation">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of nature or form that a rock component part may be observed within its parent composite material</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2008-01-23</terms:created>
+        <terms:modified rdf:datatype="&xsd;date">2008-07-01</terms:modified>
+        <terms:title xml:lang="en">Earth Material Component Relation Types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:description xml:lang="en">Types of nature or form that a rock component part may be observed within its parent composite material</terms:description>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation</terms:identifier>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

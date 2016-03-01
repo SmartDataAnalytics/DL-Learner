@@ -1,0 +1,259 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://www.w3.org/2000/01/rdf-schema#label> "Lithogenesis types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://purl.org/dc/terms/title> "Lithogenesis types"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/AEOLD"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2000/01/rdf-schema#label> "Aeolian: sand dunes, loess"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2000/01/rdf-schema#comment> "Aeolian: sand dunes, loess"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/CALC"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2000/01/rdf-schema#label> "Shallow marine calcareous mudstone"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2000/01/rdf-schema#comment> "Shallow marine calcareous mudstone"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/CARB"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2000/01/rdf-schema#label> "Shallow marine carbonate: shelves, ramps, includes shallow marine evaporites"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2000/01/rdf-schema#comment> "Shallow marine carbonate: shelves, ramps, includes shallow marine evaporites"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/CLSH"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2000/01/rdf-schema#label> "Clastic shoreline: beach, barrier island"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2000/01/rdf-schema#comment> "Clastic shoreline: beach, barrier island"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/DCLST"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2000/01/rdf-schema#label> "Deep marine clastic (turbidite deposits)"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2000/01/rdf-schema#comment> "Deep marine clastic (turbidite deposits)"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/EXT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2000/01/rdf-schema#label> "Extrusive igneous rocks"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2000/01/rdf-schema#comment> "Extrusive igneous rocks"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/FINT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2000/01/rdf-schema#label> "Intrusive magmatism: mainly felsic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2000/01/rdf-schema#comment> "Intrusive magmatism: mainly felsic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/FLAVA"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2000/01/rdf-schema#label> "Lavas: felsic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2000/01/rdf-schema#comment> "Lavas: felsic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLAVA> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/FLUV"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2000/01/rdf-schema#label> "Alluvial: alluvial fans, fluviatile"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2000/01/rdf-schema#comment> "Alluvial: alluvial fans, fluviatile"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/FMINT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2000/01/rdf-schema#label> "Intrusive magmatism: felsic and mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2000/01/rdf-schema#comment> "Intrusive magmatism: felsic and mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/GLACI"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2000/01/rdf-schema#label> "Glacial"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2000/01/rdf-schema#comment> "Glacial"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/INT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2000/01/rdf-schema#label> "Intrusive magmatism"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2000/01/rdf-schema#comment> "Intrusive magmatism"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FINT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FMINT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/LDE"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2000/01/rdf-schema#label> "Lacustrine, including playa lakes, lagoons, and coastal sabkha evaporites"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2000/01/rdf-schema#comment> "Lacustrine, including playa lakes, lagoons, and coastal sabkha evaporites"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/MCLST"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2000/01/rdf-schema#label> "Shallow marine siliciclastic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2000/01/rdf-schema#comment> "Shallow marine siliciclastic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/MET"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2000/01/rdf-schema#label> "Metamorphic rocks"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2000/01/rdf-schema#comment> "Metamorphic rocks"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/METIG"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2000/01/rdf-schema#label> "Regional metamorphism: high grade, dominantly intrusive igneous (felsic & mafic) protolith"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2000/01/rdf-schema#comment> "Regional metamorphism: high grade, dominantly intrusive igneous (felsic & mafic) protolith"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METIG> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/METOP"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2000/01/rdf-schema#label> "Metamorphic overprint"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2000/01/rdf-schema#comment> "Metamorphic overprint"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METOP> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/METSD"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2000/01/rdf-schema#label> "Regional metamorphism: high grade, sedimentary protolith"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2000/01/rdf-schema#comment> "Regional metamorphism: high grade, sedimentary protolith"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/METSD> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/MINT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2000/01/rdf-schema#label> "Intrusive magmatism: mainly mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2000/01/rdf-schema#comment> "Intrusive magmatism: mainly mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MINT> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/MLAVA"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2000/01/rdf-schema#label> "Lavas: mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2000/01/rdf-schema#comment> "Lavas: mafic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MLAVA> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/PARA"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2000/01/rdf-schema#label> "Paralic: deltaic, estuarine"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2000/01/rdf-schema#comment> "Paralic: deltaic, estuarine"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/PELG"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2000/01/rdf-schema#label> "Pelagic and hemipelagic (suspension deposits), including chalk"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2000/01/rdf-schema#comment> "Pelagic and hemipelagic (suspension deposits), including chalk"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/RESID"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2000/01/rdf-schema#label> "Residual deposits"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2000/01/rdf-schema#comment> "Residual deposits"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/ROOT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2000/01/rdf-schema#label> "Root of Hierarchy"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2000/01/rdf-schema#comment> "Root of Hierarchy"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#broader> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/INT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MET> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/SED"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2000/01/rdf-schema#label> "Sedimentary environments"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2000/01/rdf-schema#comment> "Sedimentary environments"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/ROOT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/AEOLD> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CALC> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CARB> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/CLSH> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/DCLST> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/FLUV> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/GLACI> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/LDE> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/MCLST> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PARA> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/PELG> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/SED> <http://www.w3.org/2004/02/skos/core#narrower> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/RESID> .
+
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/VOLC"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2000/01/rdf-schema#label> "Volcaniclastic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2000/01/rdf-schema#comment> "Volcaniclastic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2004/02/skos/core#broader> <http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/EXT> .
+<http://data.bgs.ac.uk/id/Lexicon/LithogeneticType/VOLC> <http://www.w3.org/2004/02/skos/core#narrower> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .

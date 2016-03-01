@@ -1,0 +1,98 @@
+test set errors pos: [d148, d99, d104, d102, d35, d246, d105, d192, d296, d284, d139]
+test set errors neg: [d257, d71, d79]
+fold 0:
+  training: 163 positive and 139 negative examples  testing: 8/19 correct positives, 13/16 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 60% (64.238% on training set)
+  length: 10
+  runtime: 10.008s
+
+test set errors pos: [d145, d191, d283, d94, d277, d197, d275, d91]
+test set errors neg: [d256, d261, d60, d72, d73, d75, d78]
+fold 1:
+  training: 164 positive and 140 negative examples  testing: 10/18 correct positives, 8/15 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 54.545% (64.803% on training set)
+  length: 10
+  runtime: 10.019s
+
+test set errors pos: [d142, d85_1, d109, d292, d108, d193, d314, d307, d92]
+test set errors neg: [d67, d83]
+fold 2:
+  training: 164 positive and 139 negative examples  testing: 9/18 correct positives, 14/16 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 67.647% (63.366% on training set)
+  length: 10
+  runtime: 10.048s
+
+test set errors pos: [d141, d85_2, d86, d33, d200, d40, d199]
+test set errors neg: [d171]
+fold 3:
+  training: 164 positive and 140 negative examples  testing: 11/18 correct positives, 14/15 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 75.758% (62.5% on training set)
+  length: 10
+  runtime: 10.029s
+
+test set errors pos: [d103, d136, d206, d251, d204, d106]
+test set errors neg: [d113, d270, d61]
+fold 4:
+  training: 164 positive and 139 negative examples  testing: 12/18 correct positives, 13/16 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 73.529% (62.706% on training set)
+  length: 10
+  runtime: 10.036s
+
+test set errors pos: [d147, d330, d87, d233, d84, d291, d281, d96, d90]
+test set errors neg: [d268, d294, d328, d62, d63, d81]
+fold 5:
+  training: 163 positive and 140 negative examples  testing: 10/19 correct positives, 9/15 correct negatives
+  concept: Compound  and (hasAtom some Hydrogen-3)  and (amesTestPositive some {true})
+  accuracy: 55.882% (64.026% on training set)
+  length: 9
+  runtime: 10.02s
+
+test set errors pos: [d135, d42, d253, d231, d286, d196, d305, d306, d138]
+test set errors neg: [d258, d280]
+fold 6:
+  training: 164 positive and 139 negative examples  testing: 9/18 correct positives, 14/16 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 67.647% (63.366% on training set)
+  length: 10
+  runtime: 10.007s
+
+test set errors pos: [d146, d311, d322, d144, d98, d134, d247, d93]
+test set errors neg: [d263, d276, d282, d319, d68]
+fold 7:
+  training: 164 positive and 140 negative examples  testing: 10/18 correct positives, 10/15 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 60.606% (64.145% on training set)
+  length: 10
+  runtime: 10.045s
+
+test set errors pos: [d97, d143, d140, d89, d100, d203, d198, d315, d279, d95, d308]
+test set errors neg: [d334, d335, d70, d80]
+fold 8:
+  training: 164 positive and 139 negative examples  testing: 7/18 correct positives, 12/16 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 55.882% (64.686% on training set)
+  length: 10
+  runtime: 10.038s
+
+test set errors pos: [d88, d101, d201, d137, d202, d195, d107]
+test set errors neg: [d128, d216, d265, d287, d324, d59]
+fold 9:
+  training: 164 positive and 140 negative examples  testing: 11/18 correct positives, 9/15 correct negatives
+  concept: Compound  and (hasStructure some (not (Ring)))  and (amesTestPositive some {true})
+  accuracy: 60.606% (64.145% on training set)
+  length: 10
+  runtime: 10.039s
+
+
+Finished 10-folds cross-validation.
+runtime: av. 10.029s (deviation 0.015s; min 10.007s; max 10.048s)
+length: av. 9.9 (deviation 0.316; min 9; max 10)
+F-Measure on training set: av. 61.661% (deviation 0.819%; min 60.351%; max 62.976%)
+F-Measure: av. 60.956% (deviation 7.788%; min 48.276%; max 73.333%)
+predictive accuracy on training set: av. 63.798% (deviation 0.784%; min 62.5%; max 64.803%)
+predictive accuracy: av. 63.21% (deviation 7.525%; min 54.545%; max 75.758%)

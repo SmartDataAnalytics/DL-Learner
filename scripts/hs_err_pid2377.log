@@ -1,0 +1,894 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f08e31a0429, pid=2377, tid=139675881641728
+#
+# JRE version: 7.0_03-b147
+# Java VM: OpenJDK 64-Bit Server VM (22.0-b10 mixed mode linux-amd64 compressed oops)
+# Derivative: IcedTea7 2.1.1pre
+# Distribution: Ubuntu precise (development branch), package 7~u3-2.1.1~pre1-1ubuntu2
+# Problematic frame:
+# V  [libjvm.so+0x53b429]  jvmti_IsMethodSynthetic+0xc9
+#
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please include
+# instructions on how to reproduce the bug and visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-7/
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f08dc123800):  JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_in_vm, id=2401, stack(0x00007f08d33f1000,0x00007f08d34f2000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=128 (), si_addr=0x0000000000000000
+
+Registers:
+RAX=0x0000000000000001, RBX=0x00007f08dc123800, RCX=0x00007f08e3ad72c0, RDX=0x00007f08e38a00b8
+RSP=0x00007f08d34f0800, RBP=0x00007f08d34f0860, RSI=0x00007f08dc123800, RDI=0x00007f08dc00ddd0
+R8 =0x0000000000000015, R9 =0x000000000000000a, R10=0x0000000000000000, R11=0x00007f08e4079cb0
+R12=0x00007f08dc00ddd0, R13=0x003b656c003b7265, R14=0x00007f08d34f08e0, R15=0x0000000000000063
+RIP=0x00007f08e31a0429, EFLAGS=0x0000000000010206, CSGSFS=0x0000000000000033, ERR=0x0000000000000000
+  TRAPNO=0x000000000000000d
+
+Top of Stack: (sp=0x00007f08d34f0800)
+0x00007f08d34f0800:   00007f08dc123800 0000000000000000
+0x00007f08d34f0810:   00007f0800000000 0000000000000000
+0x00007f08d34f0820:   00007f08dc123800 00007f08e1bf2156
+0x00007f08d34f0830:   00007f08d34f09a0 00007f08d34f08e0
+0x00007f08d34f0840:   00007f08e1e11060 003b656c003b7265
+0x00007f08d34f0850:   0000000000000002 0000000000000001
+0x00007f08d34f0860:   00007f08d34f0890 00007f08e1bfcdb0
+0x00007f08d34f0870:   00007f08d34f0890 00007f08d34f09a0
+0x00007f08d34f0880:   003b656c003b7265 0000000000000010
+0x00007f08d34f0890:   00007f08d34f0920 00007f08e1bdb3fc
+0x00007f08d34f08a0:   00007f0890005d80 0000000000000000
+0x00007f08d34f08b0:   0000000000000000 0000000000000000
+0x00007f08d34f08c0:   0000000000000003 0000000000000008
+0x00007f08d34f08d0:   00007f0800000009 00007f08e1be0b1c
+0x00007f08d34f08e0:   00007f08d34f0900 00007f08d34f09a0
+0x00007f08d34f08f0:   0000000000000c0c 0000000000000002
+0x00007f08d34f0900:   000000000000000f 0000000000000000
+0x00007f08d34f0910:   0000000000000002 000000000000000f
+0x00007f08d34f0920:   00007f08d34f0b60 00007f08e1be64e0
+0x00007f08d34f0930:   00000c0c00000013 00007f08dc0f0200
+0x00007f08d34f0940:   00007f0888000fb0 00007f08e1bfc325
+0x00007f08d34f0950:   00007f0888000fb8 000000000000000b
+0x00007f08d34f0960:   00000c0c00000013 00007f08dc0f0200
+0x00007f08d34f0970:   00007f0888000fb0 00007f0890003360
+0x00007f08d34f0980:   00000c0c00000013 00007f08dc0f0200
+0x00007f08d34f0990:   00007f0888000fb0 00007f08e38cae18
+0x00007f08d34f09a0:   00007f08d34f0a6e 00007f08000000ae
+0x00007f08d34f09b0:   00007f08d34f09b8 000000000000007e
+0x00007f08d34f09c0:   00007f08d34f09f0 0000000000000000
+0x00007f08d34f09d0:   00007f0000000000 00000c0c0000001c
+0x00007f08d34f09e0:   0000000000000080 00007f08d34f09f0
+0x00007f08d34f09f0:   087f000003000000 0a00000058417adc 
+
+Instructions: (pc=0x00007f08e31a0429)
+0x00007f08e31a0409:   e7 e8 51 5f 05 00 84 c0 74 35 41 f6 84 24 68 01
+0x00007f08e31a0419:   00 00 10 41 bf 63 00 00 00 74 24 4d 85 ed 74 13
+0x00007f08e31a0429:   4d 8b 6d 00 48 b8 fe fe fe fe fe fe fe fe 49 39
+0x00007f08e31a0439:   c5 75 55 41 bf 17 00 00 00 66 0f 1f 44 00 00 48 
+
+Register to memory mapping:
+
+RAX=0x0000000000000001 is an unknown value
+RBX=0x00007f08dc123800 is a thread
+RCX=0x00007f08e3ad72c0: <offset 0x2182c0> in /lib/x86_64-linux-gnu/libpthread.so.0 at 0x00007f08e38bf000
+RDX=0x00007f08e38a00b8: <offset 0xc3b0b8> in /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so at 0x00007f08e2c65000
+RSP=0x00007f08d34f0800 is pointing into the stack for thread: 0x00007f08dc123800
+RBP=0x00007f08d34f0860 is pointing into the stack for thread: 0x00007f08dc123800
+RSI=0x00007f08dc123800 is a thread
+RDI=0x00007f08dc00ddd0 is an unknown value
+R8 =0x0000000000000015 is an unknown value
+R9 =0x000000000000000a is an unknown value
+R10=0x0000000000000000 is an unknown value
+R11=0x00007f08e4079cb0: <offset 0x182cb0> in /lib/x86_64-linux-gnu/libc.so.6 at 0x00007f08e3ef7000
+R12=0x00007f08dc00ddd0 is an unknown value
+R13=0x003b656c003b7265 is an unknown value
+R14=0x00007f08d34f08e0 is pointing into the stack for thread: 0x00007f08dc123800
+R15=0x0000000000000063 is an unknown value
+
+
+Stack: [0x00007f08d33f1000,0x00007f08d34f2000],  sp=0x00007f08d34f0800,  free space=1022k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x53b429]  jvmti_IsMethodSynthetic+0xc9
+C  [libjdwp.so+0x28db0]  Agent_OnLoad+0x19880
+C  [libjdwp.so+0x73fc]  __strcat_chk+0x73fc
+C  [libjdwp.so+0x124e0]  Agent_OnLoad+0x2fb0
+C  [libjdwp.so+0x2591e]  Agent_OnLoad+0x163ee
+V  [libjvm.so+0x5a4b27]  JvmtiAgentThread::start_function_wrapper(JavaThread*, Thread*)+0x97
+V  [libjvm.so+0x7caf48]  JavaThread::run()+0x148
+V  [libjvm.so+0x6ae3e2]  java_start(Thread*)+0x132
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007f08dc12e800 JavaThread "Service Thread" daemon [_thread_blocked, id=2413, stack(0x00007f08d2eec000,0x00007f08d2fed000)]
+  0x00007f08dc12c800 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=2410, stack(0x00007f08d2fed000,0x00007f08d30ee000)]
+  0x00007f08dc129800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=2409, stack(0x00007f08d30ee000,0x00007f08d31ef000)]
+  0x00007f0890001000 JavaThread "JDWP Command Reader" daemon [_thread_in_native, id=2405, stack(0x00007f08d31ef000,0x00007f08d32f0000)]
+  0x00007f08dc127000 JavaThread "JDWP Event Helper Thread" daemon [_thread_blocked, id=2402, stack(0x00007f08d32f0000,0x00007f08d33f1000)]
+=>0x00007f08dc123800 JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_in_vm, id=2401, stack(0x00007f08d33f1000,0x00007f08d34f2000)]
+  0x00007f08dc112800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=2399, stack(0x00007f08d36f7000,0x00007f08d37f8000)]
+  0x00007f08dc0bc800 JavaThread "Finalizer" daemon [_thread_blocked, id=2395, stack(0x00007f08d37f8000,0x00007f08d38f9000)]
+  0x00007f08dc0ba000 JavaThread "Reference Handler" daemon [_thread_blocked, id=2394, stack(0x00007f08d38f9000,0x00007f08d39fa000)]
+  0x00007f08dc013000 JavaThread "main" [_thread_blocked, id=2384, stack(0x00007f08e45f3000,0x00007f08e46f4000)]
+
+Other Threads:
+  0x00007f08dc0b1800 VMThread [stack: 0x00007f08d39fa000,0x00007f08d3afb000] [id=2393]
+  0x00007f08dc141800 WatcherThread [stack: 0x00007f08d2deb000,0x00007f08d2eec000] [id=2414]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 74432K, used 39685K [0x00000007ace00000, 0x00000007b2110000, 0x0000000800000000)
+  eden space 63808K, 52% used [0x00000007ace00000,0x00000007aeefe2e8,0x00000007b0c50000)
+  from space 10624K, 55% used [0x00000007b0c50000,0x00000007b12134f0,0x00000007b16b0000)
+  to   space 10624K, 0% used [0x00000007b16b0000,0x00000007b16b0000,0x00000007b2110000)
+ PSOldGen        total 170240K, used 0K [0x0000000706a00000, 0x0000000711040000, 0x00000007ace00000)
+  object space 170240K, 0% used [0x0000000706a00000,0x0000000706a00000,0x0000000711040000)
+ PSPermGen       total 21248K, used 11449K [0x00000006fc400000, 0x00000006fd8c0000, 0x0000000706a00000)
+  object space 21248K, 53% used [0x00000006fc400000,0x00000006fcf2e4b8,0x00000006fd8c0000)
+
+Code Cache  [0x00007f08d9000000, 0x00007f08d9270000, 0x00007f08dc000000)
+ total_blobs=457 nmethods=206 adapters=212 free_code_cache=48144Kb largest_free_block=49278400
+
+Dynamic libraries:
+00400000-00401000 r-xp 00000000 08:03 8794126                            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+00600000-00601000 r--p 00000000 08:03 8794126                            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+00601000-00602000 rw-p 00001000 08:03 8794126                            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+00a48000-00a69000 rw-p 00000000 00:00 0                                  [heap]
+6fc400000-6fd8c0000 rw-p 00000000 00:00 0 
+6fd8c0000-706a00000 rw-p 00000000 00:00 0 
+706a00000-711040000 rw-p 00000000 00:00 0 
+711040000-7ace00000 rw-p 00000000 00:00 0 
+7ace00000-7b2110000 rw-p 00000000 00:00 0 
+7b2110000-800000000 rw-p 00000000 00:00 0 
+7f0874000000-7f0874021000 rw-p 00000000 00:00 0 
+7f0874021000-7f0878000000 ---p 00000000 00:00 0 
+7f0878000000-7f0878021000 rw-p 00000000 00:00 0 
+7f0878021000-7f087c000000 ---p 00000000 00:00 0 
+7f087c000000-7f087c561000 rw-p 00000000 00:00 0 
+7f087c561000-7f0880000000 ---p 00000000 00:00 0 
+7f0880000000-7f08804ac000 rw-p 00000000 00:00 0 
+7f08804ac000-7f0884000000 ---p 00000000 00:00 0 
+7f0884000000-7f0884021000 rw-p 00000000 00:00 0 
+7f0884021000-7f0888000000 ---p 00000000 00:00 0 
+7f0888000000-7f0888021000 rw-p 00000000 00:00 0 
+7f0888021000-7f088c000000 ---p 00000000 00:00 0 
+7f088c000000-7f088c021000 rw-p 00000000 00:00 0 
+7f088c021000-7f0890000000 ---p 00000000 00:00 0 
+7f0890000000-7f08900c6000 rw-p 00000000 00:00 0 
+7f08900c6000-7f0894000000 ---p 00000000 00:00 0 
+7f0894000000-7f0894021000 rw-p 00000000 00:00 0 
+7f0894021000-7f0898000000 ---p 00000000 00:00 0 
+7f0898000000-7f0898021000 rw-p 00000000 00:00 0 
+7f0898021000-7f089c000000 ---p 00000000 00:00 0 
+7f089c000000-7f089c021000 rw-p 00000000 00:00 0 
+7f089c021000-7f08a0000000 ---p 00000000 00:00 0 
+7f08a0000000-7f08a0021000 rw-p 00000000 00:00 0 
+7f08a0021000-7f08a4000000 ---p 00000000 00:00 0 
+7f08a4000000-7f08a4021000 rw-p 00000000 00:00 0 
+7f08a4021000-7f08a8000000 ---p 00000000 00:00 0 
+7f08ac000000-7f08ac021000 rw-p 00000000 00:00 0 
+7f08ac021000-7f08b0000000 ---p 00000000 00:00 0 
+7f08b4000000-7f08b4021000 rw-p 00000000 00:00 0 
+7f08b4021000-7f08b8000000 ---p 00000000 00:00 0 
+7f08bc000000-7f08bc021000 rw-p 00000000 00:00 0 
+7f08bc021000-7f08c0000000 ---p 00000000 00:00 0 
+7f08c4000000-7f08c4021000 rw-p 00000000 00:00 0 
+7f08c4021000-7f08c8000000 ---p 00000000 00:00 0 
+7f08cc000000-7f08cc021000 rw-p 00000000 00:00 0 
+7f08cc021000-7f08d0000000 ---p 00000000 00:00 0 
+7f08d0e9c000-7f08d0ea6000 r--s 0038d000 08:03 8794085                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/charsets.jar
+7f08d0ea6000-7f08d0ee2000 r-xp 00000000 08:03 10227352                   /lib/x86_64-linux-gnu/libpcre.so.3.12.1
+7f08d0ee2000-7f08d10e1000 ---p 0003c000 08:03 10227352                   /lib/x86_64-linux-gnu/libpcre.so.3.12.1
+7f08d10e1000-7f08d10e2000 r--p 0003b000 08:03 10227352                   /lib/x86_64-linux-gnu/libpcre.so.3.12.1
+7f08d10e2000-7f08d10e3000 rw-p 0003c000 08:03 10227352                   /lib/x86_64-linux-gnu/libpcre.so.3.12.1
+7f08d10e3000-7f08d10ea000 r-xp 00000000 08:03 8791542                    /usr/lib/x86_64-linux-gnu/libffi.so.6.0.0
+7f08d10ea000-7f08d12e9000 ---p 00007000 08:03 8791542                    /usr/lib/x86_64-linux-gnu/libffi.so.6.0.0
+7f08d12e9000-7f08d12ea000 r--p 00006000 08:03 8791542                    /usr/lib/x86_64-linux-gnu/libffi.so.6.0.0
+7f08d12ea000-7f08d12eb000 rw-p 00007000 08:03 8791542                    /usr/lib/x86_64-linux-gnu/libffi.so.6.0.0
+7f08d12eb000-7f08d1303000 r-xp 00000000 08:03 10228017                   /lib/x86_64-linux-gnu/libresolv-2.15.so
+7f08d1303000-7f08d1503000 ---p 00018000 08:03 10228017                   /lib/x86_64-linux-gnu/libresolv-2.15.so
+7f08d1503000-7f08d1504000 r--p 00018000 08:03 10228017                   /lib/x86_64-linux-gnu/libresolv-2.15.so
+7f08d1504000-7f08d1505000 rw-p 00019000 08:03 10228017                   /lib/x86_64-linux-gnu/libresolv-2.15.so
+7f08d1505000-7f08d1507000 rw-p 00000000 00:00 0 
+7f08d1507000-7f08d1524000 r-xp 00000000 08:03 10227334                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f08d1524000-7f08d1723000 ---p 0001d000 08:03 10227334                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f08d1723000-7f08d1724000 r--p 0001c000 08:03 10227334                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f08d1724000-7f08d1725000 rw-p 0001d000 08:03 10227334                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f08d1725000-7f08d1726000 rw-p 00000000 00:00 0 
+7f08d1726000-7f08d1729000 r-xp 00000000 08:03 8782257                    /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.3200.4
+7f08d1729000-7f08d1928000 ---p 00003000 08:03 8782257                    /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.3200.4
+7f08d1928000-7f08d1929000 r--p 00002000 08:03 8782257                    /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.3200.4
+7f08d1929000-7f08d192a000 rw-p 00003000 08:03 8782257                    /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.3200.4
+7f08d192a000-7f08d1a1c000 r-xp 00000000 08:03 10227505                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.3200.4
+7f08d1a1c000-7f08d1c1c000 ---p 000f2000 08:03 10227505                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.3200.4
+7f08d1c1c000-7f08d1c1d000 r--p 000f2000 08:03 10227505                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.3200.4
+7f08d1c1d000-7f08d1c1e000 rw-p 000f3000 08:03 10227505                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.3200.4
+7f08d1c1e000-7f08d1c1f000 rw-p 00000000 00:00 0 
+7f08d1c1f000-7f08d1c6c000 r-xp 00000000 08:03 8786587                    /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.3200.4
+7f08d1c6c000-7f08d1e6c000 ---p 0004d000 08:03 8786587                    /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.3200.4
+7f08d1e6c000-7f08d1e6d000 r--p 0004d000 08:03 8786587                    /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.3200.4
+7f08d1e6d000-7f08d1e6e000 rw-p 0004e000 08:03 8786587                    /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.3200.4
+7f08d1e6e000-7f08d1fb6000 r-xp 00000000 08:03 8786586                    /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.3200.4
+7f08d1fb6000-7f08d21b5000 ---p 00148000 08:03 8786586                    /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.3200.4
+7f08d21b5000-7f08d21b9000 r--p 00147000 08:03 8786586                    /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.3200.4
+7f08d21b9000-7f08d21bb000 rw-p 0014b000 08:03 8786586                    /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.3200.4
+7f08d21bb000-7f08d21bd000 rw-p 00000000 00:00 0 
+7f08d21c5000-7f08d21cf000 r--s 0038d000 08:03 8794085                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/charsets.jar
+7f08d21cf000-7f08d21d3000 r--s 000a0000 08:03 8794111                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/jsse.jar
+7f08d21d3000-7f08d21e9000 r-xp 00000000 08:03 8794151                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f08d21e9000-7f08d23e9000 ---p 00016000 08:03 8794151                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f08d23e9000-7f08d23ea000 r--p 00016000 08:03 8794151                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f08d23ea000-7f08d23eb000 rw-p 00017000 08:03 8794151                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f08d23eb000-7f08d23fb000 r-xp 00000000 08:03 8794140                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f08d23fb000-7f08d25fa000 ---p 00010000 08:03 8794140                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f08d25fa000-7f08d25fb000 r--p 0000f000 08:03 8794140                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f08d25fb000-7f08d25fc000 rw-p 00010000 08:03 8794140                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f08d25fc000-7f08d25fd000 r--s 00001000 08:03 11147396                   /home/hajira/.m2/repository/com/intellij/annotations/7.0.3/annotations-7.0.3.jar
+7f08d25fd000-7f08d25fe000 r--s 00002000 08:03 11147409                   /home/hajira/.m2/repository/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar
+7f08d25fe000-7f08d2601000 r--s 0000c000 08:03 11275085                   /home/hajira/.m2/repository/com/davidsoergel/stats/0.931/stats-0.931.jar
+7f08d2601000-7f08d2603000 r--s 0000f000 08:03 11275087                   /home/hajira/.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar
+7f08d2603000-7f08d2604000 r--s 00009000 08:03 11275083                   /home/hajira/.m2/repository/com/davidsoergel/runutils/0.911/runutils-0.911.jar
+7f08d2604000-7f08d2606000 r--s 00013000 08:03 11147407                   /home/hajira/.m2/repository/com/davidsoergel/trees/1.031/trees-1.031.jar
+7f08d2606000-7f08d260b000 r--s 0002c000 08:03 11147405                   /home/hajira/.m2/repository/edu/berkeley/compbio/ml/0.921/ml-0.921.jar
+7f08d260b000-7f08d260d000 r--s 00006000 08:03 11147403                   /home/hajira/.m2/repository/com/davidsoergel/conja/1.061/conja-1.061.jar
+7f08d260d000-7f08d2619000 r--s 00076000 08:03 11147392                   /home/hajira/.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar
+7f08d2619000-7f08d261b000 r--s 0000d000 08:03 11012744                   /home/hajira/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
+7f08d261b000-7f08d2622000 r--s 00045000 08:03 11012750                   /home/hajira/.m2/repository/com/davidsoergel/dsutils/1.051/dsutils-1.051.jar
+7f08d2622000-7f08d2626000 r--s 0002f000 08:03 11012748                   /home/hajira/.m2/repository/edu/berkeley/compbio/jlibsvm/0.911/jlibsvm-0.911.jar
+7f08d2626000-7f08d263d000 r--s 00123000 08:03 11933525                   /home/hajira/.m2/repository/org/apache/commons/commons-math3/3.0/commons-math3-3.0.jar
+7f08d263d000-7f08d263f000 r--s 00003000 08:03 918971                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-logging/0.4.1/elk-util-logging-0.4.1.jar
+7f08d263f000-7f08d2640000 r--s 00002000 08:03 918969                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-io/0.4.1/elk-util-io-0.4.1.jar
+7f08d2640000-7f08d2642000 r--s 00002000 08:03 918967                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-common/0.4.1/elk-util-common-0.4.1.jar
+7f08d2642000-7f08d2644000 r--s 00004000 08:03 918965                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-concurrent/0.4.1/elk-util-concurrent-0.4.1.jar
+7f08d2644000-7f08d2647000 r--s 0000f000 08:03 918963                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-collections/0.4.1/elk-util-collections-0.4.1.jar
+7f08d2647000-7f08d2655000 r--s 00072000 08:03 918961                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-reasoner/0.4.1/elk-reasoner-0.4.1.jar
+7f08d2655000-7f08d2657000 r--s 00001000 08:03 918959                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-util-hashing/0.4.1/elk-util-hashing-0.4.1.jar
+7f08d2657000-7f08d265c000 r--s 00016000 08:03 918957                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-owl-implementation/0.4.1/elk-owl-implementation-0.4.1.jar
+7f08d265c000-7f08d2662000 r--s 00012000 08:03 918955                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-owl-model/0.4.1/elk-owl-model-0.4.1.jar
+7f08d2662000-7f08d2669000 r--s 00059000 08:03 919085                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-impl/3.5.1/owlapi-impl-3.5.1.jar
+7f08d2669000-7f08d267a000 r--s 00092000 08:03 919073                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-api/3.5.1/owlapi-api-3.5.1.jar
+7f08d267a000-7f08d26a2000 r--s 00241000 08:03 918911                     /home/hajira/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar
+7f08d26a2000-7f08d26a5000 r--s 00016000 08:03 919083                     /home/hajira/.m2/repository/org/apache/felix/org.osgi.core/1.4.0/org.osgi.core-1.4.0.jar
+7f08d26a5000-7f08d26aa000 r--s 00025000 08:03 919081                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-tools/3.5.1/owlapi-tools-3.5.1.jar
+7f08d26aa000-7f08d26af000 r--s 0003c000 08:03 919079                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-oboformat/3.5.1/owlapi-oboformat-3.5.1.jar
+7f08d26af000-7f08d26c3000 r--s 00101000 08:03 919077                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-parsers/3.5.1/owlapi-parsers-3.5.1.jar
+7f08d26c3000-7f08d26c4000 r--s 00002000 08:03 919075                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-apibinding/3.5.1/owlapi-apibinding-3.5.1.jar
+7f08d26c4000-7f08d26c8000 r--s 00021000 08:03 918953                     /home/hajira/.m2/repository/org/semanticweb/elk/elk-owlapi/0.4.1/elk-owlapi-0.4.1.jar
+7f08d26c8000-7f08d26f9000 r--s 00254000 08:03 919061                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/3.5.1/owlapi-distribution-3.5.1.jar
+7f08d26f9000-7f08d2736000 r--s 005ec000 08:03 1048730                    /home/hajira/.m2/repository/weka/weka/3.6.5/weka-3.6.5.jar
+7f08d2736000-7f08d273a000 r--s 00026000 08:03 11803417                   /home/hajira/.m2/repository/org/apache/commons/commons-compress/1.2/commons-compress-1.2.jar
+7f08d273a000-7f08d2744000 r--s 000e4000 08:03 919071                     /home/hajira/.m2/repository/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar
+7f08d2744000-7f08d2756000 r--s 000d6000 08:03 918993                     /home/hajira/.m2/repository/xerces/xercesImpl/2.6.0/xercesImpl-2.6.0.jar
+7f08d2756000-7f08d275c000 r--s 0007a000 08:03 12327091                   /home/hajira/.m2/repository/org/codehaus/woodstox/wstx-asl/3.2.9/wstx-asl-3.2.9.jar
+7f08d275c000-7f08d2775000 r--s 002fd000 08:03 1048728                    /home/hajira/.m2/repository/com/ibm/icu/icu4j/3.4.4/icu4j-3.4.4.jar
+7f08d2775000-7f08d2778000 r--s 00023000 08:03 1048726                    /home/hajira/.m2/repository/com/hp/hpl/jena/iri/0.8/iri-0.8.jar
+7f08d2778000-7f08d2797000 r--s 00176000 08:03 1048724                    /home/hajira/.m2/repository/com/hp/hpl/jena/arq/2.8.3/arq-2.8.3.jar
+7f08d2797000-7f08d2799000 r--s 00014000 08:03 919885                     /home/hajira/.m2/repository/jline/jline/0.9.94/jline-0.9.94.jar
+7f08d2799000-7f08d279b000 r--s 00009000 08:03 919681                     /home/hajira/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar
+7f08d279b000-7f08d279d000 r--s 00004000 08:03 1048722                    /home/hajira/.m2/repository/com/openlinksw/virtuoso-jena/6.0.0-tp1/virtuoso-jena-6.0.0-tp1.jar
+7f08d279d000-7f08d279f000 r--s 00022000 08:03 1048720                    /home/hajira/.m2/repository/com/openlinksw/virtuoso-jdbc3/6.0.0-tp1/virtuoso-jdbc3-6.0.0-tp1.jar
+7f08d279f000-7f08d27a1000 r--s 00007000 08:03 1048718                    /home/hajira/.m2/repository/com/dumontierlab/pdb2rdf-cli/0.0.9/pdb2rdf-cli-0.0.9.jar
+7f08d27a1000-7f08d27aa000 r--s 0006d000 08:03 11147394                   /home/hajira/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar
+7f08d27aa000-7f08d27ad000 r--s 00025000 08:03 1048716                    /home/hajira/.m2/repository/com/dumontierlab/pdb2rdf-parser/0.0.8/pdb2rdf-parser-0.0.8.jar
+7f08d27ad000-7f08d27b3000 r--s 00077000 08:03 1048714                    /home/hajira/.m2/repository/postgresql/postgresql/8.4-701.jdbc4/postgresql-8.4-701.jdbc4.jar
+7f08d27b3000-7f08d27b7000 r--s 00028000 08:03 1048712                    /home/hajira/.m2/repository/net/sourceforge/secondstring/secondstring/20060615/secondstring-20060615.jar
+7f08d27b7000-7f08d27bb000 r--s 00038000 08:03 11405642                   /home/hajira/.m2/repository/commons-lang/commons-lang/2.3/commons-lang-2.3.jar
+7f08d27bb000-7f08d27bd000 r--s 0000f000 08:03 1048624                    /home/hajira/.m2/repository/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.jar
+7f08d27bd000-7f08d27cb000 r--s 00047000 08:03 1048618                    /home/hajira/.m2/repository/org/dllearner/spring-xmlbeans-3.0/1.0/spring-xmlbeans-3.0-1.0.jar
+7f08d27cb000-7f08d27cd000 r--s 00005000 08:03 1048616                    /home/hajira/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar
+7f08d27cd000-7f08d280a000 r--s 00255000 08:03 1048614                    /home/hajira/.m2/repository/org/apache/xmlbeans/xmlbeans/2.4.0/xmlbeans-2.4.0.jar
+7f08d280a000-7f08d280e000 r--s 0002c000 08:03 1048622                    /home/hajira/.m2/repository/org/springframework/spring-expression/3.2.13.RELEASE/spring-expression-3.2.13.RELEASE.jar
+7f08d280e000-7f08d2810000 r--s 00000000 08:03 1048612                    /home/hajira/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar
+7f08d2810000-7f08d2818000 r--s 0004b000 08:03 919883                     /home/hajira/.m2/repository/org/springframework/spring-aop/3.2.13.RELEASE/spring-aop-3.2.13.RELEASE.jar
+7f08d2818000-7f08d282c000 r--s 000c0000 08:03 919881                     /home/hajira/.m2/repository/org/springframework/spring-context/3.2.13.RELEASE/spring-context-3.2.13.RELEASE.jar
+7f08d282c000-7f08d282d000 r--s 00005000 08:03 919877                     /home/hajira/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar
+7f08d282d000-7f08d282f000 r--s 0000b000 08:03 919703                     /home/hajira/.m2/repository/org/pentaho/pentaho-commons/pentaho-package-manager/1.0.8/pentaho-package-manager-1.0.8.jar
+7f08d282f000-7f08d2831000 r--s 00016000 08:03 919701                     /home/hajira/.m2/repository/net/sf/squirrel-sql/thirdparty-non-maven/java-cup/0.11a/java-cup-0.11a.jar
+7f08d2831000-7f08d287b000 r--s 006b0000 08:03 919699                     /home/hajira/.m2/repository/nz/ac/waikato/cms/weka/weka-dev/3.7.11/weka-dev-3.7.11.jar
+7f08d287b000-7f08d2884000 r--s 00263000 08:03 8794114                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/resources.jar
+7f08d2884000-7f08d2886000 r--s 00005000 08:03 11147411                   /home/hajira/.m2/repository/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar
+7f08d2886000-7f08d2889000 r--s 00018000 08:03 919837                     /home/hajira/.m2/repository/org/apache/lucene/lucene-sandbox/5.2.1/lucene-sandbox-5.2.1.jar
+7f08d2889000-7f08d2893000 r--s 00058000 08:03 919835                     /home/hajira/.m2/repository/org/apache/lucene/lucene-queryparser/5.2.1/lucene-queryparser-5.2.1.jar
+7f08d2893000-7f08d28a5000 r--s 0016a000 08:03 919833                     /home/hajira/.m2/repository/org/apache/lucene/lucene-analyzers-common/5.2.1/lucene-analyzers-common-5.2.1.jar
+7f08d28a5000-7f08d28bd000 r--s 00606000 08:03 11147460                   /home/hajira/.m2/repository/edu/northwestern/at/morphadorner/2009-04-30/morphadorner-2009-04-30.jar
+7f08d28bd000-7f08d28be000 r--s 00005000 08:03 919841                     /home/hajira/.m2/repository/org/restlet/jee/org.restlet.ext.servlet/2.3.0/org.restlet.ext.servlet-2.3.0.jar
+7f08d28be000-7f08d28c7000 r--s 000a4000 08:03 919839                     /home/hajira/.m2/repository/org/restlet/jee/org.restlet/2.3.0/org.restlet-2.3.0.jar
+7f08d28c7000-7f08d28c9000 r--s 00008000 08:03 919697                     /home/hajira/.m2/repository/org/ow2/asm/asm-commons/4.1/asm-commons-4.1.jar
+7f08d28c9000-7f08d28ca000 r--s 0000b000 08:03 919695                     /home/hajira/.m2/repository/org/ow2/asm/asm/4.1/asm-4.1.jar
+7f08d28ca000-7f08d28cb000 r--s 00006000 08:03 919831                     /home/hajira/.m2/repository/org/noggit/noggit/0.6/noggit-0.6.jar
+7f08d28cb000-7f08d28cd000 r--s 00006000 08:03 919829                     /home/hajira/.m2/repository/org/htrace/htrace-core/3.0.4/htrace-core-3.0.4.jar
+7f08d28cd000-7f08d28ce000 r--s 0000a000 08:03 919827                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-xml/9.2.10.v20150310/jetty-xml-9.2.10.v20150310.jar
+7f08d28ce000-7f08d28d0000 r--s 00019000 08:03 919825                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-webapp/9.2.10.v20150310/jetty-webapp-9.2.10.v20150310.jar
+7f08d28d0000-7f08d28d6000 r--s 00051000 08:03 919823                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-util/9.2.10.v20150310/jetty-util-9.2.10.v20150310.jar
+7f08d28d6000-7f08d28d8000 r--s 0001c000 08:03 919821                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-servlets/9.2.10.v20150310/jetty-servlets-9.2.10.v20150310.jar
+7f08d28d8000-7f08d28db000 r--s 0001a000 08:03 919819                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-servlet/9.2.10.v20150310/jetty-servlet-9.2.10.v20150310.jar
+7f08d28db000-7f08d28e1000 r--s 00061000 08:03 919817                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-server/9.2.10.v20150310/jetty-server-9.2.10.v20150310.jar
+7f08d28e1000-7f08d28e4000 r--s 00015000 08:03 919815                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-security/9.2.10.v20150310/jetty-security-9.2.10.v20150310.jar
+7f08d28e4000-7f08d28e6000 r--s 00006000 08:03 919813                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-rewrite/9.2.10.v20150310/jetty-rewrite-9.2.10.v20150310.jar
+7f08d28e6000-7f08d28e7000 r--s 00005000 08:03 919811                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-jmx/9.2.10.v20150310/jetty-jmx-9.2.10.v20150310.jar
+7f08d28e7000-7f08d28ea000 r--s 00018000 08:03 919809                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-io/9.2.10.v20150310/jetty-io-9.2.10.v20150310.jar
+7f08d28ea000-7f08d28ec000 r--s 00018000 08:03 919807                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-http/9.2.10.v20150310/jetty-http-9.2.10.v20150310.jar
+7f08d28ec000-7f08d28ee000 r--s 0000b000 08:03 919805                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-deploy/9.2.10.v20150310/jetty-deploy-9.2.10.v20150310.jar
+7f08d28ee000-7f08d28ef000 r--s 00003000 08:03 919803                     /home/hajira/.m2/repository/org/eclipse/jetty/jetty-continuation/9.2.10.v20150310/jetty-continuation-9.2.10.v20150310.jar
+7f08d28ef000-7f08d28f5000 r--s 00071000 08:03 12327065                   /home/hajira/.m2/repository/org/codehaus/woodstox/woodstox-core-asl/4.4.1/woodstox-core-asl-4.4.1.jar
+7f08d28f5000-7f08d28f9000 r--s 00024000 08:03 11666116                   /home/hajira/.m2/repository/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar
+7f08d28f9000-7f08d2905000 r--s 000b6000 08:03 919693                     /home/hajira/.m2/repository/org/apache/zookeeper/zookeeper/3.4.6/zookeeper-3.4.6.jar
+7f08d2905000-7f08d2906000 r--s 00009000 08:03 919801                     /home/hajira/.m2/repository/org/apache/httpcomponents/httpmime/4.4.1/httpmime-4.4.1.jar
+7f08d2906000-7f08d290d000 r--s 00048000 08:03 919799                     /home/hajira/.m2/repository/org/apache/httpcomponents/httpcore/4.4.1/httpcore-4.4.1.jar
+7f08d290d000-7f08d291a000 r--s 000a4000 08:03 919797                     /home/hajira/.m2/repository/org/apache/httpcomponents/httpclient/4.4.1/httpclient-4.4.1.jar
+7f08d291a000-7f08d297f000 r--s 00711000 08:03 919795                     /home/hajira/.m2/repository/org/apache/hadoop/hadoop-hdfs/2.6.0/hadoop-hdfs-2.6.0.jar
+7f08d297f000-7f08d29b5000 r--s 002ff000 08:03 919793                     /home/hajira/.m2/repository/org/apache/hadoop/hadoop-common/2.6.0/hadoop-common-2.6.0.jar
+7f08d29b5000-7f08d29b7000 r--s 0000f000 08:03 919791                     /home/hajira/.m2/repository/org/apache/hadoop/hadoop-auth/2.6.0/hadoop-auth-2.6.0.jar
+7f08d29b7000-7f08d2a21000 r--s 00f92000 08:03 8914574                    /usr/lib/jvm/java-7-openjdk-amd64/lib/tools.jar
+7f08d2a21000-7f08d2a23000 r--s 00003000 08:03 919789                     /home/hajira/.m2/repository/org/apache/hadoop/hadoop-annotations/2.6.0/hadoop-annotations-2.6.0.jar
+7f08d2a23000-7f08d2a26000 r--s 00026000 08:03 919691                     /home/hajira/.m2/repository/org/antlr/antlr-runtime/3.5/antlr-runtime-3.5.jar
+7f08d2a26000-7f08d2a28000 r--s 00006000 08:03 919787                     /home/hajira/.m2/repository/net/agkn/hll/1.6.0/hll-1.6.0.jar
+7f08d2a28000-7f08d2a2b000 r--s 00015000 08:03 919689                     /home/hajira/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
+7f08d2a2b000-7f08d2a6a000 rw-p 00000000 00:00 0 
+7f08d2a6a000-7f08d2b90000 r--s 00eff000 08:03 919785                     /home/hajira/.m2/repository/it/unimi/dsi/fastutil/6.5.11/fastutil-6.5.11.jar
+7f08d2b90000-7f08d2b94000 r--s 0002a000 08:03 919687                     /home/hajira/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar
+7f08d2b94000-7f08d2b97000 r--s 0000c000 08:03 919685                     /home/hajira/.m2/repository/commons-fileupload/commons-fileupload/1.2.1/commons-fileupload-1.2.1.jar
+7f08d2b97000-7f08d2b9d000 r--s 00043000 08:03 919683                     /home/hajira/.m2/repository/commons-configuration/commons-configuration/1.6/commons-configuration-1.6.jar
+7f08d2b9d000-7f08d2bab000 r--s 0007f000 08:03 11560766                   /home/hajira/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
+7f08d2bab000-7f08d2bb2000 r--s 0003f000 08:03 919783                     /home/hajira/.m2/repository/commons-codec/commons-codec/1.10/commons-codec-1.10.jar
+7f08d2bb2000-7f08d2bb3000 r--s 0000e000 08:03 919781                     /home/hajira/.m2/repository/com/tdunning/t-digest/3.1/t-digest-3.1.jar
+7f08d2bb3000-7f08d2bb5000 r--s 00017000 08:03 919679                     /home/hajira/.m2/repository/com/spatial4j/spatial4j/0.4.1/spatial4j-0.4.1.jar
+7f08d2bb5000-7f08d2bb7000 r--s 0000b000 08:03 919677                     /home/hajira/.m2/repository/com/googlecode/concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.2/concurrentlinkedhashmap-lru-1.2.jar
+7f08d2bb7000-7f08d2bbf000 r--s 0007b000 08:03 919675                     /home/hajira/.m2/repository/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar
+7f08d2bbf000-7f08d2bd7000 r--s 00123000 08:03 919673                     /home/hajira/.m2/repository/com/carrotsearch/hppc/0.5.2/hppc-0.5.2.jar
+7f08d2bd7000-7f08d2be3000 r--s 00084000 08:03 919779                     /home/hajira/.m2/repository/org/apache/solr/solr-solrj/5.2.1/solr-solrj-5.2.1.jar
+7f08d2be3000-7f08d2be8000 r--s 00032000 08:03 919777                     /home/hajira/.m2/repository/org/apache/lucene/lucene-suggest/5.2.1/lucene-suggest-5.2.1.jar
+7f08d2be8000-7f08d2bee000 r--s 00042000 08:03 919775                     /home/hajira/.m2/repository/org/apache/lucene/lucene-spatial/5.2.1/lucene-spatial-5.2.1.jar
+7f08d2bee000-7f08d2bf4000 r--s 0002e000 08:03 919773                     /home/hajira/.m2/repository/org/apache/lucene/lucene-queries/5.2.1/lucene-queries-5.2.1.jar
+7f08d2bf4000-7f08d2bf8000 r--s 00026000 08:03 919771                     /home/hajira/.m2/repository/org/apache/lucene/lucene-misc/5.2.1/lucene-misc-5.2.1.jar
+7f08d2bf8000-7f08d2bfa000 r--s 00007000 08:03 919769                     /home/hajira/.m2/repository/org/apache/lucene/lucene-memory/5.2.1/lucene-memory-5.2.1.jar
+7f08d2bfa000-7f08d2bfd000 r--s 00016000 08:03 919767                     /home/hajira/.m2/repository/org/apache/lucene/lucene-join/5.2.1/lucene-join-5.2.1.jar
+7f08d2bfd000-7f08d2c00000 r--s 00020000 08:03 919765                     /home/hajira/.m2/repository/org/apache/lucene/lucene-highlighter/5.2.1/lucene-highlighter-5.2.1.jar
+7f08d2c00000-7f08d2c03000 r--s 00018000 08:03 919763                     /home/hajira/.m2/repository/org/apache/lucene/lucene-grouping/5.2.1/lucene-grouping-5.2.1.jar
+7f08d2c03000-7f08d2c05000 r--s 00011000 08:03 919761                     /home/hajira/.m2/repository/org/apache/lucene/lucene-expressions/5.2.1/lucene-expressions-5.2.1.jar
+7f08d2c05000-7f08d2c0c000 r--s 00060000 08:03 919759                     /home/hajira/.m2/repository/org/apache/lucene/lucene-codecs/5.2.1/lucene-codecs-5.2.1.jar
+7f08d2c0c000-7f08d2c13000 r--s 00054000 08:03 919757                     /home/hajira/.m2/repository/org/apache/lucene/lucene-backward-codecs/5.2.1/lucene-backward-codecs-5.2.1.jar
+7f08d2c13000-7f08d2c15000 r--s 00005000 08:03 919755                     /home/hajira/.m2/repository/org/apache/lucene/lucene-analyzers-phonetic/5.2.1/lucene-analyzers-phonetic-5.2.1.jar
+7f08d2c15000-7f08d2c18000 r--s 00460000 08:03 919753                     /home/hajira/.m2/repository/org/apache/lucene/lucene-analyzers-kuromoji/5.2.1/lucene-analyzers-kuromoji-5.2.1.jar
+7f08d2c18000-7f08d2c48000 r--s 00325000 08:03 919751                     /home/hajira/.m2/repository/org/apache/solr/solr-core/5.2.1/solr-core-5.2.1.jar
+7f08d2c48000-7f08d2c4d000 r--s 0002d000 08:03 919671                     /home/hajira/.m2/repository/net/didion/jwnl/jwnl/1.4.1.RC2/jwnl-1.4.1.RC2.jar
+7f08d2c4d000-7f08d2c51000 r--s 00015000 08:03 919669                     /home/hajira/.m2/repository/javax/xml/bind/jaxb-api/2.2.7/jaxb-api-2.2.7.jar
+7f08d2c51000-7f08d2c56000 r--s 0002d000 08:03 919667                     /home/hajira/.m2/repository/de/jollyday/jollyday/0.4.7/jollyday-0.4.7.jar
+7f08d2c56000-7f08d2c74000 r--s 0027d000 08:03 919665                     /home/hajira/.m2/repository/xalan/xalan/2.7.0/xalan-2.7.0.jar
+7f08d2c74000-7f08d2c7b000 r--s 00045000 08:03 919661                     /home/hajira/.m2/repository/xom/xom/1.2.5/xom-1.2.5.jar
+7f08d2c7b000-7f08d2cb5000 r--s 003f3000 08:03 12193068                   /home/hajira/.m2/repository/edu/stanford/nlp/stanford-corenlp/1.3.4/stanford-corenlp-1.3.4.jar
+7f08d2cb5000-7f08d2cba000 r--s 00016000 08:03 919031                     /home/hajira/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar
+7f08d2cba000-7f08d2cbf000 r--s 00048000 08:03 919029                     /home/hajira/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
+7f08d2cbf000-7f08d2cc8000 r--s 00098000 08:03 919027                     /home/hajira/.m2/repository/org/javassist/javassist/3.16.1-GA/javassist-3.16.1-GA.jar
+7f08d2cc8000-7f08d2ccb000 r--s 0001b000 08:03 919119                     /home/hajira/.m2/repository/org/reflections/reflections/0.9.9-RC1/reflections-0.9.9-RC1.jar
+7f08d2ccb000-7f08d2ccc000 r--s 00014000 08:03 919067                     /home/hajira/.m2/repository/org/aksw/semlibsvm/3.20-SNAPSHOT/semlibsvm-3.20-SNAPSHOT.jar
+7f08d2ccc000-7f08d2cda000 r--s 00191000 08:03 919117                     /home/hajira/.m2/repository/com/h2database/h2/1.4.187/h2-1.4.187.jar
+7f08d2cda000-7f08d2cdb000 r--s 00000000 08:03 919025                     /home/hajira/.m2/repository/org/aksw/jena-sparql-api/jena-sparql-api-resources/2.12.1-8/jena-sparql-api-resources-2.12.1-8.jar
+7f08d2cdb000-7f08d2cdc000 r--s 00002000 08:03 919023                     /home/hajira/.m2/repository/org/aksw/jena-sparql-api/jena-sparql-api-cache-h2/2.12.1-8/jena-sparql-api-cache-h2-2.12.1-8.jar
+7f08d2cdc000-7f08d2cde000 r--s 00006000 08:03 919021                     /home/hajira/.m2/repository/com/blogspot/nurkiewicz/asyncretry/asyncretry/0.0.1/asyncretry-0.0.1.jar
+7f08d2cde000-7f08d2ce2000 r--s 00026000 08:03 919019                     /home/hajira/.m2/repository/commons-digester/commons-digester/1.6/commons-digester-1.6.jar
+7f08d2ce2000-7f08d2ce7000 r--s 0002a000 08:03 919017                     /home/hajira/.m2/repository/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar
+7f08d2ce7000-7f08d2cea000 r--s 0001f000 08:03 919015                     /home/hajira/.m2/repository/commons-validator/commons-validator/1.3.1/commons-validator-1.3.1.jar
+7f08d2cea000-7f08d2ced000 r--s 00012000 08:03 919013                     /home/hajira/.m2/repository/org/aksw/commons/aksw-commons-util/0.7.5/aksw-commons-util-0.7.5.jar
+7f08d2ced000-7f08d2cef000 r--s 0000a000 08:03 919011                     /home/hajira/.m2/repository/org/aksw/commons/aksw-commons-collections/0.7.5/aksw-commons-collections-0.7.5.jar
+7f08d2cef000-7f08d2cf2000 r--s 0001f000 08:03 919115                     /home/hajira/.m2/repository/org/apache/jena/jena-iri/1.1.1/jena-iri-1.1.1.jar
+7f08d2cf2000-7f08d2cf4000 r--s 00007000 08:03 11405633                   /home/hajira/.m2/repository/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar
+7f08d2cf4000-7f08d2cf6000 r--s 00003000 08:03 11803415                   /home/hajira/.m2/repository/org/slf4j/jcl-over-slf4j/1.6.4/jcl-over-slf4j-1.6.4.jar
+7f08d2cf6000-7f08d2cfd000 r--s 00064000 08:03 11147446                   /home/hajira/.m2/repository/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar
+7f08d2cfd000-7f08d2d02000 r--s 00030000 08:03 919113                     /home/hajira/.m2/repository/org/apache/thrift/libthrift/0.9.1/libthrift-0.9.1.jar
+7f08d2d02000-7f08d2d05000 r--s 0001a000 08:03 919009                     /home/hajira/.m2/repository/org/apache/httpcomponents/httpclient-cache/4.2.6/httpclient-cache-4.2.6.jar
+7f08d2d05000-7f08d2d07000 r--s 00007000 08:03 919007                     /home/hajira/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.3.0/jackson-annotations-2.3.0.jar
+7f08d2d07000-7f08d2d18000 r--s 000cf000 08:03 919005                     /home/hajira/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.3.3/jackson-databind-2.3.3.jar
+7f08d2d18000-7f08d2d1b000 r--s 0002e000 08:03 919003                     /home/hajira/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.3.3/jackson-core-2.3.3.jar
+7f08d2d1b000-7f08d2d1d000 r--s 0001b000 08:03 919001                     /home/hajira/.m2/repository/com/github/jsonld-java/jsonld-java/0.5.0/jsonld-java-0.5.0.jar
+7f08d2d1d000-7f08d2d54000 r--s 0029e000 08:03 919111                     /home/hajira/.m2/repository/org/apache/jena/jena-arq/2.12.1/jena-arq-2.12.1.jar
+7f08d2d54000-7f08d2d70000 r--s 00156000 08:03 919109                     /home/hajira/.m2/repository/org/apache/jena/jena-core/2.12.1/jena-core-2.12.1.jar
+7f08d2d70000-7f08d2d75000 r--s 0002a000 08:03 918991                     /home/hajira/.m2/repository/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar
+7f08d2d75000-7f08d2d81000 r--s 00076000 08:03 919107                     /home/hajira/.m2/repository/org/apache/jena/jena-sdb/1.5.1/jena-sdb-1.5.1.jar
+7f08d2d81000-7f08d2d84000 r--s 00011000 08:03 918989                     /home/hajira/.m2/repository/org/aksw/jena-sparql-api/jena-sparql-api-utils/2.12.1-8/jena-sparql-api-utils-2.12.1-8.jar
+7f08d2d84000-7f08d2d8a000 r--s 0002d000 08:03 918987                     /home/hajira/.m2/repository/org/aksw/jena-sparql-api/jena-sparql-api-core/2.12.1-8/jena-sparql-api-core-2.12.1-8.jar
+7f08d2d8a000-7f08d2db5000 r--s 001fc000 08:03 918985                     /home/hajira/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar
+7f08d2db5000-7f08d2db7000 r--s 00005000 08:03 918983                     /home/hajira/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar
+7f08d2db7000-7f08d2db8000 r--s 00001000 08:03 918981                     /home/hajira/.m2/repository/xmlpull/xmlpull/1.1.3.1/xmlpull-1.1.3.1.jar
+7f08d2db8000-7f08d2dc4000 r--s 0006a000 08:03 918979                     /home/hajira/.m2/repository/com/thoughtworks/xstream/xstream/1.4.3/xstream-1.4.3.jar
+7f08d2dc4000-7f08d2deb000 r--s 00216000 08:03 919105                     /home/hajira/.m2/repository/org/apache/lucene/lucene-core/5.2.1/lucene-core-5.2.1.jar
+7f08d2deb000-7f08d2dec000 ---p 00000000 00:00 0 
+7f08d2dec000-7f08d2eec000 rw-p 00000000 00:00 0                          [stack:2414]
+7f08d2eec000-7f08d2eef000 ---p 00000000 00:00 0 
+7f08d2eef000-7f08d2fed000 rw-p 00000000 00:00 0                          [stack:2413]
+7f08d2fed000-7f08d2ff0000 ---p 00000000 00:00 0 
+7f08d2ff0000-7f08d30ee000 rw-p 00000000 00:00 0                          [stack:2410]
+7f08d30ee000-7f08d30f1000 ---p 00000000 00:00 0 
+7f08d30f1000-7f08d31ef000 rw-p 00000000 00:00 0                          [stack:2409]
+7f08d31ef000-7f08d31f2000 ---p 00000000 00:00 0 
+7f08d31f2000-7f08d32f0000 rw-p 00000000 00:00 0                          [stack:2405]
+7f08d32f0000-7f08d32f3000 ---p 00000000 00:00 0 
+7f08d32f3000-7f08d33f1000 rw-p 00000000 00:00 0                          [stack:2402]
+7f08d33f1000-7f08d33f4000 ---p 00000000 00:00 0 
+7f08d33f4000-7f08d34f2000 rw-p 00000000 00:00 0                          [stack:2401]
+7f08d34f2000-7f08d34f6000 r-xp 00000000 08:03 8794139                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f08d34f6000-7f08d36f5000 ---p 00004000 08:03 8794139                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f08d36f5000-7f08d36f6000 r--p 00003000 08:03 8794139                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f08d36f6000-7f08d36f7000 rw-p 00004000 08:03 8794139                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f08d36f7000-7f08d36fa000 ---p 00000000 00:00 0 
+7f08d36fa000-7f08d37f8000 rw-p 00000000 00:00 0                          [stack:2399]
+7f08d37f8000-7f08d37fb000 ---p 00000000 00:00 0 
+7f08d37fb000-7f08d38f9000 rw-p 00000000 00:00 0                          [stack:2395]
+7f08d38f9000-7f08d38fc000 ---p 00000000 00:00 0 
+7f08d38fc000-7f08d39fa000 rw-p 00000000 00:00 0                          [stack:2394]
+7f08d39fa000-7f08d39fb000 ---p 00000000 00:00 0 
+7f08d39fb000-7f08d4000000 rw-p 00000000 00:00 0                          [stack:2393]
+7f08d4000000-7f08d4021000 rw-p 00000000 00:00 0 
+7f08d4021000-7f08d8000000 ---p 00000000 00:00 0 
+7f08d8002000-7f08d8015000 r--s 000c6000 08:03 919103                     /home/hajira/.m2/repository/org/springframework/spring-core/3.2.13.RELEASE/spring-core-3.2.13.RELEASE.jar
+7f08d8015000-7f08d8022000 r--s 0008a000 08:03 919101                     /home/hajira/.m2/repository/org/springframework/spring-beans/3.2.13.RELEASE/spring-beans-3.2.13.RELEASE.jar
+7f08d8022000-7f08d8024000 r--s 00204000 08:03 918951                     /home/hajira/.m2/repository/org/fuzzy/fuzzyowl/1.0/fuzzyowl-1.0.jar
+7f08d8024000-7f08d8028000 r--s 0008f000 08:03 918949                     /home/hajira/.m2/repository/org/fuzzy/fuzzydl/1.0/fuzzydl-1.0.jar
+7f08d8028000-7f08d8029000 r--s 00002000 08:03 919097                     /home/hajira/.m2/repository/net/sourceforge/findbugs/annotations/1.3.2/annotations-1.3.2.jar
+7f08d8029000-7f08d806b000 r--s 00334000 08:03 919095                     /home/hajira/.m2/repository/com/hazelcast/hazelcast-all/3.2.5/hazelcast-all-3.2.5.jar
+7f08d806b000-7f08d8070000 r--s 00031000 08:03 919093                     /home/hajira/.m2/repository/com/jamonapi/jamon/2.81/jamon-2.81.jar
+7f08d8070000-7f08d8080000 r--s 00088000 08:03 919091                     /home/hajira/.m2/repository/joda-time/joda-time/2.8.1/joda-time-2.8.1.jar
+7f08d8080000-7f08d808d000 r--s 000b7000 08:03 919089                     /home/hajira/.m2/repository/net/sourceforge/owlapi/jfact/1.2.2/jfact-1.2.2.jar
+7f08d808d000-7f08d80ab000 r--s 0016e000 08:03 918945                     /home/hajira/.m2/repository/org/semanticweb/hermit/hermit/1.3.8/hermit-1.3.8.jar
+7f08d80ab000-7f08d851b000 rw-p 00000000 00:00 0 
+7f08d851b000-7f08d86ca000 r--s 03e91000 08:03 8794181                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar
+7f08d86ca000-7f08d86cb000 ---p 00000000 00:00 0 
+7f08d86cb000-7f08d87cb000 rw-p 00000000 00:00 0                          [stack:2392]
+7f08d87cb000-7f08d87cc000 ---p 00000000 00:00 0 
+7f08d87cc000-7f08d88cc000 rw-p 00000000 00:00 0                          [stack:2391]
+7f08d88cc000-7f08d88cd000 ---p 00000000 00:00 0 
+7f08d88cd000-7f08d89cd000 rw-p 00000000 00:00 0                          [stack:2390]
+7f08d89cd000-7f08d89ce000 ---p 00000000 00:00 0 
+7f08d89ce000-7f08d8b22000 rw-p 00000000 00:00 0                          [stack:2389]
+7f08d8b22000-7f08d9000000 rw-p 00000000 00:00 0 
+7f08d9000000-7f08d9270000 rwxp 00000000 00:00 0 
+7f08d9270000-7f08dc928000 rw-p 00000000 00:00 0 
+7f08dc928000-7f08e0000000 ---p 00000000 00:00 0 
+7f08e0000000-7f08e0004000 r--s 0001d000 08:03 918977                     /home/hajira/.m2/repository/uk/ac/shef/wit/simmetrics/1.6.2/simmetrics-1.6.2.jar
+7f08e0004000-7f08e000a000 r--s 00065000 08:03 918975                     /home/hajira/.m2/repository/eu/trowl/trowl-core/1.5.0/trowl-core-1.5.0.jar
+7f08e000a000-7f08e000c000 r--s 002e4000 08:03 918973                     /home/hajira/.m2/repository/de/tudresden/inf/lat/cel/reasoner/0.5.1/reasoner-0.5.1.jar
+7f08e000c000-7f08e0020000 r--s 0008d000 08:03 918943                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owllink/owllink/1.2.2/owllink-1.2.2.jar
+7f08e0020000-7f08e0022000 r--s 00009000 08:03 919063                     /home/hajira/.m2/repository/com/google/code/factplusplus/factpp-owlapi/1.6.2/factpp-owlapi-1.6.2.jar
+7f08e0022000-7f08e0023000 r--s 0000f000 08:03 918941                     /home/hajira/.m2/repository/org/json/json/20140107/json-20140107.jar
+7f08e0023000-7f08e0024000 r--s 00007000 08:03 918939                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-explanation/2.3.3-dllearner/pellet-explanation-2.3.3-dllearner.jar
+7f08e0024000-7f08e0026000 r--s 0000d000 08:03 918937                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-modularity/2.3.3-dllearner/pellet-modularity-2.3.3-dllearner.jar
+7f08e0026000-7f08e002b000 r--s 0002b000 08:03 918935                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-jena/2.3.3-dllearner/pellet-jena-2.3.3-dllearner.jar
+7f08e002b000-7f08e002d000 r--s 00010000 08:03 918933                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-pellint/2.3.3-dllearner/pellet-pellint-2.3.3-dllearner.jar
+7f08e002d000-7f08e0034000 r--s 0005f000 08:03 918925                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-query/2.3.3-dllearner/pellet-query-2.3.3-dllearner.jar
+7f08e0034000-7f08e003b000 r--s 00028000 08:03 918923                     /home/hajira/.m2/repository/org/jgrapht/jgrapht-jdk1.5/0.7.3/jgrapht-jdk1.5-0.7.3.jar
+7f08e003b000-7f08e004c000 r--s 0010a000 08:03 918915                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-core/2.3.3-dllearner/pellet-core-2.3.3-dllearner.jar
+7f08e004c000-7f08e004d000 ---p 00000000 00:00 0 
+7f08e004d000-7f08e014d000 rw-p 00000000 00:00 0                          [stack:2388]
+7f08e014d000-7f08e014e000 ---p 00000000 00:00 0 
+7f08e014e000-7f08e024e000 rw-p 00000000 00:00 0                          [stack:2387]
+7f08e024e000-7f08e024f000 ---p 00000000 00:00 0 
+7f08e024f000-7f08e034f000 rw-p 00000000 00:00 0                          [stack:2386]
+7f08e034f000-7f08e0350000 ---p 00000000 00:00 0 
+7f08e0350000-7f08e045b000 rw-p 00000000 00:00 0                          [stack:2385]
+7f08e045b000-7f08e04a3000 rw-p 00000000 00:00 0 
+7f08e04a3000-7f08e04ae000 rw-p 00000000 00:00 0 
+7f08e04ae000-7f08e04f6000 rw-p 00000000 00:00 0 
+7f08e04f6000-7f08e054a000 rw-p 00000000 00:00 0 
+7f08e054a000-7f08e0a28000 rw-p 00000000 00:00 0 
+7f08e0a28000-7f08e0a52000 rw-p 00000000 00:00 0 
+7f08e0a52000-7f08e0cc1000 rw-p 00000000 00:00 0 
+7f08e0cc1000-7f08e0cc2000 rw-p 00000000 00:00 0 
+7f08e0cc2000-7f08e0cca000 r-xp 00000000 08:03 8794165                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f08e0cca000-7f08e0ec9000 ---p 00008000 08:03 8794165                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f08e0ec9000-7f08e0eca000 r--p 00007000 08:03 8794165                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f08e0eca000-7f08e0ecb000 rw-p 00008000 08:03 8794165                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f08e0ecb000-7f08e0ed7000 r-xp 00000000 08:03 10228012                   /lib/x86_64-linux-gnu/libnss_files-2.15.so
+7f08e0ed7000-7f08e10d6000 ---p 0000c000 08:03 10228012                   /lib/x86_64-linux-gnu/libnss_files-2.15.so
+7f08e10d6000-7f08e10d7000 r--p 0000b000 08:03 10228012                   /lib/x86_64-linux-gnu/libnss_files-2.15.so
+7f08e10d7000-7f08e10d8000 rw-p 0000c000 08:03 10228012                   /lib/x86_64-linux-gnu/libnss_files-2.15.so
+7f08e10d8000-7f08e10e2000 r-xp 00000000 08:03 10223751                   /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+7f08e10e2000-7f08e12e2000 ---p 0000a000 08:03 10223751                   /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+7f08e12e2000-7f08e12e3000 r--p 0000a000 08:03 10223751                   /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+7f08e12e3000-7f08e12e4000 rw-p 0000b000 08:03 10223751                   /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+7f08e12e4000-7f08e12fb000 r-xp 00000000 08:03 10228021                   /lib/x86_64-linux-gnu/libnsl-2.15.so
+7f08e12fb000-7f08e14fa000 ---p 00017000 08:03 10228021                   /lib/x86_64-linux-gnu/libnsl-2.15.so
+7f08e14fa000-7f08e14fb000 r--p 00016000 08:03 10228021                   /lib/x86_64-linux-gnu/libnsl-2.15.so
+7f08e14fb000-7f08e14fc000 rw-p 00017000 08:03 10228021                   /lib/x86_64-linux-gnu/libnsl-2.15.so
+7f08e14fc000-7f08e14fe000 rw-p 00000000 00:00 0 
+7f08e14fe000-7f08e1506000 r-xp 00000000 08:03 10228022                   /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+7f08e1506000-7f08e1705000 ---p 00008000 08:03 10228022                   /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+7f08e1705000-7f08e1706000 r--p 00007000 08:03 10228022                   /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+7f08e1706000-7f08e1707000 rw-p 00008000 08:03 10228022                   /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+7f08e1707000-7f08e19d0000 r--p 00000000 08:03 8790510                    /usr/lib/locale/locale-archive
+7f08e19d0000-7f08e19d3000 r-xp 00000000 08:03 8794156                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f08e19d3000-7f08e1bd2000 ---p 00003000 08:03 8794156                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f08e1bd2000-7f08e1bd3000 r--p 00002000 08:03 8794156                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f08e1bd3000-7f08e1bd4000 rw-p 00003000 08:03 8794156                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f08e1bd4000-7f08e1c10000 r-xp 00000000 08:03 8794155                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f08e1c10000-7f08e1e0f000 ---p 0003c000 08:03 8794155                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f08e1e0f000-7f08e1e10000 r--p 0003b000 08:03 8794155                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f08e1e10000-7f08e1e11000 rw-p 0003c000 08:03 8794155                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f08e1e11000-7f08e1e12000 rw-p 00000000 00:00 0 
+7f08e1e12000-7f08e1e39000 r-xp 00000000 08:03 8794164                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f08e1e39000-7f08e2038000 ---p 00027000 08:03 8794164                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f08e2038000-7f08e2039000 r--p 00026000 08:03 8794164                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f08e2039000-7f08e203b000 rw-p 00027000 08:03 8794164                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f08e203b000-7f08e2049000 r-xp 00000000 08:03 8794150                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f08e2049000-7f08e2248000 ---p 0000e000 08:03 8794150                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f08e2248000-7f08e224a000 r--p 0000d000 08:03 8794150                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f08e224a000-7f08e224b000 rw-p 0000f000 08:03 8794150                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f08e224b000-7f08e2252000 r-xp 00000000 08:03 10228014                   /lib/x86_64-linux-gnu/librt-2.15.so
+7f08e2252000-7f08e2451000 ---p 00007000 08:03 10228014                   /lib/x86_64-linux-gnu/librt-2.15.so
+7f08e2451000-7f08e2452000 r--p 00006000 08:03 10228014                   /lib/x86_64-linux-gnu/librt-2.15.so
+7f08e2452000-7f08e2453000 rw-p 00007000 08:03 10228014                   /lib/x86_64-linux-gnu/librt-2.15.so
+7f08e2453000-7f08e2468000 r-xp 00000000 08:03 10227267                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f08e2468000-7f08e2667000 ---p 00015000 08:03 10227267                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f08e2667000-7f08e2668000 r--p 00014000 08:03 10227267                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f08e2668000-7f08e2669000 rw-p 00015000 08:03 10227267                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f08e2669000-7f08e2764000 r-xp 00000000 08:03 10228001                   /lib/x86_64-linux-gnu/libm-2.15.so
+7f08e2764000-7f08e2963000 ---p 000fb000 08:03 10228001                   /lib/x86_64-linux-gnu/libm-2.15.so
+7f08e2963000-7f08e2964000 r--p 000fa000 08:03 10228001                   /lib/x86_64-linux-gnu/libm-2.15.so
+7f08e2964000-7f08e2965000 rw-p 000fb000 08:03 10228001                   /lib/x86_64-linux-gnu/libm-2.15.so
+7f08e2965000-7f08e2a47000 r-xp 00000000 08:03 8791915                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f08e2a47000-7f08e2c46000 ---p 000e2000 08:03 8791915                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f08e2c46000-7f08e2c4e000 r--p 000e1000 08:03 8791915                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f08e2c4e000-7f08e2c50000 rw-p 000e9000 08:03 8791915                    /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+7f08e2c50000-7f08e2c65000 rw-p 00000000 00:00 0 
+7f08e2c65000-7f08e35f8000 r-xp 00000000 08:03 8794168                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f08e35f8000-7f08e37f8000 ---p 00993000 08:03 8794168                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f08e37f8000-7f08e3872000 r--p 00993000 08:03 8794168                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f08e3872000-7f08e3894000 rw-p 00a0d000 08:03 8794168                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f08e3894000-7f08e38bf000 rw-p 00000000 00:00 0 
+7f08e38bf000-7f08e38d7000 r-xp 00000000 08:03 10228005                   /lib/x86_64-linux-gnu/libpthread-2.15.so
+7f08e38d7000-7f08e3ad6000 ---p 00018000 08:03 10228005                   /lib/x86_64-linux-gnu/libpthread-2.15.so
+7f08e3ad6000-7f08e3ad7000 r--p 00017000 08:03 10228005                   /lib/x86_64-linux-gnu/libpthread-2.15.so
+7f08e3ad7000-7f08e3ad8000 rw-p 00018000 08:03 10228005                   /lib/x86_64-linux-gnu/libpthread-2.15.so
+7f08e3ad8000-7f08e3adc000 rw-p 00000000 00:00 0 
+7f08e3adc000-7f08e3af2000 r-xp 00000000 08:03 10227357                   /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f08e3af2000-7f08e3cf1000 ---p 00016000 08:03 10227357                   /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f08e3cf1000-7f08e3cf2000 r--p 00015000 08:03 10227357                   /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f08e3cf2000-7f08e3cf3000 rw-p 00016000 08:03 10227357                   /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+7f08e3cf3000-7f08e3cf5000 r-xp 00000000 08:03 10228024                   /lib/x86_64-linux-gnu/libdl-2.15.so
+7f08e3cf5000-7f08e3ef5000 ---p 00002000 08:03 10228024                   /lib/x86_64-linux-gnu/libdl-2.15.so
+7f08e3ef5000-7f08e3ef6000 r--p 00002000 08:03 10228024                   /lib/x86_64-linux-gnu/libdl-2.15.so
+7f08e3ef6000-7f08e3ef7000 rw-p 00003000 08:03 10228024                   /lib/x86_64-linux-gnu/libdl-2.15.so
+7f08e3ef7000-7f08e40ab000 r-xp 00000000 08:03 10228020                   /lib/x86_64-linux-gnu/libc-2.15.so
+7f08e40ab000-7f08e42aa000 ---p 001b4000 08:03 10228020                   /lib/x86_64-linux-gnu/libc-2.15.so
+7f08e42aa000-7f08e42ae000 r--p 001b3000 08:03 10228020                   /lib/x86_64-linux-gnu/libc-2.15.so
+7f08e42ae000-7f08e42b0000 rw-p 001b7000 08:03 10228020                   /lib/x86_64-linux-gnu/libc-2.15.so
+7f08e42b0000-7f08e42b5000 rw-p 00000000 00:00 0 
+7f08e42b5000-7f08e42b6000 r--s 00003000 08:03 918921                     /home/hajira/.m2/repository/com/github/ansell/aterms/shared-objects/1.4.9-p1/shared-objects-1.4.9-p1.jar
+7f08e42b6000-7f08e42b8000 r--s 0000a000 08:03 918919                     /home/hajira/.m2/repository/com/github/ansell/jjtraveler/jjtraveler/0.6/jjtraveler-0.6.jar
+7f08e42b8000-7f08e42ba000 r--s 00010000 08:03 918917                     /home/hajira/.m2/repository/com/github/ansell/aterms/aterm-java/1.8.2-p1/aterm-java-1.8.2-p1.jar
+7f08e42ba000-7f08e42bc000 r--s 00015000 08:03 918913                     /home/hajira/.m2/repository/com/clarkparsia/pellet/pellet-owlapiv3/2.3.3-dllearner/pellet-owlapiv3-2.3.3-dllearner.jar
+7f08e42bc000-7f08e42bf000 r--s 00016000 08:03 919087                     /home/hajira/.m2/repository/net/sourceforge/owlapi/owlapitools-concurrentimpl/1.1.1/owlapitools-concurrentimpl-1.1.1.jar
+7f08e42bf000-7f08e42c1000 r--s 00017000 08:03 919069                     /home/hajira/.m2/repository/org/ini4j/ini4j/0.5.4/ini4j-0.5.4.jar
+7f08e42c1000-7f08e42c2000 r--s 00002000 08:03 8794096                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/dnsns.jar
+7f08e42c2000-7f08e42c5000 r--s 00085000 08:03 8794097                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/localedata.jar
+7f08e42c5000-7f08e42c8000 r--s 00032000 08:03 8794098                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/sunjce_provider.jar
+7f08e42c8000-7f08e42cb000 r--s 0000f000 08:03 8794100                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/pulse-java.jar
+7f08e42cb000-7f08e42d7000 r-xp 00000000 08:03 8794148                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f08e42d7000-7f08e44d7000 ---p 0000c000 08:03 8794148                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f08e44d7000-7f08e44d8000 r--p 0000c000 08:03 8794148                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f08e44d8000-7f08e44d9000 rw-p 0000d000 08:03 8794148                    /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f08e44d9000-7f08e44fb000 r-xp 00000000 08:03 10228013                   /lib/x86_64-linux-gnu/ld-2.15.so
+7f08e44fb000-7f08e44fe000 r--s 0003c000 08:03 8794095                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/sunpkcs11.jar
+7f08e44fe000-7f08e4500000 r--s 00012000 08:03 8794099                    /usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/zipfs.jar
+7f08e4500000-7f08e4501000 r--s 00007000 08:03 9183706                    /usr/share/java/java-atk-wrapper.jar
+7f08e4501000-7f08e4533000 rw-p 00000000 00:00 0 
+7f08e4533000-7f08e45e9000 rw-p 00000000 00:00 0 
+7f08e45e9000-7f08e45f1000 rw-s 00000000 08:03 3407914                    /tmp/hsperfdata_hajira/2377
+7f08e45f1000-7f08e45f2000 rw-p 00000000 00:00 0 
+7f08e45f2000-7f08e45f3000 r--p 00000000 00:00 0 
+7f08e45f3000-7f08e45f6000 ---p 00000000 00:00 0 
+7f08e45f6000-7f08e46fb000 rw-p 00000000 00:00 0                          [stack:2384]
+7f08e46fb000-7f08e46fc000 r--p 00022000 08:03 10228013                   /lib/x86_64-linux-gnu/ld-2.15.so
+7f08e46fc000-7f08e46fe000 rw-p 00023000 08:03 10228013                   /lib/x86_64-linux-gnu/ld-2.15.so
+7ffe7d52a000-7ffe7d54f000 rw-p 00000000 00:00 0                          [stack]
+7ffe7d5cc000-7ffe7d5cd000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:45189 -Dfile.encoding=UTF-8 
+java_command: org.dllearner.experiments.DTKernel
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x8065e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x8065e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x6ac6d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x6ac6d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x6ac6d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x6ac6d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x6acaa0], sa_mask[0]=0x00000004, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x6acbe0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x6acbe0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x6acbe0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x6acbe0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 12.04 (precise)
+uname:Linux 3.5.0-61-generic #90-Ubuntu SMP Sun Apr 26 11:23:53 UTC 2015 x86_64
+libc:glibc 2.15 NPTL 2.15 
+rlimit: STACK 8192k, CORE 0k, NPROC 127496, NOFILE 4096, AS infinity
+load average:0.20 0.30 0.37
+
+/proc/meminfo:
+MemTotal:       16338464 kB
+MemFree:         5455260 kB
+Buffers:          221828 kB
+Cached:          6238744 kB
+SwapCached:          788 kB
+Active:          6782808 kB
+Inactive:        3711716 kB
+Active(anon):    3875704 kB
+Inactive(anon):   755680 kB
+Active(file):    2907104 kB
+Inactive(file):  2956036 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:      33358844 kB
+SwapFree:       33335984 kB
+Dirty:              1036 kB
+Writeback:             0 kB
+AnonPages:       4033300 kB
+Mapped:           248264 kB
+Shmem:            596664 kB
+Slab:             183632 kB
+SReclaimable:     139384 kB
+SUnreclaim:        44248 kB
+KernelStack:        4592 kB
+PageTables:        35372 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    41528076 kB
+Committed_AS:    7596996 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      392204 kB
+VmallocChunk:   34359337172 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      299912 kB
+DirectMap2M:    13244416 kB
+DirectMap1G:     3145728 kB
+
+
+CPU:total 8 (4 cores per cpu, 2 threads per core) family 6 model 60 stepping 3, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2801.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 1200.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 1
+cpu cores	: 4
+apicid		: 2
+initial apicid	: 2
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 2
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2801.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 2
+cpu cores	: 4
+apicid		: 4
+initial apicid	: 4
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 3
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2801.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 3
+cpu cores	: 4
+apicid		: 6
+initial apicid	: 6
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 4
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2801.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 1
+initial apicid	: 1
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 5
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2801.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 1
+cpu cores	: 4
+apicid		: 3
+initial apicid	: 3
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 6
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 800.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 2
+cpu cores	: 4
+apicid		: 5
+initial apicid	: 5
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 7
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 60
+model name	: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+stepping	: 3
+microcode	: 0x1c
+cpu MHz		: 2100.000
+cache size	: 6144 KB
+physical id	: 0
+siblings	: 8
+core id		: 3
+cpu cores	: 4
+apicid		: 7
+initial apicid	: 7
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase bmi1 avx2 smep bmi2 erms invpcid
+bogomips	: 5587.11
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 16338464k(5455260k free), swap 33358844k(33335984k free)
+
+vm_info: OpenJDK 64-Bit Server VM (22.0-b10) for linux-amd64 JRE (1.7.0_03-b147), built on Apr 13 2012 00:05:38 by "buildd" with gcc 4.6.3
+
+time: Tue Aug 25 19:30:32 2015
+elapsed time: 899 seconds
+

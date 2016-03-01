@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;TenFold.java&apos; to &apos;org.dllearner.examples.TenFold.java&apos;&#x0A;- Original project: &apos;scripts&apos;&#x0A;- Destination element: &apos;org.dllearner.examples.TenFold.java&apos;&#x0A;- Original element: &apos;org.dllearner.examples.TenFold.java&apos;" description="Copy compilation unit" destination="/src\/main\/java&lt;org.dllearner.examples{TenFold.java" element1="/src\/main\/java&lt;org.dllearner.examples{TenFold.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1446820260915" units="1" version="1.0"/>
+</session>

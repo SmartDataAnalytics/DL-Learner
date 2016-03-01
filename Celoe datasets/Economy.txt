@@ -1,0 +1,400 @@
+
+FastInstanceChecker = OWAPIfalseUse approximations in reasoner instance checkerfalse
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 271.139 (deviation 271.787; min 71; max 836; count 36)
+approximation difference: av. 0.099 (deviation 0.096; min 0; max 0.214; count 22)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 2
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 2
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.421 (deviation 0.286; min 0.016; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 2)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 7
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 7
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.692 (deviation 0.26; min 0.077; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.913 (deviation 0.064; min 0.854; max 1; count 7)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 9
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 9
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.556 (deviation 0.302; min 0.016; max 1; count 36)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.932 (deviation 0.068; min 0.854; max 1; count 9)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPIfalseUse approximations in reasoner instance checkertrue
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnnnnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 3,088.472 (deviation 1,851.309; min 446; max 6,121; count 36)
+approximation difference: av. 0.036 (deviation 0.068; min 0; max 0.214; count 65)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 7
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 7
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.637 (deviation 0.344; min 0.045; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.974 (deviation 0.053; min 0.857; max 1; count 7)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 9
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 9
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.771 (deviation 0.232; min 0.189; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.949 (deviation 0.062; min 0.859; max 1; count 9)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 16
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 16
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.704 (deviation 0.297; min 0.045; max 1; count 36)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.96 (deviation 0.057; min 0.857; max 1; count 16)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPItrueUse approximations in reasoner instance checkerfalse
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnnnnnnnnnnnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 49,176.333 (deviation 45,475.061; min 6,167; max 162,314; count 36)
+approximation difference: av. 0.04 (deviation 0.068; min 0; max 0.214; count 230)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 14
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 14
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.823 (deviation 0.343; min 0.045; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.999 (deviation 0.003; min 0.988; max 1; count 14)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 9
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 9
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.771 (deviation 0.229; min 0.192; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.947 (deviation 0.061; min 0.859; max 1; count 9)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 23
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 23
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.797 (deviation 0.289; min 0.045; max 1; count 36)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.979 (deviation 0.045; min 0.859; max 1; count 23)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPItrueUse approximations in reasoner instance checkertrue
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnnnnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 83,619.889 (deviation 81,718.612; min 1,929; max 226,205; count 36)
+approximation difference: av. 0.055 (deviation 0.076; min 0; max 0.214; count 130)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 7
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 7
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.641 (deviation 0.344; min 0.045; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.978 (deviation 0.053; min 0.857; max 1; count 7)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 9
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 9
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.774 (deviation 0.23; min 0.192; max 1; count 18)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.95 (deviation 0.06; min 0.859; max 1; count 9)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 16
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 16
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.707 (deviation 0.296; min 0.045; max 1; count 36)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.962 (deviation 0.057; min 0.857; max 1; count 16)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPIfalseUse approximations in reasoner instance checkerfalse
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 110 (deviation 51.334; min 77; max 197; count 14)
+approximation difference: av. 0.147 (deviation 0.019; min 0.131; max 0.163; count 4)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.415 (deviation 0.201; min 0.157; max 0.689; count 7)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 2
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 2
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.733 (deviation 0.154; min 0.477; max 0.904; count 7)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.891 (deviation 0.018; min 0.878; max 0.904; count 2)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 2
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 2
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.574 (deviation 0.239; min 0.157; max 0.904; count 14)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.891 (deviation 0.018; min 0.878; max 0.904; count 2)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPIfalseUse approximations in reasoner instance checkertrue
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 1,634.825 (deviation 2,032.235; min 140; max 8,225; count 40)
+approximation difference: av. 0.092 (deviation 0.093; min 0.025; max 0.261; count 10)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 3
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 3
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.497 (deviation 0.28; min 0.041; max 0.928; count 20)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.881 (deviation 0.041; min 0.857; max 0.928; count 3)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 2
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 2
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.642 (deviation 0.198; min 0.172; max 0.904; count 20)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.891 (deviation 0.018; min 0.878; max 0.904; count 2)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 5
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 5
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.57 (deviation 0.25; min 0.041; max 0.928; count 40)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.885 (deviation 0.031; min 0.857; max 0.928; count 5)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPItrueUse approximations in reasoner instance checkerfalse
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 24,932.786 (deviation 19,951.409; min 6,683; max 59,682; count 14)
+approximation difference: av. 0.054 (deviation 0.055; min 0.015; max 0.164; count 80)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.676 (deviation 0.395; min 0.159; max 0.997; count 7)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.989 (deviation 0.006; min 0.981; max 0.997; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.8 (deviation 0.189; min 0.481; max 0.995; count 7)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.938 (deviation 0.052; min 0.884; max 0.995; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 8
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 8
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.738 (deviation 0.304; min 0.159; max 0.997; count 14)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.964 (deviation 0.044; min 0.884; max 0.997; count 8)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+FastInstanceChecker = OWAPItrueUse approximations in reasoner instance checkertrue
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnnn
+classes in ontology: 340
+classes with at least 3 instances: 20
+class expressions tested: av. 24,279.975 (deviation 22,933.51; min 2,313; max 88,712; count 40)
+approximation difference: av. 0.087 (deviation 0.137; min 0; max 0.829; count 41)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 5
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 5
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.546 (deviation 0.318; min 0.041; max 0.997; count 20)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.924 (deviation 0.066; min 0.857; max 0.997; count 5)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.667 (deviation 0.222; min 0.175; max 0.995; count 20)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.943 (deviation 0.049; min 0.882; max 0.995; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 9
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 9
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 0.606 (deviation 0.278; min 0.041; max 0.997; count 40)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 0.933 (deviation 0.057; min 0.857; max 0.997; count 9)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+

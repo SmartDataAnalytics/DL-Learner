@@ -1,0 +1,98 @@
+test set errors pos: [lymphography#94, lymphography#78, lymphography#124, lymphography#145, lymphography#147]
+test set errors neg: []
+fold 0:
+  training: 72 positive and 60 negative examples  testing: 4/9 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 68.75% (86.364% on training set)
+  length: 9
+  runtime: 10.009s
+
+test set errors pos: [lymphography#111, lymphography#33, lymphography#122]
+test set errors neg: []
+fold 1:
+  training: 73 positive and 60 negative examples  testing: 5/8 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 80% (84.962% on training set)
+  length: 9
+  runtime: 10.019s
+
+test set errors pos: [lymphography#53]
+test set errors neg: []
+fold 2:
+  training: 73 positive and 60 negative examples  testing: 7/8 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 93.333% (83.459% on training set)
+  length: 9
+  runtime: 10.02s
+
+test set errors pos: [lymphography#48]
+test set errors neg: []
+fold 3:
+  training: 73 positive and 61 negative examples  testing: 7/8 correct positives, 6/6 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 92.857% (83.582% on training set)
+  length: 9
+  runtime: 10.007s
+
+test set errors pos: [lymphography#90, lymphography#121]
+test set errors neg: [lymphography#146]
+fold 4:
+  training: 73 positive and 60 negative examples  testing: 6/8 correct positives, 6/7 correct negatives
+  concept: BlockOfAffere3  and (CIN14_Lac_Margin or (LNE11_2  and (NON19_n0-9 or SF16_Chalices)))
+  accuracy: 80% (84.962% on training set)
+  length: 9
+  runtime: 10.02s
+
+test set errors pos: [lymphography#5]
+test set errors neg: []
+fold 5:
+  training: 73 positive and 60 negative examples  testing: 7/8 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 93.333% (83.459% on training set)
+  length: 9
+  runtime: 10.015s
+
+test set errors pos: [lymphography#51, lymphography#103, lymphography#113]
+test set errors neg: [lymphography#144]
+fold 6:
+  training: 73 positive and 61 negative examples  testing: 5/8 correct positives, 5/6 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 71.429% (85.821% on training set)
+  length: 9
+  runtime: 10.002s
+
+test set errors pos: [lymphography#17, lymphography#19, lymphography#131]
+test set errors neg: []
+fold 7:
+  training: 73 positive and 60 negative examples  testing: 5/8 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 80% (84.962% on training set)
+  length: 9
+  runtime: 10.002s
+
+test set errors pos: [lymphography#105]
+test set errors neg: []
+fold 8:
+  training: 73 positive and 60 negative examples  testing: 7/8 correct positives, 7/7 correct negatives
+  concept: BlockOfAffere3  and (NON19_n0-9 or (CIN14_Lac_Margin  and (ByPass6 or NON19_n10-19)))
+  accuracy: 93.333% (83.459% on training set)
+  length: 9
+  runtime: 10.011s
+
+test set errors pos: [lymphography#6, lymphography#98]
+test set errors neg: [lymphography#31]
+fold 9:
+  training: 73 positive and 61 negative examples  testing: 6/8 correct positives, 5/6 correct negatives
+  concept: BlockOfAffere3  and (CIN14_Lac_Margin or NON19_n0-9)
+  accuracy: 78.571% (84.328% on training set)
+  length: 5
+  runtime: 10.004s
+
+
+Finished 10-folds cross-validation.
+runtime: av. 10.011s (deviation 0.007s; min 10.002s; max 10.02s)
+length: av. 8.6 (deviation 1.265; min 5; max 9)
+F-Measure on training set: av. 83.822% (deviation 1.238%; min 82.54%; max 85.937%)
+F-Measure: av. 82.015% (deviation 11.074%; min 61.538%; max 93.333%)
+predictive accuracy on training set: av. 84.536% (deviation 1.053%; min 83.459%; max 86.364%)
+predictive accuracy: av. 83.161% (deviation 9.433%; min 68.75%; max 93.333%)

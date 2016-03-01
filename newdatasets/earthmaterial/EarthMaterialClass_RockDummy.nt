@@ -1,0 +1,71 @@
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://www.w3.org/2000/01/rdf-schema#label> "Types of non earth material matter, or absense of matter, that may be recorded in a geological log or section"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/title> "BGS Earth Material: Rock Dummy Classes"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/description> "Classifies matter or absense of matter, other than earth material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/2000/01/rdf-schema#label> "No core recovered"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/2004/02/skos/core#prefLabel> "No core recovered"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/2004/02/skos/core#definition> "NO CORE RECOVERED"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/2000/01/rdf-schema#label> "Open hole"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/2004/02/skos/core#prefLabel> "Open hole"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/2004/02/skos/core#definition> "OPEN HOLE"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/2000/01/rdf-schema#label> "Unknown/unclassified entry"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/2004/02/skos/core#prefLabel> "Unknown/unclassified entry"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/2004/02/skos/core#definition> "UNKNOWN/UNCLASSIFIED ENTRY"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/2000/01/rdf-schema#label> "Void"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/2004/02/skos/core#prefLabel> "Void"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/2004/02/skos/core#definition> "VOID"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/2000/01/rdf-schema#label> "Water, type unspecified"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/2004/02/skos/core#prefLabel> "Water, type unspecified"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/2004/02/skos/core#definition> "WATER, TYPE UNSPECIFIED"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/2000/01/rdf-schema#label> "Sea water"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/2004/02/skos/core#prefLabel> "Sea water"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/2004/02/skos/core#definition> "WATER, SEA"@en .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .

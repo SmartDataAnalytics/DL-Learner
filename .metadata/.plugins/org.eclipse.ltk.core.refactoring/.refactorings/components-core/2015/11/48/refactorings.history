@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;OntologyEngineering.java&apos; to &apos;org.dllearner.examples.Carcinogenesis.java&apos;&#x0A;- Original project: &apos;components-core&apos;&#x0A;- Destination element: &apos;org.dllearner.examples.Carcinogenesis.java&apos;&#x0A;- Original element: &apos;org.dllearner.learningproblems.OntologyEngineering.java&apos;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="=scripts/src\/main\/java&lt;org.dllearner.examples{Carcinogenesis.java" element1="/src\/main\/java&lt;org.dllearner.learningproblems{OntologyEngineering.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1448626090697" units="1" version="1.0"/>
+</session>

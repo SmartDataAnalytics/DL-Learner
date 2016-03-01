@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="313" key="DIALOG_WIDTH"/>
+		<item value="105" key="DIALOG_Y_ORIGIN"/>
+		<item value="419" key="DIALOG_HEIGHT"/>
+		<item value="873" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="ClassLearningProblem" key="selection"/>
+		<list key="findhistory">
+			<item value="next()"/>
+			<item value="classInstances.size()"/>
+			<item value="while "/>
+			<item value="getnext"/>
+			<item value="for(OWLIndividual ind : classInstances) {"/>
+			<item value="for(OWLIndividual ind : classInstances)"/>
+			<item value="for("/>
+			<item value="for(ind:"/>
+		</list>
+		<list key="replacehistory">
+			<item value="OWLIndividual ind;&#x09;&#x09;&#x09;&#x09; &#x0A;&#x09;&#x09;&#x09;&#x09;while ((ind = getNextInstance(classInstances))!= null){"/>
+			<item value=""/>
+			<item value="&#x09;OWLIndividual ind;&#x09;&#x09;&#x09;&#x09; while ((ind = getNextInstance(classInstances))!= null){"/>
+			<item value="&#x09;OWLIndividual ind;&#x09;&#x09;&#x09;&#x09; while ((ind = getNextInstance(classInstances))!= null)&#x09;&#x09;&#x09;&#x09;{"/>
+		</list>
+	</section>
+</section>

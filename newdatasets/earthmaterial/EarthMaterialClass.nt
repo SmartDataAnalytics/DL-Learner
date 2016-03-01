@@ -1,0 +1,156 @@
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/title> "BGS Earth Material Classes"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/description> "Classifies all types of earth material or other substance that may be recorded in a geological log or section. This is an abstract schema that consists of 3 sub-schemas."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://www.w3.org/2000/01/rdf-schema#label> "Types of material including single rock types, non earth materials and composite lithologies. This is an abstract schema that consists of 3 sub-schemas"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/EarthMaterialClass"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://www.w3.org/1999/02/22-rdf-syntax-ns#about> "http://www.bgs.ac.uk/bgsrcs/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/hasPart> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/hasPart> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://purl.org/dc/terms/hasPart> <http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/bgsrcs/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/data/services/vocabulary/1.0/home.html"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/data/vocabularies/dictionary.cfm?name=DIC_ROCK_ALL"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/title> "Earth Material Component Rank Types"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://www.w3.org/2000/01/rdf-schema#label> "Relative proportion that a rock component part takes within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/description> "Relative proportions that a rock component part may take within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/created> "2008-07-01"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank> <http://purl.org/dc/terms/modified> "2008-01-23"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/title> "Earth Material Component Relation Types"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://www.w3.org/2000/01/rdf-schema#label> "Types of nature or form that a rock component part may be observed within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/description> "Types of nature or form that a rock component part may be observed within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/modified> "2008-07-01"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation> <http://purl.org/dc/terms/created> "2008-01-23"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock> <http://www.w3.org/2000/01/rdf-schema#label> "rock type"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock> <http://www.w3.org/2000/01/rdf-schema#comment> "This property is a link to the single lithology that defines this rock component"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature> <http://www.w3.org/2000/01/rdf-schema#label> "form"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature> <http://www.w3.org/2000/01/rdf-schema#comment> "This property describes the nature or form that a rock component part is observed within its parent composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://purl.org/dc/terms/hasPart> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://www.w3.org/2000/01/rdf-schema#label> "has component part"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links a composite earth material class with a described component part"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank> <http://www.w3.org/2000/01/rdf-schema#label> "rank"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank> <http://www.w3.org/2000/01/rdf-schema#comment> "This property describes the relative rank of a described component part in terms of volume compared to other components of the same composite material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://purl.org/dc/terms/isPartOf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://www.w3.org/2000/01/rdf-schema#label> "is a component part of"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links a described rock component part with the composite earth material class that it is a component of"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://purl.org/dc/terms/title> "Component part of a rock"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent> <http://www.w3.org/2000/01/rdf-schema#label> "Component part of a rock"@en .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://www.w3.org/2000/01/rdf-schema#label> "Types and compositional descriptions of earth materials that may be found in logs or exposures that are composed of one or more single rock types"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/title> "BGS Earth Material: Rock Composite Classes"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/description> "Classifies and describes the composition of rock types that are composed of one or more single rock types"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://www.w3.org/2000/01/rdf-schema#label> "Types of non earth material matter, or absense of matter, that may be recorded in a geological log or section"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/title> "BGS Earth Material: Rock Dummy Classes"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/description> "Classifies matter or absense of matter, other than earth material"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/isPartOf> <http://data.bgs.ac.uk/ref/EarthMaterialClass> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://www.w3.org/2000/01/rdf-schema#label> "Types of earth material that are single rock types only"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/title> "BGS Earth Material: Rock Name Classes"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/description> "Classifies individual types of earth material.  
+Version 3 of the largely RCS-compliant dictionary of rock names - the currently approved version.  
+   Most of its content is RCS-compliant, but for the time being it still includes a number of legacy entries  
+   intended to support authentic coding of historical records. Entries include unique root names from the RCS  
+   (e.g. basalt) as well as a gradually increasing set of approved qualified root names (e.g. olivine-clinopyroxene-plagioclase-phyric basalt)."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#narrower> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://www.w3.org/2000/01/rdf-schema#label> "sub type in main hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with its parent super-class as defined by the main BGS rock classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#narrower> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://www.w3.org/2000/01/rdf-schema#label> "sub type in Total Alkalis Versus Silica Classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with a child sub class defined by the Total Alkalis Versus Silica Classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#narrower> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://www.w3.org/2000/01/rdf-schema#label> "sub type in Unconsolidated Deposits Classification Scheme hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with a child sub class defined by the Unconsolidated Deposits Classification Scheme hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with its parent super-class as defined by the main BGS rock classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#broader> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain> <http://www.w3.org/2000/01/rdf-schema#label> "super type in main hierarchy"@en .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#broader> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://www.w3.org/2000/01/rdf-schema#label> "super type in Unconsolidated Deposits Classification Scheme hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with its parent super-class as defined by the Total Alkalis Versus Silica Classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
+
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2004/02/skos/core#broader> .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://www.w3.org/2000/01/rdf-schema#label> "super type in Total Alkalis Versus Silica Classification hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://www.w3.org/2000/01/rdf-schema#comment> "This property links an earth material class with its parent super-class as defined by the Unconsolidated Deposits Classification Scheme hierarchy"@en .
+<http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .

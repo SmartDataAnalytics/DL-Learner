@@ -1,0 +1,194 @@
+/**
+ * 
+ */
+package org.dllearner.examples;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.jena.riot.Lang;
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.cli.CLI;
+import org.dllearner.cli.CrossValidation;
+import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.XSD;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+
+/**
+ * A basic example how to use DL-Learner.
+ * 
+ * Knowledge base: a family ontology Target Concept: father
+ * 
+ * @author Lorenz Buehmann
+ *
+ */
+public class TenFold {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) throws Exception {
+		// ToStringRenderer.getInstance().setRenderer(new
+		// ManchesterOWLSyntaxOWLObjectRendererImpl());
+		// String conffileName="../examples/carcinogenesis/tenfold.conf";
+		// File file = new
+		// File("../examples/carcinogenesis/carcinogenesis.owl");
+
+		tring conffileName = "../newdatasets/Lexicons/lith.conf";
+		
+		
+		File file = new File("../newdatasets/Lexicons/Lexicon.nt");
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks1 = new OWLAPIOntology(ontology);
+		ks1.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_DefinitionStatus.nt");
+		 ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks2 = new OWLAPIOntology(ontology);
+		ks2.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_EquivalenceType.nt");
+		 ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks3 = new OWLAPIOntology(ontology);
+		ks3.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_EquivalentName.nt");
+		 ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks4 = new OWLAPIOntology(ontology);
+		ks4.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_LithogeneticType.nt");
+		 ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks5 = new OWLAPIOntology(ontology);
+		ks5.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_LithologyComponent.nt");
+		 ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks6 = new OWLAPIOntology(ontology);
+		ks6.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_NamedRockUnit.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks7 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_RockUnitRank.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks8 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_ShapeType.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks9 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_SourceInfo.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks10 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_SpatialScope.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks11 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_Stratotype.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks12 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_StratotypeType.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks13 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_Theme.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks14 = new OWLAPIOntology(ontology);
+		ks7.init();
+		file = new File("../newdatasets/Lexicons/Lexicon_Class.nt");
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		AbstractKnowledgeSource ks15 = new OWLAPIOntology(ontology);
+		ks7.init();
+		
+		
+		//////////////////////////// CONF FILE
+		//////////////////////////// //////////////////////////////////
+
+		// String conffileName
+		// ="../examples/lymphography/lymphography_Class3.conf";
+		// String conffileName ="../UCI/mush2.conf";
+		File confFile = new File(conffileName);
+		CLI cl = new CLI(confFile);
+		cl.init();
+
+		// read Owl file
+		//KnowledgeSource ks = cl.getKnowledgeSource();
+		//ks.init();
+		// setup the reasoner
+		ClosedWorldReasoner rc = new ClosedWorldReasoner();
+		rc.setSources(ks1,ks2,ks3,ks4,ks5,ks6,ks7,ks8,ks9,ks10,ks11,ks12,ks13,ks14,ks15);
+		rc.init();
+		// create the learning problem
+		ClassLearningProblem lp = new ClassLearningProblem(rc);
+		lp.setReasoner(rc);
+		
+		lp.init();
+		
+
+		// RhoDRDown op = new RhoDRDown();
+		// op.setReasoner(rc);
+		// op.setUseStringDatatypes(true); // sent by lorenz
+		// op.setFrequencyThreshold(5);
+		// op.setUseDataHasValueConstructor(true);
+		// op.setUseHasValueConstructor(true);
+		// op.init();
+
+		CELOE alg = new CELOE(cl.getLearningProblem(), cl.getReasonerComponent());
+		alg.setMaxExecutionTimeInSeconds(500);
+		alg.setWriteSearchTree(true);
+		alg.setSearchTreeFile("/tmp/dllearner/search-treel.log");
+		// alg.setOperator(op);
+		alg.setReplaceSearchTree(true);
+
+		// /////////// Ignoring a concept //////////////
+		 OWLClassImpl cls1 = new OWLClassImpl(IRI.create("http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis"));
+		 Set<OWLClass> ignoredConcepts = Sets.newHashSet();
+		 ignoredConcepts.add(cls1);
+		 alg.setIgnoredConcepts(ignoredConcepts);
+		////////////////////////////////////////
+		alg.init();
+
+		////////////////////////////////////////////////////////////
+
+		// new
+		// CrossValidation(cl.getLearningAlgorithm(),cl.getLearningProblem(),cl.getReasonerComponent(),10,true,true,"../Dtree/Folds/");
+		new CrossValidation(cl.getLearningAlgorithm(), cl.getLearningProblem(), cl.getReasonerComponent(), 10, true,
+				false, "../Dtree/Folds/");
+
+	}
+
+}

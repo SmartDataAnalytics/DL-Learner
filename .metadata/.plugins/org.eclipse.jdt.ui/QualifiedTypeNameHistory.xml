@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="java.io.BufferedWriter"/>
+<fullyQualifiedTypeName name="java.io.FileWriter"/>
+<fullyQualifiedTypeName name="java.io.PrintWriter"/>
+<fullyQualifiedTypeName name="eu.trowl.owlapi3.rel.normal.model.Description"/>
+<fullyQualifiedTypeName name="eu.trowl.owlapi3.rel.tms.model.Description"/>
+<fullyQualifiedTypeName name="org.hamcrest.Description"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.owllink.builtin.response.Description"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.model.OWLClassExpression"/>
+<fullyQualifiedTypeName name="org.dllearner.core.Score"/>
+<fullyQualifiedTypeName name="org.dllearner.learningproblems.EvaluatedDescriptionClass"/>
+<fullyQualifiedTypeName name="org.dllearner.utilities.OwlApiJenaUtils"/>
+<fullyQualifiedTypeName name="org.dllearner.refinementoperators.RhoDRDown"/>
+<fullyQualifiedTypeName name="org.dllearner.reasoning.OWLAPIReasoner"/>
+<fullyQualifiedTypeName name="org.dllearner.core.AbstractReasonerComponent"/>
+<fullyQualifiedTypeName name="java.io.FileOutputStream"/>
+<fullyQualifiedTypeName name="java.io.PrintStream"/>
+<fullyQualifiedTypeName name="org.dllearner.examples.OntologyEngineering"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="org.dllearner.reasoning.ClosedWorldReasoner"/>
+<fullyQualifiedTypeName name="uk.ac.manchester.cs.owl.owlapi.OWLClassImpl"/>
+<fullyQualifiedTypeName name="com.github.jsonldjava.core.RDFDataset.IRI"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.model.IRI"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.model.OWLClass"/>
+<fullyQualifiedTypeName name="org.aksw.commons.collections.Sets"/>
+<fullyQualifiedTypeName name="com.google.common.collect.Sets"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.model.OWLAnonymousIndividual"/>
+<fullyQualifiedTypeName name="java.util.SortedSet"/>
+<fullyQualifiedTypeName name="org.semanticweb.owlapi.model.OWLIndividual"/>
+<fullyQualifiedTypeName name="java.io.BufferedReader"/>
+<fullyQualifiedTypeName name="java.io.FileReader"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="org.dllearner.learningproblems.ClassLearningProblemSampling"/>
+</qualifiedTypeNameHistroy>

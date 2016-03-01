@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://acl/BMV" uri="MDM0.73.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://reliant.teknowledge.com/DAML/Economy.owl" uri="Economy.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://sweet.jpl.nasa.gov/1.1/earthrealm.owl" uri="earthrealm.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://www.co-ode.org/ontologies/eukariotic/2005/06/01/eukariotic.owl" uri="eukariotic.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://www.fadyart.com/Finance.owl" uri="Finance.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="duplicate:http://www.inter2geo.eu/2008/ontology/GeoSkills" uri="GeoSkills.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="duplicate:http://www.inter2geo.eu/2008/ontology/GeoSkills" uri="OLDGeoSkills.owl.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1448550046108" name="http://www.mssm.edu/labs/maayan" uri="adhesome.owl"/>
+    </group>
+</catalog>

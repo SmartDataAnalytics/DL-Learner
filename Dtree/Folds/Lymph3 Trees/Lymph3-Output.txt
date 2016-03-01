@@ -1,0 +1,98 @@
+test set errors pos: []
+test set errors neg: [lymphography#145, lymphography#29, lymphography#50, lymphography#53]
+fold 0:
+  training: 54 positive and 78 negative examples  testing: 7/7 correct positives, 5/9 correct negatives
+  concept: (EarlyUptakeIn9  and ExclusionOfNo18) or (not (BlockOfAffere3))
+  accuracy: 75% (61.364% on training set)
+  length: 6
+  runtime: 50.009s
+
+test set errors pos: []
+test set errors neg: [lymphography#130, lymphography#131, lymphography#136, lymphography#2, lymphography#48, lymphography#76, lymphography#79]
+fold 1:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 2/9 correct negatives
+  concept: (EarlyUptakeIn9  and (not (NON19_n0-9))) or (not (BlockOfAffere3))
+  accuracy: 53.333% (72.18% on training set)
+  length: 7
+  runtime: 50.02s
+
+test set errors pos: []
+test set errors neg: [lymphography#102, lymphography#118, lymphography#148, lymphography#35, lymphography#6, lymphography#87, lymphography#94]
+fold 2:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 2/9 correct negatives
+  concept: (EarlyUptakeIn9  and ExclusionOfNo18) or (not (BlockOfAffere3))
+  accuracy: 53.333% (63.91% on training set)
+  length: 6
+  runtime: 50.015s
+
+test set errors pos: [lymphography#69]
+test set errors neg: [lymphography#24, lymphography#55]
+fold 3:
+  training: 55 positive and 79 negative examples  testing: 5/6 correct positives, 6/8 correct negatives
+  concept: CIL12_Oval or (EarlyUptakeIn9  and SF16_Vesicles  and (not (LNE11_2)))
+  accuracy: 78.571% (67.91% on training set)
+  length: 8
+  runtime: 50.014s
+
+test set errors pos: []
+test set errors neg: [lymphography#51, lymphography#58]
+fold 4:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 7/9 correct negatives
+  concept: (EarlyUptakeIn9  and (not (NON19_n0-9))) or (not (BlockOfAffere3))
+  accuracy: 86.667% (68.421% on training set)
+  length: 7
+  runtime: 50.017s
+
+test set errors pos: []
+test set errors neg: [lymphography#111, lymphography#140, lymphography#15, lymphography#16, lymphography#60, lymphography#78]
+fold 5:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 3/9 correct negatives
+  concept: (EarlyUptakeIn9  and (not (NON19_n0-9))) or (not (BlockOfAffere3))
+  accuracy: 60% (71.429% on training set)
+  length: 7
+  runtime: 50.018s
+
+test set errors pos: []
+test set errors neg: [lymphography#121, lymphography#19, lymphography#37, lymphography#5, lymphography#77]
+fold 6:
+  training: 55 positive and 79 negative examples  testing: 6/6 correct positives, 3/8 correct negatives
+  concept: (EarlyUptakeIn9  and ExclusionOfNo18) or (not (BlockOfAffere3))
+  accuracy: 64.286% (62.687% on training set)
+  length: 6
+  runtime: 50.007s
+
+test set errors pos: []
+test set errors neg: [lymphography#122, lymphography#33, lymphography#36, lymphography#90]
+fold 7:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 5/9 correct negatives
+  concept: (EarlyUptakeIn9  and (not (NON19_n0-9))) or (not (BlockOfAffere3))
+  accuracy: 73.333% (69.925% on training set)
+  length: 7
+  runtime: 50.005s
+
+test set errors pos: []
+test set errors neg: [lymphography#103, lymphography#11, lymphography#113, lymphography#147, lymphography#44, lymphography#98]
+fold 8:
+  training: 55 positive and 78 negative examples  testing: 6/6 correct positives, 3/9 correct negatives
+  concept: (EarlyUptakeIn9  and (not (NON19_n0-9))) or (not (BlockOfAffere3))
+  accuracy: 60% (71.429% on training set)
+  length: 7
+  runtime: 50.011s
+
+test set errors pos: []
+test set errors neg: [lymphography#137, lymphography#143, lymphography#17]
+fold 9:
+  training: 55 positive and 79 negative examples  testing: 6/6 correct positives, 5/8 correct negatives
+  concept: (EarlyUptakeIn9  and ExclusionOfNo18) or (not (BlockOfAffere3))
+  accuracy: 78.571% (61.194% on training set)
+  length: 6
+  runtime: 50.018s
+
+
+Finished 10-folds cross-validation.
+runtime: av. 50.013s (deviation 0.005s; min 50.005s; max 50.02s)
+length: av. 6.7 (deviation 0.675; min 6; max 8)
+F-Measure on training set: av. 71.527% (deviation 2.752%; min 67.901%; max 74.83%)
+F-Measure: av. 72.565% (deviation 7.679%; min 63.158%; max 85.714%)
+predictive accuracy on training set: av. 67.045% (deviation 4.36%; min 61.194%; max 72.18%)
+predictive accuracy: av. 68.31% (deviation 11.645%; min 53.333%; max 86.667%)

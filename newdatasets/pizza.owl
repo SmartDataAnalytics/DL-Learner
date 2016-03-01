@@ -1,0 +1,341 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="www.pizza.com#"
+     xml:base="www.pizza.com"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="www.pizza.com">
+        <rdfs:comment>Pizza info</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- www.pizza.com#hasBase -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#hasBase">
+        <owl:inverseOf rdf:resource="www.pizza.com#isBaseOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- www.pizza.com#hasIngredient -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#hasIngredient">
+        <rdfs:range rdf:resource="www.pizza.com#Topping"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- www.pizza.com#hasTopping -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#hasTopping"/>
+    
+
+
+    <!-- www.pizza.com#isBaseOf -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#isBaseOf">
+        <rdfs:subPropertyOf rdf:resource="www.pizza.com#isIngredientOf"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- www.pizza.com#isIngredientOf -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#isIngredientOf">
+        <owl:inverseOf rdf:resource="www.pizza.com#hasIngredient"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- www.pizza.com#isToppingOf -->
+
+    <owl:ObjectProperty rdf:about="www.pizza.com#isToppingOf"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- www.pizza.com#Base -->
+
+    <owl:Class rdf:about="www.pizza.com#Base">
+        <owl:disjointWith rdf:resource="www.pizza.com#Pizza"/>
+        <owl:disjointWith rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#CaperTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#CaperTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#VegetableTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#CheeseTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#CheeseTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#DeepPanBase -->
+
+    <owl:Class rdf:about="www.pizza.com#DeepPanBase">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Base"/>
+        <owl:disjointWith rdf:resource="www.pizza.com#ThinAndCrispyBase"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#GreenPepperTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#GreenPepperTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#PepperTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#HamTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#HamTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#MeatTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#JalapenoTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#JalapenoTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#PepperTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#MeatTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#MeatTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#MozzarellaTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#MozzarellaTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#CheeseTopping"/>
+        <owl:disjointWith rdf:resource="www.pizza.com#ParmezanTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#MushroomTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#MushroomTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#VegetableTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#OnionTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#OnionTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#VegetableTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#ParmezanTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#ParmezanTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#CheeseTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#PepperTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#PepperTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#VegetableTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#PepperoniTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#PepperoniTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#MeatTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#Pizza -->
+
+    <owl:Class rdf:about="www.pizza.com#Pizza">
+        <owl:disjointWith rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#PrawnTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#PrawnTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#SeaFoodTopping"/>
+        <owl:disjointWith rdf:resource="www.pizza.com#TunaTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#RedPepperTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#RedPepperTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#PepperTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#SalamiTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#SalamiTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#MeatTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#SeaFoodTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#SeaFoodTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#SpicyBeefTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#SpicyBeefTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#MeatTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#ThinAndCrispyBase -->
+
+    <owl:Class rdf:about="www.pizza.com#ThinAndCrispyBase">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Base"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#TomatoTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#TomatoTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#VegetableTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#Topping -->
+
+    <owl:Class rdf:about="www.pizza.com#Topping"/>
+    
+
+
+    <!-- www.pizza.com#TunaTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#TunaTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#SeaFoodTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- www.pizza.com#VegetableTopping -->
+
+    <owl:Class rdf:about="www.pizza.com#VegetableTopping">
+        <rdfs:subClassOf rdf:resource="www.pizza.com#Topping"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="www.pizza.com#HamTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#PepperoniTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#SalamiTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#SpicyBeefTopping"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="www.pizza.com#CaperTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#MushroomTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#OnionTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#PepperTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#TomatoTopping"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="www.pizza.com#CheeseTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#MeatTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#SeaFoodTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#VegetableTopping"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="www.pizza.com#GreenPepperTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#JalapenoTopping"/>
+            <rdf:Description rdf:about="www.pizza.com#RedPepperTopping"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

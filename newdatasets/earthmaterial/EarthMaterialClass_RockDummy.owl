@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY ref "http://data.bgs.ac.uk/ref/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/owl/owlapi/turtle#"
+     xml:base="http://www.semanticweb.org/owl/owlapi/turtle"
+     xmlns:ref="http://data.bgs.ac.uk/ref/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/hasCurrentStatus -->
+
+    <owl:AnnotationProperty rdf:about="&ref;hasCurrentStatus"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/accessRights -->
+
+    <owl:AnnotationProperty rdf:about="&terms;accessRights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/created -->
+
+    <owl:AnnotationProperty rdf:about="&terms;created"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="&terms;creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="&terms;description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/isPartOf -->
+
+    <owl:AnnotationProperty rdf:about="&terms;isPartOf"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+    <owl:AnnotationProperty rdf:about="&terms;publisher"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#definition -->
+
+    <owl:AnnotationProperty rdf:about="&skos;definition"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#inScheme -->
+
+    <owl:AnnotationProperty rdf:about="&skos;inScheme"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="&skos;prefLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="&xsd;date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Concept -->
+
+    <owl:Class rdf:about="&skos;Concept"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <owl:Class rdf:about="&skos;ConceptScheme"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/NOCO">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">No core recovered</rdfs:label>
+        <skos:definition xml:lang="en">NO CORE RECOVERED</skos:definition>
+        <skos:prefLabel xml:lang="en">No core recovered</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/OPHO">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Open hole</rdfs:label>
+        <skos:definition xml:lang="en">OPEN HOLE</skos:definition>
+        <skos:prefLabel xml:lang="en">Open hole</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/UKNOWN">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Unknown/unclassified entry</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">UNKNOWN/UNCLASSIFIED ENTRY</skos:definition>
+        <skos:prefLabel xml:lang="en">Unknown/unclassified entry</skos:prefLabel>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/VOID">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Void</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">VOID</skos:definition>
+        <skos:prefLabel xml:lang="en">Void</skos:prefLabel>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATR">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Water, type unspecified</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">WATER, TYPE UNSPECIFIED</skos:definition>
+        <skos:prefLabel xml:lang="en">Water, type unspecified</skos:prefLabel>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy/WATRS">
+        <rdf:type rdf:resource="&skos;Concept"/>
+        <rdfs:label xml:lang="en">Sea water</rdfs:label>
+        <skos:prefLabel xml:lang="en">Sea water</skos:prefLabel>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <skos:definition xml:lang="en">WATER, SEA</skos:definition>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <ref:hasCurrentStatus rdf:resource="&ref;CurrentStatus/CURRENT"/>
+        <rdfs:isDefinedBy rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+        <skos:inScheme rdf:resource="&ref;EarthMaterialClass/RockDummy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy -->
+
+    <owl:NamedIndividual rdf:about="&ref;EarthMaterialClass/RockDummy">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of non earth material matter, or absense of matter, that may be recorded in a geological log or section</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2011-02-10</terms:created>
+        <terms:title xml:lang="en">BGS Earth Material: Rock Dummy Classes</terms:title>
+        <terms:description xml:lang="en">Classifies matter or absense of matter, other than earth material</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy</terms:identifier>
+        <terms:isPartOf rdf:resource="&ref;EarthMaterialClass"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

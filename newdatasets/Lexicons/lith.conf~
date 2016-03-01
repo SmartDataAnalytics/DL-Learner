@@ -1,0 +1,211 @@
+/*
+Converted from the  Repository at:
+http://data.bgs.ac.uk
+
+Files:
+*/
+
+ 
+// knowledge source definition // we have to read man files
+ks1.type = "OWL File"
+ks1.fileName = "Lexicon.nt"
+ks2.type = "OWL File"
+ks2.fileName = "Lexicon_DefinitionStatus.nt"
+ks3.type = "OWL File"
+ks3.fileName = "Lexicon_EquivalenceType.nt"
+ks4.type = "OWL File"
+ks4.fileName = "Lexicon_EquivalentName.nt"
+ks5.type = "OWL File"
+ks5.fileName = "Lexicon_LithogeneticType.nt"
+ks6.type = "OWL File"
+ks6.fileName = "Lexicon_LithologyComponent.nt"
+ks7.type = "OWL File"
+ks7.fileName = "Lexicon_NamedRockUnit.nt"
+ks8.type = "OWL File"
+ks8.fileName = "Lexicon_RockUnitRank.nt"
+ks9.type = "OWL File"
+ks9.fileName = "Lexicon_ShapeType.nt"
+ks10.type = "OWL File"
+ks10.fileName = "Lexicon_SourceInfo.nt"
+ks11.type = "OWL File"
+ks11.fileName = "Lexicon_SpatialScope.nt"
+ks12.type = "OWL File"
+ks12.fileName = "Lexicon_Stratotype.nt"
+ks13.type = "OWL File"
+ks13.fileName = "Lexicon_StratotypeType.nt"
+ks14.type = "OWL File"
+ks14.fileName = "Lexicon_Theme.nt"
+ks15.type = "OWL File"
+ks15.fileName = "Lexicons/Lexicon_Class.nt
+
+
+
+
+// reasoner
+reasoner.type = "closed world reasoner"
+reasoner.sources = { ks1,ks2,ks3,ks4,ks5,ks6,ks7,ks8,ks9,ks10,ks11,ks12,ks13,ks14,ks15 }
+
+// learning problem
+lp.type = "posNegStandard"
+lp.positiveExamples = {
+/*FLUV*/
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/EMSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BISG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LHGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ETSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SURA",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BASG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BYSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/STSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SYSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RDFD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WOGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ALTD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DAY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LASI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/NIT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RMLY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HPSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FPGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SHE",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CCGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/GCGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ANSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HETD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SHGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DASI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CMBE",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LNSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FIGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BDGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SUHG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WIHG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SDSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BOSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WV",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/EGSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/NDR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/KRT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BHT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/TPGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BFSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/STGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/PRSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WASG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/NO",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BGGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WGGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LTH",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CRTD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WORT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BGT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WHAT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HHTD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BYTH",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SPHT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SIGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LHSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/PERT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SBS",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ILSI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BALGH",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CVD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DHGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BYGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HAN",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BRET",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RIN",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ROSI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BESG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BARW",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/PSTT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FSGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WLGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BPGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FEG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/KPGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BSGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/STAU",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BSSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BDTN",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/AILT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HEATH",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HAGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CFSI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/OKSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HNGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BKFD",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/THGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ESI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WAT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SUGL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FULB",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DVA"
+}
+lp.negativeExamples = {
+/*GLACI*/
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CBAY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SDVY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/OULT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FC",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/MTON",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RMT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SHLAG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SLSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RDSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HPTI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/DMG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BUB",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HATI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ASAG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RLTI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ARDS",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CWSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/GDSI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/SSA",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WDGE",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/RYCL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ASGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/JURBY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BECL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ORRIS",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ALGR",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LEY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/STIL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CODT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/CDVY",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/PELC",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ODT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/THT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BATI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/UWIS",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WOC",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HOTI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/STLL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LOSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WOSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HGV",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WOHE",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/MTIL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/HISA",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/ETIL",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/WIGS",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/FASG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/LOFT",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/USI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/BRLSG",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/KBSI",
+"http://data.bgs.ac.uk/id/Lexicon/NamedRockUnit/MFT"
+}
+
+op.type = "rho"
+op.useAllConstructor = false
+op.useExistsConstructor = true
+op.useNegation = false
+
+alg.type = "ocel"
+ alg.ignoredConcepts = {
+"http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis"
+}

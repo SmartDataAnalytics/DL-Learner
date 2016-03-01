@@ -1,0 +1,47 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon themes"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Rock Type Themes"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://www.w3.org/2000/01/rdf-schema#label> "Artificial"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/ARTIF> <http://www.w3.org/2000/01/rdf-schema#comment> "Artificial (including all anthropogenic deposits and excavations)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://www.w3.org/2000/01/rdf-schema#label> "Bedrock"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/BEDRCK> <http://www.w3.org/2000/01/rdf-schema#comment> "Bedrock (comprising the crag formations of East Anglia and all pre-Quaternary formations)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://www.w3.org/2000/01/rdf-schema#label> "Mass Movement"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/MASMVT> <http://www.w3.org/2000/01/rdf-schema#comment> "Mass Movement (comprising landslide deposits)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#label> "Not Applicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#comment> "Not applicable"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://www.w3.org/2000/01/rdf-schema#label> "Not Entered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/NotEntered> <http://www.w3.org/2000/01/rdf-schema#comment> "We have not assigned a value yet (and it might not be applicable)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Theme> .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://www.w3.org/2000/01/rdf-schema#label> "Superficial"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Theme/SPRFCL> <http://www.w3.org/2000/01/rdf-schema#comment> "Superficial (comprising deposits of Quaternary age except for the crag formations of East Anglia)"@en .

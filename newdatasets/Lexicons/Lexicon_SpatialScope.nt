@@ -1,0 +1,41 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon spatial scopes"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Spatial Scope of Definitions"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://www.w3.org/2000/01/rdf-schema#label> "General"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/GENRAL> <http://www.w3.org/2000/01/rdf-schema#comment> "General (definition applies to whole outcrop, onshore or offshore).  General applicability is used where the definition is used nationwide, whether the rock unit is widespread or restricted to a small area. General status could be used for a definition provided for a unit seen in a single outcrop in Charnwood if it were considered unlikely to be modified as new areas were surveyed; the definition is considered to have &quot;general&quot; or &quot;national&quot; validity. 
+"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://www.w3.org/2000/01/rdf-schema#label> "Local"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/LOCAL> <http://www.w3.org/2000/01/rdf-schema#comment> "Local (definition applies only to part of the outcrop).  Local applicability should be used where a definition is provided for a wide-ranging unit on the basis of its first modern mapping in a relatively small area; the definition (based on the modern mapping) is assumed to have only &quot;local&quot; validity when first provided. Further information from eventual more widespread mapping should allow confirmation, augmentation and/or revision of th"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#label> "Not applicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#comment> "Not applicable"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://www.w3.org/2000/01/rdf-schema#label> "Universal"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/UNIVRS> <http://www.w3.org/2000/01/rdf-schema#comment> "Universal (definition applies to whole formation in the United Kingdom, at outcrop and subcrop, onshore and offshore)."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://www.w3.org/2000/01/rdf-schema#label> "Wider"@en .
+<http://data.bgs.ac.uk/id/Lexicon/SpatialScope/WIDER> <http://www.w3.org/2000/01/rdf-schema#comment> "Wider applicability is used more rarely for definitions recognised as having a wider validity than the UK. Relatively few will be considered for this status, but the option remains available."@en .

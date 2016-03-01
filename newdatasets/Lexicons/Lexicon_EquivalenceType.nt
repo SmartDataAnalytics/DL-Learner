@@ -1,0 +1,19 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon equivalence types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Types of equivalence"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL"@en .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://www.w3.org/2000/01/rdf-schema#label> "Equivalent code and name are lateral equivalents"@en .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/LATRL> <http://www.w3.org/2000/01/rdf-schema#comment> "Lateral"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE"@en .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://www.w3.org/2000/01/rdf-schema#label> "Equivalent code and name are obsolete"@en .
+<http://data.bgs.ac.uk/id/Lexicon/EquivalenceType/OBSLTE> <http://www.w3.org/2000/01/rdf-schema#comment> "Obsolete"@en .

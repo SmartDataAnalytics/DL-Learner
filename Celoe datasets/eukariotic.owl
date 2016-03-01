@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.co-ode.org/ontologies/eukariotic/2005/06/01/eukariotic.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/eukariotic/2005/06/01/eukariotic.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Cell">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Has the advantage that the conditions making EukarioticCell normal are only maintained in on place - in TypicalEukarioticCell</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="EukarioticCell"/>
+          <owl:Class rdf:ID="ProkarioticCell"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="TypicalRedBloodCell">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NonTypicalRedBloodCell"/>
+    </owl:disjointWith>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</owl:cardinality>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasNucleus"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:ID="RedBloodCell"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="NonTypicalEukarioticCell">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="TypicalEukarioticCell"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#EukarioticCell"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#ProkarioticCell">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="#hasNucleus"/>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</owl:cardinality>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Cell"/>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#EukarioticCell"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Any Cell that do not have a nucleus and is not a eukariotic cell.
+(Eg Blood Cells are eukariotic, but don't have a nucleus)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Nucleus"/>
+  <owl:Class rdf:ID="ProbeBothEukarioticAndProkarioticCell">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#EukarioticCell"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cannot have something that is both
+</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ProkarioticCell"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AvianRedBloodCell">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NonTypicalRedBloodCell"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#hasNucleus"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >We would like this to be considered a normal eukariotic cell</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#TypicalEukarioticCell">
+    <owl:disjointWith rdf:resource="#NonTypicalEukarioticCell"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="#hasNucleus"/>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:cardinality>
+          </owl:Restriction>
+          <owl:Class rdf:about="#EukarioticCell"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#EukarioticCell">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >
+</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Cell"/>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TypicalEukarioticCell"/>
+          <owl:Class rdf:about="#NonTypicalEukarioticCell"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#NonTypicalRedBloodCell">
+    <owl:disjointWith rdf:resource="#TypicalRedBloodCell"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#RedBloodCell"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class>
+    <owl:complementOf>
+      <owl:Class rdf:about="#RedBloodCell"/>
+    </owl:complementOf>
+  </owl:Class>
+  <owl:Class rdf:about="#RedBloodCell">
+    <rdfs:subClassOf rdf:resource="#EukarioticCell"/>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TypicalRedBloodCell"/>
+          <owl:Class rdf:about="#NonTypicalRedBloodCell"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <Nucleus rdf:ID="a_nucleus"/>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <Nucleus rdf:about="#a_nucleus"/>
+      <Nucleus rdf:ID="b_nucleus"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+  <RedBloodCell rdf:ID="redbloodcell_with_1_nucleus">
+    <hasNucleus rdf:resource="#a_nucleus"/>
+  </RedBloodCell>
+  <RedBloodCell rdf:ID="redbloodcell_with_2_nucleii">
+    <hasNucleus rdf:resource="#b_nucleus"/>
+    <hasNucleus rdf:resource="#a_nucleus"/>
+  </RedBloodCell>
+  <RedBloodCell rdf:ID="redbloodcell_with_unstated_nucleii"/>
+  <rdf:Description rdf:ID="cell_with_no_nucleii">
+    <rdf:type>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</owl:cardinality>
+        <owl:onProperty rdf:resource="#hasNucleus"/>
+      </owl:Restriction>
+    </rdf:type>
+    <rdf:type rdf:resource="#Cell"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Could be a bloodcell, so we don't have enough information to state that it is a ProkarioticCell
+</rdfs:comment>
+  </rdf:Description>
+  <Cell rdf:ID="cell_with_1_nucleus">
+    <hasNucleus rdf:resource="#a_nucleus"/>
+  </Cell>
+  <Cell rdf:ID="cell_with_2_nucleii">
+    <hasNucleus rdf:resource="#b_nucleus"/>
+    <hasNucleus rdf:resource="#a_nucleus"/>
+  </Cell>
+  <rdf:Description rdf:ID="cell_with_no_nucleii_that_not_an_abnormal_eukariotic_cell">
+    <rdf:type>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</owl:cardinality>
+        <owl:onProperty rdf:resource="#hasNucleus"/>
+      </owl:Restriction>
+    </rdf:type>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Only way we can determine that this is not, for example, a blood cell</rdfs:comment>
+    <rdf:type>
+      <owl:Class>
+        <owl:complementOf rdf:resource="#NonTypicalEukarioticCell"/>
+      </owl:Class>
+    </rdf:type>
+    <rdf:type rdf:resource="#Cell"/>
+  </rdf:Description>
+  <rdf:Description rdf:ID="redbloodcell_with_no_nucleii">
+    <rdf:type>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</owl:cardinality>
+        <owl:onProperty rdf:resource="#hasNucleus"/>
+      </owl:Restriction>
+    </rdf:type>
+    <rdf:type rdf:resource="#RedBloodCell"/>
+  </rdf:Description>
+  <Cell rdf:ID="cell_with_unstated_nucleii"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.1 beta, Build 272)  http://protege.stanford.edu -->

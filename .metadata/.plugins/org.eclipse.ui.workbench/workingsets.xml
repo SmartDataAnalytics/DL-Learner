@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1443123383506_1" label="dllearner-parent" name="dllearner-parent">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/scripts" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/interfaces" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/components-ext" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/components-core" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1443123069117_0" label="Window Working Set" name="Aggregate for window 1443123069116"/>
+</workingSetManager>

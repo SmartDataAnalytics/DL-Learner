@@ -1,0 +1,98 @@
+test set errors pos: [lymphography#26, lymphography#129, lymphography#142, lymphography#31]
+test set errors neg: []
+fold 0:
+  training: 54 positive and 78 negative examples  testing: 3/7 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 75% (84.848% on training set)
+  length: 9
+  runtime: 10.015s
+
+test set errors pos: [lymphography#116, lymphography#146, lymphography#72, lymphography#39]
+test set errors neg: []
+fold 1:
+  training: 55 positive and 78 negative examples  testing: 2/6 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 73.333% (84.962% on training set)
+  length: 9
+  runtime: 10.014s
+
+test set errors pos: [lymphography#46]
+test set errors neg: []
+fold 2:
+  training: 55 positive and 78 negative examples  testing: 5/6 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 93.333% (82.707% on training set)
+  length: 9
+  runtime: 10.146s
+
+test set errors pos: [lymphography#56, lymphography#112, lymphography#69]
+test set errors neg: []
+fold 3:
+  training: 55 positive and 79 negative examples  testing: 3/6 correct positives, 8/8 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 78.571% (84.328% on training set)
+  length: 9
+  runtime: 10.002s
+
+test set errors pos: [lymphography#75]
+test set errors neg: [lymphography#135, lymphography#8]
+fold 4:
+  training: 55 positive and 78 negative examples  testing: 5/6 correct positives, 7/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9))
+  accuracy: 80% (83.459% on training set)
+  length: 7
+  runtime: 10.024s
+
+test set errors pos: [lymphography#91]
+test set errors neg: []
+fold 5:
+  training: 55 positive and 78 negative examples  testing: 5/6 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 93.333% (82.707% on training set)
+  length: 9
+  runtime: 10.003s
+
+test set errors pos: [lymphography#114, lymphography#10]
+test set errors neg: []
+fold 6:
+  training: 55 positive and 79 negative examples  testing: 4/6 correct positives, 8/8 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 85.714% (83.582% on training set)
+  length: 9
+  runtime: 10.003s
+
+test set errors pos: [lymphography#41]
+test set errors neg: []
+fold 7:
+  training: 55 positive and 78 negative examples  testing: 5/6 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 93.333% (82.707% on training set)
+  length: 9
+  runtime: 10.003s
+
+test set errors pos: [lymphography#115, lymphography#117, lymphography#21, lymphography#144, lymphography#1]
+test set errors neg: []
+fold 8:
+  training: 55 positive and 78 negative examples  testing: 1/6 correct positives, 9/9 correct negatives
+  concept: SF16_Vesicles  and (LNE4 or (LNE11_3  and (CIN14_Lac_Central or CIN14_Lacunar)))
+  accuracy: 66.667% (84.211% on training set)
+  length: 9
+  runtime: 10.013s
+
+test set errors pos: [lymphography#40, lymphography#30, lymphography#32]
+test set errors neg: []
+fold 9:
+  training: 55 positive and 79 negative examples  testing: 3/6 correct positives, 8/8 correct negatives
+  concept: SF16_Vesicles  and (CIN14_Lac_Central or (CIN14_Lacunar  and EarlyUptakeIn9  and ExclusionOfNo18))
+  accuracy: 78.571% (84.328% on training set)
+  length: 9
+  runtime: 10.003s
+
+
+Finished 10-folds cross-validation.
+runtime: av. 10.023s (deviation 0.044s; min 10.002s; max 10.146s)
+length: av. 8.8 (deviation 0.632; min 7; max 9)
+F-Measure on training set: av. 75.932% (deviation 1.545%; min 74.157%; max 78.261%)
+F-Measure: av. 70.156% (deviation 20.27%; min 28.571%; max 90.909%)
+predictive accuracy on training set: av. 83.784% (deviation 0.877%; min 82.707%; max 84.962%)
+predictive accuracy: av. 81.786% (deviation 9.342%; min 66.667%; max 93.333%)

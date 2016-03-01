@@ -1,0 +1,199 @@
+/*
+Converted form the UCI Machine Learning Repository at:
+http://archive.ics.uci.edu/ml/datasets/Lymphography
+
+Files:
+lymphography_Class1.conf
+lymphography_Class2.conf
+lymphography_Class3.conf
+lymphography_Class4.conf
+
+A solution ist found relatively fast for example 1 and  4.
+Because of the increasing length of concepts for example 2 and 4, 
+it will need a lot of time to find a solution, in case it exists at all.
+Mainly used as a test case for improving the algorithms (example 4 uses 
+a new experimental version of the refinement algorithm)
+*/
+prefixes = [ ("kb","http://www.example.org/lymphography#") ]
+ 
+// knowledge source definition 
+ks.type = "OWL File"
+ks.fileName = "lymphography.owl" 
+
+// reasoner
+reasoner.type = "closed world reasoner"
+reasoner.sources = { ks }
+
+// learning problem
+lp.type = "posNegStandard"
+lp.positiveExamples = {
+/*Class2*/
+"kb:2",
+"kb:5",
+"kb:6",
+"kb:7",
+"kb:8",
+"kb:11",
+"kb:12",
+"kb:13",
+"kb:16",
+"kb:17",
+"kb:18",
+"kb:19",
+"kb:20",
+"kb:23",
+"kb:24",
+"kb:29",
+"kb:33",
+"kb:34",
+"kb:35",
+"kb:36",
+"kb:43",
+"kb:44",
+"kb:47",
+"kb:48",
+"kb:49",
+"kb:50",
+"kb:51",
+"kb:53",
+"kb:54",
+"kb:55",
+"kb:58",
+"kb:60",
+"kb:62",
+"kb:64",
+"kb:65",
+"kb:68",
+"kb:71",
+"kb:73",
+"kb:76",
+"kb:77",
+"kb:78",
+"kb:82",
+"kb:86",
+"kb:87",
+"kb:88",
+"kb:90",
+"kb:92",
+"kb:93",
+"kb:94",
+"kb:97",
+"kb:98",
+"kb:99",
+"kb:100",
+"kb:102",
+"kb:103",
+"kb:104",
+"kb:105",
+"kb:107",
+"kb:109",
+"kb:110",
+"kb:111",
+"kb:113",
+"kb:118",
+"kb:121",
+"kb:122",
+"kb:123",
+"kb:124",
+"kb:125",
+"kb:127",
+"kb:128",
+"kb:130",
+"kb:131",
+"kb:134",
+"kb:135",
+"kb:136",
+"kb:139",
+"kb:141",
+"kb:143",
+"kb:145",
+"kb:147",
+"kb:148"
+}
+lp.negativeExamples = {
+/*Class1*/
+"kb:79",
+"kb:137",
+/*Class3*/
+"kb:1",
+"kb:3",
+"kb:4",
+"kb:9",
+"kb:10",
+"kb:14",
+"kb:21",
+"kb:22",
+"kb:25",
+"kb:26",
+"kb:27",
+"kb:28",
+"kb:30",
+"kb:31",
+"kb:32",
+"kb:38",
+"kb:39",
+"kb:40",
+"kb:41",
+"kb:42",
+"kb:46",
+"kb:52",
+"kb:56",
+"kb:57",
+"kb:59",
+"kb:61",
+"kb:63",
+"kb:66",
+"kb:67",
+"kb:69",
+"kb:70",
+"kb:72",
+"kb:74",
+"kb:75",
+"kb:80",
+"kb:81",
+"kb:83",
+"kb:84",
+"kb:85",
+"kb:89",
+"kb:91",
+"kb:95",
+"kb:96",
+"kb:101",
+"kb:106",
+"kb:108",
+"kb:112",
+"kb:114",
+"kb:115",
+"kb:116",
+"kb:117",
+"kb:119",
+"kb:120",
+"kb:126",
+"kb:129",
+"kb:132",
+"kb:133",
+"kb:138",
+"kb:142",
+"kb:144",
+"kb:146",
+
+/*Class4*/
+"kb:15",
+"kb:37",
+"kb:45",
+"kb:140"
+}
+
+op.type = "rho"
+op.useAllConstructor = false
+op.useExistsConstructor = true
+op.useNegation = false
+
+alg.type = "ocel"
+ alg.ignoredConcepts = {
+"kb:Target1_NormalFind",
+"kb:Target2_Metastases",
+"kb:Target3_MalignLymph",
+"kb:Target4_Fibrosis"
+}
+alg.noisePercentage = 16.0

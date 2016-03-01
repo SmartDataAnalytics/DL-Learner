@@ -1,0 +1,749 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY Lexicon "http://data.bgs.ac.uk/ref/Lexicon/" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/hajira/ontologies/2016/1/untitled-ontology-40#"
+     xml:base="http://www.semanticweb.org/hajira/ontologies/2016/1/untitled-ontology-40"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:Lexicon="http://data.bgs.ac.uk/ref/Lexicon/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/hajira/ontologies/2016/1/untitled-ontology-40"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent -->
+
+    <owl:AnnotationProperty rdf:about="&Lexicon;hasObsoleteEquivalent">
+        <rdfs:subPropertyOf rdf:resource="&terms;replaces"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://purl.org/dc/terms/accessRights -->
+
+    <owl:AnnotationProperty rdf:about="&terms;accessRights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="&terms;creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="&terms;description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+    <owl:AnnotationProperty rdf:about="&terms;publisher"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/replaces -->
+
+    <owl:AnnotationProperty rdf:about="&terms;replaces"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/seeAlso -->
+
+    <owl:AnnotationProperty rdf:about="&foaf;seeAlso"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasDefinitionStatus">
+        <rdfs:label xml:lang="en">has definition status</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the status of the lexicon definition </rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasEquivalenceType">
+        <rdfs:label xml:lang="en">has equivalence type</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a type of equivalence between two rock unit names or rock unit entities</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasEquivalentLexiconEntry">
+        <rdfs:label xml:lang="en">has equivalent lexicon entry</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to an equivalent rock unit entry in the lexicon</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasLithogenesis">
+        <rdfs:label xml:lang="en">has lithogenesis</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the lithogenetic type applicable to this rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLithology -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasLithology">
+        <rdfs:label xml:lang="en">has lithology</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the lithology that a lithological component is composed of, as described by the BGS Rock Classification Scheme</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasLithologyComponent">
+        <rdfs:label xml:lang="en">has lithology component</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a lithological component of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasObsoleteEquivalent">
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasOldestAge">
+        <rdfs:label xml:lang="en">has oldest age</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the oldest geological age of the rock unit </rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasPredominantAge">
+        <rdfs:label xml:lang="en">has predominant age</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the predominant geological age of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasRockUnitRank">
+        <rdfs:label xml:lang="en">has rock unit rank</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the rank of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasShapeType -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasShapeType">
+        <rdfs:label xml:lang="en">has shape type</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the type of shape that the rock unit takes in the ground</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasSourceInfo">
+        <rdfs:label xml:lang="en">has source info</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a description of source information used for the lexicon entry. Inverse property of isSourceInfoFor. </rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <owl:inverseOf rdf:resource="&Lexicon;isSourceInfoFor"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasSourceReference">
+        <rdfs:label xml:lang="en">has source reference</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a published document that is a source reference</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasSpatialScopeOfDefinition">
+        <rdfs:label xml:lang="en">definition has spatial scope</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a named spatial scope in which the definition applies</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasStratotypeType">
+        <rdfs:label xml:lang="en">Type of Stratotype</rdfs:label>
+        <rdfs:comment xml:lang="en">Specifies whether the referenced stratotype is a type section, reference section, etc.</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasTheme -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasTheme">
+        <rdfs:label xml:lang="en">has theme</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the geological theme that the rock unit is assigned to</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasTypeLocality -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasTypeLocality"/>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasUnitClass">
+        <rdfs:label xml:lang="en">has classification</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the classification of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;hasYoungestAge">
+        <rdfs:label xml:lang="en">has youngest age</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the youngest geological age of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;isLexiconEntry">
+        <rdfs:label xml:lang="en">is lexicon entry</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the rock unit entry in the lexicon for which an equivalent name is defined</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;isSourceInfoFor">
+        <rdfs:label xml:lang="en">is source info for</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to a lexicon entry which this is source information for</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;isTypeLocalityFor">
+        <owl:inverseOf rdf:resource="&Lexicon;hasTypeLocality"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines -->
+
+    <owl:ObjectProperty rdf:about="&Lexicon;sourceReferenceDefines">
+        <rdfs:label xml:lang="en">source reference defines</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to an aspect of the lexicon entry definition that this source information defines</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;equivalenceDescription">
+        <rdfs:label xml:lang="en">has equivalence description</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the equivalence between the two rock unit names or rock unit entities</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasFormality -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasFormality">
+        <rdfs:label xml:lang="en">has formality</rdfs:label>
+        <rdfs:comment xml:lang="en">Property indicates if the lexicon entry is formal or informal</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasGeographicalDistribution">
+        <rdfs:label xml:lang="en">has geographical distribution</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the geographical distribution of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasLithogenesisDescription">
+        <rdfs:label xml:lang="en">has lithogenesis description</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the lithogenesis, environment of deposition or mode of origin of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasLithologyDescription">
+        <rdfs:label xml:lang="en">has lithology description</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the lithology of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasLowerBoundaryDefinition">
+        <rdfs:label xml:lang="en">has lower boundary definition</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the lower boundary of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasRevisionNumber">
+        <rdfs:label xml:lang="en">has revision number</rdfs:label>
+        <rdfs:label xml:lang="en">revision number</rdfs:label>
+        <rdfs:comment xml:lang="en">Property gives the revision number of the lexicon entry</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:title xml:lang="en">The revision number of a resource.</terms:title>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasRoleDescription">
+        <rdfs:label xml:lang="en">has role description</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the role of the source reference</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasThicknessDescription">
+        <rdfs:label xml:lang="en">has thickness description</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the thickness of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;hasUpperBoundaryDefinition">
+        <rdfs:label xml:lang="en">has upper boundary definition</rdfs:label>
+        <rdfs:comment xml:lang="en">Property describes the upper boundary of the rock unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;isLocallyDominant">
+        <rdfs:label xml:lang="en">is locally dominant</rdfs:label>
+        <rdfs:comment xml:lang="en">Property indicates if this lithological component is locally dominant in places within the extent of the rock unit, even though it may not be dominant overall in the unit</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/rankNumber -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;rankNumber">
+        <rdfs:label xml:lang="en">Numerical Rank</rdfs:label>
+        <rdfs:comment xml:lang="en">Property gives rank order of a rock unit formation expressed as an integer</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/sourceType -->
+
+    <owl:DatatypeProperty rdf:about="&Lexicon;sourceType">
+        <rdfs:label xml:lang="en">source type</rdfs:label>
+        <rdfs:comment xml:lang="en">Property indicates whether this source is a principal or non-principal source of information for the lexicon entry</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource -->
+
+    <owl:Class rdf:about="&rdf;Resource"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <owl:Class rdf:about="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/ref/Lexicon">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/Lexicon/home.cfm</foaf:seeAlso>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/data/services/vocabulary/1.0/home.html</foaf:seeAlso>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/Class -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;Class">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon classification type</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Classification Type</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;DefinitionStatus">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon definition status</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Definition statii</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;EquivalenceType">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon equivalence types</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Types of equivalence</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/EquivalentName -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;EquivalentName">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon equivalent names</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Equivalent Names</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;LithogeneticType">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lithogenesis types</rdfs:label>
+        <terms:title xml:lang="en">Lithogenesis types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;LithologyComponent">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lithology components</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Lithological Components</terms:title>
+        <terms:description xml:lang="en">Describes the lithological components of a rock unit in the BGS Lexicon of Named Rock Units</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;NamedRockUnit">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Named Rock Units in the UK</rdfs:label>
+        <terms:identifier rdf:datatype="&xsd;string">http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit</terms:identifier>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/lexicon</foaf:seeAlso>
+        <terms:title xml:lang="en">A Unit in the BGS Lexicon of Named Rocks</terms:title>
+        <terms:description xml:lang="en">The Lexicon of Named Rock Units database provides BGS definitions of rock unit terms that appear on our maps and in our publications.</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;RockUnitRank">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lithostratigraphical unit ranks</rdfs:label>
+        <terms:identifier rdf:datatype="&xsd;string">http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank</terms:identifier>
+        <terms:title xml:lang="en">Lithostratigraphical unit ranks</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:description xml:lang="en">This scheme defines ranks of rock unit used in the BGS Lexicon of Rock Unit. The rank indicates how large and extensive the rock unit it. Larger ranking units are sub-divided into smaller ranking units.</terms:description>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/ShapeType -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;ShapeType">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon unit shape types</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Unit Shape Types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/SourceInfo -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;SourceInfo">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon source information</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Source References</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/SpatialScope -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;SpatialScope">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon spatial scopes</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Spatial Scope of Definitions</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/Stratotype -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;Stratotype">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon stratotype</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Stratotypes</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/StratotypeType -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;StratotypeType">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon Stratotype types</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Stratotype Types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/Theme -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;Theme">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <rdfs:label xml:lang="en">Lexicon themes</rdfs:label>
+        <terms:title xml:lang="en">BGS Lexicon of Named Rock Units: Rock Type Themes</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor -->
+
+    <owl:NamedIndividual rdf:about="&Lexicon;isTypeLocalityFor">
+        <rdf:type rdf:resource="&rdf;Resource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="&Lexicon;isTypeLocalityFor">
+        <rdfs:label xml:lang="en">is type locality for</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to the rock unit in the BGS Lexicon for which this is a type locality</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </rdf:Description>
+    <rdf:Description rdf:about="&Lexicon;hasObsoleteEquivalent">
+        <rdfs:label xml:lang="en">has obsolete equivalent</rdfs:label>
+        <rdfs:comment xml:lang="en">Property links to an obsolete lexicon entry that the current entry replaces</rdfs:comment>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

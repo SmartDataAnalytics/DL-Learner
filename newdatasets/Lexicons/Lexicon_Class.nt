@@ -1,0 +1,82 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Classification Type"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon classification type"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/AGE"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://www.w3.org/2000/01/rdf-schema#label> "Age Based"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/AGE> <http://www.w3.org/2000/01/rdf-schema#comment> "Unit classified according to age (or composite age or age range). E.g. Devonian rocks, undifferentiated. Always Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/CMP"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://www.w3.org/2000/01/rdf-schema#label> "Composite"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/CMP> <http://www.w3.org/2000/01/rdf-schema#comment> "Composite unit of two or more individually defined units, but not itself a valid unit. E.g. Penarth Group and Lias Group, undifferentiated. Always Informal, although the components may individually be Formal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/LDIN"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://www.w3.org/2000/01/rdf-schema#label> "Lithodemic Intrusive"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDIN> <http://www.w3.org/2000/01/rdf-schema#comment> "Units of igneous intrusive origin and their recognisable metamorphosed equivalents. E.g. Mull Dyke Swarm; Criffel-Dalbeattie Pluton; Fethaland Metagabbro. Formal or Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/LDMX"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://www.w3.org/2000/01/rdf-schema#label> "Lithodemic Mixed-class"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDMX> <http://www.w3.org/2000/01/rdf-schema#comment> "Mappable units comprising child units that represent two or more of the three classes of unit that are distinguished and delimited on the basis of rock characteristics (lithostratigraphical, intrusive and tectono-metamorphic), each in sufficient proportion that the essential character of the parent unit is &apos;mixed&apos;; for example, a mappable unit encompassing a sill-swarm (intrusive) and its sedimentary country rocks (lithostratigraphical). E.g. Lewisian Supercomplex; Anglesey Megacomplex. Formal or Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/LDTM"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://www.w3.org/2000/01/rdf-schema#label> "Lithodemic Tectono-metamorphic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LDTM> <http://www.w3.org/2000/01/rdf-schema#comment> "Predominantly single-class mappable units whose original character and/or setting has been modified substantially by deformation and/or metamorphism such that they cannot now be classified as, or linked to, a formally recognised lithostratigraphical unit or intrusive unit. Includes intensely deformed units such as fault rocks, shear zones, cataclasites, mylonites and impactites. E.g. An Cnoc Quartzite Lens; Newtown Harzburgite Layer; Glen Trail Amphibolite Train; Glen Ordie Metasedimentary Parcel; Strathy Gneiss Package; Menai Assemblage. Formal or Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/LMG"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://www.w3.org/2000/01/rdf-schema#label> "Litho-morpho-genetic"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LMG> <http://www.w3.org/2000/01/rdf-schema#comment> "Generic types of superficial deposit based primarily on lithology, morphology, genesis or combination of these; sometimes with geographic or age qualifiers but no lithostratigraphical name. E.g. Peat; Tidal Flat Deposits; Alluvium; River Terrace Deposits; Blown Sand; Glaciofluvial Deposits; Till; Hummock (Moundy) Glacial Deposits. Always Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/LS"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://www.w3.org/2000/01/rdf-schema#label> "Lithostratigraphical"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/LS> <http://www.w3.org/2000/01/rdf-schema#comment> "Stratified units (conforming to the law of superposition) including sedimentary, volcanic and volcaniclastic units and their recognisable metamorphosed equivalents. E.g. Culver Chalk Formation; Borrowdale Volcanic Group; Litton Tuff Member; Tummel Psammite Formation; Binnein Schist Member. Formal or Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/MADE"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://www.w3.org/2000/01/rdf-schema#label> "Man Made Ground"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MADE> <http://www.w3.org/2000/01/rdf-schema#comment> "All anthropogenic deposits or excavations. E.g. Made Ground (undivided). Always Informal (q.v)."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/MISC"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://www.w3.org/2000/01/rdf-schema#label> "Miscellaneous"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/MISC> <http://www.w3.org/2000/01/rdf-schema#comment> "Rock unit that cannot properly be classified as any of the others. E.g. Unnamed Mineral Flat in Carboniferous limestone. Always Informal."@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#label> "Not Applicable"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotApplicable> <http://www.w3.org/2000/01/rdf-schema#comment> "Not applicable"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/Class> .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://www.w3.org/2000/01/rdf-schema#label> "Not Entered"@en .
+<http://data.bgs.ac.uk/id/Lexicon/Class/NotEntered> <http://www.w3.org/2000/01/rdf-schema#comment> "We have not assigned a value yet (and it might not be applicable)"@en .

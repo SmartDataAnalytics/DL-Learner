@@ -1,0 +1,33 @@
+
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon Stratotype types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Stratotype Types"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://www.w3.org/2000/01/rdf-schema#label> "Partial Type Section"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/PT> <http://www.w3.org/2000/01/rdf-schema#comment> "Partial Type Section (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://www.w3.org/2000/01/rdf-schema#label> "Reference Section"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/RS> <http://www.w3.org/2000/01/rdf-schema#comment> "Reference Section (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://www.w3.org/2000/01/rdf-schema#label> "Type Area"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TA> <http://www.w3.org/2000/01/rdf-schema#comment> "Type Area (needs enhancement)"@en .
+
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://www.w3.org/2000/01/rdf-schema#label> "Type Section"@en .
+<http://data.bgs.ac.uk/id/Lexicon/StratotypeType/TS> <http://www.w3.org/2000/01/rdf-schema#comment> "Type Section (needs enhancement)"@en .

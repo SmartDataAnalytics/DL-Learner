@@ -1,0 +1,9 @@
+test set errors pos: [f6, d197]
+test set errors neg: []
+fold 0:
+  training: 11 positive and 195 negative examples  testing: 0/2 correct positives, 22/22 correct negatives
+  concept: Compound  and (hasFifeExamplesOfAcenthrylenes some {true})  and (lumo some double[<= "-3.768"^^double])
+  accuracy: 91.667% (94.66% on training set)
+  length: 9
+  runtime: 12.128s
+

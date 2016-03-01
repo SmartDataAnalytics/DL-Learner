@@ -1,0 +1,379 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:baloons="http://dllearner.org/baloons/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/baloons/hasAct -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/baloons/hasAct"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/hasAge -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/baloons/hasAge"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/hasColor -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/baloons/hasColor"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/hasSize -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/baloons/hasSize"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/isInflated -->
+
+    <ObjectProperty rdf:about="http://dllearner.org/baloons/isInflated"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/baloons/Act -->
+
+    <Class rdf:about="http://dllearner.org/baloons/Act"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/Age -->
+
+    <Class rdf:about="http://dllearner.org/baloons/Age"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/Color -->
+
+    <Class rdf:about="http://dllearner.org/baloons/Color"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/Inflated -->
+
+    <Class rdf:about="http://dllearner.org/baloons/Inflated"/>
+    
+
+
+    <!-- http://dllearner.org/baloons/Size -->
+
+    <Class rdf:about="http://dllearner.org/baloons/Size"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dllearner.org/baloons/ADULT -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ADULT">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Age"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/CHILD -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/CHILD">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Age"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/DIP -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/DIP">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Act"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/F -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/F">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Inflated"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/LARGE -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/LARGE">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Size"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/PURPLE -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/PURPLE">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Color"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/SMALL -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/SMALL">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Size"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/STRETCH -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/STRETCH">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Act"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/T -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/T">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Inflated"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/YELLOW -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/YELLOW">
+        <rdf:type rdf:resource="http://dllearner.org/baloons/Color"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind0 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind0">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind1 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind1">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind10 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind10">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind11 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind11">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind12 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind12">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind13 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind13">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind14 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind14">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind15 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind15">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind2 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind2">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind3 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind3">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind4 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind4">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind5 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind5">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind6 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind6">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind7 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind7">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/DIP"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/LARGE"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/YELLOW"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind8 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind8">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/ADULT"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/T"/>
+    </NamedIndividual>
+    
+
+
+    <!-- http://dllearner.org/baloons/ind9 -->
+
+    <NamedIndividual rdf:about="http://dllearner.org/baloons/ind9">
+        <baloons:hasAge rdf:resource="http://dllearner.org/baloons/CHILD"/>
+        <baloons:isInflated rdf:resource="http://dllearner.org/baloons/F"/>
+        <baloons:hasColor rdf:resource="http://dllearner.org/baloons/PURPLE"/>
+        <baloons:hasSize rdf:resource="http://dllearner.org/baloons/SMALL"/>
+        <baloons:hasAct rdf:resource="http://dllearner.org/baloons/STRETCH"/>
+    </NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

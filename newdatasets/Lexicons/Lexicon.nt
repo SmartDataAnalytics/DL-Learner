@@ -1,0 +1,304 @@
+<http://data.bgs.ac.uk/ref/Lexicon> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units"@en .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/Lexicon/home.cfm"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<http://data.bgs.ac.uk/ref/Lexicon> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/data/services/vocabulary/1.0/home.html"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Classification Type"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Class> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon classification type"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon definition status"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/DefinitionStatus> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Definition statii"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription> <http://www.w3.org/2000/01/rdf-schema#label> "has equivalence description"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/equivalenceDescription> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the equivalence between the two rock unit names or rock unit entities"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon equivalence types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalenceType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Types of equivalence"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalentName> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalentName> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalentName> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon equivalent names"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/EquivalentName> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Equivalent Names"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus> <http://www.w3.org/2000/01/rdf-schema#label> "has definition status"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasDefinitionStatus> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the status of the lexicon definition "@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType> <http://www.w3.org/2000/01/rdf-schema#label> "has equivalence type"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalenceType> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a type of equivalence between two rock unit names or rock unit entities"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#label> "has equivalent lexicon entry"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasEquivalentLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to an equivalent rock unit entry in the lexicon"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasFormality> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasFormality> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasFormality> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasFormality> <http://www.w3.org/2000/01/rdf-schema#label> "has formality"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasFormality> <http://www.w3.org/2000/01/rdf-schema#comment> "Property indicates if the lexicon entry is formal or informal"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution> <http://www.w3.org/2000/01/rdf-schema#label> "has geographical distribution"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasGeographicalDistribution> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the geographical distribution of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis> <http://www.w3.org/2000/01/rdf-schema#label> "has lithogenesis"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesis> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the lithogenetic type applicable to this rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription> <http://www.w3.org/2000/01/rdf-schema#label> "has lithogenesis description"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithogenesisDescription> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the lithogenesis, environment of deposition or mode of origin of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithology> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithology> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithology> <http://www.w3.org/2000/01/rdf-schema#label> "has lithology"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithology> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the lithology that a lithological component is composed of, as described by the BGS Rock Classification Scheme"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent> <http://www.w3.org/2000/01/rdf-schema#label> "has lithology component"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyComponent> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a lithological component of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription> <http://www.w3.org/2000/01/rdf-schema#label> "has lithology description"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLithologyDescription> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the lithology of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "has lower boundary definition"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasLowerBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the lower boundary of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to an obsolete lexicon entry that the current entry replaces"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://www.w3.org/2000/01/rdf-schema#label> "has obsolete equivalent"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://purl.org/dc/terms/replaces> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasObsoleteEquivalent> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge> <http://www.w3.org/2000/01/rdf-schema#label> "has oldest age"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasOldestAge> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the oldest geological age of the rock unit "@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge> <http://www.w3.org/2000/01/rdf-schema#label> "has predominant age"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasPredominantAge> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the predominant geological age of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/2000/01/rdf-schema#label> "revision number"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://purl.org/dc/terms/title> "The revision number of a resource."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/2000/01/rdf-schema#label> "has revision number"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRevisionNumber> <http://www.w3.org/2000/01/rdf-schema#comment> "Property gives the revision number of the lexicon entry"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank> <http://www.w3.org/2000/01/rdf-schema#label> "has rock unit rank"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRockUnitRank> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the rank of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription> <http://www.w3.org/2000/01/rdf-schema#label> "has role description"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasRoleDescription> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the role of the source reference"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasShapeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasShapeType> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the type of shape that the rock unit takes in the ground"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasShapeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasShapeType> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasShapeType> <http://www.w3.org/2000/01/rdf-schema#label> "has shape type"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://www.w3.org/2002/07/owl#inverseOf> <http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a description of source information used for the lexicon entry. Inverse property of isSourceInfoFor. "@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://www.w3.org/2000/01/rdf-schema#label> "has source info"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference> <http://www.w3.org/2000/01/rdf-schema#label> "has source reference"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSourceReference> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a published document that is a source reference"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "definition has spatial scope"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasSpatialScopeOfDefinition> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a named spatial scope in which the definition applies"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType> <http://www.w3.org/2000/01/rdf-schema#label> "Type of Stratotype"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasStratotypeType> <http://www.w3.org/2000/01/rdf-schema#comment> "Specifies whether the referenced stratotype is a type section, reference section, etc."@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasTheme> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasTheme> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasTheme> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasTheme> <http://www.w3.org/2000/01/rdf-schema#label> "has theme"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasTheme> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the geological theme that the rock unit is assigned to"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription> <http://www.w3.org/2000/01/rdf-schema#label> "has thickness description"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasThicknessDescription> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the thickness of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass> <http://www.w3.org/2000/01/rdf-schema#label> "has classification"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUnitClass> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the classification of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "has upper boundary definition"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasUpperBoundaryDefinition> <http://www.w3.org/2000/01/rdf-schema#comment> "Property describes the upper boundary of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge> <http://www.w3.org/2000/01/rdf-schema#label> "has youngest age"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/hasYoungestAge> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the youngest geological age of the rock unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#label> "is lexicon entry"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isLexiconEntry> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the rock unit entry in the lexicon for which an equivalent name is defined"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant> <http://www.w3.org/2000/01/rdf-schema#label> "is locally dominant"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isLocallyDominant> <http://www.w3.org/2000/01/rdf-schema#comment> "Property indicates if this lithological component is locally dominant in places within the extent of the rock unit, even though it may not be dominant overall in the unit"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to a lexicon entry which this is source information for"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://www.w3.org/2000/01/rdf-schema#label> "is source info for"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/isSourceInfoFor> <http://www.w3.org/2002/07/owl#inverseOf> <http://data.bgs.ac.uk/ref/Lexicon/hasSourceInfo> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to the rock unit in the BGS Lexicon for which this is a type locality"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://www.w3.org/2000/01/rdf-schema#label> "is type locality for"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/isTypeLocalityFor> <http://www.w3.org/2002/07/owl#inverseOf> <http://data.bgs.ac.uk/ref/Lexicon/hasTypeLocality> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://www.w3.org/2000/01/rdf-schema#label> "Lithogenesis types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithogeneticType> <http://purl.org/dc/terms/title> "Lithogenesis types"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent> <http://www.w3.org/2000/01/rdf-schema#label> "Lithology components"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Lithological Components"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/LithologyComponent> <http://purl.org/dc/terms/description> "Describes the lithological components of a rock unit in the BGS Lexicon of Named Rock Units"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/title> "A Unit in the BGS Lexicon of Named Rocks"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://www.w3.org/2000/01/rdf-schema#label> "Named Rock Units in the UK"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://xmlns.com/foaf/0.1/seeAlso> "http://www.bgs.ac.uk/lexicon"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://data.bgs.ac.uk/ref/Lexicon/NamedRockUnit> <http://purl.org/dc/terms/description> "The Lexicon of Named Rock Units database provides BGS definitions of rock unit terms that appear on our maps and in our publications."@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/rankNumber> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/rankNumber> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/rankNumber> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/rankNumber> <http://www.w3.org/2000/01/rdf-schema#label> "Numerical Rank"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/rankNumber> <http://www.w3.org/2000/01/rdf-schema#comment> "Property gives rank order of a rock unit formation expressed as an integer"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://www.w3.org/2000/01/rdf-schema#label> "Lithostratigraphical unit ranks"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/title> "Lithostratigraphical unit ranks"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/description> "This scheme defines ranks of rock unit used in the BGS Lexicon of Rock Unit. The rank indicates how large and extensive the rock unit it. Larger ranking units are sub-divided into smaller ranking units."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/Lexicon/RockUnitRank"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon unit shape types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/ShapeType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Unit Shape Types"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/SourceInfo> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SourceInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/SourceInfo> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon source information"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SourceInfo> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Source References"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource> .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines> <http://www.w3.org/2000/01/rdf-schema#label> "source reference defines"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceReferenceDefines> <http://www.w3.org/2000/01/rdf-schema#comment> "Property links to an aspect of the lexicon entry definition that this source information defines"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/sourceType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceType> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceType> <http://www.w3.org/2000/01/rdf-schema#label> "source type"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/sourceType> <http://www.w3.org/2000/01/rdf-schema#comment> "Property indicates whether this source is a principal or non-principal source of information for the lexicon entry"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon spatial scopes"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/SpatialScope> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Spatial Scope of Definitions"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/Stratotype> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Stratotype> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/Stratotype> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon stratotype"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Stratotype> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Stratotypes"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon Stratotype types"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/StratotypeType> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Stratotype Types"@en .
+
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://www.w3.org/2000/01/rdf-schema#label> "Lexicon themes"@en .
+<http://data.bgs.ac.uk/ref/Lexicon/Theme> <http://purl.org/dc/terms/title> "BGS Lexicon of Named Rock Units: Rock Type Themes"@en .

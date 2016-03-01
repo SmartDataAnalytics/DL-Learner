@@ -1,0 +1,525 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY skos "http://www.w3.org/2004/02/skos/core#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY EarthMaterialClass "http://data.bgs.ac.uk/ref/EarthMaterialClass/" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/hajira/ontologies/2016/0/untitled-ontology-30#"
+     xml:base="http://www.semanticweb.org/hajira/ontologies/2016/0/untitled-ontology-30"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:EarthMaterialClass="http://data.bgs.ac.uk/ref/EarthMaterialClass/"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/hajira/ontologies/2016/0/untitled-ontology-30"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;hasComponentPart">
+        <rdfs:subPropertyOf rdf:resource="&terms;hasPart"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;isComponentPartOf">
+        <rdfs:subPropertyOf rdf:resource="&terms;isPartOf"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;subClassMain">
+        <rdfs:subPropertyOf rdf:resource="&skos;narrower"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;subClassTAS">
+        <rdfs:subPropertyOf rdf:resource="&skos;narrower"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;subClassUDCS">
+        <rdfs:subPropertyOf rdf:resource="&skos;narrower"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;superClassMain">
+        <rdfs:subPropertyOf rdf:resource="&skos;broader"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;superClassTAS">
+        <rdfs:subPropertyOf rdf:resource="&skos;broader"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS -->
+
+    <owl:AnnotationProperty rdf:about="&EarthMaterialClass;superClassUDCS">
+        <rdfs:subPropertyOf rdf:resource="&skos;broader"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://purl.org/dc/terms/accessRights -->
+
+    <owl:AnnotationProperty rdf:about="&terms;accessRights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/created -->
+
+    <owl:AnnotationProperty rdf:about="&terms;created"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="&terms;creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="&terms;description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/hasPart -->
+
+    <owl:AnnotationProperty rdf:about="&terms;hasPart"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/isPartOf -->
+
+    <owl:AnnotationProperty rdf:about="&terms;isPartOf"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/modified -->
+
+    <owl:AnnotationProperty rdf:about="&terms;modified"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+    <owl:AnnotationProperty rdf:about="&terms;publisher"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#about -->
+
+    <owl:AnnotationProperty rdf:about="&rdf;about"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#broader -->
+
+    <owl:AnnotationProperty rdf:about="&skos;broader"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#narrower -->
+
+    <owl:AnnotationProperty rdf:about="&skos;narrower"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/seeAlso -->
+
+    <owl:AnnotationProperty rdf:about="&foaf;seeAlso"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="&xsd;date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/componentRock -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;componentRock">
+        <rdfs:label xml:lang="en">rock type</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property is a link to the single lithology that defines this rock component</rdfs:comment>
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentNature -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;hasComponentNature">
+        <rdfs:label xml:lang="en">form</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property describes the nature or form that a rock component part is observed within its parent composite material</rdfs:comment>
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentPart -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;hasComponentPart">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/hasComponentRank -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;hasComponentRank">
+        <rdfs:label xml:lang="en">rank</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property describes the relative rank of a described component part in terms of volume compared to other components of the same composite material</rdfs:comment>
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/isComponentPartOf -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;isComponentPartOf">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassMain -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;subClassMain">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassTAS -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;subClassTAS">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/subClassUDCS -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;subClassUDCS">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassMain -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;superClassMain">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassTAS -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;superClassTAS">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/superClassUDCS -->
+
+    <owl:ObjectProperty rdf:about="&EarthMaterialClass;superClassUDCS">
+        <rdfs:range rdf:resource="&rdfs;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#Resource -->
+
+    <owl:Class rdf:about="&rdfs;Resource"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#ConceptScheme -->
+
+    <owl:Class rdf:about="&skos;ConceptScheme"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass -->
+
+    <owl:NamedIndividual rdf:about="http://data.bgs.ac.uk/ref/EarthMaterialClass">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of material including single rock types, non earth materials and composite lithologies. This is an abstract schema that consists of 3 sub-schemas</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2011-02-10</terms:created>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/bgsrcs/</foaf:seeAlso>
+        <rdf:about rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/bgsrcs/</rdf:about>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/data/services/vocabulary/1.0/home.html</foaf:seeAlso>
+        <foaf:seeAlso rdf:datatype="&xsd;anyURI">http://www.bgs.ac.uk/data/vocabularies/dictionary.cfm?name=DIC_ROCK_ALL</foaf:seeAlso>
+        <terms:title xml:lang="en">BGS Earth Material Classes</terms:title>
+        <terms:description xml:lang="en">Classifies all types of earth material or other substance that may be recorded in a geological log or section. This is an abstract schema that consists of 3 sub-schemas.</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/ref/EarthMaterialClass</terms:identifier>
+        <terms:hasPart rdf:resource="&EarthMaterialClass;RockComposite"/>
+        <terms:hasPart rdf:resource="&EarthMaterialClass;RockDummy"/>
+        <terms:hasPart rdf:resource="&EarthMaterialClass;RockName"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;ComponentRank">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Relative proportion that a rock component part takes within its parent composite material</rdfs:label>
+        <terms:modified rdf:datatype="&xsd;date">2008-01-23</terms:modified>
+        <terms:created rdf:datatype="&xsd;date">2008-07-01</terms:created>
+        <terms:title xml:lang="en">Earth Material Component Rank Types</terms:title>
+        <terms:description xml:lang="en">Relative proportions that a rock component part may take within its parent composite material</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRank</terms:identifier>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;ComponentRelation">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of nature or form that a rock component part may be observed within its parent composite material</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2008-01-23</terms:created>
+        <terms:modified rdf:datatype="&xsd;date">2008-07-01</terms:modified>
+        <terms:title xml:lang="en">Earth Material Component Relation Types</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:description xml:lang="en">Types of nature or form that a rock component part may be observed within its parent composite material</terms:description>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/ref/EarthMaterialClass/ComponentRelation</terms:identifier>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComponent -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;RockComponent">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Component part of a rock</rdfs:label>
+        <terms:title xml:lang="en">Component part of a rock</terms:title>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/RockComposite -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;RockComposite">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types and compositional descriptions of earth materials that may be found in logs or exposures that are composed of one or more single rock types</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2011-02-10</terms:created>
+        <terms:title xml:lang="en">BGS Earth Material: Rock Composite Classes</terms:title>
+        <terms:description xml:lang="en">Classifies and describes the composition of rock types that are composed of one or more single rock types</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:isPartOf rdf:resource="http://data.bgs.ac.uk/ref/EarthMaterialClass"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/RockDummy -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;RockDummy">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of non earth material matter, or absense of matter, that may be recorded in a geological log or section</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2011-02-10</terms:created>
+        <terms:title xml:lang="en">BGS Earth Material: Rock Dummy Classes</terms:title>
+        <terms:description xml:lang="en">Classifies matter or absense of matter, other than earth material</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/id/EarthMaterialClass/RockDummy</terms:identifier>
+        <terms:isPartOf rdf:resource="http://data.bgs.ac.uk/ref/EarthMaterialClass"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName -->
+
+    <owl:NamedIndividual rdf:about="&EarthMaterialClass;RockName">
+        <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <rdfs:label xml:lang="en">Types of earth material that are single rock types only</rdfs:label>
+        <terms:created rdf:datatype="&xsd;date">2011-02-10</terms:created>
+        <terms:title xml:lang="en">BGS Earth Material: Rock Name Classes</terms:title>
+        <terms:description xml:lang="en">Classifies individual types of earth material.  
+Version 3 of the largely RCS-compliant dictionary of rock names - the currently approved version.  
+   Most of its content is RCS-compliant, but for the time being it still includes a number of legacy entries  
+   intended to support authentic coding of historical records. Entries include unique root names from the RCS  
+   (e.g. basalt) as well as a gradually increasing set of approved qualified root names (e.g. olivine-clinopyroxene-plagioclase-phyric basalt).</terms:description>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <terms:identifier xml:lang="en">http://data.bgs.ac.uk/ref/EarthMaterialClass/RockName</terms:identifier>
+        <terms:isPartOf rdf:resource="http://data.bgs.ac.uk/ref/EarthMaterialClass"/>
+        <terms:creator rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+        <terms:publisher rdf:resource="http://www.bgs.ac.uk/foaf.rdf"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="&EarthMaterialClass;isComponentPartOf">
+        <rdfs:label xml:lang="en">is a component part of</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links a described rock component part with the composite earth material class that it is a component of</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;superClassUDCS">
+        <rdfs:label xml:lang="en">super type in Total Alkalis Versus Silica Classification hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with its parent super-class as defined by the Unconsolidated Deposits Classification Scheme hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;subClassMain">
+        <rdfs:label xml:lang="en">sub type in main hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with its parent super-class as defined by the main BGS rock classification hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;subClassUDCS">
+        <rdfs:label xml:lang="en">sub type in Unconsolidated Deposits Classification Scheme hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with a child sub class defined by the Unconsolidated Deposits Classification Scheme hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;superClassMain">
+        <rdfs:label xml:lang="en">super type in main hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with its parent super-class as defined by the main BGS rock classification hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;superClassTAS">
+        <rdfs:label xml:lang="en">super type in Unconsolidated Deposits Classification Scheme hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with its parent super-class as defined by the Total Alkalis Versus Silica Classification hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;subClassTAS">
+        <rdfs:label xml:lang="en">sub type in Total Alkalis Versus Silica Classification hierarchy</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links an earth material class with a child sub class defined by the Total Alkalis Versus Silica Classification hierarchy</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="&EarthMaterialClass;hasComponentPart">
+        <rdfs:label xml:lang="en">has component part</rdfs:label>
+        <terms:accessRights xml:lang="en">The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible.</terms:accessRights>
+        <rdfs:comment xml:lang="en">This property links a composite earth material class with a described component part</rdfs:comment>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

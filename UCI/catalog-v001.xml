@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="Mushroomfixed3.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="Mushroom.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="Mushroomtop.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="baloon.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="balancetry.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="balanceeee.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="balance.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="Mushroomfixed.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="balloon.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1452262780182" name="duplicate:http://www.w3.org/2002/07/owl" uri="carsdata.owl"/>
+    </group>
+</catalog>
