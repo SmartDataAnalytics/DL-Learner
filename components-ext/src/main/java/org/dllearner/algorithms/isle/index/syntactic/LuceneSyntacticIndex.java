@@ -133,5 +133,4 @@ public class LuceneSyntacticIndex implements Index {
 		return 0;
 	}
 
-
 }

@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 public class MouseDiabetes2 {
 
     private static final Logger logger = Logger.getLogger(MouseDiabetes2.class);

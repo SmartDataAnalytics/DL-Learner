@@ -70,7 +70,6 @@ public class ABoxQueryGenerator {
      * @return
      */
 
-
     /*public String createLastQuery(List<String> individuals, OntModel model, List<String> filters) {
     Monitor monABoxQueryGeneration = MonitorFactory.getTimeMonitor("ABox query generator")
             .start();
@@ -109,7 +108,6 @@ public class ABoxQueryGenerator {
     monABoxQueryGeneration.stop();
     return builder.toString();
 }    */
-
 
     /*private List<String> getIndividualsFromModel
            (OntModel

@@ -1101,7 +1101,6 @@ public class QueryTreeUtils {
 			}
 		}
 
-
 		// 2. compare the children
 //		for (Node edge2 : tree2.getEdges()) {
 //

@@ -81,10 +81,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	
-	protected static final OWLClass OWL_THING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_THING.getIRI());
-	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_NOTHING.getIRI());
+	protected static final OWLClass OWL_THING = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
 	protected boolean isRunning = false;
@@ -92,39 +90,42 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	protected OWLClassExpressionMinimizer minimizer;
 	
-	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
+	@ConfigOption(defaultValue="true", description="Specifies whether returned expressions should " +
+			"be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the " +
+			"shortest expression which is equivalent to the learned expression). Turning this feature off may improve " +
+			"performance.")
 	private boolean useMinimizer = true;
 	
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
 	protected int maxExecutionTimeInSeconds = 10;
 
 	/**
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	@ConfigOption(name="learningProblem", description="The Learning Problem variable to use in this algorithm")
+	@ConfigOption(description="The Learning Problem variable to use in this algorithm")
 	protected AbstractClassExpressionLearningProblem<? extends Score> learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	@ConfigOption(name="reasoner", description="The reasoner variable to use for this learning problem")
+	@ConfigOption(description="The reasoner variable to use for this learning problem")
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
 	
-	@ConfigOption(name="allowedConcepts", description="List of classes that are allowed")
+	@ConfigOption(description="List of classes that are allowed")
 	protected Set<OWLClass> allowedConcepts = null;
-	@ConfigOption(name="ignoredConcepts", description="List of classes to ignore")
+	@ConfigOption(description="List of classes to ignore")
 	protected Set<OWLClass> ignoredConcepts = null;
-	@ConfigOption(name="allowedObjectProperties", description="List of object properties to allow")
+	@ConfigOption(description="List of object properties to allow")
 	protected Set<OWLObjectProperty> allowedObjectProperties = null;
-	@ConfigOption(name="ignoredObjectProperties", description="List of object properties to ignore")
+	@ConfigOption(description="List of object properties to ignore")
 	protected Set<OWLObjectProperty> ignoredObjectProperties = null;
-	@ConfigOption(name="allowedDataProperties", description="List of data properties to allow")
+	@ConfigOption(description="List of data properties to allow")
 	protected Set<OWLDataProperty> allowedDataProperties = null;
-	@ConfigOption(name="ignoredDataProperties", description="List of data properties to ignore")
+	@ConfigOption(description="List of data properties to ignore")
 	protected Set<OWLDataProperty> ignoredDataProperties = null;
 
     /**
@@ -142,9 +143,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractClassExpressionLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-//
-//		baseURI = reasoner.getBaseURI();
-//		prefixes = reasoner.getPrefixes();
 	}
 	
 	/**
@@ -181,16 +179,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
-		
-	/**
-	 * Every algorithm must be able to return the score of the
-	 * best solution found.
-	 * 
-	 * @return Best score.
-	 */
-//	@Deprecated
-//	public abstract Score getSolutionScore();
-	
 
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
@@ -284,7 +272,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-//			if(ed.getAccuracy() < accuracyThreshold) {
 			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
 			}
@@ -358,7 +345,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected String getSolutionString() {
 		int current = 1;
 		String str = "";
-		for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+		for(EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions().descendingSet()) {
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
 			String descriptionString = descriptionToString(description);

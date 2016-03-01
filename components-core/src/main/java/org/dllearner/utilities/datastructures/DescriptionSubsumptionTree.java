@@ -141,7 +141,6 @@ public class DescriptionSubsumptionTree {
 			}
 		}
 
-
 		/**
 		 * @return the first, i.e. the shortest class expression of this node
 		 */

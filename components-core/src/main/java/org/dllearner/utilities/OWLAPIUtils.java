@@ -214,7 +214,6 @@ public class OWLAPIUtils {
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
 
-
 	
 	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {

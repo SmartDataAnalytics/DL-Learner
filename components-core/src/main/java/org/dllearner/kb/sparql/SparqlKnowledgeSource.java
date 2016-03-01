@@ -65,7 +65,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
     private byte[] ontologyBytes;
     private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
 
-
 	public SparqlKnowledgeSource() {}
 
 	public SparqlKnowledgeSource(URL url, Set<String> instances) {
@@ -80,11 +79,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private URL ontologyFragmentURL;
 
-
-
 	private Manipulator manipulator = null;
-
-
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -145,7 +140,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);
-
 
 	/*
 	 * (non-Javadoc)
@@ -224,7 +218,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 			nrOfExtractedAxioms = configuration.getOwlAPIOntologyCollector().getNrOfExtractedAxioms();
 
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -260,8 +253,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 			this.uri = uri;
 		}
 
-
-
 		public Node call(){
 			System.out.println("funky");
 			return m.extractOneURI(uri);
@@ -290,11 +281,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	}
 
-
 	public SparqlQuery sparqlQuery(String query) {
 		return new SparqlQuery(query, getSparqlEndpoint());
 	}
-
 
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {

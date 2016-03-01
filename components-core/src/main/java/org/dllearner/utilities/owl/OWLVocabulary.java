@@ -76,7 +76,6 @@ public class OWLVocabulary {
 	public static final String OWL_equivalentProperty = "http://www.w3.org/2002/07/owl#equivalentProperty";
 	public static final String OWL_inverseOf = "http://www.w3.org/2002/07/owl#inverseOf";
 
-
 	
 	public static final String OWL_THING = "http://www.w3.org/2002/07/owl#Thing";
 	public static final String OWL_NOTHING = "http://www.w3.org/2002/07/owl#Nothing";

@@ -36,7 +36,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 /**
  * Component manager for the new (as of 2011) annotation based configuration
  * system.

@@ -18,7 +18,6 @@
  */
 package org.dllearner.test;
 
-
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;

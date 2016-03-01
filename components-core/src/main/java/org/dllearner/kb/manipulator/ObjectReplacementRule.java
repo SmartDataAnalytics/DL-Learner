@@ -32,7 +32,6 @@ public class ObjectReplacementRule extends Rule{
 	String oldObject;
 	String newObject;
 
-
 	public ObjectReplacementRule(Months month, String oldObject, String newObject) {
 		super(month);
 		this.oldObject = oldObject;

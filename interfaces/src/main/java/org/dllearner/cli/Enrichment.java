@@ -630,7 +630,6 @@ public class Enrichment {
 		OWLAxiom ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SuggestionSet, ind);
 		axioms.add(ax);
 
-
 		//create instance for algorithm run
 		String algorithmRunID = defaultNamespace + generateId();
 		OWLIndividual algorithmRunInd = f.getOWLNamedIndividual(IRI.create(algorithmRunID));
@@ -697,7 +696,6 @@ public class Enrichment {
 			axioms.addAll(ind2Axioms.getValue());
 		}
 
-
 //		printManchesterOWLSyntax(axioms, defaultNamespace);
 //		printTurtleSyntax(axioms);
 //		printNTriplesSyntax(axioms);
@@ -722,8 +720,6 @@ public class Enrichment {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(new HashSet<>(axioms), IRI.create(defaultNamespace + "enrichment"));
 			OWLManager.createOWLOntologyManager().saveOntology(ontology, manSyntaxFormat, new SystemOutDocumentTarget());
-
-
 
 			System.out.println("]");
 		} catch (OWLOntologyCreationException | OWLOntologyStorageException e) {
@@ -984,7 +980,6 @@ public class Enrichment {
 		parser.acceptsAll(asList("cls"),
 				"Specifies whether compute axiom for classes.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 
-
 		//username and password if endpoint is protected
 		parser.acceptsAll(asList("u", "username"), "Specify the username.")
 		.withOptionalArg().ofType(String.class);
@@ -1195,7 +1190,6 @@ public class Enrichment {
 				}
 			}
 
-
 		}
 
 	}
@@ -1210,6 +1204,5 @@ public class Enrichment {
 		String host = url.getHost();
 		return host != null && !"".equals(host);
 	}
-
 
 }

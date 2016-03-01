@@ -1,10 +1,12 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.config.ConfigOption;
 
 @ComponentAnn(name = "Generalised FMeasure", shortName = "gen_fmeasure", version = 0.1)
 public class AccMethodGenFMeasure implements AccMethodThreeValued, AccMethodWithBeta {
 
+	@ConfigOption(description = "beta factor (0 = do not use)", defaultValue = "0")
 	private double beta = 0;
 
 	@Override

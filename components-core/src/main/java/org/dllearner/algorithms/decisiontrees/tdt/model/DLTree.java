@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.tdt.model;
 
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,14 +26,11 @@ import java.util.Stack;
 
 //import knowledgeBasesHandler.KnowledgeBase;
 
-
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-
 
 public class DLTree extends AbstractTree {
 
@@ -121,16 +116,13 @@ public class DLTree extends AbstractTree {
 		////			this.pos = this.neg = null; // node has no children
 		//		}
 
-
 		public String toString() {
 			return this.concept.toString();
 		}
 
 	}
 
-
 	private DLNode root; // Tree root
-
 
 	public DLTree () {
 		this.root = null;
@@ -154,7 +146,6 @@ public class DLTree extends AbstractTree {
 	public OWLClassExpression getRoot() {
 		return root.concept;
 	}
-
 
 	public void setPosTree(DLTree subTree) {
 		this.root.pos = subTree;
@@ -206,10 +197,6 @@ public class DLTree extends AbstractTree {
 		return root.neg;
 	}
 
-
-
-
-
 	private double getNodes(){
 
 		ArrayList<DLNode> list = new ArrayList<>();
@@ -246,7 +233,6 @@ public class DLTree extends AbstractTree {
 		return getNodes();
 	}
 
-
 	public List<DLTree> getLeaves(){
 		ArrayList<DLTree> leaves= new ArrayList<>();
 
@@ -269,12 +255,9 @@ public class DLTree extends AbstractTree {
 				}
 			}
 
-
 		}
 
-
 		return leaves;
-
 
 	}
 

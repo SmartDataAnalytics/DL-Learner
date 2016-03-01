@@ -218,7 +218,6 @@ public class QTLEvaluation {
 
 	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
 
-
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -554,7 +553,6 @@ public class QTLEvaluation {
 										ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
 										logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
 										logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
-
 
 										// compute baseline
 										logger.info("Computing baseline...");
@@ -2013,8 +2011,6 @@ public class QTLEvaluation {
 		OptionSpec<String> noiseIntervalsSpec = parser.accepts("noise", "comma-separated list of noise values used in evaluation").withRequiredArg().ofType(String.class);
 		OptionSpec<String> measuresSpec = parser.accepts("measures", "comma-separated list of measures used in evaluation").withRequiredArg().ofType(String.class);
 
-
-
         OptionSet options = parser.parse(args);
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
@@ -2096,7 +2092,6 @@ public class QTLEvaluation {
 	}
 	
 
-
 	class ExampleCandidates {
 
 		List<String> correctPosExampleCandidates;
@@ -2136,8 +2131,6 @@ public class QTLEvaluation {
 				List<String> falsePosExampleCandidates = new ArrayList<>(this.falsePosExampleCandidates);
 				Collections.sort(falsePosExampleCandidates);
 				Collections.shuffle(falsePosExampleCandidates, rnd);
-
-
 
 				boolean probabilityBased = false;
 

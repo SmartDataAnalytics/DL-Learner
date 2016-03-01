@@ -99,7 +99,6 @@ public final class LiteralLearningTest {
 				Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
                 //Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
-
 				Set<OWLIndividual> positiveExamples = new TreeSet<>();
 				positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
 				positiveExamples.add(df.getOWLNamedIndividual("N2", pm));

@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.dsttdt.models;
 
-
 import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
 import org.dllearner.algorithms.decisiontrees.tdt.model.AbstractTree;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -98,7 +97,6 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 	public MassFunction getRootBBA() {
 		return root.m;
 	}
-
 
 	public void setPosTree(DSTDLTree subTree) {
 		//System.out.println("--->"+(this.root==null));

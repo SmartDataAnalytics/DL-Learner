@@ -258,7 +258,6 @@ public class QueryTreeEditDistanceTest {
         System.out.println("d(t1,t3) = " + distance1_3);
         System.out.println("d(t2,t3) = " + distance2_3);
 
-
         boolean moreSimilar = distance1_2 < distance1_3;
 
         assertEquals(distance1_2 < distance1_3, moreSimilar);

@@ -47,7 +47,6 @@ public class TONESRepository implements OntologyRepository{
 
     private OWLOntologyIRIMapper iriMapper;
 
-
     public TONESRepository() {
         entries = new ArrayList<>();
         iriMapper = new RepositoryIRIMapper();
@@ -58,24 +57,20 @@ public class TONESRepository implements OntologyRepository{
     	refresh();
     }
 
-
     @Override
     public String getName() {
         return repositoryName;
     }
-
 
     @Override
     public String getLocation() {
         return repositoryLocation.toString();
     }
 
-
     @Override
     public void refresh() {
         fillRepository();
     }
-
 
     @Override
     public Collection<OntologyRepositoryEntry> getEntries() {
@@ -84,12 +79,10 @@ public class TONESRepository implements OntologyRepository{
         return ret;
     }
 
-
     @Override
     public List<Object> getMetaDataKeys() {
         return Collections.emptyList();
     }
-
 
     public void dispose() {
     }
@@ -97,7 +90,6 @@ public class TONESRepository implements OntologyRepository{
     /////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //  Implementation details
-
 
     private void fillRepository() {
         try {
@@ -135,24 +127,20 @@ public class TONESRepository implements OntologyRepository{
             physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyIRI);
         }
 
-
         @Override
         public String getOntologyShortName() {
             return shortName;
         }
-
 
         @Override
         public URI getOntologyURI() {
             return ontologyURI;
         }
 
-
         @Override
         public URI getPhysicalURI() {
             return physicalURI;
         }
-
 
         @Override
         public String getMetaData(Object key) {
@@ -160,7 +148,6 @@ public class TONESRepository implements OntologyRepository{
         }
 
     }
-
 
     private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
 

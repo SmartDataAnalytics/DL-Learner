@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.dsttdt;
 
-
 import java.util.ArrayList;
 //import knowledgeBasesHandler.KnowledgeBase;
 import java.util.List;
@@ -51,8 +50,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 @ComponentAnn(name="ETDT", shortName="etdt", version=1.0, description="An Evidence-based Terminological Decision Tree")
 public class DSTTDTClassifier extends AbstractCELA{
 	
@@ -84,14 +81,14 @@ public class DSTTDTClassifier extends AbstractCELA{
 		//		configurator = new CELOEConfigurator(this);
 	}
 	
-	@ConfigOption(defaultValue = "0.05", name = "PURITY_THRESHOLD", description = "Purity threshold for setting a leaf")
+	@ConfigOption(defaultValue = "0.05", description = "Purity threshold for setting a leaf")
 	protected  double puritythreshold;
 
-	@ConfigOption(defaultValue = "4", name = "BEAM", description = "value for limiting the number of generated concepts")
+	@ConfigOption(defaultValue = "4", description = "value for limiting the number of generated concepts")
 	protected int  beam;
 	
 	
-	@ConfigOption(defaultValue = "false", name = "nonspecificity", description = "a flag to decide if further control on the purity measure should be made")
+	@ConfigOption(defaultValue = "false", description = "a flag to decide if further control on the purity measure should be made")
 	protected boolean nonSpecifityControl;
 	
 
@@ -103,7 +100,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		this.nonSpecifityControl = nonSpecifityControl;
 	}
 
-	//@ConfigOption(defaultValue = "false", name = "missingValueTreatment", description = "for overcoming the problem of missing values in tree algorithms.tree.models")
+	//@ConfigOption(defaultValue = "false", description = "for overcoming the problem of missing values in tree algorithms.tree.models")
 	//protected boolean missingValueTreatmentForTDT;
 	protected double prPos;
 	protected double prNeg;
@@ -113,26 +110,21 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 	//protected RefinementOperator operator;
 
-
 	public double getPuritythreshold() {
 		return puritythreshold;
 	}
-
 
 	public void setPuritythreshold(double puritythreshold) {
 		this.puritythreshold = puritythreshold;
 	}
 
-
 	public int getBeam() {
 		return beam;
 	}
 
-
 	public void setBeam(int beam) {
 		this.beam = beam;
 	}
-
 
 //	public boolean isBinaryClassification() {
 //		return binaryClassification;
@@ -143,37 +135,29 @@ public class DSTTDTClassifier extends AbstractCELA{
 //		this.binaryClassification = binaryClassification;
 //	}
 
-
 	public OWLClassExpression getClassToDescribe() {
 		return classToDescribe;
 	}
-
 
 	public void setClassToDescribe(OWLClassExpression classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 
-
 	public TreeInductionHeuristics getHeuristic() {
 		return heuristic;
 	}
-
 
 	public void setHeuristic(TreeInductionHeuristics heuristic) {
 		this.heuristic = heuristic;
 	}
 
-
 	public RefinementOperator getOperator() {
 		return operator;
 	}
 
-
 	public void setOperator(RefinementOperator operator) {
 		this.operator = operator;
 	}
-
-
 
 	@Override
 	public void init() throws ComponentInitException{
@@ -233,10 +217,8 @@ public class DSTTDTClassifier extends AbstractCELA{
 		toInduce.setSecondElement(examples);
 		stack.push(toInduce);
 
-
 		Stack<DSTDLTree> lastTrees= new Stack<>(); // for refine hierarchically a concept
 		while (!stack.isEmpty()){
-
 
 			// pop from the stack
 			Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> current= stack.pop(); // extract the next element
@@ -252,8 +234,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 			int usize = undExs.size();
 			System.out.printf("Learning problem\t p:%d\t n:%d\t u:%d\t prPos:%4f\t prNeg:%4f\n",
 					psize, nsize, usize, prPos, prNeg);
-
-
 
 			//build the BBA for the current node
 			ArrayList<Integer> frame = new ArrayList<>();
@@ -352,7 +332,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 						SortedSet<OWLIndividual> negExsF = new TreeSet<>();
 						SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
-
 						Split.split(newRootConcept.getFirstElement(), dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						// select node concept
 
@@ -418,7 +397,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 						SortedSet<OWLIndividual> negExsF = new TreeSet<>();
 						SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
-
 						//split(newRootConcept.getFirstElement(), posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						Split.split(newRootConcept.getFirstElement(), dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						// select node concept
@@ -428,7 +406,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 						//	undExsT = union(undExsT,
 						//						tree.setPosTree(induceDSTDLTree(posExsT, negExsT, undExsT, dim, prPos, prNeg));
 						//						tree.setNegTree(induceDSTDLTree(posExsF, negExsF, undExsF, dim, prPos, prNeg));
-
 
 						DSTDLTree posTree= new DSTDLTree();
 						DSTDLTree negTree= new DSTDLTree(); // recursive calls simulation through iteration
@@ -466,15 +443,10 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 		}
 
-
 		currentmodel= tree;
 		stop=true;
 		return tree;
 	}
-
-
-
-
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void classifyExampleDST(List<Couple<Integer,MassFunction<Integer>>> list,OWLIndividual indTestEx, DSTDLTree tree) {
@@ -588,11 +560,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 		//	System.out.println("Tree "+ tree);
 	}
 
-
-
-
-
-
 	public DSTDLTree getCurrentmodel() {
 		return currentmodel;
 	}
@@ -611,8 +578,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 		//}
 	}
-
-
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public MassFunction<Integer> getBBA(OWLIndividual indTestEx, EvidentialModel tree) {
@@ -643,10 +608,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 		return bba;
 	}
 
-
-
-
-
 	/**
 	 * Implementation of forcing criterion for the final class assignement
 	 * @param bba
@@ -669,7 +630,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 		//System.out.println(confirmationFunctionValuePos+ " vs. "+ confirmationFunctionValueNeg+ "vs." +confirmationFunctionValueUnc);
 
-
 		if((confirmationFunctionValueUnc>confirmationFunctionValuePos)&&(confirmationFunctionValueUnc>confirmationFunctionValueNeg))
 			if (confirmationFunctionValuePos>confirmationFunctionValueNeg)
 				 return +1;
@@ -684,17 +644,15 @@ public class DSTTDTClassifier extends AbstractCELA{
 		
 	}
 
-
-
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		
 		
 		PosNegUndLP learningProblem2 = (PosNegUndLP)learningProblem;
-		SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)learningProblem2.getPositiveExample();
-		SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)learningProblem2.getNegativeExample();
-		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExample();
+		SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)learningProblem2.getPositiveExamples();
+		SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)learningProblem2.getNegativeExamples();
+		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExamples();
 
 		//System.out.printf("--- Query Concept #%d \n",c);
 		
@@ -702,8 +660,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 		//OWLIndividual[] trainingExs= reasoner.getIndividuals().toArray(new OWLIndividual[reasoner.getIndividuals().size()]);
 		//boolean binaryClassification= false; // when you use the evidential version of TDT model you must use only a ternary splitting
  		//Split.splitting(dataFactory, reasoner, trainingExs, posExs, negExs, undExs, classToDescribe, binaryClassification);
-
-
 
 		prPos = (double)posExs.size()/(posExs.size()+ negExs.size()+undExs.size());
 		prNeg = (double)negExs.size()/(posExs.size()+ negExs.size()+undExs.size());
@@ -720,10 +676,8 @@ public class DSTTDTClassifier extends AbstractCELA{
 		
 		stop();
 
-
 		
 	}
-
 
 	@Override
 	public void stop() {
@@ -731,14 +685,11 @@ public class DSTTDTClassifier extends AbstractCELA{
 		stop=true;
 	}
 
-
 	@Override
 	public boolean isRunning() {
 		// TODO Auto-generated method stub
 		return !(stop);
 	}
-
-
 
 	@Override
 	public OWLClassExpression getCurrentlyBestDescription() {
@@ -753,8 +704,6 @@ public class DSTTDTClassifier extends AbstractCELA{
 		return null;
 	}
 
-
 	
-
 
 }

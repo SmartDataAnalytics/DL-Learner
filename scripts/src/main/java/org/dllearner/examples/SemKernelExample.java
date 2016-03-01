@@ -87,7 +87,6 @@ public class SemKernelExample {
     // get it at http://aber-owl.net/aber-owl/diseasephenotypes/data/mousephenotypes.txt
     private static String mgi2mpClsMappingsFilePath = workingDirPath + "mousephenotypes_new.txt";
 
-
     /* URI constants */
     private static final String oboPrefix = "http://purl.obolibrary.org/obo/";
 

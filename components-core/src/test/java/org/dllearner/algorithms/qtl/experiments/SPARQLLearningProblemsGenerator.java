@@ -63,7 +63,6 @@ public class SPARQLLearningProblemsGenerator {
 		dataDir = new File(benchmarkDirectory, "data/dbpedia/");
 		dataDir.mkdirs();
 
-
 		schema = ModelFactory.createDefaultModel();
 
 		// initialize the reasoner
@@ -127,7 +126,6 @@ public class SPARQLLearningProblemsGenerator {
 			}
 			allPaths.addAll(paths);
 		}
-
 
 //		for (Future<Path> future : futures) {
 //		      try {

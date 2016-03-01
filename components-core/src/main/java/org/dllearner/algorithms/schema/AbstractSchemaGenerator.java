@@ -40,7 +40,6 @@ import org.semanticweb.owlapi.profiles.Profiles;
 
 import java.util.*;
 
-
 /**
  * 
  * @author Lorenz Buehmann

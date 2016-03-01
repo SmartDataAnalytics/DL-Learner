@@ -27,6 +27,8 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.annotations.NoConfigOption;
+import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
@@ -83,12 +85,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     SortedSet<OWLIndividual> individuals = new TreeSet<>();
 
     // namespaces
+	@OutVariable
     private Map<String, String> prefixes = new TreeMap<>();
+	@OutVariable
     private String baseURI;
 
     // references to OWL API ontologies
     private Set<OWLOntology> owlAPIOntologies = new HashSet<>();
-
 
     private OWLClassExpressionMinimizer minimizer;
 
@@ -96,13 +99,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     
     
  // default reasoner is Pellet
-    @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
+    @ConfigOption(defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
-    @ConfigOption(name = "useFallbackReasoner", defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
+    @ConfigOption(defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
     private boolean useFallbackReasoner = false;
 
-    @ConfigOption(name = "owlLinkURL", defaultValue="null", description="specifies the URL of the remote OWLLink server")
+    @ConfigOption(defaultValue="null", description="specifies the URL of the remote OWLLink server")
     private String owlLinkURL;
 
     public OWLAPIReasoner() {
@@ -212,7 +215,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
-
 
         // remove classes that are built-in entities
 		Iterator<OWLClass> it = atomicConcepts.iterator();
@@ -957,7 +959,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		return map;
 	}
 
-
     // OWL API returns a set of nodes of classes, where each node
     // consists of equivalent classes; this method picks one class
     // from each node to flatten the set of nodes
@@ -1248,7 +1249,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
 			reasoner = new ThreadSafeOWLReasoner(reasoner);

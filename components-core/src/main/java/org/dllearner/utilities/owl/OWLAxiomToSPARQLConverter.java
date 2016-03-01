@@ -18,7 +18,6 @@
  */
 package org.dllearner.utilities.owl;
 
-
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;

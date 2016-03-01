@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.dsttdt.dst;
 
-
 import java.util.List;
 
 import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;

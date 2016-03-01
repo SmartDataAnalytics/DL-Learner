@@ -374,5 +374,4 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 		}
 	}
 
-
 }

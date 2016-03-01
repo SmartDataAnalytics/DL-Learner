@@ -63,5 +63,4 @@ public class QueryTreePoint implements Clusterable<QueryTreePoint>{
 		return null;
 	}
 
-
 }

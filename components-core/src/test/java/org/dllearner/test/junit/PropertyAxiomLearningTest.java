@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-
 public class PropertyAxiomLearningTest {
 	
 	private static SparqlEndpointKS ks;

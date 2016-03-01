@@ -1246,7 +1246,6 @@ public class KBParser implements KBParserConstants {
     return false;
   }
 
-
 /** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;

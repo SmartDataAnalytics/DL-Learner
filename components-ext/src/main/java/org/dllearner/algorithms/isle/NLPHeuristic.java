@@ -45,7 +45,7 @@ public class NLPHeuristic extends AbstractHeuristic{
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;
 	
-	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
+	@ConfigOption(defaultValue="0.1")
 	private double startNodeBonus = 0.1;
 	
 	private double nlpBonusFactor = 1;

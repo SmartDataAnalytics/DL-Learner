@@ -41,7 +41,6 @@ import java.util.SortedSet;
  */
 public class SPARQLReasonerTest {
 
-
 	public static void main(String[] args) throws Exception{
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		
