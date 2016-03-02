@@ -1,0 +1,94 @@
+2016-03-02 09:45:34,206 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: org.dllearner:components-core:1.3-SNAPSHOT @ /home/hajira/Documents/newdl/develop/components-core/pom.xml.
+2016-03-02 09:45:35,047 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: org.dllearner:components-ext:1.3-SNAPSHOT @ /home/hajira/Documents/newdl/develop/components-ext/pom.xml.
+2016-03-02 09:45:35,398 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: org.dllearner:interfaces:1.3-SNAPSHOT @ /home/hajira/Documents/newdl/develop/interfaces/pom.xml.
+2016-03-02 09:45:35,478 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: org.dllearner:scripts:1.3-SNAPSHOT @ /home/hajira/Documents/newdl/develop/scripts/pom.xml.
+2016-03-02 09:45:36,140 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /components-core/src/main/java
+2016-03-02 09:45:36,141 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /components-core/src/main/resources
+2016-03-02 09:45:36,143 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /components-core/src/test/java
+2016-03-02 09:45:36,143 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /components-core/src/test/resources
+2016-03-02 09:45:36,236 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /interfaces/src/main/java
+2016-03-02 09:45:36,236 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /interfaces/src/main/resources
+2016-03-02 09:45:36,237 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /interfaces/src/test/java
+2016-03-02 09:45:36,237 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /interfaces/src/test/resources
+2016-03-02 09:45:36,308 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /scripts/src/main/java
+2016-03-02 09:45:36,308 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /scripts/src/test/java
+2016-03-02 09:45:36,379 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /components-ext/src/main/java
+2016-03-02 09:45:36,379 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /components-ext/src/main/resources
+2016-03-02 09:45:36,380 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /components-ext/src/test/java
+2016-03-02 09:45:36,380 [Worker-0] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /components-ext/src/test/resources
+2016-03-02 09:45:36,492 [Worker-0] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Imported and configured 4 project(s) in 3 sec
+2016-03-02 09:45:44,050 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:44,055 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 09:45:44,062 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:44,064 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources
+2016-03-02 09:45:44,896 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:44,897 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 58 resources
+2016-03-02 09:45:44,964 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:44,965 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 29 resources
+2016-03-02 09:45:46,784 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:46,785 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 09:45:46,787 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:46,787 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 2 resources
+2016-03-02 09:45:48,580 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:48,580 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/main/resources
+2016-03-02 09:45:48,581 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 09:45:48,581 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/test/resources
+2016-03-02 11:08:14,590 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:08:14,591 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 11:08:14,593 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:08:14,595 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources
+2016-03-02 11:20:55,704 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:20:55,704 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/main/resources
+2016-03-02 11:20:55,705 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:20:55,705 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/test/resources
+2016-03-02 11:21:35,556 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:21:35,556 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/main/resources
+2016-03-02 11:21:35,557 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:21:35,557 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/test/resources
+2016-03-02 11:51:53,756 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:51:53,757 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 11:51:53,758 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:51:53,758 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 11:51:53,788 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:51:53,788 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/main/resources
+2016-03-02 11:51:53,788 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:51:53,789 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/test/resources
+2016-03-02 11:59:37,372 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:59:37,372 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/main/resources
+2016-03-02 11:59:37,374 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 11:59:37,374 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/hajira/Documents/newdl/develop/scripts/src/test/resources
+2016-03-02 11:59:42,788 [Worker-18] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache file is not out-of-date. No remote download required.
+2016-03-02 12:00:51,518 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 12:00:51,518 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 12:00:51,520 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 12:00:51,520 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 12:11:38,100 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 12:11:38,101 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 12:11:38,102 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 12:11:38,102 [Worker-18] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 13:16:09,776 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:16:09,776 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 13:16:09,777 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:16:09,778 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources
+2016-03-02 13:26:06,567 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:26:06,568 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 5 resources
+2016-03-02 13:26:06,569 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:26:06,569 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources
+2016-03-02 13:27:43,818 [Worker-28] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded http://maven.aksw.org/repository/internal/net/sourceforge/owlapi/owlapi-distribution/4.1.4/owlapi-distribution-4.1.4-sources.jar
+2016-03-02 13:27:43,870 [Worker-28] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded http://maven.aksw.org/repository/snapshots/net/sourceforge/owlapi/owlapi-distribution/4.1.4/owlapi-distribution-4.1.4-sources.jar
+2016-03-02 13:27:45,513 [Worker-28] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded http://dev.davidsoergel.com/nexus/content/repositories/releases/net/sourceforge/owlapi/owlapi-distribution/4.1.4/owlapi-distribution-4.1.4-sources.jar
+2016-03-02 13:27:45,829 [Worker-28] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloading https://repo.maven.apache.org/maven2/net/sourceforge/owlapi/owlapi-distribution/4.1.4/owlapi-distribution-4.1.4-sources.jar
+2016-03-02 13:27:46,102 [Worker-28] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/net/sourceforge/owlapi/owlapi-distribution/4.1.4/owlapi-distribution-4.1.4-sources.jar
+2016-03-02 13:27:46,122 [Worker-28] INFO  o.e.m.j.internal.DownloadSourcesJob - Downloaded sources for net.sourceforge.owlapi:owlapi-distribution:4.1.4
+2016-03-02 13:27:46,351 [Worker-31] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:27:46,352 [Worker-31] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 13:27:46,354 [Worker-31] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:27:46,354 [Worker-31] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 13:45:55,972 [Worker-33] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:45:55,973 [Worker-33] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 13:45:55,974 [Worker-33] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 13:45:55,975 [Worker-33] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources
+2016-03-02 14:33:45,378 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 14:33:45,378 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-03-02 14:33:45,380 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-03-02 14:33:45,381 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 21 resources

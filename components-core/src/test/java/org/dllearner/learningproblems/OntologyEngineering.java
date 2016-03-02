@@ -96,7 +96,59 @@ public class OntologyEngineering {
 	private static boolean computeApproxDiff = true;
 	private static boolean useFMeasure = true;
 	public int i =1;
-	public static File f = new File("GS1.txt");
+	public static File resultoutput = new File("GS1.txt");
+
+	public OntologyEngineering(File ontFile, String outFile) {
+		// TODO Auto-generated constructor stub
+		Logger.getRootLogger().setLevel(Level.WARN);
+		try
+		{
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontFile);
+		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
+		ks.init();	
+		
+		
+		resultoutput = new File(outFile) ;
+		AbstractReasonerComponent rc ;
+		System.out.println("Loaded ontology from file :" + ontFile + ".");
+		
+		if(testFCIApprox) {
+			// OWL API +no APX
+			useFastInstanceChecker = false;
+			useApproximations = false;
+			rc=new OWLAPIReasoner(ks);
+			rc.init();
+			run(rc);
+			
+			
+			useFastInstanceChecker = false;
+			useApproximations = true;
+			rc=new OWLAPIReasoner(ks);
+			rc.init();
+			run(rc);
+			
+			
+			useFastInstanceChecker = true;
+			useApproximations = false;
+			rc = new ClosedWorldReasoner(ks);
+			rc.init();
+			run(rc);
+			
+			
+			useFastInstanceChecker = true;
+			useApproximations = true;
+			rc = new ClosedWorldReasoner(ks);
+			rc.init();
+			run(rc);			
+		} else {
+			rc = new ClosedWorldReasoner(ks);
+			rc.init();
+			run(rc);	
+		}
+		}catch (Exception e)
+		{}
+		
+	}
 	public static void main(String[] args) throws
 			Exception {
 
@@ -104,7 +156,7 @@ public class OntologyEngineering {
 		String fileName = "GeoSkills.owl";
 		// OWL file is the first argument of the script
 		//File file = new File(filePath);
-		File file = new File("/home/hajira/Documents/AKSW/Celoe datasets/"+fileName);
+		File file = new File("../Celoe datasets/"+fileName);
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();	
@@ -113,9 +165,6 @@ public class OntologyEngineering {
 	
 		// load OWL in reasoner
 			
-			
-		System.out.println("Loaded ontology " + fileName + ".");
-		
 	
 		// ??? we need to extract classes from LP not give a target class
 		//OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://www.example.org/lymphography#Target2_Metastases"));
@@ -452,17 +501,17 @@ public class OntologyEngineering {
 				
 		
 		 
-         if(!f.exists())
+         if(!resultoutput.exists())
          {
            try {
-                   f.createNewFile();
+        	   resultoutput.createNewFile();
                } catch (Exception e) {
                    e.printStackTrace();
                }
          }
 
        
-               FileOutputStream fos = new FileOutputStream(f);
+               FileOutputStream fos = new FileOutputStream(resultoutput);
                PrintStream ps = new PrintStream(fos,true);
                System.setOut(ps);
        
