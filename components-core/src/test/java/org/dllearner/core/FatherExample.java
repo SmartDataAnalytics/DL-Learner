@@ -49,7 +49,7 @@ public class FatherExample {
 	 */
 	public static void main(String[] args) throws Exception{
 		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
-		
+		// a little change to father example to check it works
 		// setup the knowledge base
 		File file = new File("../examples/father.owl");
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
