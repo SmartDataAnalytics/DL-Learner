@@ -150,7 +150,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			((AccMethodApproximate) accuracyMethod).setReasoner(getReasoner());
 		}
 		if (accuracyMethod instanceof AccMethodThreeValued) {
-			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), Sets.newTreeSet(superClassInstances));
+			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), superClassInstances);
 			negatedClassInstances = Sets.newTreeSet(cc[0].trueSet);
 //			System.out.println("negated class instances: " + negatedClassInstances);
 		}
@@ -166,7 +166,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
-		Coverage[] cc = ((ReasoningUtilsCLP)reasoningUtil).getCoverageCLP(description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances));
+		Coverage[] cc = ((ReasoningUtilsCLP)reasoningUtil).getCoverageCLP(description, classInstances, superClassInstances);
 
 		double recall = Heuristics.divideOrZero(cc[0].trueCount, classInstances.size()); // tp / (tp+fn)
 		double precision = Heuristics.divideOrZero(cc[0].trueCount, cc[0].trueCount + cc[1].trueCount); // tp / (tp+fp)
@@ -177,7 +177,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		if (accuracyMethod instanceof AccMethodTwoValued) {
 			acc = reasoningUtil.getAccuracyOrTooWeakExact2((AccMethodTwoValued) accuracyMethod, cc, noise);
 		} else if (accuracyMethod instanceof AccMethodThreeValued) {
-			acc = ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeakExact3((AccMethodThreeValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), negatedClassInstances, noise);
+			acc = ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeakExact3((AccMethodThreeValued) accuracyMethod, description, classInstances, superClassInstances, negatedClassInstances, noise);
 		} else {
 			throw new RuntimeException();
 		}
@@ -206,14 +206,17 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		nanoStartTime = System.nanoTime();
 		if (accuracyMethod instanceof AccMethodThreeValued) {
-			return ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeak3((AccMethodThreeValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), negatedClassInstances, noise);
+			return ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeak3((AccMethodThreeValued) accuracyMethod, description, classInstances, superClassInstances, negatedClassInstances, noise);
 		} else if (accuracyMethod instanceof  AccMethodTwoValued) {
-			return reasoningUtil.getAccuracyOrTooWeak2((AccMethodTwoValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+			return reasoningUtil.getAccuracyOrTooWeak2((AccMethodTwoValued) accuracyMethod, description, classInstances, superClassInstances, noise);
 		} else {
 			throw new RuntimeException();
 		}
 	}
 
+	/**
+	 * @return whether the description test should be aborted because time expired
+	 */
 	public boolean terminationTimeExpired() {
 		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds * 1000000000L));
 		if (val) {
@@ -323,6 +326,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return cc[0].trueCount/(double)cc[0].total;
 	}
 
+	/* () for ontology engineering */
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		AccMethodTwoValuedApproximate acc;
 		if (accuracyMethod instanceof AccMethodPredAcc) {
@@ -335,9 +339,10 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			throw new RuntimeException();
 		}
 		acc.setReasoner(reasoner);
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 
+	/* () for ontology engineering */
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 		AccMethodTwoValued acc;
 		if (accuracyMethod instanceof AccMethodPredAcc) {
@@ -349,7 +354,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		} else {
 			throw new RuntimeException();
 		}
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 }
 
