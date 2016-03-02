@@ -142,7 +142,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		Random rand = new Random(1);
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
-
+		classInstances=prepareInstances(classInstances);
+		superClassInstances=prepareInstances(superClassInstances);
 		if (accuracyMethod == null) {
 			accuracyMethod = new AccMethodPredAcc(true);
 		}
@@ -159,6 +160,12 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
+	}
+	public List<OWLIndividual> prepareInstances(List<OWLIndividual> Instances) {
+		Random rand = new Random(1);
+		Collections.shuffle(Instances, rand);
+		return Instances;
+		
 	}
 
 	@Override
