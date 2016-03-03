@@ -109,7 +109,6 @@ public class OntologyEngineering {
 		
 		
 		resultoutput = new File(outFile) ;
-		
 		AbstractReasonerComponent rc ;
 		System.out.println("Loaded ontology from file :" + ontFile + ".");
 		
@@ -512,7 +511,7 @@ public class OntologyEngineering {
          }
 
        
-               FileOutputStream fos = new FileOutputStream(resultoutput, true);
+               FileOutputStream fos = new FileOutputStream(resultoutput);
                PrintStream ps = new PrintStream(fos,true);
                System.setOut(ps);
        

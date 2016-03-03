@@ -1,0 +1,196 @@
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: 
+classes in ontology: 560
+classes with at least 3 instances: 0
+class expressions tested: no data collected
+approximation difference: no data collected
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: 
+classes in ontology: 560
+classes with at least 3 instances: 0
+class expressions tested: no data collected
+approximation difference: no data collected
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: 
+classes in ontology: 560
+classes with at least 3 instances: 0
+class expressions tested: no data collected
+approximation difference: no data collected
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: 
+classes in ontology: 560
+classes with at least 3 instances: 0
+class expressions tested: no data collected
+approximation difference: no data collected
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 0
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 0
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: no data collected
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: no data collected
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
