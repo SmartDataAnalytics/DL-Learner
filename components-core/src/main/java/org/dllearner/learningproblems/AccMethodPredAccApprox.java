@@ -22,11 +22,18 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 @ComponentAnn(name = "Predictive Accuracy Approximate", shortName = "approx.prec_acc", version = 0)
 public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate {
@@ -42,66 +49,129 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	private double approxDelta = 0.05;
 	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
-	
-    
+	private boolean doSample = false;
+	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
+	{ 
+		// to be Implemented by Tommaso 
+		// for testing this, we must use doSample=true
+		
+	}
 	@Override
 	public double getAccApprox2(OWLClassExpression description, Collection<OWLIndividual> positiveExamples, Collection<OWLIndividual> negativeExamples, double noise) {
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 
 		int notCoveredPos = 0;
 		//			int notCoveredNeg = 0;
-
+		
 		int posClassifiedAsPos = 0;
 		int negClassifiedAsNeg = 0;
 
 		int nrOfPosChecks = 0;
 		int nrOfNegChecks = 0;
-
-		// special case: we test positive and negative examples in turn
+		
+		OWLIndividual negExample;
+		OWLIndividual posExample;
+		
 		Iterator<OWLIndividual> itPos = positiveExamples.iterator();
 		Iterator<OWLIndividual> itNeg = negativeExamples.iterator();
+		
+		
+		if (doSample) {
+			doSamplingTask(description.getClassExpressionType().toString(), positiveExamples, negativeExamples);
 
-		do {
-			// in each loop we pick 0 or 1 positives and 0 or 1 negative
-			// and classify it
+			do {
 
-			if(itPos.hasNext()) {
-				OWLIndividual posExample = itPos.next();
-				//					System.out.println(posExample);
+				if ((posExample = getNextPosInstance()) != null) {
+					// System.out.println(posExample);
 
-				if(reasoner.hasType(description, posExample)) {
-					posClassifiedAsPos++;
-				} else {
-					notCoveredPos++;
+					if (reasoner.hasType(description, posExample)) {
+						posClassifiedAsPos++;
+					} else {
+						notCoveredPos++;
+					}
+					nrOfPosChecks++;
+
+					// take noise into account
+					if (notCoveredPos > maxNotCovered) {
+						return -1;
+					}
 				}
-				nrOfPosChecks++;
 
-				// take noise into account
-				if(notCoveredPos > maxNotCovered) {
-					return -1;
+				if ((negExample = getNextNegInstance()) != null) {
+
+					if (!reasoner.hasType(description, negExample)) {
+						negClassifiedAsNeg++;
+					}
+					nrOfNegChecks++;
 				}
-			}
 
-			if(itNeg.hasNext()) {
-				OWLIndividual negExample = itNeg.next();
-				if(!reasoner.hasType(description, negExample)) {
-					negClassifiedAsNeg++;
+				// compute how accurate our current approximation is and return
+				// if it is sufficiently accurate
+				double approx[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
+						1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				if (approx[1] < approxDelta) {
+					// System.out.println(approx[0]);
+					return approx[0];
 				}
-				nrOfNegChecks++;
-			}
+			} while (((negExample) != null) || ((posExample) != null));
+		} else {
 
-			// compute how accurate our current approximation is and return if it is sufficiently accurate
-			double approx[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(), 1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
-			if(approx[1]<approxDelta) {
-				//					System.out.println(approx[0]);
-				return approx[0];
-			}
+			// special case: we test positive and negative examples in turn
 
-		} while(itPos.hasNext() || itNeg.hasNext());
+			do {
+				// in each loop we pick 0 or 1 positives and 0 or 1 negative
+				// and classify it
+				if (itPos.hasNext()) {
+					posExample = itPos.next();
+					// System.out.println(posExample);
 
-		return Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
+					if (reasoner.hasType(description, posExample)) {
+						posClassifiedAsPos++;
+					} else {
+						notCoveredPos++;
+					}
+					nrOfPosChecks++;
+
+					// take noise into account
+					if (notCoveredPos > maxNotCovered) {
+						return -1;
+					}
+				}
+				if (itNeg.hasNext()) {
+					negExample = itNeg.next();
+					if (!reasoner.hasType(description, negExample)) {
+						negClassifiedAsNeg++;
+					}
+					nrOfNegChecks++;
+				}
+
+				// compute how accurate our current approximation is and return
+				// if it is sufficiently accurate
+				double approx2[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
+						1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				if (approx2[1] < approxDelta) {
+					// System.out.println(approx2[0]);
+					return approx2[0];
+				}
+
+			} while ((itPos.hasNext() || itNeg.hasNext()));
+		}
+
+		return Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos,
+				negClassifiedAsNeg, 1);
 	}
-
+	public OWLIndividual getNextPosInstance()
+	{
+		// to be Implemented by Tommaso 
+		OWLIndividual nextSample=null;
+		return nextSample;
+	}
+	public OWLIndividual getNextNegInstance()
+	{
+		// to be Implemented by Tommaso 
+		OWLIndividual nextSample=null;
+		return nextSample;
+	}
 	@Override
 	public double getApproxDelta() {
 		return approxDelta;

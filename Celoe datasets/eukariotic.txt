@@ -1,3 +1,9 @@
+testing
+
+======= Stats New
+ClosedWorldReasoner : false
+Use approximations : false
+useFMeasure : true
 
 knowledge engineering process finished successfully - summary shown below
 
@@ -5,7 +11,7 @@ settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
 user input protocol: nnnnnnnn
 classes in ontology: 11
 classes with at least 3 instances: 4
-class expressions tested: av. 14,568.125 (deviation 1,869.134; min 11,901; max 16,973; count 8)
+class expressions tested: av. 15,517 (deviation 2,113.007; min 12,465; max 18,368; count 8)
 approximation difference: av. 0 (deviation 0; min 0; max 0; count 80)
 
 statistics for equivalence axioms:
@@ -48,13 +54,19 @@ non-perfect (not 100% accuracy) axioms selected: 0
 average number typed by user: no data collected
 
 
+
+======= Stats New
+ClosedWorldReasoner : false
+Use approximations : true
+useFMeasure : true
+
 knowledge engineering process finished successfully - summary shown below
 
 settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
 user input protocol: nnnnnnnn
 classes in ontology: 11
 classes with at least 3 instances: 4
-class expressions tested: av. 17,335 (deviation 1,829.774; min 15,120; max 19,573; count 8)
+class expressions tested: av. 18,363.375 (deviation 2,229.686; min 15,178; max 20,683; count 8)
 approximation difference: av. 0 (deviation 0; min 0; max 0; count 80)
 
 statistics for equivalence axioms:
@@ -97,13 +109,19 @@ non-perfect (not 100% accuracy) axioms selected: 0
 average number typed by user: no data collected
 
 
+
+======= Stats New
+ClosedWorldReasoner : true
+Use approximations : false
+useFMeasure : true
+
 knowledge engineering process finished successfully - summary shown below
 
 settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
 user input protocol: nnnnnnnn
 classes in ontology: 11
 classes with at least 3 instances: 4
-class expressions tested: av. 21,301.375 (deviation 1,817.875; min 19,627; max 24,796; count 8)
+class expressions tested: av. 22,559.375 (deviation 1,900.98; min 20,638; max 25,848; count 8)
 approximation difference: av. 0.011 (deviation 0.044; min 0; max 0.2; count 49)
 
 statistics for equivalence axioms:
@@ -146,13 +164,74 @@ non-perfect (not 100% accuracy) axioms selected: 0
 average number typed by user: no data collected
 
 
+
+======= Stats New
+ClosedWorldReasoner : true
+Use approximations : true
+useFMeasure : true
+
 knowledge engineering process finished successfully - summary shown below
 
 settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
 user input protocol: nnnnnnnn
 classes in ontology: 11
 classes with at least 3 instances: 4
-class expressions tested: av. 23,005.5 (deviation 2,487.022; min 19,824; max 25,522; count 8)
+class expressions tested: av. 25,670.125 (deviation 3,444.351; min 21,304; max 30,250; count 8)
+approximation difference: av. 0 (deviation 0; min 0; max 0; count 80)
+
+statistics for equivalence axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 4)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+statistics for super class axioms:
+classes above 85.0% threshold: 4
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 4
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 4)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 4)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+merged statistics for equivalence/superclass:
+classes above 85.0% threshold: 8
+axioms learned succesfully: 0
+axioms missed: 0
+class with no sensible axioms: 8
+inconsistencies detected: 0
+additional instances found: no data collected
+average accuracy overall: av. 1 (deviation 0; min 1; max 1; count 8)
+average accuracy of selected expressions: no data collected
+average accuracy of expressions above threshold: av. 1 (deviation 0; min 1; max 1; count 8)
+non-perfect (not 100% accuracy) axioms selected: 0
+average number typed by user: no data collected
+
+
+
+======= Stats New
+ClosedWorldReasoner : false
+Use approximations : false
+useFMeasure : false
+
+knowledge engineering process finished successfully - summary shown below
+
+settings: 0.85 min accuracy, 3 min instances, 10s algorithm runtime
+user input protocol: nnnnnnnn
+classes in ontology: 11
+classes with at least 3 instances: 4
+class expressions tested: av. 14,770.125 (deviation 2,381.834; min 10,318; max 17,462; count 8)
 approximation difference: av. 0 (deviation 0; min 0; max 0; count 80)
 
 statistics for equivalence axioms:

@@ -9,7 +9,8 @@ public class EngineeringRunningScript {
 		String outputFilename ="";
 		
 		// TODO Auto-generated method stub
-		String[] files = {"Economy", "MDM0.73", "GeoSkills", "adhesome","earthrealm", "eukariotic","SC" };
+		//String[] files = {"Economy", "MDM0.73", "GeoSkills", "adhesome","earthrealm", "eukariotic","SC" };
+		String[] files = {"adhesome","earthrealm", "eukariotic","SC" };
 		for (int I = 0; I < files.length; I++) {
 			ontologyFileName = files[I] + ".owl";
 			outputFilename = files[I] + ".txt";
