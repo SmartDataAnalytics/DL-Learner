@@ -1,0 +1,140 @@
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. scotica"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#comment> "Tarzetta (Cooke) Lambotte, Memoire Societe Royale des Sciences de Liege, Série 2 14: 325 (1888)Tarzetta è un genere di funghi ascomiceti appartenente alla famiglia Pyronemataceae."@it .
+<http://dbpedia.org/resource/Tarzetta> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Pyronemataceae> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. gaillardiana"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Tarzetta> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#comment> "Tarzetta is a genus of fungi in the family Pyronemataceae. The genus has a widespread distribution in north temperate regions, and contains 9 species."@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/abstract> "Die Napfbecherlinge (Tarzetta) sind eine Gattung der Echten Schlauchpilze aus der Familie der Feuerkissenverwandten (Pyronemataceae) mit 4 Arten in Mitteleuropa und 13 Arten weltweit."@de .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Tarzetta?oldid=542725200> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. jafneospora"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/imageWidth> "240"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/typeSpecies> "Tarzetta rapulum"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#comment> "Die Napfbecherlinge (Tarzetta) sind eine Gattung der Echten Schlauchpilze aus der Familie der Feuerkissenverwandten (Pyronemataceae) mit 4 Arten in Mitteleuropa und 13 Arten weltweit."@de .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Pezizomycetes> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.0hhv3vk> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/division> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. spurcata"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/genus> "Tarzetta"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/familia> <http://dbpedia.org/resource/Pyronemataceae> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/abstract> "Tarzetta (Cooke) Lambotte, Memoire Societe Royale des Sciences de Liege, Série 2 14: 325 (1888)Tarzetta è un genere di funghi ascomiceti appartenente alla famiglia Pyronemataceae."@it .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/divisio> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q1132726> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/wikiPageRevisionID> "542725200"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/genusAuthority> "Lambotte"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Pezizomycetes> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/order> <http://dbpedia.org/resource/Pezizales> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2002/07/owl#sameAs> <http://it.dbpedia.org/resource/Tarzetta> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#label> "Tarzetta"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#label> "Tarzetta"@it .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/ordo> <http://dbpedia.org/resource/Pezizales> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/synonym> "Pustulina (Eckblad (1968)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Tarzetta> <http://xmlns.com/foaf/0.1/depiction> <http://commons.wikimedia.org/wiki/Special:FilePath/Tarzetta_cupularis_-_Kerbrandiger_Napfbecherling.jpg> .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2002/07/owl#sameAs> <http://de.dbpedia.org/resource/Napfbecherlinge> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. catinus"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivision> "T. cupularis"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/synonyms> "Pustulina (Eckblad )"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/family> <http://dbpedia.org/resource/Pyronemataceae> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/imageCaption> "Tarzetta cupularis"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/wikiPageID> "33769309"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/subdivisionRanks> <http://dbpedia.org/resource/Species> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Tarzetta_cupularis_-_Kerbrandiger_Napfbecherling.jpg?width=300> .
+<http://dbpedia.org/resource/Tarzetta> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Tarzetta> .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/property/typeSpeciesAuthority> "Rehm"@en .
+<http://dbpedia.org/resource/Tarzetta> <http://dbpedia.org/ontology/abstract> "Tarzetta is a genus of fungi in the family Pyronemataceae. The genus has a widespread distribution in north temperate regions, and contains 9 species."@en .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2000/01/rdf-schema#label> "Napfbecherlinge"@de .
+<http://dbpedia.org/resource/Tarzetta> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q1132726> .
+<http://dbpedia.org/resource/Tarzetta_catinus> <http://dbpedia.org/ontology/genus> <http://dbpedia.org/resource/Tarzetta> .
+<http://dbpedia.org/resource/Tarzetta_cupularis> <http://dbpedia.org/ontology/genus> <http://dbpedia.org/resource/Tarzetta> .
+<http://en.wikipedia.org/wiki/Tarzetta> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Tarzetta> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Metus_(fungus)> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.indexfungorum.org/Names/genusrecord.asp?RecordID=25192> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/ordo> <http://dbpedia.org/resource/Lecanorales> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/family> <http://dbpedia.org/resource/Cladoniaceae> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Metus_(fungus)> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q6825532> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q6825532> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/subdivisionranks> "Species"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Lecanoromycetes> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/order> <http://dbpedia.org/resource/Lecanorales> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/familia> <http://dbpedia.org/resource/Cladoniaceae> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/2000/01/rdf-schema#label> "Metus (fungus)"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/genus> "Metus"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/division> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/genusAuthority> "D.J. Galloway & P.James"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/typeSpeciesAuthority> "D.J. Galloway & P. James"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Lichens> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/wikiPageID> "22496862"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/wikiPageRevisionID> "632095402"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Lecanoromycetes> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/divisio> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Lecanorales> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/ontology/abstract> "Metus is a genus of lichenized fungi in the family Cladoniaceae."@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Metus_(fungus)?oldid=632095402> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://dbpedia.org/property/typeSpecies> "Metus conglomeratus"@en .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.05zytxf> .
+<http://dbpedia.org/resource/Metus_(fungus)> <http://www.w3.org/2000/01/rdf-schema#comment> "Metus is a genus of lichenized fungi in the family Cladoniaceae."@en .
+<http://dbpedia.org/resource/Metus> <http://dbpedia.org/ontology/wikiPageDisambiguates> <http://dbpedia.org/resource/Metus_(fungus)> .
+<http://en.wikipedia.org/wiki/Metus_(fungus)> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Metus_(fungus)> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Emilmuelleria> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Concept105835747> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/family> <http://dbpedia.org/resource/Chaetomiaceae> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/order> <http://dbpedia.org/resource/Sordariales> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Genus105845013> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/division> <http://dbpedia.org/resource/Pezizomycotina> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Emilmuelleria> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Emilmuelleria?oldid=632205430> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/divisio> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/ordo> <http://dbpedia.org/resource/Sordariales> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/genusAuthority> "Arx"@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2000/01/rdf-schema#label> "Emilmuelleria"@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Monotypic_Sordariomycetes_genera> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2000/01/rdf-schema#comment> "Emilmuelleria is a genus of fungi within the Chaetomiaceae family. This is a monotypic genus, containing the single species Emilmuelleria spirotricha."@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Sordariomycetes> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Sordariales> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Sordariomycetes> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Kind105839024> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/abstract> "Emilmuelleria is a genus of fungi within the Chaetomiaceae family. This is a monotypic genus, containing the single species Emilmuelleria spirotricha."@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/typeSpecies> "Emilmuelleria spirotricha"@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/division> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.080jkbj> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/familia> <http://dbpedia.org/resource/Chaetomiaceae> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.speciesfungorum.org/Names/genusrecord.asp?RecordID=25039> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/wikiPageID> "24522729"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PsychologicalFeature100023100> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2002/07/owl#sameAs> <http://yago-knowledge.org/resource/Emilmuelleria> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Idea105833840> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/genus> "Emilmuelleria"@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Category105838765> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MonotypicFungiGenera> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/subdivisio> <http://dbpedia.org/resource/Pezizomycotina> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/wikiPageRevisionID> "632205430"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/property/typeSpeciesAuthority> "Arx"@en .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Cognition100023271> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q5371997> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q5371997> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Abstraction100002137> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://umbel.org/umbel/rc/Fungus> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Content105809192> .
+<http://dbpedia.org/resource/Emilmuelleria> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://en.wikipedia.org/wiki/Emilmuelleria> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Emilmuelleria> .
+<http://dbpedia.org/resource/Emilmuelleria_spirotricha> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Emilmuelleria> .

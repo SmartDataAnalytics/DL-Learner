@@ -1,0 +1,237 @@
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://nt.ars-grin.gov/fungaldatabases> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/CausalAgent100007347> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/genus> <http://dbpedia.org/resource/Corticium> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Pathogen101386007> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/subphylum> <http://dbpedia.org/resource/Agaricomycotina> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Coconut_palm_diseases> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://xmlns.com/foaf/0.1/name> "Corticium penicillatum"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Corticium_penicillatum> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/binomial> "Corticium penicillatum"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Object100002684> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/abstract> "Corticium penicillatum is a species of fungus in the class Agaricomycetes. It is a corticioid fungus and a plant pathogen, the causal agent of coconut thread blight, a leaf disease of coconut palms. The species was originally described from Papua New Guinea in 1925 and has since been reported from Vanuatu, Fiji, and the Solomon Islands. Corticium penicillatum has never been redescribed or reviewed and is unlikely to be a species of Corticium in the modern sense."@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/name> "Corticium penicillatum"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=185749> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Agent109190918> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/familia> "incertae sedis"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Incertae_sedis> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/ordo> "incertae sedis"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2002/07/owl#sameAs> <http://yago-knowledge.org/resource/Corticium_penicillatum> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/binomialAuthority> "Petch"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2000/01/rdf-schema#comment> "Corticium penicillatum is a species of fungus in the class Agaricomycetes. It is a corticioid fungus and a plant pathogen, the causal agent of coconut thread blight, a leaf disease of coconut palms. The species was originally described from Papua New Guinea in 1925 and has since been reported from Vanuatu, Fiji, and the Solomon Islands. Corticium penicillatum has never been redescribed or reviewed and is unlikely to be a species of Corticium in the modern sense."@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PlantPathogensAndDiseases> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/wikiPageID> "11322755"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/LivingThing100004258> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Organism100004475> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/phylum> <http://dbpedia.org/resource/Basidiomycota> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Corticium_penicillatum> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Agaricomycetes> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.02r7q5x> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q5173279> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/phylum> <http://dbpedia.org/resource/Agaricomycotina> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/species> "C. penicillatum"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2000/01/rdf-schema#label> "Corticium penicillatum"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q5173279> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://umbel.org/umbel/rc/Fungus> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/phylum> <http://dbpedia.org/resource/Basidiomycota> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PhysicalEntity100001930> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Microorganism101326291> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Corticium_penicillatum?oldid=607734094> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/wikiPageRevisionID> "607734094"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Fungal_plant_pathogens_and_diseases> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/subclassis> "incertae sedis"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Agaricomycetes> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Agaricomycetes> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://dbpedia.org/property/genus> "Corticium"@en .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Whole100003553> .
+<http://en.wikipedia.org/wiki/Corticium_penicillatum> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Corticium_penicillatum> .
+<http://dbpedia.org/resource/Corticium_penicillatum> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/InfectiousAgent109312843> .
+<http://dbpedia.org/resource/Gibberella_moniliformis> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi_var._subglutinans> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Pathogen101386007> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Sordariomycetes> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/phylum> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/phylum> <http://dbpedia.org/resource/Ascomycota> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Fungi_with_sequenced_genomes> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://xmlns.com/foaf/0.1/depiction> <http://commons.wikimedia.org/wiki/Special:FilePath/Gibberella_fujikuroi.jpg> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Lisea fujikuroi (Sawada, (1919)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Gibberella fujikuroi var. moniliformis (Wineland) Kuhlman, (1982)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Gibberella_fujikuroi.jpg?width=300> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Gibberella moniliformis (Wineland, (1924)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Hypocreomycetidae> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Whole100003553> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/species> "G. fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://ja.dbpedia.org/resource/イネ馬鹿苗病菌> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/imageWidth> "240"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/genus> "Gibberella"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#comment> "Gibberella fujikuroi is een parasiterende schimmelssoort. De schimmel komt in de bodem voor en kan planten en dieren aantasten.De schimmel veroorzaakt de bakanae-ziekte in rijst. Deze schimmel wordt gekenmerkt door lichtgroene bladeren, onvolgroeide wortelgroei, slanke bladeren en langwerpige internodiën."@nl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/ordo> <http://dbpedia.org/resource/Hypocreales> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://nl.dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/CausalAgent100007347> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PhysicalEntity100001930> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Microorganism101326291> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Gibberella moniliformis (Wineland, )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/abstract> "Gibberella fujikuroi is een parasiterende schimmelssoort. De schimmel komt in de bodem voor en kan planten en dieren aantasten.De schimmel veroorzaakt de bakanae-ziekte in rijst. Deze schimmel wordt gekenmerkt door lichtgroene bladeren, onvolgroeide wortelgroei, slanke bladeren en langwerpige internodiën."@nl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/binomial> "Gibberella fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/name> "Gibberella fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://nt.ars-grin.gov/fungaldatabases> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PlantPathogensAndDiseases> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://pl.dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#comment> "イネ馬鹿苗病菌（イネばかなえびょうきん、学名：Gibberella fujikuroi ）は、植物の病原菌の一つ。自らの代謝産物である植物ホルモンのジベレリンによってイネの苗が異常に成長させられるイネ馬鹿苗病を引き起こす。属名のGibberellaはラテン語で「小さなこぶ」を意味する。"@ja .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/binomialAuthority> "Wollenw.,"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Oospora verticillioides (Sacc., )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#comment> "Gibberella fujikuroi is a fungal plant pathogen. It causes bakanae disease in rice seedlings, by overloading them with the phytohormone gibberellin as its own metabolic byproduct."@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/genus> <http://dbpedia.org/resource/Gibberella> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q288175> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#label> "Fusarium verticillioides"@de .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Gibberella_fujikuroi?oldid=631986304> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://xmlns.com/foaf/0.1/name> "Gibberella fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/LivingThing100004258> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.02rqqg0> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Fusarium moniliforme (J. Sheld., )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Gibberella fujikuroi var. moniliformis ( Kuhlman, )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Sordariomycetes> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Agent109190918> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://de.dbpedia.org/resource/Fusarium_verticillioides> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Object100002684> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://yago-knowledge.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/wikiPageID> "11738598"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/family> <http://dbpedia.org/resource/Nectriaceae> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#label> "イネ馬鹿苗病菌"@ja .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://umbel.org/umbel/rc/Fungus> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.speciesfungorum.org/Names/Names.asp> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.metapathogen.com/gibberella/> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/familia> <http://dbpedia.org/resource/Nectriaceae> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Fusarium moniliforme (J. Sheld., (1904)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/abstract> "イネ馬鹿苗病菌（イネばかなえびょうきん、学名：Gibberella fujikuroi ）は、植物の病原菌の一つ。自らの代謝産物である植物ホルモンのジベレリンによってイネの苗が異常に成長させられるイネ馬鹿苗病を引き起こす。属名のGibberellaはラテン語で「小さなこぶ」を意味する。"@ja .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:IARC_Group_2B_carcinogens> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#label> "Gibberella fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#label> "Gibberella fujikuroi"@pl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#label> "Gibberella fujikuroi"@nl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/imageCaption> "Gibberella fujikuroi"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Gibberella> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Fungal_plant_pathogens_and_diseases> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/wikiPageRevisionID> "631986304"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q288175> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Rice_diseases> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#comment> "Gibberella fujikuroi (Sawada) Wollenw. – gatunek grzybów workowych należący do rodziny gruzełkowatych (Nectriaceae). Anamorfa tego gatunku jest nazywana Fusarium moniliforme."@pl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/order> <http://dbpedia.org/resource/Hypocreales> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Lisea fujikuroi (Sawada, )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/abstract> "Fusarium verticillioides ist eine Schimmelpilzart, die der Gattung Fusarium angehört. Die Pilze verursachen unter anderem Ährenkrankheiten auf Getreide und produzieren dabei gesundheitsschädliche Mykotoxine. Die Teleomorphe ist Gibberella moniliformis."@de .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/abstract> "Gibberella fujikuroi (Sawada) Wollenw. – gatunek grzybów workowych należący do rodziny gruzełkowatych (Nectriaceae). Anamorfa tego gatunku jest nazywana Fusarium moniliforme."@pl .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/2000/01/rdf-schema#comment> "Fusarium verticillioides ist eine Schimmelpilzart, die der Gattung Fusarium angehört. Die Pilze verursachen unter anderem Ährenkrankheiten auf Getreide und produzieren dabei gesundheitsschädliche Mykotoxine. Die Teleomorphe ist Gibberella moniliformis."@de .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Fusarium verticillioides (Sacc.) Nirenberg, (1976)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/synonyms> "Fusarium verticillioides ( Nirenberg, )"@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/subclassis> <http://dbpedia.org/resource/Hypocreomycetidae> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/abstract> "Gibberella fujikuroi is a fungal plant pathogen. It causes bakanae disease in rice seedlings, by overloading them with the phytohormone gibberellin as its own metabolic byproduct."@en .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/ontology/synonym> "Oospora verticillioides (Sacc., (1882)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Organism100004475> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Fusarium_moniliforme> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_subglutinans> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://en.wikipedia.org/wiki/Gibberella_fujikuroi> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Giberella_moniliforme> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Lisea_fujikuroi> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Oospora_verticillioides> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Fusarium_verticillioides> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi_var._moniliformis> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Gibberella_fujikuroi> .
+<http://dbpedia.org/resource/Gibberella_fujikuroi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/InfectiousAgent109312843> .
+<http://dbpedia.org/resource/Malupa_vignae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://en.wikipedia.org/wiki/Phakopsora_pachyrhizi> <http://xmlns.com/foaf/0.1/primaryTopic> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.dbpedia.org/resource/Q7180218> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Species> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Phakopsora_pachyrhizi_1.jpg?width=300> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/name> "Phakopsora pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Fungi_described_in_1914> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://xmlns.com/foaf/0.1/depiction> <http://commons.wikimedia.org/wiki/Special:FilePath/Phakopsora_pachyrhizi_1.jpg> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Soybean_diseases> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/rangeMapWidth> "250"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2002/07/owl#sameAs> <http://wikidata.org/entity/Q7180218> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Uromyces sojae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Malupa sojae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/binomial> "Phakopsora pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/classis> <http://dbpedia.org/resource/Pucciniomycetes> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/genus> <http://dbpedia.org/resource/Soybean_rust> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Organism100004475> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/abstract> "Phakopsora pachyrhizi is a plant pathogen. It causes Asian soybean rust."@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/rangeMapCaption> "Contour map showing numbers of NADP sites testing positive for P. pachyrhizi in center and East of USA in 2006."@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Uromyces sojae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/phylum> <http://dbpedia.org/resource/Basidiomycota> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Teliomycotina> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/family> <http://dbpedia.org/resource/Phakopsoraceae> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Fungal_plant_pathogens_and_diseases> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://nt.ars-grin.gov/fungaldatabases> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Malupa vignae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> <http://en.wikipedia.org/wiki/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PlantPathogensAndDiseases> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/wikiPageID> "11798034"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Agent109190918> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Fungus> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Pucciniomycetes> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/regnum> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Object100002684> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Uredo sojae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Uredo vignae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://umbel.org/umbel/rc/Fungus> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/familia> <http://dbpedia.org/resource/Phakopsoraceae> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Malupa sojae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Physopella pachyrhizi"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Microorganism101326291> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Incertae_sedis> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Whole100003553> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/rangeMap> "Phakopsora_pachyrhizi_in_US_2006.jpg"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Fungus> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Pathogen101386007> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Physopella pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Phakopsora vignae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Phakopsora sojae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2002/07/owl#sameAs> <http://rdf.freebase.com/ns/m.02rsvp6> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/species> "P. pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Uredo sojae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://xmlns.com/foaf/0.1/name> "Phakopsora pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q19088> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/ns/prov#wasDerivedFrom> <http://en.wikipedia.org/wiki/Phakopsora_pachyrhizi?oldid=610759542> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/synonyms> "Phakopsora vignae"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Eukaryote> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/subclassis> <http://dbpedia.org/resource/Incertae_sedis> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2000/01/rdf-schema#label> "Phakopsora pachyrhizi"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Uredo vignae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/LivingThing100004258> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Malupa vignae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2000/01/rdf-schema#comment> "Phakopsora pachyrhizi is a plant pathogen. It causes Asian soybean rust."@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/ordo> <http://dbpedia.org/resource/Rust_(fungus)> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/binomialAuthority> "Syd. & P. Syd.,"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/wikiPageExternalLink> <http://www.speciesfungorum.org/Names/Names.asp> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PhysicalEntity100001930> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/synonym> "Phakopsora sojae"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/2002/07/owl#sameAs> <http://yago-knowledge.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/CausalAgent100007347> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/order> <http://dbpedia.org/resource/Rust_(fungus)> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/hasPhotoCollection> <http://wifo5-03.informatik.uni-mannheim.de/flickrwrappr/photos/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/ontology/wikiPageRevisionID> "610759542"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/genus> "Phakopsora"@en .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://dbpedia.org/property/phylum> <http://dbpedia.org/resource/Basidiomycota> .
+<http://dbpedia.org/resource/Phakopsora_vignae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Uredo_vignae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Uromyces_sojae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Uredo_sojae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_sojae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Malupa_sojae> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Physopella_pachyrhizi> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Phakopsora_pachyrhizi> .
+<http://dbpedia.org/resource/Phakopsora_pachyrhizi> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/InfectiousAgent109312843> .
