@@ -10,9 +10,9 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
  *
  */
-public class CeloePlusSampling {
+public class CELOEPlusSampling {
 	
-	final static Logger logger = Logger.getLogger(CeloePlusSampling.class);
+	final static Logger logger = Logger.getLogger(CELOEPlusSampling.class);
 	
 	private static enum Type {
 		POS, NEG;
@@ -21,14 +21,14 @@ public class CeloePlusSampling {
 	private String className;
 	private HashMap<Type, Collection<OWLIndividual>> examples = new HashMap<>();
 	
-	private static CeloePlusSampling instance;
+	private static CELOEPlusSampling instance;
 	
-	protected CeloePlusSampling() {
+	protected CELOEPlusSampling() {
 		super();
 	}
 	
-	public static CeloePlusSampling getInstance() {
-		return (instance == null) ? instance = new CeloePlusSampling() : instance;
+	public static CELOEPlusSampling getInstance() {
+		return (instance == null) ? instance = new CELOEPlusSampling() : instance;
 	}
 	
 	public void sample(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg) {

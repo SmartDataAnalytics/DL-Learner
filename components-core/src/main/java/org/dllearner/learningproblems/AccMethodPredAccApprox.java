@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.learningproblems.clustering.CeloePlusSampling;
+import org.dllearner.learningproblems.clustering.CELOEPlusSampling;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -54,7 +54,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
 	{ 
 		// for testing this, we must use doSample=true
-		CeloePlusSampling.getInstance().sample(className, pos, neg);
+		CELOEPlusSampling.getInstance().sample(className, pos, neg);
 		
 	}
 	@Override
@@ -163,12 +163,12 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	}
 	public OWLIndividual getNextPosInstance()
 	{
-		OWLIndividual nextSample = CeloePlusSampling.getInstance().nextPositive();
+		OWLIndividual nextSample = CELOEPlusSampling.getInstance().nextPositive();
 		return nextSample;
 	}
 	public OWLIndividual getNextNegInstance()
 	{
-		OWLIndividual nextSample = CeloePlusSampling.getInstance().nextNegative();
+		OWLIndividual nextSample = CELOEPlusSampling.getInstance().nextNegative();
 		return nextSample;
 	}
 	@Override
