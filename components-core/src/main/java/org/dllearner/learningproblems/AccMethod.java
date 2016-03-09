@@ -3,7 +3,7 @@ package org.dllearner.learningproblems;
 import org.dllearner.core.Component;
 
 /**
- * Created by Simon Bin on 16-1-26.
+ * Interface for any accuracy method
  */
 public interface AccMethod extends Component {
 }
