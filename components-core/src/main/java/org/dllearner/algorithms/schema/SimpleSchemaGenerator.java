@@ -91,7 +91,7 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 				for (AxiomType<? extends OWLAxiom> axiomType : applicableAxiomTypes) {
 					// apply the appropriate learning algorithm
 					try {
-						List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
+						Set<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
 						generatedAxioms.addAll(axioms);
 					} catch (Exception e) {
 						LOGGER.error("Exception occured for axiom type "

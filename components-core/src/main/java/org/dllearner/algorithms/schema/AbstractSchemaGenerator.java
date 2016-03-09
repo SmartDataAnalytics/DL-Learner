@@ -39,6 +39,8 @@ import org.semanticweb.owlapi.profiles.OWLProfile;
 import org.semanticweb.owlapi.profiles.Profiles;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -143,6 +145,23 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		}
 		return entities;
 	}
+
+	/**
+	 * Return the entities contained in the current knowledge base for the given entity type.
+	 *
+	 * @param entityType the entity type
+	 */
+	protected <T extends OWLEntity> SortedSet<T> getEntities(EntityType<T> entityType) {
+		SortedSet<T> entitiesForType = new TreeSet<>();
+		for (OWLEntity entity : getEntities()) {
+			if (entity.isType(entityType)) {
+				entitiesForType.add((T) entity);
+			}
+		}
+		return entitiesForType;
+//		Stream<T> s = entities.stream().filter(e -> e.isType(entityType)).map(e -> (T) e);
+//		return s.collect(Collectors.toList());
+	}
 	
 	/**
 	 * @param accuracyThreshold the accuracyThreshold to set
@@ -151,7 +170,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		this.accuracyThreshold = accuracyThreshold;
 	}
 	
-	protected List<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
+	protected Set<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
 		// get the algorithm class
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		
@@ -177,7 +196,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 			learner.start();
 			
 			// return the result
-			return learner.getCurrentlyBestAxioms(accuracyThreshold);
+			return new TreeSet<>(learner.getCurrentlyBestAxioms(accuracyThreshold));
 		} catch (Exception e) {
 			throw new Exception("Generation of " + axiomType.getName() + " axioms failed.", e);
 		}
