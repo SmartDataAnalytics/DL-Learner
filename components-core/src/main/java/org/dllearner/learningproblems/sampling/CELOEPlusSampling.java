@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
@@ -15,7 +16,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
  */
 public class CELOEPlusSampling {
 	
-	final static Logger logger = Logger.getLogger(CELOEPlusSampling.class);
+	final static Logger logger = LoggerFactory.getLogger(CELOEPlusSampling.class);
 	
 	/**
 	 * Namespace of the individuals to be considered, discarding sameAs
@@ -29,7 +30,7 @@ public class CELOEPlusSampling {
 	}
 	
 	private String className;
-	private HashMap<Type, Collection<OWLIndividual>> examples = new HashMap<>();
+	private HashMap<Type, Collection<OWLNamedIndividual>> examples = new HashMap<>();
 	
 	private static CELOEPlusSampling instance;
 	
@@ -44,24 +45,29 @@ public class CELOEPlusSampling {
 	public void sample(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg) {
 		
 		this.className = className;
-		this.examples.put(Type.POS, pos);
-		this.examples.put(Type.NEG, neg);
 		
 		logger.info("CELOE+ sampling started on class "+className);
 		logger.warn("Namespace is hard-coded! Selection is limited to "+NAMESPACE);
 		
-		Collection<OWLIndividual> posF = nsFilter(pos);
+		Collection<OWLNamedIndividual> posF = nsFilter(pos);
 		logger.info("|P| = " + posF.size() + "\t\tP = " + posF);
-		Collection<OWLIndividual> negF = nsFilter(neg);
+		Collection<OWLNamedIndividual> negF = nsFilter(neg);
 		logger.info("|N| = " + negF.size() + "\t\tN = " + negF);
+		this.examples.put(Type.POS, posF);
+		this.examples.put(Type.NEG, negF);
 
 		// TODO
 		
 		// declare sparse vectors by instance
 		
-
 		// for each class (pos/neg)
+		for(Type t : examples.keySet()) {
+			logger.info("Processing type "+t.name());
 			// for each individual
+			for(OWLNamedIndividual ind : examples.get(t)) {
+				
+				logger.debug(""+ind.getDataPropertiesInSignature());
+				logger.debug(""+ind.getObjectPropertiesInSignature());
 				// get CBD
 				// compute sparse vector
 				// for each triple
@@ -69,7 +75,8 @@ public class CELOEPlusSampling {
 					// string -> add to property index (property->index)
 					// numeric/date -> add to sparse vectors
 					// uri -> add to sparse vectors (boolean value)
-		
+			}
+		}
 		// compute indexes (word2vec or tf-idf)
 		// for each property
 			// ...
@@ -84,14 +91,14 @@ public class CELOEPlusSampling {
 	 * @param instances
 	 * @return
 	 */
-	private Collection<OWLIndividual> nsFilter(Collection<OWLIndividual> instances) {
+	private Collection<OWLNamedIndividual> nsFilter(Collection<OWLIndividual> instances) {
 		
-		Set<OWLIndividual> ind = new TreeSet<>();
+		Set<OWLNamedIndividual> ind = new TreeSet<>();
 		for (OWLIndividual i : instances) {
 			if (i.isAnonymous())
 				continue;
 			if (i.asOWLNamedIndividual().getIRI().toString().startsWith(NAMESPACE))
-				ind.add(i);
+				ind.add(i.asOWLNamedIndividual());
 		}
 		return ind;
 	}
@@ -105,8 +112,9 @@ public class CELOEPlusSampling {
 	}
 
 	private OWLIndividual next(Type type) {
+		Collection<OWLNamedIndividual> ex = examples.get(type);
 		// TODO Auto-generated method stub
-		Collection<OWLIndividual> ex = examples.get(type);
+		// compute similarities and get farthest point
 		return null;
 	}
 

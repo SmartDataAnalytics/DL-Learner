@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.learningproblems.sampling.CELOEPlusSampling;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -30,7 +29,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  */
 public class CELOEPlusTest {
 
-	final static Logger logger = Logger.getLogger(CELOEPlusTest.class);
+	final static Logger logger = Logger.getRootLogger();
 
 	private static OWLOntologyManager m;
 
@@ -51,7 +50,7 @@ public class CELOEPlusTest {
 
 	@Test
 	public void test() {
-
+		
 		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
 		assertNotNull(cps);
 
