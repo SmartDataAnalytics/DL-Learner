@@ -45,12 +45,6 @@ public class CELOEPlusTest {
 	private static final String SUPERCLASS_URI = "http://dbpedia.org/ontology/Fungus";
 
 	/**
-	 * Namespace of the individuals to be considered, discarding sameAs
-	 * instances.
-	 */
-	private static final String NAMESPACE = "http://dbpedia.org/resource/";
-
-	/**
 	 * Class whose expression is to be learned.
 	 */
 	private static final String TARGET_CLASS = "http://dbpedia.org/class/yago/InfectiousAgent109312843";
@@ -62,11 +56,11 @@ public class CELOEPlusTest {
 		assertNotNull(cps);
 
 		Collection<OWLIndividual> pos = getIndividuals(SUPERCLASS_URI,
-				NAMESPACE, PATH_PREFIX + "dbo-fungus-pos.nt");
-		assertEquals(pos.size(), 3);
+				PATH_PREFIX + "dbo-fungus-pos.nt");
+		assertEquals(pos.size(), 19);
 		Collection<OWLIndividual> neg = getIndividuals(SUPERCLASS_URI,
-				NAMESPACE, PATH_PREFIX + "dbo-fungus-neg.nt");
-		assertEquals(neg.size(), 3);
+				PATH_PREFIX + "dbo-fungus-neg.nt");
+		assertEquals(neg.size(), 15);
 
 		cps.sample(TARGET_CLASS, pos, neg);
 
@@ -79,7 +73,7 @@ public class CELOEPlusTest {
 	 * @return
 	 */
 	private Set<OWLIndividual> getIndividuals(String superclass,
-			String namespace, String filename) {
+			String filename) {
 
 		File file = new File(filename);
 
@@ -103,10 +97,7 @@ public class CELOEPlusTest {
 		// filter out all owl:sameAs instances...
 		Set<OWLIndividual> ind = new TreeSet<>();
 		for (OWLNamedIndividual i : instances) {
-			// TODO if not done earlier, this should be moved inside
-			// CELOEPlusSampling.sample()
-			if (i.getIRI().toString().startsWith(namespace))
-				ind.add(i);
+			ind.add(i);
 		}
 		logger.info("|I| = " + ind.size() + "\t\tI = " + ind);
 
