@@ -15,7 +15,10 @@ import java.util.SortedSet;
 /**
  * Generate a schema restricted to RDFS language features.
  *
- * Ordering of axiom types:
+ * The idea is to define an order when each axiom type has to be investigated. For RDFS this is given by the analysis
+ * of the RDFS reasoning rules, especially those that contain the corresponding predicates listed below.
+ *
+ * Order of axiom types:
  *
  * 1. rdfs:subPropertyOf
  * 2. rdfs:subClassOf
@@ -28,6 +31,8 @@ import java.util.SortedSet;
 public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RDFSSchemaGenerator.class);
+
+	private Set<OWLAxiom> learnedAxiomsTotal;
 
 	public RDFSSchemaGenerator(QueryExecutionFactory qef) {
 		super(qef);
@@ -43,6 +48,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 
 	@Override
 	public Set<OWLAxiom> generateSchema() {
+		learnedAxiomsTotal = new HashSet<>();
 
 		// 1. learn property hierarchies
 		learnTransitiveClosure(AxiomType.SUB_DATA_PROPERTY, EntityType.DATA_PROPERTY);
@@ -59,7 +65,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 		learnIterative(AxiomType.DATA_PROPERTY_RANGE, EntityType.DATA_PROPERTY);
 		learnIterative(AxiomType.OBJECT_PROPERTY_RANGE, EntityType.OBJECT_PROPERTY);
 
-		return null;
+		return learnedAxiomsTotal;
 	}
 
 	private void learnIterative(AxiomType axiomType, EntityType entityType) {
@@ -71,6 +77,9 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 
 				// add learned axioms to KB
 				addToKnowledgebase(learnedAxioms);
+
+				// keep track of all learned axioms
+				learnedAxiomsTotal.addAll(learnedAxioms);
 			} catch (Exception e) {
 				LOGGER.error("Failed to learn " + axiomType.getName() + " axioms for entity " + entity, e);
 			}
@@ -104,5 +113,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 			}
 		}
 
+		// keep track of all learned axioms
+		this.learnedAxiomsTotal.addAll(learnedAxiomsTotal);
 	}
 }

@@ -56,7 +56,8 @@ public class EntityDependencyMatrix<T> {
 				if(!clsA.equals(clsB)) {
 					Set<OWLNamedIndividual> instancesA = reasoner.getInstances(clsA, false).getFlattened();
 					Set<OWLNamedIndividual> instancesB = reasoner.getInstances(clsB, false).getFlattened();
-					
+
+					// S_1 = { o_i | A(a_i) and there is an p_i(a_i, o_i) in O }
 					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesA) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
@@ -64,7 +65,8 @@ public class EntityDependencyMatrix<T> {
 							objectsOfInstancesFromA.add(axiom.getObject());
 						}
 					}
-					
+
+					// S_2 = { o_i | B(b_i) and there is an p_i(b_i, o_i) in O }
 					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesB) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
