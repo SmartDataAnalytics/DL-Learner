@@ -1,4 +1,4 @@
-package org.dllearner.learningproblems.clustering;
+package org.dllearner.learningproblems.sampling;
 
 import java.util.Collection;
 import java.util.HashMap;

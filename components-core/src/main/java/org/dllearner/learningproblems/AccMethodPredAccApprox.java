@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.learningproblems.clustering.CELOEPlusSampling;
+import org.dllearner.learningproblems.sampling.CELOEPlusSampling;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;

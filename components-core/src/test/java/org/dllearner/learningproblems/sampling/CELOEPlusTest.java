@@ -1,4 +1,4 @@
-package org.dllearner.learningproblems.clustering;
+package org.dllearner.learningproblems.sampling;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.learningproblems.sampling.CELOEPlusSampling;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
