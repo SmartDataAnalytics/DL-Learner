@@ -23,4 +23,9 @@ public class R2VProperty {
 		return model;
 	}
 
+	@Override
+	public String toString() {
+		return "R2VProperty [uri=" + uri + "]";
+	}
+
 }

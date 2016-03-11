@@ -31,4 +31,10 @@ public class R2VInstance {
 		return model;
 	}
 
+	@Override
+	public String toString() {
+		return "R2VInstance [uri=" + uri + ", features=" + features + "]";
+	}
+
+	
 }

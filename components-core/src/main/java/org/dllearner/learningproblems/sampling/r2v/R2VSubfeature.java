@@ -22,5 +22,10 @@ public class R2VSubfeature {
 	public R2VFeature getFeature() {
 		return feature;
 	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
 	
 }

@@ -43,8 +43,10 @@ public class R2VModel {
 		return strategy;
 	}
 	
-	private void index(String propertyURI, String objValue) {
+	public void index() {
+		// TODO
 		
+//		feature.add(new R2VSubfeature(feature, tfidf(triple.value)));
 	}
 	
 	public void add(OWLNamedIndividual ind) {
@@ -84,39 +86,60 @@ public class R2VModel {
 					// object property
 					triple.setValue(ax.getValue().toString());
 				}
-				System.out.println(triple);
+				logger.info(triple.toString());
 			} else {
 				// TODO for other AxiomTypes (not necessary for now)
 				logger.warn("Axiom not processed: "+axiom);
 			}
 			
 			// index property if not done already
+			R2VProperty property;
 			if(!properties.containsKey(triple.getPropURI())) {
-				R2VProperty property = new R2VProperty(this, triple.getPropURI());
+				property = new R2VProperty(this, triple.getPropURI());
 				properties.put(property.getUri(), property);
+			} else {
+				property = properties.get(triple.getPropURI());
+			}
+			
+			// index feature
+			R2VFeature feature;
+			if(!instance.getFeatures().containsKey(property)) {
+				feature = new R2VFeature(this, instance, property);
+				instance.getFeatures().put(property, feature);
+			} else {
+				feature = instance.getFeatures().get(property);
 			}
 			
 			if(triple.hasObjectProperty()) {
 				// uri -> add to sparse vectors (boolean value)
 				System.out.println("   ######## URI #########");
+				feature.getSubfeatures().put(triple.getValue(), new R2VSubfeature(feature, 1.0));
+				feature.setType(R2VFeatureType.URI);
 			} else {
 				OWLDatatype dt = triple.getDatatype();
 				System.out.println(dt);
 				if(dt.isBoolean() || dt.isDouble() || dt.isFloat() || dt.isInteger()) {
 					// numeric/date -> add to sparse vectors
 					System.out.println("   ######## NUMERIC #########");
+					feature.add(new R2VSubfeature(feature, Double.parseDouble(triple.getValue())));
+					feature.setType(R2VFeatureType.NUMERICAL);
 				} else {
 					// string -> add to property index (property->index)
 					System.out.println("   ######## STRING #########");
+					feature.setType(R2VFeatureType.STRING);
 				}
 			}
-		}
+			
+			
+			
+		} // end for each axiom
 		
-//		try {
-//			o = m.loadOntologyFromOntologyDocument(IRI.create(file.toURI()));
-//		} catch (OWLOntologyCreationException e) {
-//			return null;
-//		}
+	}
+
+	@Override
+	public String toString() {
+		return "R2VModel [instances=" + instances + ", strategy=" + strategy
+				+ "]";
 	}
 	
 	

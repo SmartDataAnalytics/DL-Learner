@@ -85,6 +85,8 @@ public class CELOEPlusSampling {
 			
 		}
 		
+		System.out.println(model);
+		
 		// compute indexes (word2vec or tf-idf)
 		// for each property
 			// ...
