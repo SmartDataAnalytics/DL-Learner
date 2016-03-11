@@ -119,11 +119,12 @@ public class CELOEPlusTest {
 			OWLOntology o) {
 
 
+		
 		OWLReasoner reasoner = PelletReasonerFactory.getInstance()
 				.createReasoner(o);
 		Set<OWLNamedIndividual> instances = reasoner.getInstances(
 				OWL.Class(IRI.create(superclass)), false).getFlattened();
-
+		
 		// filter out all owl:sameAs instances...
 		Set<OWLIndividual> ind = new TreeSet<>();
 		for (OWLNamedIndividual i : instances) {

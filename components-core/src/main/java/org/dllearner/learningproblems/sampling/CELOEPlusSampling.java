@@ -12,6 +12,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,9 @@ public class CELOEPlusSampling {
 		
 		this.className = className;
 
-		ont = ((OWLAPIReasoner) rsnr).getOntology();
+		OWLAPIReasoner reasAPI = (OWLAPIReasoner) rsnr;
+		ont = reasAPI.getOntology();
+		
 		
 		logger.info("CELOE+ sampling started on class "+className);
 		logger.warn("Namespace is hard-coded! Selection is limited to "+NAMESPACE);
