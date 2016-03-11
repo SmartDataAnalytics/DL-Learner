@@ -54,7 +54,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
 	{ 
 		// for testing this, we must use doSample=true
-		CELOEPlusSampling.getInstance().sample(className, pos, neg);
+		CELOEPlusSampling.getInstance().sample(reasoner, className, pos, neg);
 		
 	}
 	@Override

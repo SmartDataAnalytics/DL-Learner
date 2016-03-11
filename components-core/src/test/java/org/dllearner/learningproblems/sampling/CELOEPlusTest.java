@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -54,26 +58,41 @@ public class CELOEPlusTest {
 		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
 		assertNotNull(cps);
 
+		OWLOntology ontPos = getOntology(PATH_PREFIX + "dbo-fungus-pos.nt");
 		Collection<OWLIndividual> pos = getIndividuals(SUPERCLASS_URI,
-				PATH_PREFIX + "dbo-fungus-pos.nt");
+				ontPos);
 		assertEquals(pos.size(), 19);
+		OWLOntology ontNeg = getOntology(PATH_PREFIX + "dbo-fungus-neg.nt");
 		Collection<OWLIndividual> neg = getIndividuals(SUPERCLASS_URI,
-				PATH_PREFIX + "dbo-fungus-neg.nt");
+				ontNeg);
 		assertEquals(neg.size(), 15);
-
-		cps.sample(TARGET_CLASS, pos, neg);
+		
+		KnowledgeSource ksPos = new OWLAPIOntology(ontPos);
+		KnowledgeSource ksNeg = new OWLAPIOntology(ontNeg);
+		try {
+			ksPos.init();
+			ksNeg.init();
+		} catch (NullPointerException | ComponentInitException e) {
+			fail("Could not initialize ontology.");
+			return;
+		}
+		OWLAPIReasoner reasoner = new OWLAPIReasoner(ksPos, ksNeg);
+		try {
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			fail("Could not initialize reasoner.");
+			return;
+		}
+		
+		cps.sample(reasoner, TARGET_CLASS, pos, neg);
 
 	}
-
+	
 	/**
-	 * @param superclass
-	 * @param namespace
 	 * @param filename
 	 * @return
 	 */
-	private Set<OWLIndividual> getIndividuals(String superclass,
-			String filename) {
-
+	private OWLOntology getOntology(String filename) {
 		File file = new File(filename);
 
 		if (m == null)
@@ -87,6 +106,18 @@ public class CELOEPlusTest {
 			return null;
 		}
 		assertNotNull(o);
+
+		return o;
+	}
+
+	/**
+	 * @param superclass
+	 * @param o
+	 * @return
+	 */
+	private Set<OWLIndividual> getIndividuals(String superclass,
+			OWLOntology o) {
+
 
 		OWLReasoner reasoner = PelletReasonerFactory.getInstance()
 				.createReasoner(o);
