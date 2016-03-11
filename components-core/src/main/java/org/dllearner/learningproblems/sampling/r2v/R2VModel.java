@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.learningproblems.sampling.strategy.FEXStrategy;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
@@ -47,6 +50,10 @@ public class R2VModel {
 	public void add(OWLNamedIndividual ind) {
 		
 		logger.info("Processing individual "+ind);
+		
+		// index individual
+		R2VInstance instance = new R2VInstance(this, ind.toString());
+		instances.put(instance.getUri(), instance);
 
 		// get CBD
 		Set<OWLAxiom> cbd = new HashSet<>();
@@ -60,11 +67,49 @@ public class R2VModel {
 		
 		// for each triple
 		for(OWLAxiom axiom : cbd) {
-			logger.info(axiom.toString());
+//			logger.info(axiom.toString());
 			// check object type
-			// string -> add to property index (property->index)
-			// numeric/date -> add to sparse vectors
-			// uri -> add to sparse vectors (boolean value)
+			Triple triple = new Triple();
+			if(axiom.isOfType(AxiomType.ANNOTATION_ASSERTION)) {
+				OWLAnnotationAssertionAxiom ax = (OWLAnnotationAssertionAxiom) axiom;
+				triple.setSubjURI(ax.getSubject().toString());
+				triple.setPropURI(ax.getProperty().getIRI().toString());
+				try {
+					OWLLiteral lit = ax.getValue().asLiteral().get();
+					// datatype property
+					OWLDatatype dt = lit.getDatatype();
+					triple.setDatatype(dt);
+					triple.setValue(lit.getLiteral());
+				} catch (Exception e) {
+					// object property
+					triple.setValue(ax.getValue().toString());
+				}
+				System.out.println(triple);
+			} else {
+				// TODO for other AxiomTypes (not necessary for now)
+				logger.warn("Axiom not processed: "+axiom);
+			}
+			
+			// index property if not done already
+			if(!properties.containsKey(triple.getPropURI())) {
+				R2VProperty property = new R2VProperty(this, triple.getPropURI());
+				properties.put(property.getUri(), property);
+			}
+			
+			if(triple.hasObjectProperty()) {
+				// uri -> add to sparse vectors (boolean value)
+				System.out.println("   ######## URI #########");
+			} else {
+				OWLDatatype dt = triple.getDatatype();
+				System.out.println(dt);
+				if(dt.isBoolean() || dt.isDouble() || dt.isFloat() || dt.isInteger()) {
+					// numeric/date -> add to sparse vectors
+					System.out.println("   ######## NUMERIC #########");
+				} else {
+					// string -> add to property index (property->index)
+					System.out.println("   ######## STRING #########");
+				}
+			}
 		}
 		
 //		try {

@@ -12,7 +12,6 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,12 +75,16 @@ public class CELOEPlusSampling {
 		
 		// for each class (pos/neg)
 		for(Type t : examples.keySet()) {
+			
 			logger.info("Processing type "+t.name());
+			
 			// for each individual
 			for(OWLNamedIndividual ind : examples.get(t)) {
 				model.add(ind);
 			}
+			
 		}
+		
 		// compute indexes (word2vec or tf-idf)
 		// for each property
 			// ...
