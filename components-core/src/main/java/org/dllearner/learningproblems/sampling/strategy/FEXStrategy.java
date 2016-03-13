@@ -7,5 +7,7 @@ package org.dllearner.learningproblems.sampling.strategy;
  *
  */
 public interface FEXStrategy {
+	
+	
 
 }

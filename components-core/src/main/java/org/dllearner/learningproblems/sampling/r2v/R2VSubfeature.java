@@ -7,11 +7,13 @@ package org.dllearner.learningproblems.sampling.r2v;
 public class R2VSubfeature {
 	
 	private Double value;
+	private String name;
 	private R2VFeature feature;
 	
-	public R2VSubfeature(R2VFeature feature, Double value) {
+	public R2VSubfeature(R2VFeature feature, String name, Double value) {
 		super();
 		this.feature = feature;
+		this.name = name;
 		this.value = value;
 	}
 	
@@ -26,6 +28,10 @@ public class R2VSubfeature {
 	@Override
 	public String toString() {
 		return String.valueOf(value);
+	}
+
+	public String getName() {
+		return name;
 	}
 	
 }

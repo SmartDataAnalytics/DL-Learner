@@ -2,9 +2,11 @@ package org.dllearner.learningproblems.sampling.r2v;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.learningproblems.sampling.strategy.FEXStrategy;
+import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -25,7 +27,7 @@ public class R2VModel {
 	
 	private final static Logger logger = LoggerFactory.getLogger(R2VModel.class);
 	
-	private OWLOntology o;
+	private OWLOntology ontology;
 	
 	// TODO as many indexes (tf-idf) as properties
 	private HashMap<String, R2VProperty> properties = new HashMap<>();
@@ -35,7 +37,7 @@ public class R2VModel {
 
 	public R2VModel(OWLOntology ontology, FEXStrategy strategy) {
 		super();
-		this.o = ontology;
+		this.ontology = ontology;
 		this.strategy = strategy;
 	}
 
@@ -43,12 +45,43 @@ public class R2VModel {
 		return strategy;
 	}
 	
-	public void index() {
+	public void normalize() {
 		// TODO
-		
-//		feature.add(new R2VSubfeature(feature, tfidf(triple.value)));
 	}
 	
+	/**
+	 * 	Compute features for string values.
+	 */
+	public void stringFeatures() {
+		
+		if(strategy instanceof TfidfFEXStrategy) {
+			// for each property
+			for(R2VProperty property : properties.values())
+				property.getTextIndex().compute();
+			
+			// compute indexes (word2vec or tf-idf)
+			for(R2VInstance instance : instances.values()) {
+				for(R2VProperty property : instance.getFeatures().keySet()) {
+					TfidfIndex index = property.getTextIndex();
+					R2VFeature feature = instance.getFeatures().get(property);
+					if(feature.getType().equals(R2VFeatureType.STRING)) {
+						Map<String, Double> map = index.tfidf(feature.getStringValue());
+						for(String term : map.keySet()) {
+							R2VSubfeature sub = new R2VSubfeature(feature, term, map.get(term));
+							feature.getSubfeatures().put(term, sub);
+						}
+					}
+				}
+			}
+		} else {
+			// TODO
+		}
+		
+	}
+	
+	/**
+	 * @param ind
+	 */
 	public void add(OWLNamedIndividual ind) {
 		
 		logger.info("Processing individual "+ind);
@@ -59,9 +92,9 @@ public class R2VModel {
 
 		// get CBD
 		Set<OWLAxiom> cbd = new HashSet<>();
-		cbd.addAll(o.getAnnotationAssertionAxioms(ind.getIRI()));
-		cbd.addAll(o.getDataPropertyAssertionAxioms(ind));
-		cbd.addAll(o.getObjectPropertyAssertionAxioms(ind));
+		cbd.addAll(ontology.getAnnotationAssertionAxioms(ind.getIRI()));
+		cbd.addAll(ontology.getDataPropertyAssertionAxioms(ind));
+		cbd.addAll(ontology.getObjectPropertyAssertionAxioms(ind));
 		
 		logger.info("CBD size = "+cbd.size());
 				
@@ -113,7 +146,7 @@ public class R2VModel {
 			if(triple.hasObjectProperty()) {
 				// uri -> add to sparse vectors (boolean value)
 				System.out.println("   ######## URI #########");
-				feature.getSubfeatures().put(triple.getValue(), new R2VSubfeature(feature, 1.0));
+				feature.getSubfeatures().put(triple.getValue(), new R2VSubfeature(feature, triple.getValue(), 1.0));
 				feature.setType(R2VFeatureType.URI);
 			} else {
 				OWLDatatype dt = triple.getDatatype();
@@ -121,19 +154,19 @@ public class R2VModel {
 				if(dt.isBoolean() || dt.isDouble() || dt.isFloat() || dt.isInteger()) {
 					// numeric/date -> add to sparse vectors
 					System.out.println("   ######## NUMERIC #########");
-					feature.add(new R2VSubfeature(feature, Double.parseDouble(triple.getValue())));
+					feature.add(Double.parseDouble(triple.getValue()));
 					feature.setType(R2VFeatureType.NUMERICAL);
 				} else {
 					// string -> add to property index (property->index)
 					System.out.println("   ######## STRING #########");
 					feature.setType(R2VFeatureType.STRING);
+					feature.setStringValue(triple.getValue());
+					property.getTextIndex().addNumeric(triple.getValue());
 				}
 			}
 			
-			
-			
 		} // end for each axiom
-		
+				
 	}
 
 	@Override

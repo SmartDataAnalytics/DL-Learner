@@ -85,13 +85,13 @@ public class CELOEPlusSampling {
 			
 		}
 		
+		// compute string features according to FEX strategy
+		model.stringFeatures();
+
 		System.out.println(model);
-		
-		// compute indexes (word2vec or tf-idf)
-		// for each property
-			// ...
-		
+
 		// normalize values
+		model.normalize();
 		
 	}
 	

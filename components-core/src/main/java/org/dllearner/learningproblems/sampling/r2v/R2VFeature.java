@@ -16,6 +16,7 @@ public class R2VFeature {
 	private R2VProperty property;
 	private HashMap<String, R2VSubfeature> subfeatures;
 	private int count = 0;
+	private String stringValue;
 //	private ArrayList<R2VSubfeature> subfeatures;
 	
 	public R2VFeature(R2VModel model, R2VInstance instance, R2VProperty property) {
@@ -35,8 +36,9 @@ public class R2VFeature {
 		return property;
 	}
 	
-	public void add(R2VSubfeature sub) {
-		subfeatures.put(String.valueOf(count++), sub);
+	public void add(Double value) {
+		String name = String.valueOf(count++);
+		subfeatures.put(name, new R2VSubfeature(this, name, value));
 	}
 
 	public HashMap<String, R2VSubfeature> getSubfeatures() {
@@ -62,6 +64,14 @@ public class R2VFeature {
 	@Override
 	public String toString() {
 		return "R2VFeature [type=" + type + ", subfeatures=" + subfeatures + "]";
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
 	}
 	
 }
