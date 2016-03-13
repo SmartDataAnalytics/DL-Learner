@@ -72,6 +72,7 @@ public class R2VModel {
 						}
 					}
 				}
+				System.out.println(instance.getUri() + "\t" + instance.getFlatSparseVector());
 			}
 		} else {
 			// TODO

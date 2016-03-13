@@ -30,11 +30,23 @@ public class R2VInstance {
 	public R2VModel getModel() {
 		return model;
 	}
+	
+	/**
+	 * Flat sparse vector considers all subfeatures at the same level.
+	 * 
+	 * @return
+	 */
+	public HashMap<String, Double> getFlatSparseVector() {
+		HashMap<String, Double> vector = new HashMap<>();
+		for(R2VFeature feature : features.values())
+			for(R2VSubfeature subfeature : feature.getSubfeatures().values())
+				vector.put(feature.getProperty().getUri() + "^^" + subfeature.getName(), subfeature.getValue());
+		return vector;
+	}
 
 	@Override
 	public String toString() {
 		return "R2VInstance [uri=" + uri + ", features=" + features + "]";
 	}
-
 	
 }

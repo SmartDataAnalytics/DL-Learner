@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.Reasoner;
+import org.dllearner.learningproblems.sampling.r2v.R2VInstance;
 import org.dllearner.learningproblems.sampling.r2v.R2VModel;
 import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -28,16 +29,19 @@ public class CELOEPlusSampling {
 	 * instances.
 	 */
 	private static final String NAMESPACE = "http://dbpedia.org/resource/";
+
+	private static CELOEPlusSampling instance;
 	
 	private static enum Type {
 		POS, NEG;
 	}
 	
+	private HashMap<Type, Collection<OWLNamedIndividual>> examples = new HashMap<>();
+	private HashMap<Type, OWLNamedIndividual> currents = new HashMap<>();
+	
 	private String className;
 	private OWLOntology ont;
-	private HashMap<Type, Collection<OWLNamedIndividual>> examples = new HashMap<>();
-	
-	private static CELOEPlusSampling instance;
+	private R2VModel model;
 	
 	protected CELOEPlusSampling() {
 		super();
@@ -71,7 +75,7 @@ public class CELOEPlusSampling {
 
 		// TODO
 		
-		R2VModel model = new R2VModel(ont, new TfidfFEXStrategy());
+		model = new R2VModel(ont, new TfidfFEXStrategy());
 		
 		// for each class (pos/neg)
 		for(Type t : examples.keySet()) {
@@ -122,9 +126,14 @@ public class CELOEPlusSampling {
 	}
 
 	private OWLIndividual next(Type type) {
-//		Collection<OWLNamedIndividual> ex = examples.get(type);
-		// TODO Auto-generated method stub
+		Collection<OWLNamedIndividual> points = examples.get(type);
+		OWLNamedIndividual current = currents.get(type);
+		
 		// compute similarities and get farthest point
+		
+		
+		// TODO
+		
 		return null;
 	}
 
