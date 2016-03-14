@@ -50,6 +50,10 @@ public class OwlApiJenaUtils {
 	
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
+	private static final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+
+	private static int ONT_COUNTER = 0;
+
 	/**
 	 * Converts a JENA API model into an OWL API ontology.
 	 * @param model the JENA API model
@@ -170,7 +174,7 @@ public class OwlApiJenaUtils {
 	 */
 	public static Set<Statement> asStatements(Set<OWLAxiom> axioms) {
 		try {
-			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(axioms);
+			OWLOntology ontology = man.createOntology(axioms, IRI.create("http://dllearner.org/converter" + ONT_COUNTER++));
 			Model model = getModel(ontology);
 			return model.listStatements().toSet();
 		} catch (OWLOntologyCreationException e) {
