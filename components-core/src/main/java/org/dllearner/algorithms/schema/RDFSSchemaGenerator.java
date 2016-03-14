@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -48,6 +47,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 
 	@Override
 	public Set<OWLAxiom> generateSchema() {
+		LOGGER.info("generating RDFS schema...");
 		learnedAxiomsTotal = new HashSet<>();
 
 		// 1. learn property hierarchies
@@ -87,15 +87,17 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 	}
 
 	private void learnTransitiveClosure(AxiomType axiomType, EntityType entityType) {
+		LOGGER.info("learning {} hierarchy ...", entityType.getPrintName().toLowerCase());
 		Set<OWLAxiom> learnedAxiomsTotal = new HashSet<>();
 
 		SortedSet<OWLEntity> entities = getEntities(entityType);
 
-		boolean newAxiomsLearned = true;
+		boolean newAxiomsLearned = !entities.isEmpty();
 
 		// fixpoint iteration
 		while(newAxiomsLearned) {
 			for (OWLEntity entity : entities) {
+				System.out.println(entity);
 				try {
 					// apply learning algorithm
 					Set<OWLAxiom> learnedAxioms = applyLearningAlgorithm(entity, axiomType);
