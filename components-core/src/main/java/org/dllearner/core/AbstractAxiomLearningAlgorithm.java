@@ -264,7 +264,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		} else {
 			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
 			if(!currentlyBestAxioms.isEmpty()){
-				logger.info("Best axiom candidate is " + currentlyBestAxioms.first());
+				logger.info("Best axiom candidate is " + currentlyBestAxioms.last());
 			}
 		}
 	}
