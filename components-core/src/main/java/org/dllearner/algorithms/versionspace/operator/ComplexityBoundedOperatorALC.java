@@ -7,8 +7,6 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.owlapi.model.*;
 
 import javax.annotation.Nonnull;
@@ -21,8 +19,6 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 
 	private TIntObjectHashMap<Set<OWLClassExpression>> topRefinements = new TIntObjectHashMap<>();
 
-	OWLClassExpressionMinimizer minimizer;
-
 	public ComplexityBoundedOperatorALC(AbstractReasonerComponent reasoner, ComplexityModel complexityModel) {
 		super(reasoner, complexityModel);
 	}
@@ -31,8 +27,6 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	public void init() throws ComponentInitException {
 		// compute refinements of top
 		computeTopRefinements();
-
-		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
 	}
 
 	@Override
@@ -49,15 +43,6 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 				refinements.add(mc);
 			}
 		}
-
-		// minimize
-		Set<OWLClassExpression> tmp = new HashSet<>(refinements.size());
-		for (OWLClassExpression refinement : refinements) {
-			OWLClassExpression cleanedRefinement = ConceptTransformation.applyEquivalenceRules(ConceptTransformation.cleanConcept(refinement));
-			cleanedRefinement = minimizer.minimize(cleanedRefinement);
-			tmp.add(cleanedRefinement);
-		}
-		refinements = tmp;
 
 		// filter by complexity here
 		Iterator<OWLClassExpression> iterator = refinements.iterator();
