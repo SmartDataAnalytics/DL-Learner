@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.versionspace;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.dllearner.algorithms.versionspace.complexity.ClassExpressionDepthComplexityModel;
 import org.dllearner.algorithms.versionspace.complexity.ClassExpressionLengthComplexityModel;
 import org.dllearner.algorithms.versionspace.complexity.ComplexityModel;
@@ -9,6 +11,7 @@ import org.dllearner.algorithms.versionspace.operator.ComplexityBoundedOperatorA
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.utilities.owl.ConceptTransformation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
@@ -19,8 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -47,7 +52,7 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 		DefaultVersionSpaceNode rootNode = new DefaultVersionSpaceNode(topConcept);
 
 		// create the version space
-		final VersionSpace versionSpace = new VersionSpace(rootNode);
+		final VersionSpace<DefaultVersionSpaceNode> versionSpace = new VersionSpace(rootNode);
 
 		// keep track of already visited(refined) nodes
 		final Set<DefaultVersionSpaceNode> visited = new HashSet<>();
@@ -80,9 +85,21 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 			visited.add(parent);
 		}
 
-//		versionSpace.vertexSet().forEach(v -> System.out.println(v));
+
 
 		// perform pruning, e.g. combine semantically equivalent concepts
+		// 1. apply syntactic rules
+		Multimap<OWLClassExpression, DefaultVersionSpaceNode> map = HashMultimap.create();
+		for (DefaultVersionSpaceNode node : versionSpace.vertexSet()) {
+			OWLClassExpression hypothesis = node.getHypothesis();
+			OWLClassExpression cleanedHypothesis = ConceptTransformation.applyEquivalenceRules(hypothesis);
+			System.out.println(hypothesis + " --> " + cleanedHypothesis);
+			map.put(cleanedHypothesis, node);
+		}
+
+		// restructure the graph, i.e. we have only one node
+
+		// 2. use reasoner
 
 
 //		final BlockingQueue<DefaultVersionSpaceNode> todoQueue = new ArrayBlockingQueue<DefaultVersionSpaceNode>(1024);

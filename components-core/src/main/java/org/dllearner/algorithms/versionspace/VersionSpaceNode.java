@@ -41,20 +41,20 @@ public class VersionSpaceNode<T> {
 		return score;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof VersionSpaceNode)) return false;
-
-		VersionSpaceNode<?> that = (VersionSpaceNode<?>) o;
-
-		return hypothesis.equals(that.hypothesis);
-	}
-
-	@Override
-	public int hashCode() {
-		return hypothesis.hashCode();
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (!(o instanceof VersionSpaceNode)) return false;
+//
+//		VersionSpaceNode<?> that = (VersionSpaceNode<?>) o;
+//
+//		return hypothesis.equals(that.hypothesis);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return hypothesis.hashCode();
+//	}
 
 	@Override
 	public String toString() {
