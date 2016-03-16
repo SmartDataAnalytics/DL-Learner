@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -67,10 +66,10 @@ public class ComponentTest {
 		
 		// create a learning problem and set positive and negative examples
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
-		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> positiveExamples = new TreeSet<>();
 		positiveExamples.add(df.getOWLNamedIndividual("heinz", pm));
 		positiveExamples.add(df.getOWLNamedIndividual("alex", pm));
-		Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> negativeExamples = new TreeSet<>();
 		negativeExamples.add(df.getOWLNamedIndividual("jan", pm));
 		negativeExamples.add(df.getOWLNamedIndividual("anna", pm));
 		negativeExamples.add(df.getOWLNamedIndividual("hanna", pm));

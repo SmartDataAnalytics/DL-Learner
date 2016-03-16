@@ -2,16 +2,17 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
 
 @ComponentAnn(name = "AMeasure", shortName = "ameasure", version = 0.1)
 public class AccMethodAMeasure implements Component, AccMethodTwoValued, AccMethodWithBeta {
 
+	@ConfigOption(description = "beta factor (0 = do not use)", defaultValue = "0")
 	protected double beta = 0;
 
 	public AccMethodAMeasure() {}
 	
-	public AccMethodAMeasure(boolean init) throws ComponentInitException {
+	public AccMethodAMeasure(boolean init) {
 		if(init)init();
 	}
 

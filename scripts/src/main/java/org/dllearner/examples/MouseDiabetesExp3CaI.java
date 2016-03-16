@@ -1,5 +1,26 @@
 package org.dllearner.examples;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
+import org.dllearner.refinementoperators.RhoDRDown;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.profiles.OWL2ELProfile;
+import org.semanticweb.owlapi.profiles.OWLProfileReport;
+import org.semanticweb.owlapi.profiles.OWLProfileViolation;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
+import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,37 +28,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.ReasonerImplementation;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.profiles.OWL2ELProfile;
-import org.semanticweb.owlapi.profiles.OWLProfileReport;
-import org.semanticweb.owlapi.profiles.OWLProfileViolation;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
-import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
-
 
 public class MouseDiabetesExp3CaI {
 
@@ -143,17 +133,15 @@ public class MouseDiabetesExp3CaI {
     }
 
     public static Set<OWLClass> loadPosExamples() throws IOException {
-        Set<OWLClass> classes = readExamples(posExamplesFilePath);
-        return classes;
+        return readExamples(posExamplesFilePath);
     }
 
     public static Set<OWLClass> loadNegExamples() throws IOException {
-        Set<OWLClass> classes = readExamples(negExamplesFilePath);
-        return classes;
+        return readExamples(negExamplesFilePath);
     }
 
     public static Set<OWLClass> readExamples(String filePath) throws IOException {
-        Set<OWLClass> classes = new TreeSet<OWLClass>();
+        Set<OWLClass> classes = new TreeSet<>();
         try(BufferedReader buffRead = new BufferedReader(new FileReader(new File(filePath)))){
             String line;
             while ((line = buffRead.readLine()) != null) {
@@ -172,7 +160,7 @@ public class MouseDiabetesExp3CaI {
     }
 
     public static OWLOntology readDumpFiles() throws
-            OWLOntologyCreationException, IOException, Exception {
+            Exception {
 
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
         OWLOntology ont = man.createOntology();
@@ -213,7 +201,7 @@ public class MouseDiabetesExp3CaI {
     }
 
     public static OWLOntology readOWLELOntology(String filePath) throws
-            OWLOntologyCreationException, OWLOntologyStorageException {
+            OWLOntologyCreationException {
 
         OWLOntology ont = readOWLOntology(filePath);
         OWLOntologyManager elMan = OWLManager.createOWLOntologyManager();
@@ -222,7 +210,7 @@ public class MouseDiabetesExp3CaI {
 
         OWL2ELProfile el = new OWL2ELProfile();
         OWLProfileReport report = el.checkOntology(ont);
-        HashSet<OWLAxiom> violatingAxioms = new HashSet<OWLAxiom>();
+        HashSet<OWLAxiom> violatingAxioms = new HashSet<>();
 
         for (OWLProfileViolation violation : report.getViolations()) {
             violatingAxioms.add(violation.getAxiom());
@@ -249,7 +237,7 @@ public class MouseDiabetesExp3CaI {
     private static OWLOntology buildLBM(Set<OWLClass> posSamples,
             Set<OWLClass> negSamples, OWLOntology ont) throws OWLOntologyCreationException {
 
-        Set<OWLEntity> allClasses = new HashSet<OWLEntity>();
+        Set<OWLEntity> allClasses = new HashSet<>();
         allClasses.addAll(posSamples);
         allClasses.addAll(negSamples);
 

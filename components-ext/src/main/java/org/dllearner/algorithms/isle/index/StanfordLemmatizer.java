@@ -30,7 +30,7 @@ class StanfordLemmatizer {
 
     public String lemmatize(String documentText)
     {
-        List<String> lemmas = new LinkedList<String>();
+        List<String> lemmas = new LinkedList<>();
 
         // create an empty Annotation just with the given text
         edu.stanford.nlp.pipeline.Annotation document = new edu.stanford.nlp.pipeline.Annotation(documentText);

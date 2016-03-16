@@ -25,7 +25,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-
 /**
  * @author Lorenz Buehmann
  *
@@ -48,7 +47,7 @@ public class RDFSLabelEntityTextRetriever extends AnnotationEntityTextRetriever{
 		
 		RDFSLabelEntityTextRetriever labelRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		Map<OWLEntity, Set<List<Token>>> relevantText = labelRetriever.getRelevantText(ontology);
-		SortedMap<String, String> uri2Labels = new TreeMap<String, String>();
+		SortedMap<String, String> uri2Labels = new TreeMap<>();
 		
 		for (Entry<OWLEntity, Set<List<Token>>> entry : relevantText.entrySet()) {
 			OWLEntity key = entry.getKey();

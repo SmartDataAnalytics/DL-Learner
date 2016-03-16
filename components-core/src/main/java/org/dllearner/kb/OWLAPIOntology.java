@@ -44,10 +44,6 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
         this.ontology = ontology;
 //		ontologyBytes = converter.convert(ontology);
     }
-	
-	public static String getName() {
-		return "OWL API Ontology";
-	}
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {

@@ -19,6 +19,7 @@
 package org.dllearner.algorithms.properties;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLProperty;
@@ -47,7 +48,9 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			"CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}");
 	
 	protected ParameterizedSparqlString COUNT_QUERY = TRIPLES_COUNT_QUERY;
-	
+
+	@ConfigOption(defaultValue = "true", description = "make SPARQL OWL queries a bit more strict (currently: also test " +
+			"if a class is an owl:Class in some cases)")
 	protected boolean strictOWLMode = true;
 	
 	
@@ -73,6 +76,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		this.strictOWLMode = strictOWLMode;
 	}
 	
+	@Override
 	protected ParameterizedSparqlString getSampleQuery(){
 		return GET_SAMPLE_QUERY;
 	}

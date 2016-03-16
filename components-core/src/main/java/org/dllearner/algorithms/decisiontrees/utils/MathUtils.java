@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.utils;
 
-
 import org.apache.commons.math3.stat.StatUtils;
 
 /**

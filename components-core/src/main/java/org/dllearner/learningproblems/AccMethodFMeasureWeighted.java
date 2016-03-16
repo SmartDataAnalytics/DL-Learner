@@ -30,6 +30,7 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodW
 	private double posWeight = 1;
 	@ConfigOption(defaultValue = "1", description = "weight on the negative examples")
 	private double negWeight = 1;
+	@ConfigOption(description = "beta factor (0 = do not use)", defaultValue = "0")
 	private double beta = 0;
 
 	@Override
@@ -65,7 +66,6 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodW
 			return Heuristics.getFScore(recall, precision, beta);
 		}
 	}
-
 
 	public boolean isBalanced() {
 		return balanced;

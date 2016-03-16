@@ -17,21 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
 public class Infgen {
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
-					} catch (OWLOntologyStorageException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -60,17 +57,17 @@ public class Infgen {
 		inf.write(new FileOutputStream(out));
 	}
 	
-	private static void reasonWithHermit(String in, String out, boolean copy) throws FileNotFoundException, IOException, OWLOntologyStorageException, OWLOntologyCreationException {
+	private static void reasonWithHermit(String in, String out, boolean copy) throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {
         OWLOntologyManager manager=OWLManager.createOWLOntologyManager();
         File inputOntologyFile = new File(in);
         OWLOntology ontology=manager.loadOntologyFromOntologyDocument(inputOntologyFile);
-        org.semanticweb.HermiT.Reasoner.ReasonerFactory factory
-        = new org.semanticweb.HermiT.Reasoner.ReasonerFactory();
+        org.semanticweb.HermiT.ReasonerFactory factory
+        = new org.semanticweb.HermiT.ReasonerFactory();
         // The factory can now be used to obtain an instance of HermiT as an OWLReasoner.
         org.semanticweb.HermiT.Configuration c
         = new org.semanticweb.HermiT.Configuration();
         OWLReasoner reasoner=factory.createReasoner(ontology, c);
-        List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+        List<InferredAxiomGenerator<? extends OWLAxiom>> generators= new ArrayList<>();
         generators.add(new InferredSubClassAxiomGenerator());
         generators.add(new InferredClassAssertionAxiomGenerator());
         generators.add(new InferredDisjointClassesAxiomGenerator() {
@@ -124,7 +121,7 @@ public class Infgen {
 		model.write(new FileOutputStream(out));
 	}
 
-	private static void loadThroughJena2(String in, String out) throws OWLOntologyCreationException, FileNotFoundException {
+	private static void loadThroughJena2(String in, String out) throws FileNotFoundException {
 		
 		Model model = RDFDataMgr.loadModel("file://"+in);
 		System.out.println("ltj; size:"+model.size());

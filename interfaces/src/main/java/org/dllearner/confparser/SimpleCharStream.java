@@ -36,7 +36,6 @@ public class SimpleCharStream
   public void setTabSize(int i) { tabSize = i; }
   public int getTabSize() { return tabSize; }
 
-
   protected void ExpandBuff(boolean wrapAround)
   {
     char[] newbuffer = new char[bufsize + 2048];
@@ -79,7 +78,6 @@ public class SimpleCharStream
     {
       throw new Error(t.getMessage());
     }
-
 
     bufsize += 2048;
     available = bufsize;
@@ -471,4 +469,4 @@ public class SimpleCharStream
   boolean getTrackLineColumn() { return trackLineColumn; }
   void setTrackLineColumn(boolean tlc) { trackLineColumn = tlc; }
 }
-/* JavaCC - OriginalChecksum=e6b5e4f4223db89b882e22f7e6893bd9 (do not edit this line) */
+/* JavaCC - OriginalChecksum=72dc79ab408ef42133eec0fa6571e53c (do not edit this line) */

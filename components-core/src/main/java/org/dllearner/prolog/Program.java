@@ -41,8 +41,7 @@ public class Program {
 	}
 
 	public boolean isGround() {
-		for (int c = 0; c < clauses.size(); c++) {
-			Clause clause = clauses.get(c);
+		for (Clause clause : clauses) {
 			if (!clause.isGround())
 				return false;
 		}

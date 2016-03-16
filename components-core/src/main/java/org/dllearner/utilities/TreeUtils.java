@@ -18,32 +18,38 @@
  */
 package org.dllearner.utilities;
 
-import java.util.Map;
-
-import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.utilities.datastructures.AbstractSearchTree;
 
 public class TreeUtils {
 
-	public static String toTreeString(AbstractSearchTree<OENode> tree,
-			String baseURI, Map<String, String> prefixes) {
-		return TreeUtils.toTreeString(tree.getRoot(), baseURI, prefixes);
+	public static String toTreeString(
+			AbstractSearchTree<? extends AbstractSearchTreeNode<? extends AbstractSearchTreeNode>> tree) {
+		return TreeUtils.toTreeString(tree.getRoot());
 	}
-	public static String toTreeString(OENode node,
-			String baseURI, Map<String, String> prefixes) {
-		return TreeUtils.toTreeString(node, 0, baseURI, prefixes).toString();
+	public static String toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
+		return TreeUtils.toTreeString(node, 0).toString();
+	}
+	public static String getRefinementChainString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
+		if(node.getParent()!=null) {
+			String ret = getRefinementChainString(node.getParent());
+			ret += " => " + node.getExpression().toString();
+			return ret;
+		} else {
+			return node.getExpression().toString();
+		}
 	}
 
-	private static StringBuilder toTreeString(OENode node,
-			int depth, String baseURI, Map<String, String> prefixes) {
+	private static StringBuilder toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node,
+			int depth) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(node.getShortDescription(baseURI, prefixes)).append("\n");
-		for(OENode child : node.getChildren()) {
-			treeString.append(TreeUtils.toTreeString(child, depth+1, baseURI, prefixes));
+		treeString.append(node.toString()).append("\n");
+		for(AbstractSearchTreeNode child : node.getChildren()) {
+			treeString.append(TreeUtils.toTreeString(child, depth+1));
 		}
 		return treeString;
 	}

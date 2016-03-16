@@ -70,8 +70,7 @@ public class Atom {
 	 */	
 	public Atom getInstance(Variable variable, Term term) {
 		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
-		for (int i = 0; i < arguments.size(); i++) {
-			Term argument = arguments.get(i);
+		for (Term argument : arguments) {
 			newArgs.add(argument.getInstance(variable, term));
 		}
 		return new Atom(name, newArgs);

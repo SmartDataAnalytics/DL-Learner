@@ -18,6 +18,7 @@
  */
 package org.dllearner.core;
 
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.utilities.ReasoningUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -38,6 +39,7 @@ public abstract class AbstractClassExpressionLearningProblem<T extends Score>  e
 
     }
 
+	@NoConfigOption
 	protected ReasoningUtils reasoningUtil;
 	protected static Class reasoningUtilsClass = ReasoningUtils.class;
 	

@@ -18,22 +18,15 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
-
+import com.jamonapi.Monitor;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
-import com.jamonapi.Monitor;
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.LinkedList;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -101,8 +94,7 @@ public class Cache implements Serializable {
 	 * @return the default cache object
 	 */
 	public static Cache getDefaultCache(){
-		Cache c = new Cache( getDefaultCacheDir()); 
-		return c;
+		return new Cache( getDefaultCacheDir());
 	}
 	
 	/**

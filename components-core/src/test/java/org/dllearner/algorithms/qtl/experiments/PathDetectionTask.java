@@ -35,7 +35,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -312,7 +311,6 @@ public class PathDetectionTask implements Callable<Path> {
 					query += " && ?o1_" + i + " != ?o2_" + i;
 				}
 				query += ") } GROUP BY ?o HAVING(count(distinct ?s1) >= " + minNrOfExamples + ") ORDER BY DESC(?cnt)";
-
 
 				System.out.println(Thread.currentThread().getId() + ":Testing path: " + path);
 				System.out.println(query);

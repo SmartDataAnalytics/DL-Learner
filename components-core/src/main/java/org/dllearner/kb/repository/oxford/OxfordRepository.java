@@ -45,7 +45,6 @@ public class OxfordRepository implements OntologyRepository{
     
     DecimalFormat df = new DecimalFormat("00000");
 
-
     public OxfordRepository() {
         entries = new ArrayList<>();
     }
@@ -55,24 +54,20 @@ public class OxfordRepository implements OntologyRepository{
     	refresh();
     }
 
-
     @Override
 	public String getName() {
         return repositoryName;
     }
-
 
     @Override
 	public String getLocation() {
         return repositoryLocation.toString();
     }
 
-
     @Override
 	public void refresh() {
         fillRepository();
     }
-
 
     @Override
 	public Collection<OntologyRepositoryEntry> getEntries() {
@@ -81,20 +76,17 @@ public class OxfordRepository implements OntologyRepository{
         return ret;
     }
 
-
     @Override
 	public List<Object> getMetaDataKeys() {
         return Collections.emptyList();
     }
 
-
-    public void dispose() throws Exception {
+    public void dispose() {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //  Implementation details
-
 
     private void fillRepository() {
     	entries.clear();
@@ -119,24 +111,20 @@ public class OxfordRepository implements OntologyRepository{
             physicalURI = ontologyIRI;
         }
 
-
         @Override
 		public String getOntologyShortName() {
             return shortName;
         }
-
 
         @Override
 		public URI getOntologyURI() {
             return ontologyURI;
         }
 
-
         @Override
 		public URI getPhysicalURI() {
             return physicalURI;
         }
-
 
         @Override
 		public String getMetaData(Object key) {

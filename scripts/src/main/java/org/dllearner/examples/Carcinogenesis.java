@@ -33,7 +33,6 @@ import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -68,12 +67,12 @@ public class Carcinogenesis {
 	private static Map<String, String> chemElements;
 
 	// structures in newgroups.pl
-	private static Set<String> newGroups = new TreeSet<String>();
+	private static Set<String> newGroups = new TreeSet<>();
 	
 	// types of atoms, bonds, and structures
-	private static Set<String> atomTypes = new TreeSet<String>();
-	private static Set<String> bondTypes = new TreeSet<String>();
-	private static Set<String> structureTypes = new TreeSet<String>();
+	private static Set<String> atomTypes = new TreeSet<>();
+	private static Set<String> bondTypes = new TreeSet<>();
+	private static Set<String> structureTypes = new TreeSet<>();
 
 	// we need a counter for bonds, because they are instances in OWL
 	// but not in Prolog
@@ -83,20 +82,20 @@ public class Carcinogenesis {
 	// list of all individuals in the knowlege base
 //	private static Set<String> individuals = new TreeSet<String>();	
 	// list of all compounds
-	private static Set<String> compounds = new TreeSet<String>(); 
+	private static Set<String> compounds = new TreeSet<>();
 	// compounds with positive ames test
-	private static Set<String> compoundsAmes = new TreeSet<String>();
+	private static Set<String> compoundsAmes = new TreeSet<>();
 	// list of all bonds
-	private static Set<String> bonds = new TreeSet<String>();
+	private static Set<String> bonds = new TreeSet<>();
 	
 	// list of all "hasProperty" test
-	private static Set<String> tests = new TreeSet<String>();
+	private static Set<String> tests = new TreeSet<>();
 	
 	// we ignore the ames test since its distribution in PTE-2 is so
 	// different from the training substances that a different testing
 	// strategy was probably in use
 	private static boolean ignoreAmes = false;
-	private static boolean ignoreSalmonella = false;;
+	private static boolean ignoreSalmonella = false;
 	private static boolean ignoreCytogenCa = false;
 	private static boolean includeMutagenesis = true;
 	// if true we learn carcinogenic, if false we learn non-carcinogenic
@@ -213,7 +212,7 @@ public class Carcinogenesis {
 //		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
 //		kb.addAxiom(disjointAtomTypes);
 		String[] mainClasses = new String[] {"Compound", "Atom", "Bond", "Structure"};
-		Set<String> mainClassesSet = new HashSet<String>(Arrays.asList(mainClasses));
+		Set<String> mainClassesSet = new HashSet<>(Arrays.asList(mainClasses));
 		OWLAxiom disjointAtomTypes = getDisjointClassesAxiom(mainClassesSet);
 		man.addAxiom(kb, disjointAtomTypes);		
 		
@@ -285,8 +284,8 @@ public class Carcinogenesis {
 
 	}
 
-	private static List<OWLAxiom> mapClause(Clause clause) throws IOException, ParseException, OWLOntologyCreationException {
-		List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+	private static List<OWLAxiom> mapClause(Clause clause) throws ParseException, OWLOntologyCreationException {
+		List<OWLAxiom> axioms = new LinkedList<>();
 		Atom head = clause.getHead();
 		String headName = head.getName();
 		// Body body = clause.getBody();
@@ -367,7 +366,7 @@ public class Carcinogenesis {
 			if(!(ignoreSalmonella && testName.equals("salmonella"))
 				&& !(ignoreCytogenCa && testName.equals("cytogen_ca"))) {
 				String resultStr = head.getArgument(2).toPLString();
-				boolean testResult = (resultStr.equals("p")) ? true : false;
+				boolean testResult = (resultStr.equals("p"));
 					
 				// create a new datatype property if it does not exist already
 				if(!tests.contains(testName)) {
@@ -390,7 +389,7 @@ public class Carcinogenesis {
 			String structureName = head.getArgument(1).toPLString();
 			int count = Integer.parseInt(head.getArgument(2).toPLString());
 			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
+			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);
 			String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);	
@@ -411,8 +410,8 @@ public class Carcinogenesis {
 			String compoundName = head.getArgument(0).toPLString();
 			String structureName = headName;
 			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
-			String structureInstance = structureName + "-" + structureNr;
+			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);
+				String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);
 			
@@ -451,11 +450,11 @@ public class Carcinogenesis {
 	
 	// takes a *.f or *.n file as input and returns the 
 	// contained examples
-	private static List<OWLIndividual> getExamples(File file) throws FileNotFoundException, IOException, ParseException {
+	private static List<OWLIndividual> getExamples(File file) throws IOException, ParseException {
 		String content = Files.readFile(file);
 		PrologParser pp = new PrologParser();
 		Program programPos = pp.parseProgram(content);
-		List<OWLIndividual> ret = new LinkedList<OWLIndividual>();
+		List<OWLIndividual> ret = new LinkedList<>();
 		for(Clause c : programPos.getClauses()) {
 			String example = c.getHead().getArgument(0).toPLString();
 			ret.add(getIndividual(example));
@@ -467,9 +466,9 @@ public class Carcinogenesis {
 		StringBuffer content = new StringBuffer();
 		for(OWLIndividual example : examples) {
 			if(learnCarcinogenic)
-				content.append("+\""+example.toString()+"\"\n");
+				content.append("+\"").append(example.toString()).append("\"\n");
 			else
-				content.append("-\""+example.toString()+"\"\n");
+				content.append("-\"").append(example.toString()).append("\"\n");
 		}
 		Files.appendToFile(file, content.toString());
 	}
@@ -478,9 +477,9 @@ public class Carcinogenesis {
 		StringBuffer content = new StringBuffer();
 		for(OWLIndividual example : examples) {
 			if(learnCarcinogenic)
-				content.append("-\""+example.toString()+"\"\n");
+				content.append("-\"").append(example.toString()).append("\"\n");
 			else
-				content.append("+\""+example.toString()+"\"\n");
+				content.append("+\"").append(example.toString()).append("\"\n");
 		}
 		Files.appendToFile(file, content.toString());
 	}	
@@ -517,7 +516,7 @@ public class Carcinogenesis {
 	}
 
 	private static OWLAxiom getDisjointClassesAxiom(Set<String> classes) {
-		Set<OWLClassExpression> descriptions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> descriptions = new HashSet<>();
 		for(String namedClass : classes)
 			descriptions.add(df.getOWLClass(IRI.create(getURI(namedClass))));
 		return df.getOWLDisjointClassesAxiom(descriptions);
@@ -525,7 +524,7 @@ public class Carcinogenesis {
 	
 	@SuppressWarnings({"unused"})
 	private static OWLAxiom getDifferentIndividualsAxiom(Set<String> individuals) {
-		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> inds = new HashSet<>();
 		for(String i : individuals)
 			inds.add(getIndividual(i));
 		return df.getOWLDifferentIndividualsAxiom(inds);
@@ -568,7 +567,7 @@ public class Carcinogenesis {
 
 	// create chemical element list
 	private static void createChemElementsMapping() {
-		chemElements = new HashMap<String, String>();
+		chemElements = new HashMap<>();
 		chemElements.put("as", "Arsenic");
 		chemElements.put("ba", "Barium");
 		chemElements.put("br", "Bromine");
@@ -741,7 +740,7 @@ public class Carcinogenesis {
 			"d36", "d37", "d38", "d41", "d42", "d48", "d50", "d51",
 			"d54", "d58", "d61", "d62", "d63", "d66", "d69", "d72",
 			"d76", "d77", "d78", "d84", "d86", "d89", "d92", "d96"};
-		TreeSet<String> mutagenic = new TreeSet<String>(Arrays.asList(mutagenicCompounds));
+		TreeSet<String> mutagenic = new TreeSet<>(Arrays.asList(mutagenicCompounds));
 	
 		for(String compound : compounds) {
 			if(mutagenic.contains(compound)) {

@@ -22,15 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.parameters.Imports;
-import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
@@ -59,7 +56,8 @@ public class EntityDependencyMatrix<T> {
 				if(!clsA.equals(clsB)) {
 					Set<OWLNamedIndividual> instancesA = reasoner.getInstances(clsA, false).getFlattened();
 					Set<OWLNamedIndividual> instancesB = reasoner.getInstances(clsB, false).getFlattened();
-					
+
+					// S_1 = { o_i | A(a_i) and there is an p_i(a_i, o_i) in O }
 					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesA) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
@@ -67,7 +65,8 @@ public class EntityDependencyMatrix<T> {
 							objectsOfInstancesFromA.add(axiom.getObject());
 						}
 					}
-					
+
+					// S_2 = { o_i | B(b_i) and there is an p_i(b_i, o_i) in O }
 					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesB) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);

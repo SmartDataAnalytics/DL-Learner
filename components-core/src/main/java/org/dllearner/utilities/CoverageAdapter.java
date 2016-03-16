@@ -1,7 +1,7 @@
 package org.dllearner.utilities;
 
 /**
- * Created by Simon Bin on 16-1-26.
+ * Implicit class to interpret CoverageCount as tp/fp/fn/fp
  */
 public class CoverageAdapter {
 	public static class CoverageAdapter2 {

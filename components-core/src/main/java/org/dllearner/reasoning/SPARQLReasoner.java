@@ -19,10 +19,8 @@
 package org.dllearner.reasoning;
 
 import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -42,6 +40,7 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.*;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -69,6 +68,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A reasoner implementation that provides inference services by the execution
@@ -104,14 +105,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private static final ParameterizedSparqlString INDIVIDUAL_POPULARITY_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(*) AS ?cnt) WHERE {?entity ?p ?o .}");
 
-
-	@ConfigOption(name = "useCache", description = "Whether to use a file-based cache", defaultValue = "true", required = false)
-	private boolean useCache = true;
-	
-	@ConfigOption(name = "laxMode", description = "Use alternative relaxed Sparql-queries for Classes and Individuals", defaultValue = "false")
+	@ConfigOption(description = "Use alternative relaxed Sparql-queries for Classes and Individuals", defaultValue = "false")
 	private boolean laxMode = false;
 
-	@ConfigOption(name = "useGenericSplitsCode", description = "Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended", defaultValue = "false")
+	@ConfigOption(description = "Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended", defaultValue = "false")
 	private boolean useGenericSplitsCode = false;
 	
 	@ConfigOption(description = "Whether to use SPARQL1.1 Value Lists", defaultValue = "false")
@@ -566,12 +563,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 						// add sub properties entry
 						if (!subsumptionHierarchyDown.containsKey(sub)) {
-							subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
+							subsumptionHierarchyDown.put(sub, new TreeSet<>());
 						}
 						
 						// add super properties entry
 						if (!subsumptionHierarchyUp.containsKey(sub)) {
-							subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
+							subsumptionHierarchyUp.put(sub, new TreeSet<>());
 						}
 						
 						// if there is a super property
@@ -580,12 +577,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 							// add sub properties entry
 							if (!subsumptionHierarchyDown.containsKey(sup)) {
-								subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+								subsumptionHierarchyDown.put(sup, new TreeSet<>());
 							}
 							
 							// add super properties entry
 							if (!subsumptionHierarchyUp.containsKey(sup)) {
-								subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+								subsumptionHierarchyUp.put(sup, new TreeSet<>());
 							}
 							
 							// add super properties entry
@@ -643,12 +640,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 				// add sub properties entry
 				if (!subsumptionHierarchyDown.containsKey(sub)) {
-					subsumptionHierarchyDown.put(sub, new TreeSet<OWLDataProperty>());
+					subsumptionHierarchyDown.put(sub, new TreeSet<>());
 				}
 				
 				// add super properties entry
 				if (!subsumptionHierarchyUp.containsKey(sub)) {
-					subsumptionHierarchyUp.put(sub, new TreeSet<OWLDataProperty>());
+					subsumptionHierarchyUp.put(sub, new TreeSet<>());
 				}
 				
 				// if there is a super property
@@ -657,12 +654,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 					// add sub properties entry
 					if (!subsumptionHierarchyDown.containsKey(sup)) {
-						subsumptionHierarchyDown.put(sup, new TreeSet<OWLDataProperty>());
+						subsumptionHierarchyDown.put(sup, new TreeSet<>());
 					}
 					
 					// add super properties entry
 					if (!subsumptionHierarchyUp.containsKey(sup)) {
-						subsumptionHierarchyUp.put(sup, new TreeSet<OWLDataProperty>());
+						subsumptionHierarchyUp.put(sup, new TreeSet<>());
 					}
 					
 					// add super properties entry
@@ -762,7 +759,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		query = "CONSTRUCT {?s a <%s>. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} WHERE {?s a <%s>.?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}".
 				replaceAll("%s", OWL.FunctionalProperty.getURI());
 		model.add(loadIncrementally(query));
-
 
 		return model;
 	}
@@ -1512,12 +1508,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	private String datatypeSparqlFilter(Iterable<OWLDatatype> dts) {
 		return Joiner.on(" || ").join(
-				Iterables.transform(dts, new Function<OWLDatatype,String>(){
-					@Override
-					public String apply(OWLDatatype input) {
-						return "DATATYPE(?o) = <" + input.toStringID() + ">";
-					}}
-						)
+				StreamSupport.stream(dts.spliterator(), false)
+						.map(input -> "DATATYPE(?o) = <" + input.toStringID() + ">")
+						.collect(Collectors.toList())
 				);
 	}
 
@@ -2402,7 +2395,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		throw new NotImplementedException("Method setSynchronized() not implemented yet!");
 	}
@@ -2414,6 +2407,5 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public void setUseValueLists(boolean useValueLists) {
 		this.useValueLists = useValueLists;
 	}
-
 
 }

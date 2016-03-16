@@ -172,7 +172,7 @@ public class OntologyCloserOWLAPI {
 		if (s == null) {
 
 			indToRestr.put(ind,
-					new HashSet<OWLObjectExactCardinality>());
+					new HashSet<>());
 			s = indToRestr.get(ind);
 		}
 		return s.add(oecr);

@@ -110,7 +110,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
 
     private final DataPropertyHierarchyInfo dataPropertyHierarchyInfo = new DataPropertyHierarchyInfo();
 
-
     private static final Version version = new Version(1, 0, 0, 0);
 
     private boolean interrupted = false;
@@ -137,7 +136,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
     public String getReasonerName() {
         return "Structural Reasoner";
     }
-
 
     @Override
     public FreshEntityPolicy getFreshEntityPolicy() {
@@ -214,9 +212,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         }
     }
 
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     @Override
     public boolean isConsistent() throws ReasonerInterruptedException, TimeOutException {
@@ -730,7 +726,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         return new OWLNamedIndividualNodeSet();
     }
 
-
     protected OWLDataFactory getDataFactory() {
         return getRootOntology().getOWLOntologyManager().getOWLDataFactory();
     }
@@ -791,7 +786,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         }
     }
 
-
     private void printIndent(int level) {
         for (int i = 0; i < level; i++) {
             System.out.print("    ");
@@ -827,7 +821,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         private Set<T> directParentsOfBottomNode = new HashSet<>();
 
         private NodeCache<T> nodeCache;
-
 
         private String name;
 
@@ -868,7 +861,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
          */
         protected abstract Set<? extends T> getEntitiesInSignature(OWLAxiom ax);
 
-
         Set<T> getEntitiesInSignature(Set<OWLAxiom> axioms) {
             Set<T> result = new HashSet<>();
             for (OWLAxiom ax : axioms) {
@@ -892,7 +884,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             pm.reasonerTaskStopped();
         }
 
-
         private void updateForSignature(Set<T> signature, Map<T, Collection<T>> cache) {
             HashSet<Set<T>> cyclesResult = new HashSet<>();
             Set<T> processed = new HashSet<>();
@@ -907,7 +898,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             for (T entity : signature) {
                 if (!processed.contains(entity)) {
                     pm.reasonerTaskProgressChanged(processed.size(), signature.size());
-                    tarjan(entity, 0, new Stack<T>(), new HashMap<T, Integer>(), new HashMap<T, Integer>(), cyclesResult, processed, new HashSet<T>(), cache, equivTopOrChildrenOfTop, equivBottomOrParentsOfBottom);
+                    tarjan(entity, 0, new Stack<>(), new HashMap<>(), new HashMap<>(), cyclesResult, processed, new HashSet<>(), cache, equivTopOrChildrenOfTop, equivBottomOrParentsOfBottom);
                     throwExceptionIfInterrupted();
                 }
             }
@@ -921,7 +912,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
 
             directParentsOfBottomNode.addAll(equivBottomOrParentsOfBottom);
             directParentsOfBottomNode.removeAll(nodeCache.getBottomNode().getEntities());
-
 
             // Now check that each found cycle has a proper parent an child
             for (Set<T> node : cyclesResult) {
@@ -969,7 +959,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         public void processChanges(Set<T> signature, Set<OWLAxiom> added, Set<OWLAxiom> removed) {
             updateForSignature(signature, null);
         }
-
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1028,7 +1017,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
                 }
             }
 
-
             for (T superEntity : rawParents) {
                 if (!indexMap.containsKey(superEntity)) {
                     tarjan(superEntity, index, stack, indexMap, lowlinkMap, result, processed, stackEntities, cache, childrenOfTop, parentsOfBottom);
@@ -1058,14 +1046,12 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
         public NodeSet<T> getNodeHierarchyChildren(T parent, boolean direct, DefaultNodeSet<T> ns) {
             Node<T> node = nodeCache.getNode(parent);
 
             if (node.isBottomNode()) {
                 return ns;
             }
-
 
             Set<T> directChildren = new HashSet<>();
             for (T equiv : node) {
@@ -1085,7 +1071,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
                 ns.addNode(childNode);
             }
 
-
             if (!direct) {
                 for (T child : directChildren) {
                     getNodeHierarchyChildren(child, direct, ns);
@@ -1100,7 +1085,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             if (node.isTopNode()) {
                 return ns;
             }
-
 
             Set<T> directParents = new HashSet<>();
             for (T equiv : node) {
@@ -1132,7 +1116,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             return nodeCache.getNode(element);
         }
     }
-
 
     private static class NodeCache<T extends OWLObject> {
 
@@ -1170,7 +1153,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             return result;
         }
 
-
         public Node<T> getNode(T containing) {
             Node<T> parentNode = map.get(containing);
             if (parentNode != null) {
@@ -1192,7 +1174,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         public Node<T> getBottomNode() {
             return bottomNode;
         }
-
 
         public void clearTopNode() {
             removeNode(hierarchyInfo.topEntity);
@@ -1233,7 +1214,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         public ClassHierarchyInfo() {
             super("class", getDataFactory().getOWLThing(), getDataFactory().getOWLNothing(), new RawClassHierarchyProvider());
         }
-
 
         @Override
         protected Set<OWLClass> getEntitiesInSignature(OWLAxiom ax) {
@@ -1343,7 +1323,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         }
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1370,7 +1349,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         Collection<T> getChildren(T parent);
 
     }
-
 
     private class RawClassHierarchyProvider implements RawHierarchyProvider<OWLClass> {
         public RawClassHierarchyProvider() {}
@@ -1443,7 +1421,6 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             return result;
         }
     }
-
 
     private class RawObjectPropertyHierarchyProvider implements RawHierarchyProvider<OWLObjectPropertyExpression> {
 

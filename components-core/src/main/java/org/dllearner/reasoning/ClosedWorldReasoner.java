@@ -24,6 +24,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import org.dllearner.core.*;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLAPIUtils;
@@ -64,6 +65,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	
 	// the underlying base reasoner implementation
 	private OWLAPIReasoner baseReasoner;
+	@ConfigOption(description = "the underlying reasoner implementation", defaultValue = "OWL API Reasoner")
+	private final OWLAPIReasoner reasonerComponent = null; /** unused, see instead: baseReasoner */
 	
 	// we use an extra set for object properties because of punning option
 	private Set<OWLObjectProperty> objectProperties;
@@ -96,17 +99,15 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	
 	
 	
-    @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
+    @ConfigOption(description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
 
-    @ConfigOption(
-    		name = "forAllRetrievalSemantics",
-    		description = "This option controls how to interpret the all quantifier in forall r.C. " +
+	@ConfigOption(description = "This option controls how to interpret the all quantifier in forall r.C. " +
     		"The standard option is to return all those which do not have an r-filler not in C. " +
     		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
     		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",
     		defaultValue = "standard")
-    private ForallSemantics forallSemantics = ForallSemantics.SomeOnly;
+    private ForallSemantics forAllSemantics = ForallSemantics.SomeOnly;
 
     public enum ForallSemantics {
     	Standard, // standard all quantor
@@ -126,12 +127,15 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
     
     private DisjointnessSemantics disjointnessSemantics = DisjointnessSemantics.INSTANCE_BASED;
-    
+
+	@ConfigOption(defaultValue = "false")
     private boolean materializeExistentialRestrictions = false;
-	private boolean useCaching = true;
-    private boolean handlePunning = false;
-    private boolean precomputeNegations = true;
-    
+	@ConfigOption(defaultValue = "true")
+	private boolean useMaterializationCaching = true;
+	@ConfigOption(defaultValue = "false")
+	private boolean handlePunning = false;
+	private boolean precomputeNegations = true;
+
 	public ClosedWorldReasoner() {}
 
     public ClosedWorldReasoner(TreeSet<OWLIndividual> individuals,
@@ -163,23 +167,23 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			if(pos != null){
 				classInstancesNeg.put(atomicConcept, new TreeSet<>(Sets.difference(individuals, pos)));
 			} else {
-				classInstancesPos.put(atomicConcept, new TreeSet<OWLIndividual>());
+				classInstancesPos.put(atomicConcept, new TreeSet<>());
 				classInstancesNeg.put(atomicConcept, individuals);
 			}
 		}
 		
 		for(OWLObjectProperty p : baseReasoner.getObjectProperties()){
 			if(opPos.get(p) == null){
-				opPos.put(p, new HashMap<OWLIndividual, SortedSet<OWLIndividual>>());
+				opPos.put(p, new HashMap<>());
 			}
 		}
 		
 		for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
 			if(bdPos.get(dp) == null){
-				bdPos.put(dp, new TreeSet<OWLIndividual>());
+				bdPos.put(dp, new TreeSet<>());
 			}
 			if(bdNeg.get(dp) == null){
-				bdNeg.put(dp, new TreeSet<OWLIndividual>());
+				bdNeg.put(dp, new TreeSet<>());
 			}
 			
 		}
@@ -197,13 +201,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     	super(baseReasoner.getSources());
         this.baseReasoner = baseReasoner;
     }
-    
-    /**
-	 * @return The name of this component.
-	 */
-	public static String getName() {
-		return "closed world reasoner";
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -222,7 +219,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	}
 	
 	private void loadOrDematerialize(){
-		if(useCaching){
+		if(useMaterializationCaching){
 			File cacheDir = new File("cache");
 			cacheDir.mkdirs();
 			HashFunction hf = Hashing.md5();
@@ -528,7 +525,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				
 				// if there is no value, by standard semantics we have to return TRUE
 				if (values.isEmpty()) {
-	                return forallSemantics == ForallSemantics.Standard;
+	                return forAllSemantics == ForallSemantics.Standard;
 				}
 				
 				boolean hasCorrectFiller = false;
@@ -540,7 +537,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					}
 				}
 				
-				if(forallSemantics == ForallSemantics.SomeOnly) {
+				if(forAllSemantics == ForallSemantics.SomeOnly) {
 					return hasCorrectFiller;
 				} else {
 					return true;
@@ -551,7 +548,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				
 				// if there is no value, by standard semantics we have to return TRUE
 				if (values == null) {
-	                return forallSemantics == ForallSemantics.Standard;
+	                return forAllSemantics == ForallSemantics.Standard;
 				}
 				
 				
@@ -564,7 +561,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					}
 				}
 				
-				if(forallSemantics == ForallSemantics.SomeOnly) {
+				if(forAllSemantics == ForallSemantics.SomeOnly) {
 					return hasCorrectFiller;
 				} else {
 					return true;
@@ -1634,18 +1631,18 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
 	public ForallSemantics getForAllSemantics() {
-		return forallSemantics;
+		return forAllSemantics;
 	}
 
-	public void setForAllSemantics(ForallSemantics forallSemantics) {
-		this.forallSemantics = forallSemantics;
+	public void setForAllSemantics(ForallSemantics forAllSemantics) {
+		this.forAllSemantics = forAllSemantics;
 	}
 	
 	/**
-	 * @param useCaching the useCaching to set
+	 * @param useMaterializationCaching the useMaterializationCaching to set
 	 */
-	public void setUseMaterializationCaching(boolean useCaching) {
-		this.useCaching = useCaching;
+	public void setUseMaterializationCaching(boolean useMaterializationCaching) {
+		this.useMaterializationCaching = useMaterializationCaching;
 	}
 	
 	/**
@@ -1661,11 +1658,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	public void setMaterializeExistentialRestrictions(boolean materializeExistentialRestrictions) {
 		this.materializeExistentialRestrictions = materializeExistentialRestrictions;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#getDatatype(org.semanticweb.owlapi.model.OWLDataProperty)
 	 */
-	@Override
+	@Override @NoConfigOption
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		return baseReasoner.getDatatype(dp);
 	}
@@ -1673,7 +1670,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		baseReasoner.setSynchronized();
 	}

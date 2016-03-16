@@ -298,7 +298,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 String mpUriStr = oboPrefix + mpId.replace(":", "_");
 
                 if (!mgi2mp.containsKey(mgiId)) {
-                    mgi2mp.put(mgiId, new TreeSet<String>());
+                    mgi2mp.put(mgiId, new TreeSet<>());
                 }
                 mgi2mp.get(mgiId).add(mpUriStr);
             }
@@ -508,7 +508,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 String goUriStr = oboPrefix + goId.replace(":", "_");
 
                 if (!mgi2go.containsKey(mgiId)) {
-                    mgi2go.put(mgiId, new TreeSet<String>());
+                    mgi2go.put(mgiId, new TreeSet<>());
                 }
                 mgi2go.get(mgiId).add(goUriStr);
             }

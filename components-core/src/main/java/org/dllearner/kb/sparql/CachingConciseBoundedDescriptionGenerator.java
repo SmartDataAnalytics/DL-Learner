@@ -19,7 +19,6 @@
 package org.dllearner.kb.sparql;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +34,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		cache = new HashMap<>();
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
@@ -44,6 +44,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		return cbd;
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
@@ -71,6 +72,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		delegatee.setRecursionDepth(maxRecursionDepth);
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 

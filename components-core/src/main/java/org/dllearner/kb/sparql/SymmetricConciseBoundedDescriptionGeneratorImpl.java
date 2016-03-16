@@ -50,10 +50,12 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		this(endpoint, null);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
 		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		Model cbd = ModelFactory.createDefaultModel();
 		cbd.add(getModelChunkedResourceIsObject(resourceURI, depth));
@@ -218,6 +220,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		this.maxRecursionDepth = maxRecursionDepth;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 

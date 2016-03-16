@@ -16,7 +16,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.*;
 
-
 /**
  * @author Lorenz Buehmann
  *
@@ -66,7 +65,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	 */
 	@Override
 	public Map<List<Token>, Double> getRelevantText(OWLEntity entity) {
-		Map<List<Token>, Double> textWithWeight = new HashMap<List<Token>, Double>();
+		Map<List<Token>, Double> textWithWeight = new HashMap<>();
 		
 		for (OWLAnnotationProperty property : properties) {
 			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(entity, ontology, property);
@@ -103,7 +102,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	
 	@Override
 	public Map<String, Double> getRelevantTextSimple(OWLEntity entity) {
-		Map<String, Double> textWithWeight = new HashMap<String, Double>();
+		Map<String, Double> textWithWeight = new HashMap<>();
 		
 		for (OWLAnnotationProperty property : properties) {
 			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(entity, ontology, property);
@@ -146,7 +145,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	public Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology) {
 		Map<OWLEntity, Set<List<Token>>> entity2RelevantText = new HashMap<>();
 		
-		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+		Set<OWLEntity> schemaEntities = new HashSet<>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());

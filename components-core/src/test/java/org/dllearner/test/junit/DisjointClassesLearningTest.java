@@ -47,7 +47,7 @@ public class DisjointClassesLearningTest { //extends TestCase{
 //	}
 
 //	@Test
-	public void testLearnSingleClass() throws MalformedURLException, ComponentInitException{
+	public void testLearnSingleClass() throws ComponentInitException{
 		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		ks.init();
 		reasoner = new SPARQLReasoner(ks);
@@ -63,7 +63,7 @@ public class DisjointClassesLearningTest { //extends TestCase{
 	}
 
 //	@Test
-	public void testLearnForMostGeneralClasses() throws ComponentInitException, MalformedURLException{
+	public void testLearnForMostGeneralClasses() throws ComponentInitException {
 		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		ks.init();
 		reasoner = new SPARQLReasoner(ks);
@@ -81,7 +81,5 @@ public class DisjointClassesLearningTest { //extends TestCase{
 			System.out.println(l.getCurrentlyBestAxioms(5));
 		}
 	}
-
-
 
 }

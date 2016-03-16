@@ -19,7 +19,7 @@ public class ReactomeCBD {
     private static String dumpFilePath = "/tmp/tr.owl";
     private static String cbdFilePath = "/tmp/tr_cbd.owl";
     private static int cbdDepth = 30;
-    private static List<String> exampleUris = new ArrayList<String>(Arrays.asList(
+    private static List<String> exampleUris = new ArrayList<>(Arrays.asList(
             // positive
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
@@ -32,7 +32,7 @@ public class ReactomeCBD {
             "http://www.reactome.org/biopax/48887#Degradation10",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2187",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1273"
-            ));
+    ));
 
     public static void main (String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();

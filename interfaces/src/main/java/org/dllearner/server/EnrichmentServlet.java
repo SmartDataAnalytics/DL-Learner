@@ -1,63 +1,13 @@
 package org.dllearner.server;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.AxiomAlgorithms;
-import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.*;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.AxiomLearningAlgorithm;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -76,21 +26,21 @@ import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class EnrichmentServlet extends HttpServlet {
 
@@ -99,7 +49,7 @@ public class EnrichmentServlet extends HttpServlet {
 	private static List<Class<? extends LearningAlgorithm>> classAlgorithms;
 	private static BidiMap<AxiomType, Class<? extends LearningAlgorithm>> axiomType2Class;
 	
-	private static final List<String> entityTypes = Arrays.asList(new String[]{"class", "objectproperty", "dataproperty"});
+	private static final List<String> entityTypes = Arrays.asList("class", "objectproperty", "dataproperty");
 	
 	private static String validAxiomTypes = "";
 	
@@ -107,7 +57,7 @@ public class EnrichmentServlet extends HttpServlet {
 	private OWLOntology ont;
 
 	static {
-		axiomType2Class = new DualHashBidiMap<AxiomType, Class<? extends LearningAlgorithm>>();
+		axiomType2Class = new DualHashBidiMap<>();
 		axiomType2Class.put(AxiomType.SUBCLASS_OF, SimpleSubclassLearner.class);
 		axiomType2Class.put(AxiomType.EQUIVALENT_CLASSES, CELOE.class);
 		axiomType2Class.put(AxiomType.DISJOINT_CLASSES, DisjointClassesLearner.class);
@@ -131,7 +81,7 @@ public class EnrichmentServlet extends HttpServlet {
 		axiomType2Class.put(AxiomType.DATA_PROPERTY_RANGE, DataPropertyRangeAxiomLearner.class);
 		axiomType2Class.put(AxiomType.FUNCTIONAL_DATA_PROPERTY, FunctionalDataPropertyAxiomLearner.class);
 
-		objectPropertyAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		objectPropertyAlgorithms = new LinkedList<>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
@@ -145,7 +95,7 @@ public class EnrichmentServlet extends HttpServlet {
 		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
 
-		dataPropertyAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		dataPropertyAlgorithms = new LinkedList<>();
 		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
@@ -153,7 +103,7 @@ public class EnrichmentServlet extends HttpServlet {
 		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class);
 		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 
-		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		classAlgorithms = new LinkedList<>();
 		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);
@@ -219,7 +169,7 @@ public class EnrichmentServlet extends HttpServlet {
 		}
 		axiomTypeStrings = axiomTypeStrings[0].split(",");
 
-		Collection<AxiomType> requestedAxiomTypes = new HashSet<AxiomType>();
+		Collection<AxiomType> requestedAxiomTypes = new HashSet<>();
 		for (String typeStr : axiomTypeStrings) {
 			AxiomType type = AxiomType.getAxiomType(typeStr.trim());
 			if (type == null) {
@@ -243,8 +193,8 @@ public class EnrichmentServlet extends HttpServlet {
 			entity = st.guessResourceType(resourceURI, true);
 		}
 		
-		Collection<AxiomType> executableAxiomTypes = new HashSet<AxiomType>();
-		Collection<AxiomType> omittedAxiomTypes = new HashSet<AxiomType>();
+		Collection<AxiomType> executableAxiomTypes = new HashSet<>();
+		Collection<AxiomType> omittedAxiomTypes = new HashSet<>();
 		Collection<AxiomType<? extends OWLAxiom>> possibleAxiomTypes = AxiomAlgorithms.getAxiomTypes(entity.getEntityType());
 		for(AxiomType type : requestedAxiomTypes){
 			if(possibleAxiomTypes.contains(type)){
@@ -275,7 +225,7 @@ public class EnrichmentServlet extends HttpServlet {
 		JSONArray result = new JSONArray();
 		
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		List<Future<JSONObject>> list = new ArrayList<Future<JSONObject>>();
+		List<Future<JSONObject>> list = new ArrayList<>();
 		
 		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 //		renderer.setShortFormProvider(new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
@@ -314,9 +264,7 @@ public class EnrichmentServlet extends HttpServlet {
 			try {
 				JSONObject array = future.get();
 				result.put(array);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
@@ -367,7 +315,7 @@ public class EnrichmentServlet extends HttpServlet {
 	private List<EvaluatedAxiom> getEvaluatedAxioms(SparqlEndpointKS endpoint, SPARQLReasoner reasoner,
 			OWLEntity entity, AxiomType axiomType, int maxExecutionTimeInSeconds,
 			double threshold, int maxNrOfReturnedAxioms, boolean useInference) {
-		List<EvaluatedAxiom> learnedAxioms = new ArrayList<EvaluatedAxiom>();
+		List<EvaluatedAxiom> learnedAxioms = new ArrayList<>();
 		try {
 			learnedAxioms = applyLearningAlgorithm(axiomType2Class.get(axiomType), endpoint, reasoner, entity, maxExecutionTimeInSeconds, threshold, maxNrOfReturnedAxioms);
 		} catch (ComponentInitException e) {
@@ -436,7 +384,7 @@ public class EnrichmentServlet extends HttpServlet {
 		System.out.print("finding negatives ... ");
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
 		SortedSet<OWLIndividual> negExamples = finder.getNegativeExamples(nc, posExamples, 20);
-		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples, negExamples);
+		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<>(posExamples, negExamples);
 		long runTime = System.currentTimeMillis() - startTime;
 		System.out.println("done (" + negExamples.size()+ " examples fround in " + runTime + " ms)");
 		
@@ -445,7 +393,7 @@ public class EnrichmentServlet extends HttpServlet {
 		ks2 = new SparqlKnowledgeSource();
 		ks2.setInstances(Helper.getStringSet(examples.getCompleteSet()));
 		ks2.setUrl(ks.getEndpoint().getURL());
-		ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
+		ks2.setDefaultGraphURIs(new TreeSet<>(ks.getEndpoint().getDefaultGraphURIs()));
 		ks2.setUseLits(false);
 		ks2.setUseCacheDatabase(true);
 		ks2.setCacheDir(cacheDir);
@@ -480,7 +428,7 @@ public class EnrichmentServlet extends HttpServlet {
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
-        List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
+        List<EvaluatedAxiom> learnedAxioms = new LinkedList<>();
         for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
@@ -496,15 +444,20 @@ public class EnrichmentServlet extends HttpServlet {
 
 	private OWLEntity getEntity(String resourceURI, String entityType, SparqlEndpoint endpoint) {
 		OWLEntity entity = null;
-		if (entityType.equals("class")) {
-			entity = new OWLClassImpl(IRI.create(resourceURI));
-		} else if (entityType.equals("objectproperty")) {
-			entity = new OWLObjectPropertyImpl(IRI.create(resourceURI));
-		} else if (entityType.equals("dataproperty")) {
-			entity = new OWLDataPropertyImpl(IRI.create(resourceURI));
-		} else {
-			SPARQLTasks st = new SPARQLTasks(endpoint);
-			entity = st.guessResourceType(resourceURI, true);
+		switch (entityType) {
+			case "class":
+				entity = new OWLClassImpl(IRI.create(resourceURI));
+				break;
+			case "objectproperty":
+				entity = new OWLObjectPropertyImpl(IRI.create(resourceURI));
+				break;
+			case "dataproperty":
+				entity = new OWLDataPropertyImpl(IRI.create(resourceURI));
+				break;
+			default:
+				SPARQLTasks st = new SPARQLTasks(endpoint);
+				entity = st.guessResourceType(resourceURI, true);
+				break;
 		}
 		return entity;
 	}

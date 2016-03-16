@@ -53,7 +53,6 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 @SuppressWarnings("all")
@@ -1246,7 +1245,6 @@ public class KBParser implements KBParserConstants {
     if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
     return false;
   }
-
 
 /** Get the next Token. */
   final public Token getNextToken() {

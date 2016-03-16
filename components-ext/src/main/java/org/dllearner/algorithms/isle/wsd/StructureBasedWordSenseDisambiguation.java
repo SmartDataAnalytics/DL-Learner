@@ -117,7 +117,7 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 	 * @return
 	 */
 	private double computeScoreSimple(Collection<String> words1, Collection<String> words2){
-		return Sets.intersection(new HashSet<String>(words1), new HashSet<String>(words2)).size();
+		return Sets.intersection(new HashSet<>(words1), new HashSet<>(words2)).size();
 	}
 	
 	/**

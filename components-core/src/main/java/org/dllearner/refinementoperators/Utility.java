@@ -272,9 +272,9 @@ public final class Utility {
 			
 			// create new entries if necessary
 			if(tmp == null)
-				cachedDisjoints.put(d1, new TreeMap<OWLClassExpression, Boolean>());
+				cachedDisjoints.put(d1, new TreeMap<>());
 			if(!cachedDisjoints.containsKey(d2))
-				cachedDisjoints.put(d2, new TreeMap<OWLClassExpression, Boolean>());
+				cachedDisjoints.put(d2, new TreeMap<>());
 			
 			// add result symmetrically in the OWLClassExpression matrix
 			cachedDisjoints.get(d1).put(d2, result);

@@ -4,16 +4,16 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<compiler.version>1.7</compiler.version>
+		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.6.4</slf4j.version>
+        <slf4j.version>1.7.16</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>5.3.0</solr.version>
         <owlapi.version>4.1.4</owlapi.version>
@@ -239,7 +239,7 @@
 	<plugin>
 	<groupId>com.amashchenko.maven.plugin</groupId>
 	<artifactId>gitflow-maven-plugin</artifactId>
-	<version>1.2.1</version>
+	<version>1.0.8</version>
 	<configuration>
 		<installProject>false</installProject>
 		<verbose>true</verbose>
@@ -269,6 +269,57 @@
 							<version>2.0</version>
 						</dependency>
 					</dependencies>
+				</plugin>
+
+				<plugin>
+					<!-- the plugin to generate changelog and release announcements -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changes-plugin</artifactId>
+					<configuration>
+						<developmentTeam>DL-Learner team</developmentTeam>
+						<!-- the changes filtered source changes file -->
+						<xmlPath>${basedir}/etc/changes.xml</xmlPath>
+						<templateDirectory>etc/templates</templateDirectory>
+						<issueManagementSystems>
+							<issueManagementSystem>changes.xml</issueManagementSystem>
+						</issueManagementSystems>
+					</configuration>
+					<executions>
+						<execution>
+							<!-- checking if the changes file is well-formed -->
+							<id>check-changes</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>changes-check</goal>
+							</goals>
+						</execution>
+						<execution>
+							<!-- generating of the Changes.txt file -->
+							<id>generate-changes-file</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>Changes.txt</announcementFile>
+								<template>changes.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- generation of the e-mail announcement message announcement.txt -->
+							<id>generate-email-announcement</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>announcement.txt</announcementFile>
+								<template>announcement.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -849,6 +900,18 @@
 					<windowtitle>DL-Learner Javadoc</windowtitle>
 					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.11</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>github-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>

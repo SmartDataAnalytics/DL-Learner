@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;

@@ -1,57 +1,42 @@
 package org.dllearner.examples;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.*;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.ExistentialRestrictionMaterialization;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import java.io.File;
+import java.util.*;
 
 public class ReactomeMinimal {
     private static final Logger logger = Logger.getLogger(ReactomeMinimal.class);
     private static final String kbPathStr = "/tmp/tr_cbd.owl";
-    private static final List<String> posExampleUris = new ArrayList<String>(Arrays.asList(
+    private static final List<String> posExampleUris = new ArrayList<>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1331",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction3743",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction3244"
-        ));
-    private static final List<String> negExampleUris = new ArrayList<String>(Arrays.asList(
+    ));
+    private static final List<String> negExampleUris = new ArrayList<>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2588",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction4826",
             "http://www.reactome.org/biopax/48887#Degradation10",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2187",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1273"
-        ));
+    ));
 
     public static void main(String[] args) throws Exception {
         setUp();
@@ -156,9 +141,8 @@ public class ReactomeMinimal {
         StringRenderer.setRenderer(Rendering.DL_SYNTAX);
     }
 
-
     private static Set<OWLIndividual> makeIndividuals(List<String> uris) {
-        Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
+        Set<OWLIndividual> individuals = new HashSet<>();
         for (String uri : uris) {
             individuals.add(new OWLNamedIndividualImpl(IRI.create(uri)));
         }

@@ -11,7 +11,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import java.util.Collections;
 
 /**
- * Created by Simon Bin on 16-1-27.
+ * Test OWL Class Expresssions
  */
 public class OWLClassExpressionTest {
 
@@ -30,7 +30,6 @@ public class OWLClassExpressionTest {
 						min)));
 		OWLDataProperty dp = new OWLDataPropertyImpl(IRI.create("p1"));
 		OWLObjectProperty op = df.getOWLObjectProperty(IRI.create("op1"));
-		OWLClassExpression ce1 = df.getOWLDataSomeValuesFrom(dp, restriction1);
 
 		OWLDatatypeRestriction restriction2 =
 				 df.getOWLDatatypeRestriction(
@@ -38,19 +37,31 @@ public class OWLClassExpressionTest {
 				Collections.singleton(df.getOWLFacetRestriction(
 						OWLFacet.MAX_INCLUSIVE,
 						max)));
-		OWLClassExpression ce2 = df.getOWLDataSomeValuesFrom(dp, restriction2);
-		OWLClassExpression ce3 = df.getOWLDataHasValue(dp, df.getOWLLiteral(true));
-		OWLClassExpression ce4 = df.getOWLObjectAllValuesFrom(op, df.getOWLThing());
-		OWLClassExpression ce5 = df.getOWLObjectSomeValuesFrom(op.getInverseProperty(), df.getOWLThing());
-		int length1 = new OWLClassExpressionLengthCalculator().getLength(ce1);
-		int length2 = new OWLClassExpressionLengthCalculator().getLength(ce2);
-		int length3 = new OWLClassExpressionLengthCalculator().getLength(ce3);
-		int length4 = new OWLClassExpressionLengthCalculator().getLength(ce4);
-		int length5 = new OWLClassExpressionLengthCalculator().getLength(ce5);
-		System.err.println("length of "+ce1+" is "+length1);
-		System.err.println("length of "+ce2+" is "+length2);
-		System.err.println("length of "+ce3+" is "+length3);
-		System.err.println("length of "+ce4+" is "+length4);
-		System.err.println("length of "+ce5+" is "+length5);
+		OWLClass klass = df.getOWLClass(IRI.create("C"));
+
+		OWLClassExpression[] ce = new OWLClassExpression[]{
+				df.getOWLDataSomeValuesFrom(dp, restriction1),
+				df.getOWLDataSomeValuesFrom(dp, restriction2),
+				df.getOWLDataHasValue(dp, df.getOWLLiteral(true)),
+				df.getOWLObjectAllValuesFrom(op, df.getOWLThing()),
+				df.getOWLObjectSomeValuesFrom(op.getInverseProperty(), df.getOWLThing()),
+				df.getOWLObjectMaxCardinality(3, op, df.getOWLThing()),
+				df.getOWLObjectMinCardinality(3, op, df.getOWLThing()),
+				df.getOWLObjectAllValuesFrom(op, klass),
+				df.getOWLObjectAllValuesFrom(op, klass.getComplementNNF()),
+		};
+
+		//OWLClassExpressionLengthMetric metric = OWLClassExpressionLengthMetric.getDefaultMetric();
+		OWLClassExpressionLengthMetric metric = OWLClassExpressionLengthMetric.getOCELMetric();
+		//metric.objectCardinalityLength = 0;
+		metric.objectComplementLength = 0;
+		int[] lengths = new int[ce.length];
+		for (int i = 0; i < ce.length; ++i) {
+			lengths[i] = new OWLClassExpressionLengthCalculator(metric).getLength(ce[i]);
+		}
+
+		for (int i = 0; i < ce.length; ++i) {
+			System.err.println("length of " + ce[i] + " is " + lengths[i]);
+		}
 	}
 }

@@ -23,6 +23,7 @@ import java.util.Map.Entry;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class DocumentationHTMLGenerator {
 	static {
 		if (System.getProperty("log4j.configuration") == null)
@@ -41,7 +42,7 @@ public class DocumentationHTMLGenerator {
 		componentNames.putAll(cm.getComponentsNamed());
 		componentNames.put(CLI.class, "Command Line Interface");
 		componentNames.put(GlobalDoc.class, "GLOBAL OPTIONS");
-		TreeMap<String, Class<?>> componentNamesInv = new TreeMap<String, Class<?>>();
+		TreeMap<String, Class<?>> componentNamesInv = new TreeMap<>();
 		
 		// create inverse, ordered map for displaying labels
 		for(Entry<Class<?>, String> entry : componentNames.entrySet()) {
@@ -66,7 +67,7 @@ public class DocumentationHTMLGenerator {
 			compSublevel.put(coreClazz, new MutableInt(0));
 		}
 		for (Class coreClazz : AnnComponentManager.coreComponentClasses) {
-			compTree.put(coreClazz, new ArrayList<Class>());
+			compTree.put(coreClazz, new ArrayList<>());
 			for (Class subClazz : AnnComponentManager.coreComponentClasses) {
 				if (subClazz.equals(coreClazz)) {
 					continue;

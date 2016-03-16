@@ -17,7 +17,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
  */
 public class SimpleEntityCandidateGenerator extends EntityCandidateGenerator{
 	
-	private Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
+	private Set<OWLEntity> allEntities = new HashSet<>();
 	
 	public SimpleEntityCandidateGenerator(OWLOntology ontology) {
 		super(ontology);
@@ -42,7 +42,7 @@ public class SimpleEntityCandidateGenerator extends EntityCandidateGenerator{
 
 	@Override
 	public HashMap<Annotation, Set<EntityScorePair>> getCandidatesMap(Set<Annotation> annotations) {
-		HashMap<Annotation, Set<EntityScorePair>> result = new HashMap<Annotation, Set<EntityScorePair>>();
+		HashMap<Annotation, Set<EntityScorePair>> result = new HashMap<>();
 		for (Annotation annotation: annotations) 
 			result.put(annotation, getCandidates(annotation));
 		

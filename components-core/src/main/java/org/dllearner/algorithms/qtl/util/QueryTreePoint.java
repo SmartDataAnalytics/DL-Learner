@@ -18,11 +18,13 @@
  */
 package org.dllearner.algorithms.qtl.util;
 
-import java.util.Collection;
-
-import org.apache.commons.math3.stat.clustering.Clusterable;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
+
+import java.util.Collection;
+
+@SuppressWarnings("deprecation") // deprecated
+interface Clusterable<T> extends org.apache.commons.math3.stat.clustering.Clusterable<T> {}
 
 /**
  * A wrapper class that allows for using DBSCANClusterer class of Apache Commons
@@ -60,6 +62,5 @@ public class QueryTreePoint implements Clusterable<QueryTreePoint>{
 	public QueryTreePoint centroidOf(Collection<QueryTreePoint> p) {
 		return null;
 	}
-
 
 }

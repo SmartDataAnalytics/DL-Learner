@@ -59,12 +59,14 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 
-	@ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
+	@ConfigOption(description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
 	private double percentPerLengthUnit = 0.05;
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 
+	@ConfigOption()
 	protected Set<OWLClass> positiveExamples = new TreeSet<>();
+	@ConfigOption()
 	protected Set<OWLClass> negativeExamples = new TreeSet<>();
 	
 	

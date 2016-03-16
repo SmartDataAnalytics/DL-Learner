@@ -50,7 +50,6 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLProperty;
@@ -87,6 +86,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		this.entailment = Entailment.RDFS;
 	}
 	
+	@Override
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		

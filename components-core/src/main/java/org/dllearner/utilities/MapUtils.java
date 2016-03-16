@@ -27,9 +27,7 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.TreeMultimap;
-import org.aksw.commons.collections.multimaps.MultimapUtils;
 
 /**
  * Utility class for operations on maps.

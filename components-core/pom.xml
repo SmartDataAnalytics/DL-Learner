@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.3-SNAPSHOT</version>
 	</parent>
 
 	<profiles>
@@ -125,21 +125,21 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<!-- Uncomment this when the junits are independent of a runtime directory -->
-					<!--<includes> -->
-					<!--<include>org/dllearner/test/junit/*</include> -->
-					<!--</includes> -->
-					<excludes>
-						<exclude>org/dllearner/test/*</exclude>
-						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
-						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
-						<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
-						<!--This line excludes inner classes -->
-						<exclude>**/*$*</exclude>
-					</excludes>
-							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
-				</configuration>
+				<!--<configuration>-->
+					<!--&lt;!&ndash; Uncomment this when the junits are independent of a runtime directory &ndash;&gt;-->
+					<!--&lt;!&ndash;<includes> &ndash;&gt;-->
+					<!--&lt;!&ndash;<include>org/dllearner/test/junit/*</include> &ndash;&gt;-->
+					<!--&lt;!&ndash;</includes> &ndash;&gt;-->
+					<!--<excludes>-->
+						<!--<exclude>org/dllearner/test/*</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>-->
+						<!--&lt;!&ndash;This line excludes inner classes &ndash;&gt;-->
+						<!--<exclude>**/*$*</exclude>-->
+					<!--</excludes>-->
+							<!--<argLine>-Dlog4j.configuration=log4j.properties</argLine>-->
+				<!--</configuration>-->
 			</plugin>
 			<!-- Jar the tests up into a separate jar so other components tests' can 
 				leverage them -->
@@ -189,6 +189,35 @@
 							<merge>true</merge>
 							<noJekyll>true</noJekyll>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Code coverage -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
@@ -469,7 +498,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.9-RC1</version>
+			<version>0.9.10</version>
 		</dependency>
 
 

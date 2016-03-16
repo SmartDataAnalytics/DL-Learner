@@ -20,7 +20,6 @@ package org.dllearner.core;
 
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Hierarchy;

@@ -97,8 +97,8 @@ public class OntologyEngineering {
 	private static boolean useFMeasure = true;
 	public int i =1;
 	public static File f = new File("GS1.txt");
-	public static void main(String[] args) throws ComponentInitException,
-			LearningProblemUnsupportedException, IOException, Exception {
+	public static void main(String[] args) throws
+			Exception {
 
 		Logger.getRootLogger().setLevel(Level.WARN);
 		String fileName = "GeoSkills.owl";
@@ -164,7 +164,7 @@ public class OntologyEngineering {
 	}
 		
 	@SuppressWarnings("unchecked")
-	public static void run(AbstractReasonerComponent reasoner) throws ComponentInitException, IOException, LearningProblemUnsupportedException {
+	public static void run(AbstractReasonerComponent reasoner) throws ComponentInitException, IOException {
 	//	ComponentManager cm = ComponentManager.getInstance();
 		
 		String baseURI = reasoner.getBaseURI();
@@ -213,7 +213,7 @@ public class OntologyEngineering {
 		// reduce number of classes for testing purposes
 //		shrinkSet(classes, 20);
 		
-		Set<OWLClass> classes = new TreeSet<OWLClass>(reasoner.getClasses());
+		Set<OWLClass> classes = new TreeSet<>(reasoner.getClasses());
 		
 		for (OWLClass nc : classes) {
 			// check whether the class has sufficient instances
@@ -311,7 +311,7 @@ public class OntologyEngineering {
 
 						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
 								.getCurrentlyBestEvaluatedDescriptions();
-						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<>(
 								suggestions.descendingSet());
 
 						if(computeApproxDiff) {
@@ -368,75 +368,79 @@ public class OntologyEngineering {
 						}
 					
 						userInputProtocol += input;
-						
-						if (input.equals("m")) {
-							if (i == 0) {
-								missesCount++;
-							} else {
-								missesCountSC++;
-							}
-							System.out
-									.println("You said the algorithm missed a possible solution.");
-						} else if (input.equals("n")) {
-							if (i == 0) {
-								noSensibleDescriptionCount++;
-							} else {
-								noSensibleDescriptionCountSC++;
-							}
-							System.out
-									.println("You said that there is no reasonable class expression.");
-						} else {
-							int selectedNr = Integer.parseInt(input);
-							EvaluatedDescriptionClass selectedExpression = suggestionsList
-									.get(selectedNr);
-							System.out.println("You selected \""
-									+ selectedExpression.getDescription().toString() + "\".");
-							boolean isConsistent = selectedExpression.isConsistent();
-							if (!isConsistent) {
-								System.out
-										.println("Adding the expression leads to an inconsistency of the knowledge base (which is positive since it is a meaningful expression).");
-							}
-							// selectedExpression.getAdditionalInstances().
-							Set<OWLIndividual> addInst = selectedExpression.getAdditionalInstances();
-							int additionalInstances = addInst.size();
-							if (additionalInstances > 0) {
-								System.out.println("Adding the expression leads to "
-										+ additionalInstances
-										+ " new instances, e.g. \""
-										+ addInst.iterator().next().toString(
-												) + "\".");
-							}
 
-							if (i == 0) {
-								accSelectedStat.addNumber(bestAcc);
-								positionStat.addNumber(selectedNr);
-								foundDescriptionCount++;
-								if (!isConsistent) {
-									inconsistencyDetected++;
-								}
-								if (additionalInstances > 0) {
-									moreInstancesCount++;
-									moreInstancesCountStat.addNumber(additionalInstances);
-								}
-								if(bestAcc < 0.9999) {
-									nonPerfectCount++;
-								}
-							} else {
-								accSelectedStatSC.addNumber(bestAcc);
-								positionStatSC.addNumber(selectedNr);
-								foundDescriptionCountSC++;
-								if (!isConsistent) {
-									inconsistencyDetectedSC++;
-								}
-								if (additionalInstances > 0) {
-									moreInstancesCountSC++;
-									moreInstancesCountStatSC.addNumber(additionalInstances);
-								}
-								if(bestAcc < 0.9999) {
-									nonPerfectCountSC++;
-								}								
+							switch (input) {
+								case "m":
+									if (i == 0) {
+										missesCount++;
+									} else {
+										missesCountSC++;
+									}
+									System.out
+											.println("You said the algorithm missed a possible solution.");
+									break;
+								case "n":
+									if (i == 0) {
+										noSensibleDescriptionCount++;
+									} else {
+										noSensibleDescriptionCountSC++;
+									}
+									System.out
+											.println("You said that there is no reasonable class expression.");
+									break;
+								default:
+									int selectedNr = Integer.parseInt(input);
+									EvaluatedDescriptionClass selectedExpression = suggestionsList
+											.get(selectedNr);
+									System.out.println("You selected \""
+											+ selectedExpression.getDescription().toString() + "\".");
+									boolean isConsistent = selectedExpression.isConsistent();
+									if (!isConsistent) {
+										System.out
+												.println("Adding the expression leads to an inconsistency of the knowledge base (which is positive since it is a meaningful expression).");
+									}
+									// selectedExpression.getAdditionalInstances().
+									Set<OWLIndividual> addInst = selectedExpression.getAdditionalInstances();
+									int additionalInstances = addInst.size();
+									if (additionalInstances > 0) {
+										System.out.println("Adding the expression leads to "
+												+ additionalInstances
+												+ " new instances, e.g. \""
+												+ addInst.iterator().next().toString(
+										) + "\".");
+									}
+
+									if (i == 0) {
+										accSelectedStat.addNumber(bestAcc);
+										positionStat.addNumber(selectedNr);
+										foundDescriptionCount++;
+										if (!isConsistent) {
+											inconsistencyDetected++;
+										}
+										if (additionalInstances > 0) {
+											moreInstancesCount++;
+											moreInstancesCountStat.addNumber(additionalInstances);
+										}
+										if (bestAcc < 0.9999) {
+											nonPerfectCount++;
+										}
+									} else {
+										accSelectedStatSC.addNumber(bestAcc);
+										positionStatSC.addNumber(selectedNr);
+										foundDescriptionCountSC++;
+										if (!isConsistent) {
+											inconsistencyDetectedSC++;
+										}
+										if (additionalInstances > 0) {
+											moreInstancesCountSC++;
+											moreInstancesCountStatSC.addNumber(additionalInstances);
+										}
+										if (bestAcc < 0.9999) {
+											nonPerfectCountSC++;
+										}
+									}
+									break;
 							}
-						}
 					}
 					
 										

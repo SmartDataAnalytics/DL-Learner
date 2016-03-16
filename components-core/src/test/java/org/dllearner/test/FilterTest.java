@@ -95,7 +95,7 @@ public class FilterTest {
 	
 	@SuppressWarnings("deprecation")
 	static void testShort(){
-		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
+		SortedSet<StringTuple> tupleset = new TreeSet<>();
 		sc.reset();
 		for (int i = 0; i < howmany; i++) {
 			
@@ -134,8 +134,8 @@ public class FilterTest {
 	
 	@SuppressWarnings("deprecation")
 	static void  testShortWithFilter(){
-		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
-		SortedSet<StringTuple> afterfilter= new TreeSet<StringTuple>();
+		SortedSet<StringTuple> tupleset = new TreeSet<>();
+		SortedSet<StringTuple> afterfilter= new TreeSet<>();
 		/*RuleExecutor re = new  RuleExecutor();
 		
 	

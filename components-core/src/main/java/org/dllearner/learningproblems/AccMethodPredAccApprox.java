@@ -40,6 +40,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	// and class instances to positive examples)
     @ConfigOption(description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
+	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
 	
     
@@ -98,8 +99,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 		} while(itPos.hasNext() || itNeg.hasNext());
 
-		double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
-		return ret;
+		return Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 	}
 
 	@Override
@@ -116,6 +116,5 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	public void setReasoner(Reasoner reasoner) {
 		this.reasoner = reasoner;
 	}
-
 
 }

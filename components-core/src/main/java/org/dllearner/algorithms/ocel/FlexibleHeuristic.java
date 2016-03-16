@@ -81,6 +81,7 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 	}
 	
 	// implementiert einfach die Definition in der Diplomarbeit
+	@Override
 	public int compare(ExampleBasedNode n1, ExampleBasedNode n2) {
 		
 		// sicherstellen, dass Qualität ausgewertet wurde

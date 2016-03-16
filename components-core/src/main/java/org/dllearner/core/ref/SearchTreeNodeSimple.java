@@ -38,12 +38,13 @@ public class SearchTreeNodeSimple<T> implements SearchTreeNode<T>{
 	}
 	
 	public SearchTreeNodeSimple(T data, SearchTreeNode<T> parent) {
-		this(data, parent, new ArrayList<SearchTreeNode<T>>());
+		this(data, parent, new ArrayList<>());
 	}
 	
 	/**
 	 * @return the data
 	 */
+	@Override
 	public T getData() {
 		return data;
 	}

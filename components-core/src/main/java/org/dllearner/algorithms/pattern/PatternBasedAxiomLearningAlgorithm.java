@@ -83,7 +83,6 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	
 	private OWLAnnotationProperty confidenceProperty = dataFactory.getOWLAnnotationProperty(IRI.create("http://dl-learner.org/pattern/confidence"));
 
-
 	private double threshold = 0.4;
 	
 	public PatternBasedAxiomLearningAlgorithm(SparqlEndpointKS ks, FragmentExtractionStrategy extractionStrategy) {

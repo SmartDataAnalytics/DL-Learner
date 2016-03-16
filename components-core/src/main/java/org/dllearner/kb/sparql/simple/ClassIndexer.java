@@ -57,7 +57,6 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-
 /**
  * Indexes an Ontology
  * skips complex classes per default, this does not affect the hierarchy outcome
@@ -144,7 +143,6 @@ public class ClassIndexer {
         return false;
     }
 
-
     public boolean isCopyLabels() {
         return copyLabels;
     }
@@ -223,7 +221,6 @@ public class ClassIndexer {
  if (isRemove(originalClassUri) || isRemove(newClassUri)) {
  return;
  }
-
 
  // create initial classes
  OntClass toClass = toModel.createClass(newClassUri);

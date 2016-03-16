@@ -93,7 +93,7 @@ public class DescriptionLinearClassifier {
 	private Instances buildData(List<OWLClassExpression> descriptions){
 		//#attributes = #descriptions + 1 for the target class
 		int numAttributes = descriptions.size() + 1;
-		ArrayList<Attribute> attInfo = new ArrayList<Attribute>(numAttributes);
+		ArrayList<Attribute> attInfo = new ArrayList<>(numAttributes);
 		
 		for (int i = 0; i < descriptions.size(); i++) {
 			attInfo.add(new Attribute("C_" + String.valueOf(i)));
@@ -107,7 +107,7 @@ public class DescriptionLinearClassifier {
 		//2. for each concept get all instances
 		
 		//apply 2. strategy
-		List<SortedSet<OWLIndividual>> individualsList = new ArrayList<SortedSet<OWLIndividual>>(descriptions.size());
+		List<SortedSet<OWLIndividual>> individualsList = new ArrayList<>(descriptions.size());
 		for (OWLClassExpression description : descriptions) {
 			SortedSet<OWLIndividual> individuals = rc.getIndividuals(description);
 			individualsList.add(individuals);
@@ -173,7 +173,7 @@ public class DescriptionLinearClassifier {
 		celoe.init();
 		celoe.start();
 		
-		List<OWLClassExpression> descriptions = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> descriptions = new ArrayList<>();
 		for (EvaluatedDescription<? extends Score> ed : celoe.getCurrentlyBestEvaluatedDescriptions(100)) {
 			if(((EvaluatedDescriptionClass)ed).getAdditionalInstances().size() > 0){
 				System.out.println(ed);

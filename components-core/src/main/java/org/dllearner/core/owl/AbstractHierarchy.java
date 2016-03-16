@@ -18,18 +18,13 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+import java.util.Map.Entry;
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -229,8 +224,8 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		
 		// add empty sets for each concept
 		for (T c : conceptsInSubsumptionHierarchy) {
-			hierarchyDownNew.put(c, new TreeSet<T>());
-			hierarchyUpNew.put(c, new TreeSet<T>());
+			hierarchyDownNew.put(c, new TreeSet<>());
+			hierarchyUpNew.put(c, new TreeSet<>());
 		}
 
 		for (T c : conceptsInSubsumptionHierarchy) {

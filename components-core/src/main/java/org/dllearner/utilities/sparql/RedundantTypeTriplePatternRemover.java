@@ -94,8 +94,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	@Override
 	public void visit(ElementGroup el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}
@@ -187,8 +186,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 
 	@Override
 	public void visit(ElementUnion el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}

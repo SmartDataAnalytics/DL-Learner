@@ -47,9 +47,9 @@ public interface EntityTextRetriever {
 	 * @param entity The entity to handle.
 	 * @return A weighted set of strings. For a value x, we need to have 0 <= x <= 1.
 	 */
-	public Map<List<Token>, Double> getRelevantText(OWLEntity entity);
+	Map<List<Token>, Double> getRelevantText(OWLEntity entity);
 	
-	public Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
+	Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
 
 	/**
 	 * @param entity

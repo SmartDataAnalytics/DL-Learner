@@ -18,9 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.utils;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.collections15.ListUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 

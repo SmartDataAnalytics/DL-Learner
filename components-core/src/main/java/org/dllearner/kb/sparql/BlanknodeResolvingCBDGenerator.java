@@ -84,7 +84,6 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 			triplesTemplate.append("}");
 		}
 
-
 		ParameterizedSparqlString query = new ParameterizedSparqlString("prefix : <http://dl-learner.org/ontology/> " + "CONSTRUCT{" + constructTemplate + "}" + " WHERE {" + triplesTemplate + "}");
 		query.setIri("s0", resourceURI);
 		System.out.println(query);
@@ -94,6 +93,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		return cbd;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 

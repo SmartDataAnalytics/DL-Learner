@@ -67,6 +67,7 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 		return df.getOWLDisjointObjectPropertiesAxiom(property, otherProperty);
 	}
 	
+	@Override
 	public double computeScore(int candidatePopularity, int popularity, int overlap) {
 		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
 	}

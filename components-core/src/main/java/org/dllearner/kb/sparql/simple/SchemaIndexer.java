@@ -66,7 +66,6 @@ public class SchemaIndexer {
             }
         }
 
-
     }
 
     public OntModel getHierarchyForURI(String classUri) {

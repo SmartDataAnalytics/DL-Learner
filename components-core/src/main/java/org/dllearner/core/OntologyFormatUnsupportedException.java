@@ -18,7 +18,6 @@
  */
 package org.dllearner.core;
 
-
 /**
  * Indicates that an operation is not supported/implemented for
  * a specific ontology file format.

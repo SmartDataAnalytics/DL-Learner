@@ -44,31 +44,26 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
 	private long nanoStartTime;
-	@ConfigOption(name = "maxExecutionTimeInSeconds",
-	              defaultValue = "10",
+	@ConfigOption(defaultValue = "10",
 	              description = "Maximum execution time in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 
-	@ConfigOption(name = "classToDescribe",
-	              description = "class of which an OWL class expression should be learned",
+	@ConfigOption(description = "class of which an OWL class expression should be learned",
 	              required = true)
 	private OWLClass classToDescribe;
 
 	private List<OWLIndividual> classInstances;
 	private TreeSet<OWLIndividual> classInstancesSet;
-	@ConfigOption(name = "equivalence",
-	              defaultValue = "true",
+	@ConfigOption(defaultValue = "true",
 	              description = "Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
-	@ConfigOption(name = "betaSC",
-	              description = "beta index for F-measure in super class learning",
+	@ConfigOption(description = "beta index for F-measure in super class learning",
 	              required = false,
 	              defaultValue = "3.0")
 	private double betaSC = 3.0;
 
-	@ConfigOption(name = "betaEq",
-	              description = "beta index for F-measure in definition learning",
+	@ConfigOption(description = "beta index for F-measure in definition learning",
 	              required = false,
 	              defaultValue = "1.0")
 	private double betaEq = 1.0;
@@ -80,34 +75,28 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// specific variables for generalised F-measure
 	private TreeSet<OWLIndividual> negatedClassInstances;
 
-	@ConfigOption(name = "accuracyMethod",
-	              description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
 	              defaultValue = "PRED_ACC")
 	protected AccMethod accuracyMethod;
 
-	@ConfigOption(name = "checkConsistency",
-	              description = "whether to check for consistency of suggestions (when added to ontology)",
+	@ConfigOption(description = "whether to check for consistency of suggestions (when added to ontology)",
 	              required = false,
 	              defaultValue = "true")
 	private boolean checkConsistency = true;
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
-
 	public ClassLearningProblem() {
 
 	}
 
+	@Override
 	protected ReasoningUtils newReasoningUtils(AbstractReasonerComponent reasoner) {
 		return new ReasoningUtilsCLP(this, reasoner);
 	}
 
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
-	}
-
-	public static String getName() {
-		return "class learning problem";
 	}
 
 	@Override
@@ -161,7 +150,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			((AccMethodApproximate) accuracyMethod).setReasoner(getReasoner());
 		}
 		if (accuracyMethod instanceof AccMethodThreeValued) {
-			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), Sets.newTreeSet(superClassInstances));
+			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), superClassInstances);
 			negatedClassInstances = Sets.newTreeSet(cc[0].trueSet);
 //			System.out.println("negated class instances: " + negatedClassInstances);
 		}
@@ -177,7 +166,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
-		Coverage[] cc = ((ReasoningUtilsCLP)reasoningUtil).getCoverageCLP(description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances));
+		Coverage[] cc = ((ReasoningUtilsCLP)reasoningUtil).getCoverageCLP(description, classInstances, superClassInstances);
 
 		double recall = Heuristics.divideOrZero(cc[0].trueCount, classInstances.size()); // tp / (tp+fn)
 		double precision = Heuristics.divideOrZero(cc[0].trueCount, cc[0].trueCount + cc[1].trueCount); // tp / (tp+fp)
@@ -188,7 +177,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		if (accuracyMethod instanceof AccMethodTwoValued) {
 			acc = reasoningUtil.getAccuracyOrTooWeakExact2((AccMethodTwoValued) accuracyMethod, cc, noise);
 		} else if (accuracyMethod instanceof AccMethodThreeValued) {
-			acc = ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeakExact3((AccMethodThreeValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), negatedClassInstances, noise);
+			acc = ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeakExact3((AccMethodThreeValued) accuracyMethod, description, classInstances, superClassInstances, negatedClassInstances, noise);
 		} else {
 			throw new RuntimeException();
 		}
@@ -217,14 +206,17 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		nanoStartTime = System.nanoTime();
 		if (accuracyMethod instanceof AccMethodThreeValued) {
-			return ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeak3((AccMethodThreeValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), negatedClassInstances, noise);
+			return ((ReasoningUtilsCLP)reasoningUtil).getAccuracyOrTooWeak3((AccMethodThreeValued) accuracyMethod, description, classInstances, superClassInstances, negatedClassInstances, noise);
 		} else if (accuracyMethod instanceof  AccMethodTwoValued) {
-			return reasoningUtil.getAccuracyOrTooWeak2((AccMethodTwoValued) accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+			return reasoningUtil.getAccuracyOrTooWeak2((AccMethodTwoValued) accuracyMethod, description, classInstances, superClassInstances, noise);
 		} else {
 			throw new RuntimeException();
 		}
 	}
 
+	/**
+	 * @return whether the description test should be aborted because time expired
+	 */
 	public boolean terminationTimeExpired() {
 		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds * 1000000000L));
 		if (val) {
@@ -233,10 +225,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return val;
 	}
 
-
 	// see http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
 	// for all methods below (currently dummies)
-
 
 	/**
 	 * @return the classToDescribe
@@ -336,6 +326,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return cc[0].trueCount/(double)cc[0].total;
 	}
 
+	/* () for ontology engineering */
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		AccMethodTwoValuedApproximate acc;
 		if (accuracyMethod instanceof AccMethodPredAcc) {
@@ -348,9 +339,10 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			throw new RuntimeException();
 		}
 		acc.setReasoner(reasoner);
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 
+	/* () for ontology engineering */
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 		AccMethodTwoValued acc;
 		if (accuracyMethod instanceof AccMethodPredAcc) {
@@ -362,7 +354,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		} else {
 			throw new RuntimeException();
 		}
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 }
 

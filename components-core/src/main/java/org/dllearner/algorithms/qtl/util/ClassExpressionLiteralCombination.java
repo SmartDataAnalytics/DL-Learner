@@ -60,7 +60,6 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 import javax.annotation.Nonnull;
 
@@ -374,6 +373,5 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 			System.out.println(expr);
 		}
 	}
-
 
 }
