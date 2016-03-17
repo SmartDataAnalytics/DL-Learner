@@ -33,12 +33,12 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	public Set<OWLClassExpression> refine(OWLClassExpression ce) {
 		Set<OWLClassExpression> refinements = super.refine(ce);
 
-		System.err.println(ce + ":" + refinements);
-
-		if(refinements.size() == 1 && refinements.iterator().next().equals(ce)) {
-			System.out.println(":::" + ce);
-			System.exit(0);
-		}
+//		System.err.println(ce + ":" + refinements);
+//
+//		if(refinements.size() == 1 && refinements.iterator().next().equals(ce)) {
+//			System.out.println(":::" + ce);
+//			System.exit(0);
+//		}
 		
 		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
 		for(int i = 1; i <= 3; i++) {
@@ -47,7 +47,13 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 				if(refinements.isEmpty() && topRef.equals(ce)) {// we can avoid the generation of A AND A if \rho(A) was empty
 					continue;
 				}
-				List<OWLClassExpression> operands = Lists.newArrayList(ce, topRef);
+				List<OWLClassExpression> operands = new ArrayList<>();
+				if(ce instanceof OWLObjectIntersectionOf) { // flatten to avoid (A AND (A AND A)) instead of (A AND A AND A)
+					operands.addAll(((OWLObjectIntersectionOf) ce).getOperands());
+				} else {
+					operands.add(ce);
+				}
+				operands.add(topRef);
 				Collections.sort(operands);
 				OWLObjectIntersectionOf mc = new OWLObjectIntersectionOfImplExt(operands);
 				refinements.add(mc);

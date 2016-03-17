@@ -55,22 +55,12 @@ public class GraphUtils {
 
 	public static <V, E> void writeGraphML(DirectedGraph<V, E> graph, String fileName) {
 
-		VertexNameProvider<V> vertexNameProvider = new VertexNameProvider<V>() {
-			@Override
-			public String getVertexName(V vertex) {
-				return vertex.toString();
-			}
-		};
+		VertexNameProvider<V> vertexNameProvider = vertex -> vertex.toString();
+		EdgeNameProvider<E> edgeLabelProvider = edge -> edge.toString();
 
-		EdgeNameProvider<E> edgeLabelProvider = new EdgeNameProvider<E>() {
-			@Override
-			public String getEdgeName(E edge) {
-				return edge.toString();
-			}
-		};
-		GraphMLExporter<V, E> exporter = new GraphMLExporter<>(new IntegerNameProvider<V>(),
+		GraphMLExporter<V, E> exporter = new GraphMLExporter<>(new IntegerNameProvider<>(),
 																	   vertexNameProvider,
-																	   new IntegerEdgeNameProvider<E>(),
+															   new IntegerEdgeNameProvider<>(),
 																	   edgeLabelProvider);
 		try {
 			exporter.export(new FileWriter(fileName), graph);

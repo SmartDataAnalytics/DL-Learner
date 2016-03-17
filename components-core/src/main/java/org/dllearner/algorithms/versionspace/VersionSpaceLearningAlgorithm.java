@@ -93,11 +93,11 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 
-		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("../examples/family/father_oe.owl"));
-		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://example.com/father#father"));
+//		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("../examples/family/father_oe.owl"));
+//		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://example.com/father#father"));
 
-//		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("../examples/swore/swore.rdf"));
-//		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
+		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("../examples/swore/swore.rdf"));
+		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
 
 		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(new OWLAPIOntology(ont));
 		reasoner.init();
@@ -107,8 +107,8 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 		lp.init();
 
 		ComplexityModel complexityModel = new HybridComplexityModel(
-				new ClassExpressionLengthComplexityModel(5),
-				new ClassExpressionDepthComplexityModel(2)
+				new ClassExpressionLengthComplexityModel(7),
+				new ClassExpressionDepthComplexityModel(1)
 		);
 
 		VersionSpaceLearningAlgorithm la = new VersionSpaceLearningAlgorithm(lp, reasoner, complexityModel);

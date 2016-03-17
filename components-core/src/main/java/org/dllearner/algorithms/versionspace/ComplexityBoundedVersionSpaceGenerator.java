@@ -2,6 +2,8 @@ package org.dllearner.algorithms.versionspace;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.dllearner.algorithms.versionspace.complexity.ClassExpressionDepthComplexityModel;
 import org.dllearner.algorithms.versionspace.complexity.ClassExpressionLengthComplexityModel;
 import org.dllearner.algorithms.versionspace.complexity.ComplexityModel;
@@ -11,7 +13,10 @@ import org.dllearner.algorithms.versionspace.operator.ComplexityBoundedOperatorA
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.utilities.datastructures.UniqueQueue;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.jgrapht.graph.DefaultEdge;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
@@ -20,12 +25,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -52,21 +55,26 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 		DefaultVersionSpaceNode rootNode = new DefaultVersionSpaceNode(topConcept);
 
 		// create the version space
-		final VersionSpace<DefaultVersionSpaceNode> versionSpace = new VersionSpace(rootNode);
+		VersionSpace<DefaultVersionSpaceNode> versionSpace = new VersionSpace(rootNode);
 
 		// keep track of already visited(refined) nodes
 		final Set<DefaultVersionSpaceNode> visited = new HashSet<>();
 
 		// the list of nodes we have to process
-		Queue<DefaultVersionSpaceNode> todo = new ArrayDeque<>();
+		Queue<DefaultVersionSpaceNode> todo = new UniqueQueue<>();
 		todo.add(rootNode);
 
+		int i = 0;
+		Monitor mon = MonitorFactory.getTimeMonitor("ref");
 		while(!todo.isEmpty()) {
 			// pick next node to process
 			DefaultVersionSpaceNode parent = todo.poll();
 
 			// compute all refinements
+			mon.start();
 			Set<OWLClassExpression> refinements = operator.refine(parent.getHypothesis());
+			mon.stop();
+//			System.out.println(parent.getHypothesis() + ":" + refinements);
 
 			// add child node and edge to parent for each refinement
 			for (OWLClassExpression ref : refinements) {
@@ -83,19 +91,55 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 				}
 			}
 			visited.add(parent);
+			if(i++ % 1000 == 0) {
+				System.out.println(i + ":" + todo.size() + "  avg_t(rho)=" + mon.getAvg() + "ms");
+			}
 		}
 
+		LOGGER.info("#nodes(before pruning): {}", versionSpace.vertexSet().size());
 
 
+		LOGGER.info("performing version space pruning...");
 		// perform pruning, e.g. combine semantically equivalent concepts
 		// 1. apply syntactic rules
-		Multimap<OWLClassExpression, DefaultVersionSpaceNode> map = HashMultimap.create();
+		Multimap<DefaultVersionSpaceNode, DefaultVersionSpaceNode> map = HashMultimap.create();
+		Map<DefaultVersionSpaceNode, DefaultVersionSpaceNode> node2NewNode = new HashMap<>();
+		OWLClassExpressionMinimizer minimizer = new OWLClassExpressionMinimizer(new OWLDataFactoryImpl(), operator.getReasoner());
 		for (DefaultVersionSpaceNode node : versionSpace.vertexSet()) {
 			OWLClassExpression hypothesis = node.getHypothesis();
 			OWLClassExpression cleanedHypothesis = ConceptTransformation.applyEquivalenceRules(hypothesis);
-			System.out.println(hypothesis + " --> " + cleanedHypothesis);
-			map.put(cleanedHypothesis, node);
+			cleanedHypothesis = minimizer.minimizeClone(cleanedHypothesis);
+//			System.out.println(hypothesis + " --> " + cleanedHypothesis);
+			DefaultVersionSpaceNode newNode = new DefaultVersionSpaceNode(cleanedHypothesis);
+			map.put(newNode, node);
+			node2NewNode.put(node, newNode);
 		}
+
+		// merge the nodes that contain the same hypothesis
+		VersionSpace<DefaultVersionSpaceNode> prunedVersionSpace = new VersionSpace(rootNode);
+//		for (Map.Entry<DefaultVersionSpaceNode, DefaultVersionSpaceNode> entry : map.entries()) {
+//			DefaultVersionSpaceNode newNode = entry.getKey();
+//			prunedVersionSpace.addVertex(newNode);
+//
+//			DefaultVersionSpaceNode oldNodes = entry.getValue();
+//
+//
+//		}
+		for (Map.Entry<DefaultVersionSpaceNode, DefaultVersionSpaceNode> entry : node2NewNode.entrySet()) {
+			DefaultVersionSpaceNode node = entry.getKey();
+			DefaultVersionSpaceNode newNode = entry.getValue();
+
+			prunedVersionSpace.addVertex(newNode);
+			Set<DefaultEdge> inEdges = versionSpace.incomingEdgesOf(node);
+			for (DefaultEdge edge : inEdges) {
+				DefaultVersionSpaceNode oldParent = versionSpace.getEdgeSource(edge);
+				DefaultVersionSpaceNode newParent = node2NewNode.get(oldParent);
+				prunedVersionSpace.addVertex(newParent);
+
+				prunedVersionSpace.addEdge(newNode, newParent);
+			}
+		}
+		versionSpace = prunedVersionSpace;
 
 		// restructure the graph, i.e. we have only one node
 
