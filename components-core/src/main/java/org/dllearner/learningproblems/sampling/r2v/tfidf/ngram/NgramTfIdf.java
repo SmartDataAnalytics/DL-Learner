@@ -54,7 +54,7 @@ public class NgramTfIdf {
      * @return iterator over document terms, where each document's terms is an iterator over strings
      */
     public static Iterable<Collection<String>> ngramDocumentTerms(List<Integer> ns, Iterable<String> documents) {
-        return ngramDocumentTerms(new RegularExpressionTokenizer(), ns, documents);
+        return ngramDocumentTerms(new TrigramRegexTokenizer(), ns, documents);
     }
 
     private static List<List<String>> ngrams(int n, List<String> tokens) {
