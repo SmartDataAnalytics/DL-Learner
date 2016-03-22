@@ -17,7 +17,6 @@ public class R2VFeature {
 	private HashMap<String, R2VSubfeature> subfeatures;
 	private int count = 0;
 	private String stringValue;
-//	private ArrayList<R2VSubfeature> subfeatures;
 	
 	public R2VFeature(R2VModel model, R2VInstance instance, R2VProperty property) {
 		super();
@@ -25,7 +24,6 @@ public class R2VFeature {
 		this.instance = instance;
 		this.property = property;
 		subfeatures = new HashMap<>();
-//		subfeatures = new ArrayList<>();
 	}
 
 	public R2VInstance getInstance() {
@@ -44,11 +42,7 @@ public class R2VFeature {
 	public HashMap<String, R2VSubfeature> getSubfeatures() {
 		return subfeatures;
 	}
-	
-//	public ArrayList<R2VSubfeature> getSubfeatures() {
-//		return subfeatures;
-//	}
-	
+		
 	public R2VModel getModel() {
 		return model;
 	}

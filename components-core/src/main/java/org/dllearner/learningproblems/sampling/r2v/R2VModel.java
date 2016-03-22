@@ -1,9 +1,11 @@
 package org.dllearner.learningproblems.sampling.r2v;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.learningproblems.sampling.strategy.FEXStrategy;
 import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
@@ -29,7 +31,7 @@ public class R2VModel {
 	
 	private OWLOntology ontology;
 	
-	// TODO as many indexes (tf-idf) as properties
+	// as many indexes (tf-idf) as properties
 	private HashMap<String, R2VProperty> properties = new HashMap<>();
 	private HashMap<String, R2VInstance> instances = new HashMap<>();
 	
@@ -72,10 +74,10 @@ public class R2VModel {
 						}
 					}
 				}
-				System.out.println(instance.getUri() + "\t" + instance.getFlatSparseVector());
+				logger.info(instance.getUri() + "\t" + instance.getFlatSparseVector());
 			}
 		} else {
-			// TODO
+			logger.info("WARNING: Unknown FEX strategy type! Skipping string processing...");
 		}
 		
 	}
@@ -88,7 +90,7 @@ public class R2VModel {
 		logger.info("Processing individual "+ind);
 		
 		// index individual
-		R2VInstance instance = new R2VInstance(this, ind.toString());
+		R2VInstance instance = new R2VInstance(this, ind);
 		instances.put(instance.getUri(), instance);
 
 		// get CBD
@@ -170,11 +172,53 @@ public class R2VModel {
 				
 	}
 
+	/**
+	 * @param points 
+	 * @return
+	 */
+	public OWLNamedIndividual getMeanPoint(Collection<OWLNamedIndividual> points) {
+		// TODO this is a dummy test
+		for(R2VInstance instance : instances.values())
+			if(points.contains(instance.getIndividual()))
+				return instance.getIndividual();
+		return null;
+	}
+	
+	/**
+	 * Euclidean distance of two individuals within the model.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public Double distance(OWLNamedIndividual a, OWLNamedIndividual b) {
+		HashMap<String, Double> aV = instances.get(a.toString()).getFlatSparseVector();
+		HashMap<String, Double> bV = instances.get(b.toString()).getFlatSparseVector();
+		TreeSet<String> commonSpace = new TreeSet<>();
+		commonSpace.addAll(aV.keySet());
+		commonSpace.addAll(bV.keySet());
+		Double sum = 0d;
+		for(String dim : commonSpace) {
+			Double aVal = aV.containsKey(dim) ? aV.get(dim) : 0d;
+			Double bVal = bV.containsKey(dim) ? bV.get(dim) : 0d;
+			sum += Math.pow(aVal - bVal, 2);
+		}
+		return Math.sqrt(sum);
+	}
+	
 	@Override
 	public String toString() {
 		return "R2VModel [instances=" + instances + ", strategy=" + strategy
 				+ "]";
 	}
-	
+
+	public String info() {
+		TreeSet<String> subf = new TreeSet<>();
+		for(R2VInstance instance : instances.values())
+			for(R2VFeature feature : instance.getFeatures().values())
+				subf.addAll(feature.getSubfeatures().keySet());
+		return "R2VModel #instances="+instances.size()+" #properties="+properties.size()+" #features="+subf.size();
+	}
+
 	
 }

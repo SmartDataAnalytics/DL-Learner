@@ -2,21 +2,29 @@ package org.dllearner.learningproblems.sampling.r2v;
 
 import java.util.HashMap;
 
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+
 /**
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
  *
  */
 public class R2VInstance {
 	
+	private OWLNamedIndividual ind;
 	private String uri;
 	private R2VModel model;
 	private HashMap<R2VProperty, R2VFeature> features;
 
-	public R2VInstance(R2VModel model, String uri) {
+	public R2VInstance(R2VModel model, OWLNamedIndividual ind) {
 		super();
 		this.model = model;
-		this.uri = uri;
+		this.ind = ind;
+		this.uri = ind.toString();
 		this.features = new HashMap<>();
+	}
+
+	public OWLNamedIndividual getIndividual() {
+		return ind;
 	}
 
 	public String getUri() {

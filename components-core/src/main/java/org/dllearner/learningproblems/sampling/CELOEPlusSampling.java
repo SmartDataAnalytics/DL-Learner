@@ -73,30 +73,24 @@ public class CELOEPlusSampling {
 		this.examples.put(Type.POS, posF);
 		this.examples.put(Type.NEG, negF);
 
-		// TODO
-		
 		model = new R2VModel(ont, new TfidfFEXStrategy());
 		
 		// for each class (pos/neg)
 		for(Type t : examples.keySet()) {
-			
 			logger.info("Processing type "+t.name());
-			
-			// for each individual
-			for(OWLNamedIndividual ind : examples.get(t)) {
+			// add individuals to the model
+			for(OWLNamedIndividual ind : examples.get(t))
 				model.add(ind);
-			}
-			
 		}
 		
 		// compute string features according to FEX strategy
 		model.stringFeatures();
 
-		System.out.println(model);
-
 		// normalize values
 		model.normalize();
 		
+		// print model info
+		logger.info(model.info());
 	}
 	
 	/**
@@ -126,15 +120,38 @@ public class CELOEPlusSampling {
 	}
 
 	private OWLIndividual next(Type type) {
+		
+		// method will return one element of this collection
 		Collection<OWLNamedIndividual> points = examples.get(type);
+		
+		// get current element
 		OWLNamedIndividual current = currents.get(type);
 		
+		if(current == null) {
+			current = model.getMeanPoint(points);
+		}
+		
+		logger.info("Current individual is "+current);
+		
 		// compute similarities and get farthest point
+		OWLNamedIndividual farthest = null;
+		Double max = Double.MIN_VALUE;
+		for(OWLNamedIndividual ind : points) {
+			if(ind != current) {
+				Double d = model.distance(current, ind);
+				logger.info("d("+current+", "+ind+") = "+d);
+				if(d > max) {
+					max = d;
+					farthest = ind;
+				}
+			}
+		}
 		
+		// update current
+		currents.put(type, farthest);
 		
-		// TODO
-		
-		return null;
+		return farthest;
 	}
+
 
 }
