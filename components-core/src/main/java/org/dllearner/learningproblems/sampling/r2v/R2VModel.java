@@ -1,6 +1,5 @@
 package org.dllearner.learningproblems.sampling.r2v;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -173,15 +172,22 @@ public class R2VModel {
 	}
 
 	/**
-	 * @param points 
 	 * @return
 	 */
-	public OWLNamedIndividual getMeanPoint(Collection<OWLNamedIndividual> points) {
-		// TODO this is a dummy test
-		for(R2VInstance instance : instances.values())
-			if(points.contains(instance.getIndividual()))
-				return instance.getIndividual();
-		return null;
+	private HashMap<String, Double> getMeanPoint() {
+		HashMap<String, Double> mean = new HashMap<>();
+		TreeSet<String> feat = new TreeSet<>();
+		for(R2VInstance instance : instances.values()) {
+			HashMap<String, Double> sparse = instance.getFlatSparseVector();
+			for(String key : sparse.keySet()) {
+				Double d = mean.containsKey(key) ? mean.get(key) : 0d;
+				mean.put(key, d + sparse.get(key));
+			}
+			feat.addAll(sparse.keySet());
+		}
+		for(String key : mean.keySet())
+			mean.put(key, mean.get(key) / feat.size());
+		return mean;
 	}
 	
 	/**
@@ -201,6 +207,7 @@ public class R2VModel {
 		for(String dim : commonSpace) {
 			Double aVal = aV.containsKey(dim) ? aV.get(dim) : 0d;
 			Double bVal = bV.containsKey(dim) ? bV.get(dim) : 0d;
+			System.out.println(aVal + "\t" + bVal + "\t" + Math.pow(aVal - bVal, 2));
 			sum += Math.pow(aVal - bVal, 2);
 		}
 		return Math.sqrt(sum);
@@ -218,6 +225,22 @@ public class R2VModel {
 			for(R2VFeature feature : instance.getFeatures().values())
 				subf.addAll(feature.getSubfeatures().keySet());
 		return "R2VModel #instances="+instances.size()+" #properties="+properties.size()+" #features="+subf.size();
+	}
+
+	/**
+	 * @param ind
+	 * @return
+	 */
+	public Double distanceFromMeanPoint(OWLNamedIndividual ind) {
+		HashMap<String, Double> aV = instances.get(ind.toString()).getFlatSparseVector();
+		HashMap<String, Double> bV = getMeanPoint();
+		Double sum = 0d;
+		for(String dim : bV.keySet()) {
+			Double aVal = aV.containsKey(dim) ? aV.get(dim) : 0d;
+			Double bVal = bV.get(dim);
+			sum += Math.pow(aVal - bVal, 2);
+		}
+		return Math.sqrt(sum);
 	}
 
 	

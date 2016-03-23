@@ -1,6 +1,5 @@
 package org.dllearner.learningproblems.sampling;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -86,7 +85,7 @@ public class CELOEPlusTest {
 		
 		cps.sample(reasoner, TARGET_CLASS, pos, neg);
 		
-		for(int i=0; i<1; i++) {
+		for(int i=0; i<4; i++) {
 			OWLIndividual p = cps.nextPositive();
 			logger.info("nextPos("+i+") is "+p);
 			OWLIndividual n = cps.nextNegative();

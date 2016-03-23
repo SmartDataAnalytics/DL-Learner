@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.Reasoner;
-import org.dllearner.learningproblems.sampling.r2v.R2VInstance;
 import org.dllearner.learningproblems.sampling.r2v.R2VModel;
 import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -37,6 +36,7 @@ public class CELOEPlusSampling {
 	}
 	
 	private HashMap<Type, Collection<OWLNamedIndividual>> examples = new HashMap<>();
+	private HashMap<Type, Collection<OWLNamedIndividual>> cache = new HashMap<>();
 	private HashMap<Type, OWLNamedIndividual> currents = new HashMap<>();
 	
 	private String className;
@@ -81,6 +81,8 @@ public class CELOEPlusSampling {
 			// add individuals to the model
 			for(OWLNamedIndividual ind : examples.get(t))
 				model.add(ind);
+			// create caches
+			cache.put(t, new TreeSet<>());
 		}
 		
 		// compute string features according to FEX strategy
@@ -126,19 +128,19 @@ public class CELOEPlusSampling {
 		
 		// get current element
 		OWLNamedIndividual current = currents.get(type);
-		
-		if(current == null) {
-			current = model.getMeanPoint(points);
-		}
-		
+				
 		logger.info("Current individual is "+current);
 		
 		// compute similarities and get farthest point
 		OWLNamedIndividual farthest = null;
 		Double max = Double.MIN_VALUE;
 		for(OWLNamedIndividual ind : points) {
-			if(ind != current) {
-				Double d = model.distance(current, ind);
+			if(ind != current && !cache.get(type).contains(ind)) {
+				Double d;
+				if(current != null)
+					d = model.distance(current, ind);
+				else
+					d = model.distanceFromMeanPoint(ind);
 				logger.info("d("+current+", "+ind+") = "+d);
 				if(d > max) {
 					max = d;
@@ -149,6 +151,10 @@ public class CELOEPlusSampling {
 		
 		// update current
 		currents.put(type, farthest);
+		
+		// add to cache, to avoid double visits
+		if(farthest != null)
+			cache.get(type).add(farthest);
 		
 		return farthest;
 	}
