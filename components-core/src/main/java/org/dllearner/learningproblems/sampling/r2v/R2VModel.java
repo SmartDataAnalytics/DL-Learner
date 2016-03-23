@@ -47,7 +47,54 @@ public class R2VModel {
 	}
 	
 	public void normalize() {
-		// TODO
+		HashMap<String, Double> min = new HashMap<>();
+		HashMap<String, Double> max = new HashMap<>();
+		
+		// find min/max
+		for(R2VInstance instance : instances.values()) {
+			HashMap<R2VProperty, R2VFeature> features = instance.getFeatures();
+			for(R2VProperty property : features.keySet()) {
+				String key = property.getUri();
+				R2VFeature feature = features.get(property);
+				for(R2VSubfeature subf : feature.getSubfeatures().values()) {
+					Double d = subf.getValue();
+					if(!min.containsKey(key))
+						min.put(key, d);
+					else {
+						if(d < min.get(key))
+							min.put(key, d);
+					}
+					if(!max.containsKey(key))
+						max.put(key, d);
+					else {
+						if(d > max.get(key))
+							max.put(key, d);
+					}
+				}
+			}
+		}
+		
+		// handle min=max
+		for(String key : min.keySet())
+			if(min.get(key) == max.get(key)) {
+				if(min.get(key) == 0d) { // (0,0) becomes (0,1) => all zeroes
+					max.put(key, 1d);
+				} else { // (n,n) with n != 0 becomes (0,n) => all ones
+					min.put(key, 0d);
+				}
+			}
+		
+		// normalize
+		for(R2VInstance instance : instances.values()) {
+			HashMap<R2VProperty, R2VFeature> features = instance.getFeatures();
+			for(R2VProperty property : features.keySet()) {
+				String key = property.getUri();
+				R2VFeature feature = features.get(property);
+				for(R2VSubfeature subf : feature.getSubfeatures().values()) {
+					subf.setNormValue((subf.getValue() - min.get(key)) / (max.get(key) - min.get(key)));
+				}
+			}
+		}
 	}
 	
 	/**
@@ -207,7 +254,7 @@ public class R2VModel {
 		for(String dim : commonSpace) {
 			Double aVal = aV.containsKey(dim) ? aV.get(dim) : 0d;
 			Double bVal = bV.containsKey(dim) ? bV.get(dim) : 0d;
-			System.out.println(aVal + "\t" + bVal + "\t" + Math.pow(aVal - bVal, 2));
+			logger.trace(aVal + "\t" + bVal + "\t" + Math.pow(aVal - bVal, 2));
 			sum += Math.pow(aVal - bVal, 2);
 		}
 		return Math.sqrt(sum);

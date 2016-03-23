@@ -48,7 +48,7 @@ public class R2VInstance {
 		HashMap<String, Double> vector = new HashMap<>();
 		for(R2VFeature feature : features.values())
 			for(R2VSubfeature subfeature : feature.getSubfeatures().values())
-				vector.put(feature.getProperty().getUri() + "^^" + subfeature.getName(), subfeature.getValue());
+				vector.put(feature.getProperty().getUri() + "^^" + subfeature.getName(), subfeature.getNormValue());
 		return vector;
 	}
 

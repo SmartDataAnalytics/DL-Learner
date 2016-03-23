@@ -7,6 +7,7 @@ package org.dllearner.learningproblems.sampling.r2v;
 public class R2VSubfeature {
 	
 	private Double value;
+	private Double normValue;
 	private String name;
 	private R2VFeature feature;
 	
@@ -34,4 +35,11 @@ public class R2VSubfeature {
 		return name;
 	}
 	
+	public Double getNormValue() {
+		return normValue;
+	}
+
+	public void setNormValue(Double normValue) {
+		this.normValue = normValue;
+	}
 }
