@@ -14,6 +14,8 @@ public class R2VInstance {
 	private String uri;
 	private R2VModel model;
 	private HashMap<R2VProperty, R2VFeature> features;
+	
+	private HashMap<String, Double> flatSparseVector;
 
 	public R2VInstance(R2VModel model, OWLNamedIndividual ind) {
 		super();
@@ -45,11 +47,15 @@ public class R2VInstance {
 	 * @return
 	 */
 	public HashMap<String, Double> getFlatSparseVector() {
-		HashMap<String, Double> vector = new HashMap<>();
+		// return cached vector
+		if(flatSparseVector != null)
+			return flatSparseVector;
+		// else, compute it
+		flatSparseVector = new HashMap<>();
 		for(R2VFeature feature : features.values())
 			for(R2VSubfeature subfeature : feature.getSubfeatures().values())
-				vector.put(feature.getProperty().getUri() + "^^" + subfeature.getName(), subfeature.getNormValue());
-		return vector;
+				flatSparseVector.put(feature.getProperty().getUri() + "^^" + subfeature.getName(), subfeature.getNormValue());
+		return flatSparseVector;
 	}
 
 	@Override

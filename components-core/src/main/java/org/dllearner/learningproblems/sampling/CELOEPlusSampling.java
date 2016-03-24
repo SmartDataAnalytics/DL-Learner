@@ -85,9 +85,11 @@ public class CELOEPlusSampling {
 			cache.put(t, new TreeSet<>());
 		}
 		
+		logger.info("Computing string features...");
 		// compute string features according to FEX strategy
 		model.stringFeatures();
 
+		logger.info("Normalizing values...");
 		// normalize values
 		model.normalize();
 		

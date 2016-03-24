@@ -40,7 +40,8 @@ public class CELOEPlusTest {
 	 * Path to the test files.
 	 */
 	private static final String PATH_PREFIX = "src/test/resources/org/dllearner/kb/";
-
+//	private static final String PATH_PREFIX = "../Celoe datasets/sampling/";
+	
 	/**
 	 * URI of the superclass which the individuals belongs to.
 	 */
@@ -53,6 +54,8 @@ public class CELOEPlusTest {
 
 	@Test
 	public void test() {
+		
+		long t0 = System.currentTimeMillis();
 		
 		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
 		assertNotNull(cps);
@@ -91,6 +94,8 @@ public class CELOEPlusTest {
 			OWLIndividual n = cps.nextNegative();
 			logger.info("nextNeg("+i+") is "+n);
 		}
+		
+		System.out.println("Execution millis: " + (System.currentTimeMillis() - t0));
 
 	}
 	

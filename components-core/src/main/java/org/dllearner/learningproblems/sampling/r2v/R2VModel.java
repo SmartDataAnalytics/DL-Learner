@@ -34,6 +34,8 @@ public class R2VModel {
 	private HashMap<String, R2VProperty> properties = new HashMap<>();
 	private HashMap<String, R2VInstance> instances = new HashMap<>();
 	
+	private HashMap<String, Double> mean;
+	
 	private FEXStrategy strategy;
 
 	public R2VModel(OWLOntology ontology, FEXStrategy strategy) {
@@ -94,6 +96,7 @@ public class R2VModel {
 					subf.setNormValue((subf.getValue() - min.get(key)) / (max.get(key) - min.get(key)));
 				}
 			}
+			logger.trace(instance.getUri() + "\t" + instance.getFlatSparseVector());
 		}
 	}
 	
@@ -120,7 +123,6 @@ public class R2VModel {
 						}
 					}
 				}
-				logger.info(instance.getUri() + "\t" + instance.getFlatSparseVector());
 			}
 		} else {
 			logger.info("WARNING: Unknown FEX strategy type! Skipping string processing...");
@@ -168,7 +170,7 @@ public class R2VModel {
 					// object property
 					triple.setValue(ax.getValue().toString());
 				}
-				logger.info(triple.toString());
+				logger.trace(triple.toString());
 			} else {
 				// TODO for other AxiomTypes (not necessary for now)
 				logger.warn("Axiom not processed: "+axiom);
@@ -194,20 +196,20 @@ public class R2VModel {
 			
 			if(triple.hasObjectProperty()) {
 				// uri -> add to sparse vectors (boolean value)
-				System.out.println("   ######## URI #########");
+				logger.trace("   ######## URI #########");
 				feature.getSubfeatures().put(triple.getValue(), new R2VSubfeature(feature, triple.getValue(), 1.0));
 				feature.setType(R2VFeatureType.URI);
 			} else {
 				OWLDatatype dt = triple.getDatatype();
-				System.out.println(dt);
+				logger.trace(dt.toString());
 				if(dt.isBoolean() || dt.isDouble() || dt.isFloat() || dt.isInteger()) {
 					// numeric/date -> add to sparse vectors
-					System.out.println("   ######## NUMERIC #########");
+					logger.trace("   ######## NUMERIC #########");
 					feature.add(Double.parseDouble(triple.getValue()));
 					feature.setType(R2VFeatureType.NUMERICAL);
 				} else {
 					// string -> add to property index (property->index)
-					System.out.println("   ######## STRING #########");
+					logger.trace("   ######## STRING #########");
 					feature.setType(R2VFeatureType.STRING);
 					feature.setStringValue(triple.getValue());
 					property.getTextIndex().addNumeric(triple.getValue());
@@ -222,7 +224,11 @@ public class R2VModel {
 	 * @return
 	 */
 	private HashMap<String, Double> getMeanPoint() {
-		HashMap<String, Double> mean = new HashMap<>();
+		// return cached mean point
+		if(mean != null)
+			return mean;
+		// otherwise, calculate it
+		mean = new HashMap<>();
 		TreeSet<String> feat = new TreeSet<>();
 		for(R2VInstance instance : instances.values()) {
 			HashMap<String, Double> sparse = instance.getFlatSparseVector();
