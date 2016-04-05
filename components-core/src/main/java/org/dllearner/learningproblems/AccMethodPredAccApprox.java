@@ -50,7 +50,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	private double approxDelta = 0.05;
 	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
-	private boolean doSample = false;
+	private boolean doSample = true;
 	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
 	{ 
 		// for testing this, we must use doSample=true
@@ -78,7 +78,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 		
 		
 		if (doSample) {
-			doSamplingTask(description.getClassExpressionType().toString(), positiveExamples, negativeExamples);
+			doSamplingTask(description.getClassExpressionType().getIRI().toString(), positiveExamples, negativeExamples);
 
 			do {
 

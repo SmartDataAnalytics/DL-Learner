@@ -27,7 +27,9 @@ public class CELOEPlusSampling {
 	 * Namespace of the individuals to be considered, discarding sameAs
 	 * instances.
 	 */
-	private static final String NAMESPACE = "http://dbpedia.org/resource/";
+	private static final String NAMESPACE = 
+//			"http://dbpedia.org/resource/";
+			"http://www.biopax.org/release/";
 
 	private static CELOEPlusSampling instance;
 	
@@ -55,7 +57,7 @@ public class CELOEPlusSampling {
 		return (instance == null) ? instance = new CELOEPlusSampling() : instance;
 	}
 	
-	public void sample(Reasoner rsnr, String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg) {
+	public boolean sample(Reasoner rsnr, String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg) {
 		
 		this.className = className;
 
@@ -95,6 +97,11 @@ public class CELOEPlusSampling {
 		
 		// print model info
 		logger.info(model.info());
+		
+		if(posF.isEmpty() || negF.isEmpty())
+			return false;
+		
+		return true;
 	}
 	
 	/**

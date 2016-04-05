@@ -101,7 +101,7 @@ public class OntologyEngineering {
 
 	public OntologyEngineering(File ontFile, String outFile) {
 		// TODO Auto-generated constructor stub
-		Logger.getRootLogger().setLevel(Level.WARN);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		try
 		{
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontFile);
@@ -127,37 +127,38 @@ public class OntologyEngineering {
 		if(testFCIApprox) {
 			
 			// OWL API +no APX
-			useFMeasure = true;
-			useFastInstanceChecker = false;
-			useApproximations = false;
-			rc=new OWLAPIReasoner(ks);
-			rc.init();
-			run(rc);
-								
-			useFastInstanceChecker = false;
-			useApproximations = true;
-			rc=new OWLAPIReasoner(ks);
-			rc.init();
-			run(rc);
-								
-			useFastInstanceChecker = true;
-			useApproximations = false;
-			rc = new ClosedWorldReasoner(ks);
-			rc.init();
-			run(rc);
-								
-			useFastInstanceChecker = true;
-			useApproximations = true;
-			rc = new ClosedWorldReasoner(ks);
-			rc.init();
-			run(rc);	
+//			useFMeasure = true;
+//			useFastInstanceChecker = false;
+//			useApproximations = false;
+//			rc=new OWLAPIReasoner(ks);
+//			rc.init();
+//			run(rc);
+//								
+//			useFastInstanceChecker = false;
+//			useApproximations = true;
+//			rc=new OWLAPIReasoner(ks);
+//			rc.init();
+//			run(rc);
+//								
+//			useFastInstanceChecker = true;
+//			useApproximations = false;
+//			rc = new ClosedWorldReasoner(ks);
+//			rc.init();
+//			run(rc);
+//								
+//			useFastInstanceChecker = true;
+//			useApproximations = true;
+//			rc = new ClosedWorldReasoner(ks);
+//			rc.init();
+//			run(rc);	
 			
-		useFMeasure = false;
-			useFastInstanceChecker = false;
-			useApproximations = false;
-			rc=new OWLAPIReasoner(ks);
-			rc.init();
-			run(rc);
+			useFMeasure = false;
+		
+//			useFastInstanceChecker = false;
+//			useApproximations = false;
+//			rc=new OWLAPIReasoner(ks);
+//			rc.init();
+//			run(rc);
 								
 			useFastInstanceChecker = false;
 			useApproximations = true;
@@ -165,11 +166,11 @@ public class OntologyEngineering {
 			rc.init();
 			run(rc);
 								
-			useFastInstanceChecker = true;
-			useApproximations = false;
-			rc = new ClosedWorldReasoner(ks);
-			rc.init();
-			run(rc);
+//			useFastInstanceChecker = true;
+//			useApproximations = false;
+//			rc = new ClosedWorldReasoner(ks);
+//			rc.init();
+//			run(rc);
 								
 			useFastInstanceChecker = true;
 			useApproximations = true;
@@ -204,36 +205,37 @@ public class OntologyEngineering {
 				useFMeasure = true;
 				
 										
-					useFastInstanceChecker = true;
-					useApproximations = false;
-					rc = new ClosedWorldReasoner(ks);
-					rc.init();
-					run(rc);
-										
-					useFastInstanceChecker = true;
-					useApproximations = true;
-					rc = new ClosedWorldReasoner(ks);
-					rc.init();
-					run(rc);	
+//					useFastInstanceChecker = true;
+//					useApproximations = false;
+//					rc = new ClosedWorldReasoner(ks);
+//					rc.init();
+//					run(rc);
+//										
+//					useFastInstanceChecker = true;
+//					useApproximations = true;
+//					rc = new ClosedWorldReasoner(ks);
+//					rc.init();
+//					run(rc);	
+//					
+//					useFastInstanceChecker = false;
+//					useApproximations = false;
+//					rc=new OWLAPIReasoner(ks);
+//					rc.init();
+//					run(rc);
+//										
+//					useFastInstanceChecker = false;
+//					useApproximations = true;
+//					rc=new OWLAPIReasoner(ks);
+//					rc.init();
+//					run(rc);
 					
-					useFastInstanceChecker = false;
-					useApproximations = false;
-					rc=new OWLAPIReasoner(ks);
-					rc.init();
-					run(rc);
-										
-					useFastInstanceChecker = false;
-					useApproximations = true;
-					rc=new OWLAPIReasoner(ks);
-					rc.init();
-					run(rc);
+					useFMeasure = false;
 					
-				useFMeasure = false;
-					useFastInstanceChecker = false;
-					useApproximations = false;
-					rc=new OWLAPIReasoner(ks);
-					rc.init();
-					run(rc);
+//					useFastInstanceChecker = false;
+//					useApproximations = false;
+//					rc=new OWLAPIReasoner(ks);
+//					rc.init();
+//					run(rc);
 										
 					useFastInstanceChecker = false;
 					useApproximations = true;
@@ -241,11 +243,11 @@ public class OntologyEngineering {
 					rc.init();
 					run(rc);
 										
-					useFastInstanceChecker = true;
-					useApproximations = false;
-					rc = new ClosedWorldReasoner(ks);
-					rc.init();
-					run(rc);
+//					useFastInstanceChecker = true;
+//					useApproximations = false;
+//					rc = new ClosedWorldReasoner(ks);
+//					rc.init();
+//					run(rc);
 										
 					useFastInstanceChecker = true;
 					useApproximations = true;
