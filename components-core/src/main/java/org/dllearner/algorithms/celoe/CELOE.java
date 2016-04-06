@@ -756,6 +756,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		descriptions = new TreeSet<>();
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
+		runtimeVsBestScore.clear();
 	}
 	
 	private void printAlgorithmRunStats() {
@@ -1171,7 +1172,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		alg.start();
 
 		SortedMap<Long, Double> map = alg.getRuntimeVsBestScore(1, TimeUnit.SECONDS);
-		System.out.println(MapUtils.asTSV(map));
+		System.out.println(MapUtils.asTSV(map, "runtime", "best_score"));
 
 	}
 	

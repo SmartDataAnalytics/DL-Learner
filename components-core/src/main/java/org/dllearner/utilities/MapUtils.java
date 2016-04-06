@@ -19,9 +19,11 @@
 package org.dllearner.utilities;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -102,5 +104,19 @@ public class MapUtils {
 	 */
 	public static <K, V> String asTSV(Map<K, V> map) {
 		return Joiner.on("\n").withKeyValueSeparator("\t").join(map);
+	}
+
+	/**
+	 * Return map in TSV format.
+	 * @param map the map
+	 * @param keyHeader header for key column
+	 * @param valueHeader header for value column
+	 * @param <K>
+	 * @param <V>
+	 *
+	 * @return TSV formatted String
+	 */
+	public static <K, V> String asTSV(Map<K, V> map, String keyHeader, String valueHeader) {
+		return Strings.nullToEmpty(keyHeader) + "\t" + Strings.nullToEmpty(valueHeader) + "\n" + Joiner.on("\n").withKeyValueSeparator("\t").join(map);
 	}
 }
