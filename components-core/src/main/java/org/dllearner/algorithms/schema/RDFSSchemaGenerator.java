@@ -15,7 +15,10 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Generate a schema restricted to RDFS language features.
@@ -60,6 +63,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 
 	@Override
 	public Set<OWLAxiom> generateSchema() {
+		LOGGER.info("generating RDFS schema...");
 		learnedAxiomsTotal = new HashSet<>();
 
 		// 1. learn property hierarchies
@@ -113,6 +117,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 			LOGGER.debug("iteration {}", i++);
 			Set<OWLAxiom> learnedAxiomsInIteration = new HashSet<>();
 			for (OWLEntity entity : entities) {
+				System.out.println(entity);
 				try {
 					// apply learning algorithm
 					Set<OWLAxiom> learnedAxioms = applyLearningAlgorithm(entity, axiomType);
