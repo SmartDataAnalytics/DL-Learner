@@ -18,16 +18,13 @@
  */
 package org.dllearner.utilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Utility class for operations on maps.
@@ -94,5 +91,16 @@ public class MapUtils {
 			multimap.putAll(entry.getKey(), entry.getValue());
 		}
 		return multimap;
+	}
+
+	/**
+	 * Return map in TSV format.
+	 * @param map the map
+	 * @param <K>
+	 * @param <V>
+	 * @return TSV formatted String
+	 */
+	public static <K, V> String asTSV(Map<K, V> map) {
+		return Joiner.on("\n").withKeyValueSeparator("\t").join(map);
 	}
 }

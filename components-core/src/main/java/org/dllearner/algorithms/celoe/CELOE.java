@@ -36,10 +36,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.*;
-import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.OWLAPIUtils;
-import org.dllearner.utilities.TreeUtils;
+import org.dllearner.utilities.*;
 import org.dllearner.utilities.datastructures.SearchTree;
 import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -54,6 +51,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -180,7 +178,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 	private boolean expandAccuracy100Nodes = false;
 	private double currentHighestAccuracy;
-	
+
+	// option to keep track of best score during algorithm run
+	private boolean keepTrackOfBestScore = false;
+	private SortedMap<Long, Double> runtimeVsBestScore = new TreeMap<>();
+
 	
 	public CELOE() {}
 	
@@ -773,6 +775,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			timeLastImprovement = System.nanoTime();
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
+
+			// track new best accuracy if enabled
+			if(keepTrackOfBestScore) {
+				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
+			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 		}
 	}
@@ -1035,10 +1042,62 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
 		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
+
+	/**
+	 * Whether to keep track of the best score during the algorithm run.
+	 *
+	 * @param keepTrackOfBestScore
 	 */
+	public void setKeepTrackOfBestScore(boolean keepTrackOfBestScore) {
+		this.keepTrackOfBestScore = keepTrackOfBestScore;
+	}
+
+	/**
+	 * @return a map containing time points at which a hypothesis with a better score than before has been found
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore() {
+		return runtimeVsBestScore;
+	}
+
+	/**
+	 * Return a map that contains
+	 * <ol>
+	 *     <li>entries with time points at which a hypothesis with a better score than before has been found</li>
+	 *     <li>entries with the current best score for each defined interval time point</li>
+	 * </ol>
+	 *
+	 * @param ticksIntervalTimeValue at which time point the current best score is tracked periodically
+	 * @param ticksIntervalTimeUnit the time unit of the periodic time point values
+	 *
+	 * @return the map
+	 *
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore(long ticksIntervalTimeValue, TimeUnit ticksIntervalTimeUnit) {
+		SortedMap<Long, Double> map = new TreeMap<>(runtimeVsBestScore);
+
+		// add entries for fixed time points if enabled
+		if(ticksIntervalTimeValue > 0) {
+			long ticksIntervalInMs = TimeUnit.MILLISECONDS.convert(ticksIntervalTimeValue, ticksIntervalTimeUnit);
+
+			// add  t = 0 -> 0
+			map.put(0L, 0d);
+
+			for(long t = ticksIntervalInMs; t <= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds); t += ticksIntervalInMs) {
+				// add value of last entry before this time point
+				map.put(t, map.get(runtimeVsBestScore.headMap(t).lastKey()));
+			}
+
+			// add  entry for t = totalRuntime
+			long totalRuntimeMs = Math.min(TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds), TimeUnit.NANOSECONDS.toMillis(totalRuntimeNs));
+			map.put(totalRuntimeMs, map.get(map.lastKey()));
+		}
+
+		return map;
+	}
+
+	/* (non-Javadoc)
+			 * @see java.lang.Object#clone()
+			 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return new CELOE(this);
@@ -1107,9 +1166,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		alg.setSearchTreeFile("log/search-tree.log");
 		alg.setReplaceSearchTree(true);
 		alg.init();
+		alg.setKeepTrackOfBestScore(true);
 		
 		alg.start();
-		
+
+		SortedMap<Long, Double> map = alg.getRuntimeVsBestScore(1, TimeUnit.SECONDS);
+		System.out.println(MapUtils.asTSV(map));
+
 	}
 	
 }
