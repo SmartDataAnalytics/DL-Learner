@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.Reasoner;
+import org.dllearner.learningproblems.OntologyEngineering;
 import org.dllearner.learningproblems.sampling.r2v.R2VModel;
 import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -66,7 +67,7 @@ public class CELOEPlusSampling {
 		
 		
 		logger.info("CELOE+ sampling started on class "+className);
-		logger.warn("Namespace is hard-coded! Selection is limited to "+NAMESPACE);
+//		logger.warn("Namespace is hard-coded! Selection is limited to "+NAMESPACE);
 		
 		Collection<OWLNamedIndividual> posF = nsFilter(pos);
 		logger.info("|P| = " + posF.size() + "\t\tP = " + posF);
@@ -116,7 +117,7 @@ public class CELOEPlusSampling {
 		for (OWLIndividual i : instances) {
 			if (i.isAnonymous())
 				continue;
-			if (i.asOWLNamedIndividual().getIRI().toString().startsWith(NAMESPACE))
+//			if (i.asOWLNamedIndividual().getIRI().toString().startsWith(NAMESPACE))
 				ind.add(i.asOWLNamedIndividual());
 		}
 		return ind;
@@ -150,7 +151,7 @@ public class CELOEPlusSampling {
 					d = model.distance(current, ind);
 				else
 					d = model.distanceFromMeanPoint(ind);
-				logger.info("d("+current+", "+ind+") = "+d);
+				logger.trace("d("+current+", "+ind+") = "+d);
 				if(d > max) {
 					max = d;
 					farthest = ind;
@@ -165,8 +166,10 @@ public class CELOEPlusSampling {
 		if(farthest != null)
 			cache.get(type).add(farthest);
 		
+		logger.info("Found farthest individual: "+farthest);
+		
 		return farthest;
 	}
-
+	
 
 }

@@ -19,8 +19,10 @@
 package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
+
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.sampling.CELOEPlusSampling;
 import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.ReasoningUtilsCLP;
@@ -28,6 +30,7 @@ import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.*;
@@ -139,8 +142,31 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		// since we use the instance list for approximations, we want to avoid
 		// any bias through URI names, so we shuffle the list once pseudo-randomly
 		superClassInstances = new LinkedList<>(superClassInstancesTmp);
-		classInstances=prepareInstances(classInstances);
-		superClassInstances=prepareInstances(superClassInstances);
+		
+//		XXX modified code
+//		classInstances=prepareInstances(classInstances);
+//		superClassInstances=prepareInstances(superClassInstances);
+		
+//		classInstances are positive examples, superClassInstances are all examples
+		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
+		List<OWLIndividual> negInstances = new LinkedList<>();
+		for(OWLIndividual ind : superClassInstances)
+			if(!classInstances.contains(ind))
+				negInstances.add(ind);
+		logger.info("POS = "+classInstances.size() + ", NEG = "+negInstances.size());
+		logger.info("POS = "+classInstances);
+		cps.sample(reasoner, getClassToDescribe().toStringID(), classInstances, negInstances);
+		classInstances.clear();
+		superClassInstances.clear();
+		// XXX the number of samples (10) is hard-coded
+		for(int i=0; i<10; i++) {
+			OWLIndividual pos = cps.nextPositive();
+			classInstances.add(pos);
+			superClassInstances.add(pos);
+			superClassInstances.add(cps.nextNegative());
+		}
+		
+		
 		if (accuracyMethod == null) {
 			accuracyMethod = new AccMethodPredAcc(true);
 		}
@@ -361,4 +387,3 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 }
-

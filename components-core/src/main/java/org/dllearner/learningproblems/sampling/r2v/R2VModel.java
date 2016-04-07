@@ -11,9 +11,11 @@ import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +127,7 @@ public class R2VModel {
 				}
 			}
 		} else {
-			logger.info("WARNING: Unknown FEX strategy type! Skipping string processing...");
+			logger.warn("Unknown FEX strategy type! Skipping string processing...");
 		}
 		
 	}
@@ -135,7 +137,7 @@ public class R2VModel {
 	 */
 	public void add(OWLNamedIndividual ind) {
 		
-		logger.info("Processing individual "+ind);
+		logger.trace("Processing individual "+ind);
 		
 		// index individual
 		R2VInstance instance = new R2VInstance(this, ind);
@@ -147,7 +149,7 @@ public class R2VModel {
 		cbd.addAll(ontology.getDataPropertyAssertionAxioms(ind));
 		cbd.addAll(ontology.getObjectPropertyAssertionAxioms(ind));
 		
-		logger.info("CBD size = "+cbd.size());
+		logger.trace("CBD size = "+cbd.size());
 				
 		// compute sparse vector
 		
@@ -171,9 +173,26 @@ public class R2VModel {
 					triple.setValue(ax.getValue().toString());
 				}
 				logger.trace(triple.toString());
+			} else if(axiom.isOfType(AxiomType.DATA_PROPERTY_ASSERTION)) {
+				OWLDataPropertyAssertionAxiom ax = (OWLDataPropertyAssertionAxiom) axiom;
+				triple.setSubjURI(ax.getSubject().toString());
+				triple.setPropURI(ax.getProperty().asOWLDataProperty().getIRI().toString());
+				OWLLiteral lit = ax.getObject();
+				// datatype property
+				OWLDatatype dt = lit.getDatatype();
+				triple.setDatatype(dt);
+				triple.setValue(lit.getLiteral());
+				logger.trace(triple.toString());
+			} else if(axiom.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION)) {
+				OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) axiom;
+				triple.setSubjURI(ax.getSubject().toString());
+				triple.setPropURI(ax.getProperty().asOWLObjectProperty().getIRI().toString());
+				// object property
+				triple.setValue(ax.getObject().toString());
+				logger.trace(triple.toString());
 			} else {
-				// TODO for other AxiomTypes (not necessary for now)
 				logger.warn("Axiom not processed: "+axiom);
+				continue;
 			}
 			
 			// index property if not done already

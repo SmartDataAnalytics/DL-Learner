@@ -50,7 +50,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	private double approxDelta = 0.05;
 	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
-	private boolean doSample = true;
+	private boolean doSample = false;
 	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
 	{ 
 		// for testing this, we must use doSample=true
@@ -76,12 +76,14 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 		Iterator<OWLIndividual> itPos = positiveExamples.iterator();
 		Iterator<OWLIndividual> itNeg = negativeExamples.iterator();
 		
+		logger.info("class expression = " + description.toString());
+		String uri = description.getClassExpressionType().getIRI().toString();
 		
 		if (doSample) {
-			doSamplingTask(description.getClassExpressionType().getIRI().toString(), positiveExamples, negativeExamples);
-
+			doSamplingTask(uri, positiveExamples, negativeExamples);
+			
 			do {
-
+				
 				if ((posExample = getNextPosInstance()) != null) {
 					// System.out.println(posExample);
 
@@ -108,8 +110,15 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 				// compute how accurate our current approximation is and return
 				// if it is sufficiently accurate
-				double approx[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
-						1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				double approx[];
+				try {
+					approx = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
+							1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					logger.warn(e.getMessage() + " Skipping class "+uri);
+					break;
+				}
 				if (approx[1] < approxDelta) {
 					// System.out.println(approx[0]);
 					return approx[0];

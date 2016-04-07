@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -333,6 +335,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
+			
+			logger.info("# refinements = "+refinements.size());
 				
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
