@@ -88,6 +88,11 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private boolean checkConsistency = true;
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	/**
+	 * 
+	 */
+	private boolean doSample = true;
 
 	public ClassLearningProblem() {
 
@@ -144,28 +149,36 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		superClassInstances = new LinkedList<>(superClassInstancesTmp);
 		
 //		XXX modified code
-//		classInstances=prepareInstances(classInstances);
-//		superClassInstances=prepareInstances(superClassInstances);
 		
 //		classInstances are positive examples, superClassInstances are all examples
-		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
-		List<OWLIndividual> negInstances = new LinkedList<>();
-		for(OWLIndividual ind : superClassInstances)
-			if(!classInstances.contains(ind))
-				negInstances.add(ind);
-		logger.info("POS = "+classInstances.size() + ", NEG = "+negInstances.size());
-		logger.info("POS = "+classInstances);
-		cps.sample(reasoner, getClassToDescribe().toStringID(), classInstances, negInstances);
-		classInstances.clear();
-		superClassInstances.clear();
-		// XXX the number of samples (10) is hard-coded
-		for(int i=0; i<10; i++) {
-			OWLIndividual pos = cps.nextPositive();
-			classInstances.add(pos);
-			superClassInstances.add(pos);
-			superClassInstances.add(cps.nextNegative());
+		if(!doSample) {
+			
+			classInstances=prepareInstances(classInstances);
+			superClassInstances=prepareInstances(superClassInstances);
+			
+		} else {
+			
+			CELOEPlusSampling cps = new CELOEPlusSampling();
+			List<OWLIndividual> negInstances = new LinkedList<>();
+			for(OWLIndividual ind : superClassInstances)
+				if(!classInstances.contains(ind))
+					negInstances.add(ind);
+			logger.info("POS = "+classInstances.size() + ", NEG = "+negInstances.size());
+			logger.info("POS = "+classInstances);
+			cps.sample(reasoner, getClassToDescribe().toStringID(), classInstances, negInstances);
+			classInstances.clear();
+			superClassInstances.clear();
+			
+			OWLIndividual ind;
+			while((ind = cps.nextPositive()) != null) {
+				classInstances.add(ind);
+				superClassInstances.add(ind);
+			}
+			while((ind = cps.nextNegative()) != null) {
+				superClassInstances.add(ind);
+			}
+
 		}
-		
 		
 		if (accuracyMethod == null) {
 			accuracyMethod = new AccMethodPredAcc(true);

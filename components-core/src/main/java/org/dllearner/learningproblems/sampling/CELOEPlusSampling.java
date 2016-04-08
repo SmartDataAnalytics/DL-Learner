@@ -28,11 +28,10 @@ public class CELOEPlusSampling {
 	 * Namespace of the individuals to be considered, discarding sameAs
 	 * instances.
 	 */
+	@SuppressWarnings("unused")
 	private static final String NAMESPACE = 
 //			"http://dbpedia.org/resource/";
 			"http://www.biopax.org/release/";
-
-	private static CELOEPlusSampling instance;
 	
 	private static enum Type {
 		POS, NEG;
@@ -46,16 +45,12 @@ public class CELOEPlusSampling {
 	private OWLOntology ont;
 	private R2VModel model;
 	
-	protected CELOEPlusSampling() {
+	public CELOEPlusSampling() {
 		super();
 	}
 	
 	public String getClassName() {
 		return className;
-	}
-
-	public static CELOEPlusSampling getInstance() {
-		return (instance == null) ? instance = new CELOEPlusSampling() : instance;
 	}
 	
 	public boolean sample(Reasoner rsnr, String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg) {
