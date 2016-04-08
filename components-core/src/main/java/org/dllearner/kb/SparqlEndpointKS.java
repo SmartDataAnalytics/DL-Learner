@@ -59,7 +59,6 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	@NoConfigOption // auto-detected
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
-	private boolean initialized = false;
 
 	@ConfigOption(description="URL of the SPARQL endpoint", required=true)
 	private URL url;
