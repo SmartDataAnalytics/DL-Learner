@@ -12,7 +12,7 @@ public class EngineeringRunningScript {
 		String[] files = 
 //			{"Economy", "MDM0.73", "GeoSkills", "adhesome","earthrealm", "eukariotic","SC" };
 //			{"adhesome","earthrealm", "eukariotic","SC" };
-			{"adhesome"};
+			{"GeoSkills"};
 		for (int I = 0; I < files.length; I++) {
 			ontologyFileName = files[I] + ".owl";
 			outputFilename = files[I] + ".sampling.txt";

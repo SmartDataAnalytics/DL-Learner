@@ -78,10 +78,10 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 		
 		logger.info("class expression = " + description.toString());
 		String uri = description.getClassExpressionType().getIRI().toString();
-		
+		doSample=false;
 		if (doSample) {
 			doSamplingTask(uri, positiveExamples, negativeExamples);
-			
+			System.out.println("SAMPLING");
 			do {
 				
 				if ((posExample = getNextPosInstance()) != null) {
@@ -125,7 +125,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 				}
 			} while (((negExample) != null) || ((posExample) != null));
 		} else {
-
+			System.out.println("NOT_SAMPLING");
 			// special case: we test positive and negative examples in turn
 
 			do {
