@@ -235,8 +235,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //	private Map<OWLClass,Map<OWLClass,Boolean>> notABDisjoint = new TreeMap<OWLClass,Map<OWLClass,Boolean>>();
 //	private Map<OWLClass,Map<OWLClass,Boolean>> notABMeaningful = new TreeMap<OWLClass,Map<OWLClass,Boolean>>();
 
-	private boolean isInitialised = false;
-
 	@ConfigOption(description = "whether to generate object complement while refining", defaultValue = "false")
 	private boolean useObjectValueNegation = false;
 
@@ -268,12 +266,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setUseObjectValueNegation(op.useObjectValueNegation);
 		setUseStringDatatypes(op.useStringDatatypes);
 		setUseNumericDatatypes(op.useNumericDatatypes);
-		isInitialised = false;
+		initialized = false;
 	}
 
 	@Override
     public void init() throws ComponentInitException {
-		if(isInitialised) {
+		if(initialized) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
 //		System.out.println("subHierarchy: " + subHierarchy);
@@ -467,7 +465,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
-		isInitialised = true;
+		initialized = true;
+	}
+
+	protected void isFinal() {
+		if (initialized) throw new IllegalStateException(this.getClass() + " already initialised in " + Thread.currentThread().getStackTrace()[2].getMethodName());
 	}
 
 	/* (non-Javadoc)
@@ -1802,6 +1804,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
+		isFinal();
 		this.useDataHasValueConstructor = useDataHasValueConstructor;
 	}
 
@@ -1842,6 +1845,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+		isFinal();
 		this.useHasValueConstructor = useHasValueConstructor;
 	}
 
@@ -1850,6 +1854,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+		isFinal();
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 	}
 
@@ -1959,6 +1964,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
+		isFinal();
 		this.useNumericDatatypes = useNumericDatatypes;
 	}
 
@@ -1966,6 +1972,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 * @param useInverse whether to use inverse properties in property restrictions
 	 */
 	public void setUseInverse(boolean useInverse) {
+		isFinal();
 		this.useInverse = useInverse;
 	}
 
@@ -1981,6 +1988,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 * @param useTimeDatatypes whether to use data/time literal restrictions
 	 */
 	public void setUseTimeDatatypes(boolean useTimeDatatypes) {
+		isFinal();
 		this.useTimeDatatypes = useTimeDatatypes;
 	}
 
