@@ -57,7 +57,7 @@ public class CELOEPlusTest {
 		
 		long t0 = System.currentTimeMillis();
 		
-		CELOEPlusSampling cps = CELOEPlusSampling.getInstance();
+		CELOEPlusSampling cps = new CELOEPlusSampling();
 		assertNotNull(cps);
 
 		OWLOntology ontPos = getOntology(PATH_PREFIX + "dbo-fungus-pos.nt");

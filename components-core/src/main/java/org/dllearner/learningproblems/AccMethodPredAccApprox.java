@@ -50,13 +50,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	private double approxDelta = 0.05;
 	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
-	private boolean doSample = false;
-	public void doSamplingTask(String className, Collection<OWLIndividual> pos, Collection<OWLIndividual> neg)
-	{ 
-		// for testing this, we must use doSample=true
-		CELOEPlusSampling.getInstance().sample(reasoner, className, pos, neg);
-		
-	}
+
 	@Override
 	public double getAccApprox2(OWLClassExpression description, Collection<OWLIndividual> positiveExamples, Collection<OWLIndividual> negativeExamples, double noise) {
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
@@ -77,109 +71,51 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 		Iterator<OWLIndividual> itNeg = negativeExamples.iterator();
 		
 		logger.info("class expression = " + description.toString());
-		String uri = description.getClassExpressionType().getIRI().toString();
-		doSample=false;
-		if (doSample) {
-			doSamplingTask(uri, positiveExamples, negativeExamples);
-			System.out.println("SAMPLING");
-			do {
-				
-				if ((posExample = getNextPosInstance()) != null) {
-					// System.out.println(posExample);
+	
+		// special case: we test positive and negative examples in turn
 
-					if (reasoner.hasType(description, posExample)) {
-						posClassifiedAsPos++;
-					} else {
-						notCoveredPos++;
-					}
-					nrOfPosChecks++;
+		do {
+			// in each loop we pick 0 or 1 positives and 0 or 1 negative
+			// and classify it
+			if (itPos.hasNext()) {
+				posExample = itPos.next();
+				// System.out.println(posExample);
 
-					// take noise into account
-					if (notCoveredPos > maxNotCovered) {
-						return -1;
-					}
+				if (reasoner.hasType(description, posExample)) {
+					posClassifiedAsPos++;
+				} else {
+					notCoveredPos++;
 				}
+				nrOfPosChecks++;
 
-				if ((negExample = getNextNegInstance()) != null) {
-
-					if (!reasoner.hasType(description, negExample)) {
-						negClassifiedAsNeg++;
-					}
-					nrOfNegChecks++;
+				// take noise into account
+				if (notCoveredPos > maxNotCovered) {
+					return -1;
 				}
-
-				// compute how accurate our current approximation is and return
-				// if it is sufficiently accurate
-				double approx[];
-				try {
-					approx = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
-							1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					logger.warn(e.getMessage() + " Skipping class "+uri);
-					break;
+			}
+			if (itNeg.hasNext()) {
+				negExample = itNeg.next();
+				if (!reasoner.hasType(description, negExample)) {
+					negClassifiedAsNeg++;
 				}
-				if (approx[1] < approxDelta) {
-					// System.out.println(approx[0]);
-					return approx[0];
-				}
-			} while (((negExample) != null) || ((posExample) != null));
-		} else {
-			System.out.println("NOT_SAMPLING");
-			// special case: we test positive and negative examples in turn
+				nrOfNegChecks++;
+			}
 
-			do {
-				// in each loop we pick 0 or 1 positives and 0 or 1 negative
-				// and classify it
-				if (itPos.hasNext()) {
-					posExample = itPos.next();
-					// System.out.println(posExample);
+			// compute how accurate our current approximation is and return
+			// if it is sufficiently accurate
+			double approx2[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
+					1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+			if (approx2[1] < approxDelta) {
+				// System.out.println(approx2[0]);
+				return approx2[0];
+			}
 
-					if (reasoner.hasType(description, posExample)) {
-						posClassifiedAsPos++;
-					} else {
-						notCoveredPos++;
-					}
-					nrOfPosChecks++;
-
-					// take noise into account
-					if (notCoveredPos > maxNotCovered) {
-						return -1;
-					}
-				}
-				if (itNeg.hasNext()) {
-					negExample = itNeg.next();
-					if (!reasoner.hasType(description, negExample)) {
-						negClassifiedAsNeg++;
-					}
-					nrOfNegChecks++;
-				}
-
-				// compute how accurate our current approximation is and return
-				// if it is sufficiently accurate
-				double approx2[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(),
-						1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
-				if (approx2[1] < approxDelta) {
-					// System.out.println(approx2[0]);
-					return approx2[0];
-				}
-
-			} while ((itPos.hasNext() || itNeg.hasNext()));
-		}
+		} while ((itPos.hasNext() || itNeg.hasNext()));
 
 		return Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos,
 				negClassifiedAsNeg, 1);
 	}
-	public OWLIndividual getNextPosInstance()
-	{
-		OWLIndividual nextSample = CELOEPlusSampling.getInstance().nextPositive();
-		return nextSample;
-	}
-	public OWLIndividual getNextNegInstance()
-	{
-		OWLIndividual nextSample = CELOEPlusSampling.getInstance().nextNegative();
-		return nextSample;
-	}
+
 	@Override
 	public double getApproxDelta() {
 		return approxDelta;
