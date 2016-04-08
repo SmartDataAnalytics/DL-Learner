@@ -1,12 +1,6 @@
 package org.dllearner.learningproblems.sampling;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.dllearner.core.Reasoner;
-import org.dllearner.learningproblems.OntologyEngineering;
 import org.dllearner.learningproblems.sampling.r2v.R2VModel;
 import org.dllearner.learningproblems.sampling.strategy.TfidfFEXStrategy;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -15,6 +9,13 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
+
+//import org.dllearner.learningproblems.OntologyEngineering;
 
 /**
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
