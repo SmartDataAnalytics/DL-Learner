@@ -18,6 +18,7 @@
  */
 package org.dllearner.refinementoperators;
 
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -32,7 +33,7 @@ import java.util.Set;
  * @author Jens Lehmann
  *
  */
-public abstract class RefinementOperatorAdapter implements LengthLimitedRefinementOperator {
+public abstract class RefinementOperatorAdapter extends AbstractComponent implements LengthLimitedRefinementOperator {
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
