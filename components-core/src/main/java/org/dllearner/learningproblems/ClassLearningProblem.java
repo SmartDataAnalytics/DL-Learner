@@ -161,9 +161,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		// XXX the number of samples (10) is hard-coded
 		for(int i=0; i<10; i++) {
 			OWLIndividual pos = cps.nextPositive();
-			classInstances.add(pos);
-			superClassInstances.add(pos);
-			superClassInstances.add(cps.nextNegative());
+			if (pos != null) {
+				classInstances.add(pos);
+				superClassInstances.add(pos);
+				superClassInstances.add(cps.nextNegative());
+			} else {
+				logger.error("next pos must not be null (i="+i+")");
+			}
 		}
 		
 		
