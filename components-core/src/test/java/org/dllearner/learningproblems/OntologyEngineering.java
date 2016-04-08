@@ -37,11 +37,13 @@ package org.dllearner.learningproblems;
  *
  */
 
-import org.aksw.commons.util.Files;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.*;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -52,6 +54,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -77,7 +80,12 @@ import java.util.*;
  * 
  */
 public class OntologyEngineering {
+	static {
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
+	}
 
+	private static org.slf4j.Logger logger = LoggerFactory.getLogger(OntologyEngineering.class);
 	private static double minAccuracy = 0.85;
 	
 	private static double noisePercent = 5.0;
@@ -101,7 +109,7 @@ public class OntologyEngineering {
 
 	public OntologyEngineering(File ontFile, String outFile) {
 		// TODO Auto-generated constructor stub
-		Logger.getRootLogger().setLevel(Level.INFO);
+		//Logger.getRootLogger().setLevel(Level.INFO);
 		try
 		{
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontFile);
@@ -190,7 +198,9 @@ public class OntologyEngineering {
 	public static void main(String[] args) throws
 			Exception {
 
-		Logger.getRootLogger().setLevel(Level.WARN);
+		Logger.getRootLogger().setLevel(Level.INFO);
+		//((AppenderSkeleton)Logger.getRootLogger().getAppender("CA")).setThreshold(Level.DEBUG);
+		Logger.getLogger(RhoDRDown.class).setLevel(Level.DEBUG);
 		String fileName = "GeoSkills.owl";
 		// OWL file is the first argument of the script
 		//File file = new File(filePath);
@@ -367,17 +377,21 @@ public class OntologyEngineering {
 					acc.init();
 					lp.setAccuracyMethod(acc);
 					lp.init();
+
+					RhoDRDown op = new RhoDRDown();
+					op.setReasoner(reasoner);
+					op.setUseNegation(false);
+					op.setFrequencyThreshold(10);
+					op.setUseDataHasValueConstructor(true);
+					op.init();
+					
 					CELOE celoe = new CELOE(lp, reasoner);
+					celoe.setOperator(op);
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					celoe.setNoisePercentage(noisePercent);
 					celoe.setMaxNrOfResults(10);
 					celoe.init();
-					
-					RhoDRDown op = (RhoDRDown) celoe.getOperator();
-					op.setUseNegation(false);
-					op.setFrequencyThreshold(10);
-					op.setUseDataHasValueConstructor(true);
-					
+
 					celoe.start();
 					classExpressionTestsStat.addNumber(celoe.getClassExpressionTests());
 					
