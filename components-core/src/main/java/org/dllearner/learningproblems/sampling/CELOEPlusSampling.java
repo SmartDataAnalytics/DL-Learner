@@ -134,7 +134,7 @@ public class CELOEPlusSampling {
 		// get current element
 		OWLNamedIndividual current = currents.get(type);
 				
-		logger.info("Current individual is "+current);
+		logger.trace("Current individual is "+current);
 		
 		// compute similarities and get farthest point
 		OWLNamedIndividual farthest = null;
@@ -161,7 +161,7 @@ public class CELOEPlusSampling {
 		if(farthest != null)
 			cache.get(type).add(farthest);
 		
-		logger.info("Found farthest individual: "+farthest);
+		logger.trace("Found farthest individual: "+farthest);
 		
 		return farthest;
 	}

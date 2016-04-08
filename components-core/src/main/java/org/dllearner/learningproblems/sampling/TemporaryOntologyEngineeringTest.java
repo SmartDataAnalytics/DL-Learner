@@ -321,16 +321,30 @@ public class TemporaryOntologyEngineeringTest {
 					acc.init();
 					lp.setAccuracyMethod(acc);
 					lp.init();
+//					CELOE celoe = new CELOE(lp, reasoner);
+//					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+//					celoe.setNoisePercentage(noisePercent);
+//					celoe.setMaxNrOfResults(10);
+//					celoe.init();
+//					
+//					RhoDRDown op = (RhoDRDown) celoe.getOperator();
+//					op.setUseNegation(false);
+//					op.setFrequencyThreshold(10);
+//					op.setUseDataHasValueConstructor(true);
+
+					RhoDRDown op = new RhoDRDown();
+					op.setReasoner(reasoner);
+					op.setUseNegation(false);
+					op.setFrequencyThreshold(10);
+					op.setUseDataHasValueConstructor(true);
+					op.init();
+					
 					CELOE celoe = new CELOE(lp, reasoner);
+					celoe.setOperator(op);
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					celoe.setNoisePercentage(noisePercent);
 					celoe.setMaxNrOfResults(10);
 					celoe.init();
-					
-					RhoDRDown op = (RhoDRDown) celoe.getOperator();
-					op.setUseNegation(false);
-					op.setFrequencyThreshold(10);
-					op.setUseDataHasValueConstructor(true);
 					
 					Logger.getRootLogger().info("Starting CELOE...");
 

@@ -90,7 +90,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	/**
-	 * 
+	 * Switch for feature-based sampling (true) or random (false).
 	 */
 	private boolean doSample = true;
 
@@ -170,12 +170,16 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			superClassInstances.clear();
 			
 			OWLIndividual ind;
+			logger.info("Sorting positive examples...");
 			while((ind = cps.nextPositive()) != null) {
 				classInstances.add(ind);
 				superClassInstances.add(ind);
+//				break;
 			}
+			logger.info("Sorting negative examples...");
 			while((ind = cps.nextNegative()) != null) {
 				superClassInstances.add(ind);
+//				break;
 			}
 
 		}
