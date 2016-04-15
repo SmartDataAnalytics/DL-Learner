@@ -115,22 +115,22 @@ public class HeuristicTests {
 		ClassLearningProblem problem = new ClassLearningProblem(reasoner);
 		
 		//// equivalent classes, no noise, no approximations ////
-		
+		/*
 		// evaluate A2 wrt. A1 using Jaccard
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodJaccard(true));
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
-		
+		*/
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodPredAcc(true));
 		// the value should be the sum of 10 (correct positives) and 970 (correct negatives) divided by 1000
 		assertEqualsClassLP(problem, nc[1], (10+70)/(double)100);
 		assertEqualsClassLP(problem, nc[2], (10+50)/(double)100);
-		
+		/*
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodAMeasure(true));
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.375);
-		
+		*/
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodFMeasure(true));
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
@@ -141,21 +141,21 @@ public class HeuristicTests {
 		
 		//// super class learning ////
 		// beta = 3.0
-		
+		/*
 		// Jaccard
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodJaccard(true), false, 0.05);
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
-		
+		*/
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodPredAcc(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 5/(double)7);
 		assertEqualsClassLP(problem, nc[2], 4/(double)7);
-		
+		/*
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodAMeasure(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.4375);
-		
+		*/
 		HeuristicTests.configureClassLP(problem, nc[0], new AccMethodFMeasure(true), false, 0.05);
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
