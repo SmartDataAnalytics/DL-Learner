@@ -2,6 +2,10 @@
 .project
 .settings
 .classpath
+.metadata
+*.tmp
+tmp/
+
 target
 
 *.swp
