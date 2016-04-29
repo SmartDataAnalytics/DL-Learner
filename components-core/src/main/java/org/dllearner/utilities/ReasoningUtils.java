@@ -331,7 +331,7 @@ public class ReasoningUtils implements Component {
 	 */
 	public double getAccuracyOrTooWeakExact2(AccMethodTwoValued accuracyMethod, CoverageCount[] cc, double noise) {
 //		return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
-		CoverageAdapter.CoverageAdapter2 c2 = new CoverageAdapter.CoverageAdapter2(cc);
+		CoverageAdapter.CoverageCountAdapter2 c2 = new CoverageAdapter.CoverageCountAdapter2(cc);
 		return accuracyMethod.getAccOrTooWeak2(c2.tp(), c2.fn(), c2.fp(), c2.tn(), noise);
 	}
 

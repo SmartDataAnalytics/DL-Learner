@@ -19,7 +19,6 @@
  */
 package org.dllearner.cli;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
@@ -32,7 +31,6 @@ import org.dllearner.confparser.ParseException;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -61,18 +59,10 @@ import java.util.Map.Entry;
  *
  */
 @ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
-public class CLI {
-	static {
-		if (System.getProperty("log4j.configuration") == null)
-			System.setProperty("log4j.configuration", "log4j.properties");
-	}
+public class CLI extends CLIBase2 {
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
 
-	private ApplicationContext context;
-	private IConfiguration configuration;
-	private File confFile;
-	
 	private LearningAlgorithm algorithm;
 	private KnowledgeSource knowledgeSource;
 	
@@ -81,9 +71,6 @@ public class CLI {
 	private boolean performCrossValidation = false;
 	@ConfigOption(defaultValue = "10", description = "Number of folds in Cross-Validation mode")
 	private int nrOfFolds = 10;
-	@ConfigOption(defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
-			+ "Note, to see results, at least \"INFO\" is required.")
-	private String logLevel = "INFO";
 
 	private AbstractClassExpressionLearningProblem lp;
 
@@ -103,15 +90,10 @@ public class CLI {
 	
 	// separate init methods, because some scripts may want to just get the application
 	// context from a conf file without actually running it
+	@Override
 	public void init() throws IOException {
     	if(context == null) {
-
-    		Resource confFileR = new FileSystemResource(confFile);
-    		List<Resource> springConfigResources = new ArrayList<>();
-            configuration = new ConfParserConfiguration(confFileR);
-            
-            ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-            context =  builder.buildApplicationContext(configuration,springConfigResources);
+		    super.init();
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
             rs = getMainReasonerComponent();
@@ -120,6 +102,7 @@ public class CLI {
     	}
 	}
 	
+    @Override
     public void run() {
     	try {
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.toLevel(logLevel.toUpperCase()));
@@ -172,28 +155,6 @@ public class CLI {
 					algorithm.start();
 				}
 			}
-    }
-    
-    private AbstractReasonerComponent getMainReasonerComponent() {
-    	AbstractReasonerComponent rc = null;
-    	// there can be 2 reasoner beans
-		Map<String, AbstractReasonerComponent> reasonerBeans = context.getBeansOfType(AbstractReasonerComponent.class);
-
-		if (reasonerBeans.size() > 1) {
-			for (Entry<String, AbstractReasonerComponent> entry : reasonerBeans.entrySet()) {
-				String key = entry.getKey();
-				AbstractReasonerComponent value = entry.getValue();
-
-				if (value instanceof ClosedWorldReasoner) {
-					rc = value;
-				}
-
-			}
-		} else {
-			rc = context.getBean(AbstractReasonerComponent.class);
-		}
-		
-		return rc;
     }
 
 	/**
@@ -255,9 +216,9 @@ public class CLI {
             // TODO: later we could check which command line interface is specified in the conf file
             // for now we just use the default one
 
-            CLI cli;
+            CLIBase2 cli;
             if(context.containsBean("cli")) {
-                cli = (CLI) context.getBean("cli");
+                cli = (CLIBase2) context.getBean("cli");
             } else {
                 cli = new CLI();
             }
@@ -285,60 +246,6 @@ public class CLI {
         }
     }
 
-    private static boolean createIfNotExists(File f) {
-        if (f.exists()) return true;
-
-        File p = f.getParentFile();
-        if (p != null && !p.exists()) p.mkdirs();
-
-        try {
-            f.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Find the primary cause of the specified exception.
-     *
-     * @param e The exception to analyze
-     * @return The primary cause of the exception.
-     */
-	private static Throwable findPrimaryCause(Exception e) {
-        // The throwables from the stack of the exception
-        Throwable[] throwables = ExceptionUtils.getThrowables(e);
-
-        //Look For a Component Init Exception and use that as the primary cause of failure, if we find it
-        int componentInitExceptionIndex = ExceptionUtils.indexOfThrowable(e, ComponentInitException.class);
-
-        Throwable primaryCause;
-        if(componentInitExceptionIndex > -1) {
-            primaryCause = throwables[componentInitExceptionIndex];
-        }else {
-            //No Component Init Exception on the Stack Trace, so we'll use the root as the primary cause.
-            primaryCause = ExceptionUtils.getRootCause(e);
-        }
-        return primaryCause;
-    }
-
-    public void setContext(ApplicationContext context) {
-		this.context = context;
-	}
-
-	public ApplicationContext getContext() {
-		return context;
-	}
-
-	public File getConfFile() {
-		return confFile;
-	}
-
-	public void setConfFile(File confFile) {
-		this.confFile = confFile;
-	}
-
 	public boolean isPerformCrossValidation() {
 		return performCrossValidation;
 	}
@@ -354,16 +261,8 @@ public class CLI {
 	public void setNrOfFolds(int nrOfFolds) {
 		this.nrOfFolds = nrOfFolds;
 	}
-	
-	public void setLogLevel(String logLevel) {
-		this.logLevel = logLevel;
-	}
-	
-	public String getLogLevel() {
-		return logLevel;
-	}
-	
-//	public LearningAlgorithm getLearningAlgorithm() {
+
+	//	public LearningAlgorithm getLearningAlgorithm() {
 //		return algorithm;
 //	}
 	

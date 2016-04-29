@@ -1,11 +1,9 @@
 package org.dllearner.cli;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser.ConfParserConfiguration;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.semkernel.SemKernelWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,7 @@ import java.util.Map.Entry;
  *
  * @author Patrick Westphal
  */
-public class SemKernelCLI {
+public class SemKernelCLI extends CLIBase2 {
     private static Logger logger = LoggerFactory.getLogger(SemKernelCLI.class);
 
     private ApplicationContext context;
@@ -68,7 +66,7 @@ public class SemKernelCLI {
             ApplicationContext context = builder.buildApplicationContext(
                     configuration, springConfigResources);
 
-            SemKernelCLI cli = new SemKernelCLI();
+            CLIBase2 cli = new SemKernelCLI();
 
             cli.setContext(context);
             cli.setConfFile(file);
@@ -91,49 +89,6 @@ public class SemKernelCLI {
         }
     }
 
-    /**
-     * Find the primary cause of the specified exception.
-     *
-     * @param e The exception to analyze
-     * @return The primary cause of the exception.
-     */
-    private static Throwable findPrimaryCause(Exception e) {
-        // The throwables from the stack of the exception
-        Throwable[] throwables = ExceptionUtils.getThrowables(e);
-
-        // Look For a Component Init Exception and use that as the primary
-        // cause of failure, if we find it
-        int componentInitExceptionIndex = ExceptionUtils.indexOfThrowable(e,
-                ComponentInitException.class);
-
-        Throwable primaryCause;
-        if(componentInitExceptionIndex > -1) {
-            primaryCause = throwables[componentInitExceptionIndex];
-        }else {
-            // No Component Init Exception on the Stack Trace, so we'll use the
-            // root as the primary cause.
-            primaryCause = ExceptionUtils.getRootCause(e);
-        }
-        return primaryCause;
-    }
-
-    public void init() throws IOException {
-        if(getContext() == null) {
-            Resource confFileR = new FileSystemResource(getConfFile());
-            List<Resource> springConfigResources = new ArrayList<>();
-            configuration = new ConfParserConfiguration(confFileR);
-
-            ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-            setContext(builder.buildApplicationContext(
-                    configuration, springConfigResources));
-
-//            knowledgeSource = context.getBean(KnowledgeSource.class);
-//            rs = getMainReasonerComponent();
-//            la = context.getBean(AbstractCELA.class);
-//            lp = context.getBean(AbstractLearningProblem.class);
-        }
-    }
-
     public void run() {
         for(Entry<String, SemKernelWorkflow> entry : getContext().
                 getBeansOfType(SemKernelWorkflow.class).entrySet()){
@@ -144,19 +99,4 @@ public class SemKernelCLI {
         }
     }
 
-    public ApplicationContext getContext() {
-        return context;
-    }
-
-    public void setContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    public File getConfFile() {
-        return confFile;
-    }
-
-    public void setConfFile(File confFile) {
-        this.confFile = confFile;
-    }
 }

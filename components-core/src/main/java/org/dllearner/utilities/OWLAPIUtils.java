@@ -215,11 +215,11 @@ public class OWLAPIUtils {
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
 
 	
-	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, boolean sfp) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				return fromManchester(s, reasoner, dataFactory);
+				return fromManchester(s, reasoner, dataFactory, sfp);
 			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
@@ -228,6 +228,9 @@ public class OWLAPIUtils {
 			return startClass;
 		}
 
+	}
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		return classExpressionPropertyExpander(startClass, reasoner, dataFactory, false);
 	}
 
 	@NotNull
@@ -290,12 +293,13 @@ public class OWLAPIUtils {
 		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, df::getOWLThing, logger);
 	}
 
-	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger, boolean sfp) {
 		if(startClass == null) {
-			startClass = defaultClass.get();
+			if (defaultClass != null)
+				startClass = defaultClass.get();
 		} else {
 			try {
-				startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
+				startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df, sfp);
 			} catch (ManchesterOWLSyntaxParserException e) {
 				logger.info("Error parsing startClass: " + e.getMessage());
 				startClass = defaultClass.get();
@@ -303,5 +307,11 @@ public class OWLAPIUtils {
 			}
 		}
 		return startClass;
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, defaultClass, logger, false);
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, boolean sfp, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, null, logger, sfp);
 	}
 }
