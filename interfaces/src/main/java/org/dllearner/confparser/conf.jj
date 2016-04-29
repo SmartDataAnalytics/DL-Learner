@@ -279,6 +279,10 @@ String String() :
     // enclosing "" are removed
     s = t.image;
     s = s.substring(1, s.length() - 1);
+    try {
+      s = java.net.URLDecoder.decode(s,"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    }
     return s;
   }
 }

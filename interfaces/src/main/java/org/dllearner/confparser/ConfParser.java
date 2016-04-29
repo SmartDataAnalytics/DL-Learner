@@ -338,7 +338,11 @@ option.setBeanRef(isBeanRef);
 // enclosing "" are removed
     s = t.image;
     s = s.substring(1, s.length() - 1);
-    {if ("" != null) return s;}
+    try {
+      s = java.net.URLDecoder.decode(s,"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    }
+{if ("" != null) return s;}
     throw new Error("Missing return statement in function");
   }
 
