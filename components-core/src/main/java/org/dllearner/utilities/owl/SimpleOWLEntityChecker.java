@@ -52,6 +52,10 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 		datatypeNames.put("int", df.getIntegerOWLDatatype());
 		datatypeNames.put("integer", df.getIntegerOWLDatatype());
 		datatypeNames.put("date", df.getOWLDatatype(XSDVocabulary.DATE.getIRI()));
+		for (OWL2Datatype o2d : OWL2Datatype.values()) {
+			if (!o2d.getShortForm().toUpperCase().equals(o2d.getShortForm()))
+				datatypeNames.put(o2d.getShortForm(), o2d.getDatatype(df));
+		}
 	}
 
 	public SimpleOWLEntityChecker(AbstractReasonerComponent rc) {
