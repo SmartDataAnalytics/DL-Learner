@@ -341,6 +341,7 @@ option.setBeanRef(isBeanRef);
     try {
       s = java.net.URLDecoder.decode(s,"UTF-8");
     } catch (UnsupportedEncodingException e) {
+    } catch (IllegalArgumentException e) {
     }
 {if ("" != null) return s;}
     throw new Error("Missing return statement in function");

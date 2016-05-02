@@ -282,6 +282,7 @@ String String() :
     try {
       s = java.net.URLDecoder.decode(s,"UTF-8");
     } catch (UnsupportedEncodingException e) {
+    } catch (IllegalArgumentException e) {
     }
     return s;
   }
