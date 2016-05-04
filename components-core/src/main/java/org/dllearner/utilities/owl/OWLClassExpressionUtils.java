@@ -1,16 +1,30 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities.owl;
-
-import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.Set;
 
 /**
  * A utility class for OWL class expressions.
@@ -19,7 +33,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class OWLClassExpressionUtils {
 	
-	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	private static OWLObjectDuplicator duplicator = new OWLObjectDuplicator(dataFactory);
 	private static final OWLClassExpressionLengthCalculator LENGTH_CALCULATOR= new OWLClassExpressionLengthCalculator();
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
@@ -34,15 +48,19 @@ public class OWLClassExpressionUtils {
 		OWLClassExpressionLengthCalculator calculator = new OWLClassExpressionLengthCalculator();
 		return calculator.getLength(ce);
 	}
-	
+
+	public static int getLength(OWLClassExpression ce, OWLClassExpressionLengthMetric metric) {
+		OWLClassExpressionLengthCalculator calculator = new OWLClassExpressionLengthCalculator(metric);
+		return calculator.getLength(ce);
+	}
+
 	/**
 	 * Returns the depth of a class expression. 
 	 * @param ce the class expression
 	 * @return the depth of the class expression
 	 */
 	public static synchronized int getDepth(OWLClassExpression ce){
-		int depth = ce.accept(DEPTH_FINDER);
-		return depth;
+		return ce.accept(DEPTH_FINDER);
 	}
 	
 	/**
@@ -82,4 +100,5 @@ public class OWLClassExpressionUtils {
 	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
 		return description.containsConjunct(cls);
 	}
+
 }

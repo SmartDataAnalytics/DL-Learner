@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -32,8 +30,8 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Jens Lehmann
@@ -42,18 +40,18 @@ import com.google.common.collect.Sets.SetView;
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	protected static Logger logger = Logger.getLogger(PosNegLP.class);
 
+	@ConfigOption(description = "list of positive examples", required = true)
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<>();
+	@ConfigOption(description = "list of negative examples", required = true)
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<>();
 	protected Set<OWLIndividual> allExamples = new TreeSet<>();
 
-    @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
+    @org.dllearner.core.config.ConfigOption(description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
-    @org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
+    @org.dllearner.core.config.ConfigOption(description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
     private double percentPerLengthUnit = 0.05;
 
-	@ConfigOption(
-			name = "accuracyMethod",
-			description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
 			defaultValue = "PRED_ACC")
 	protected AccMethodTwoValued accuracyMethod;
 

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities.sparql;
 
@@ -52,7 +67,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	/**
 	 * Returns a pruned copy of the given query.
 	 * @param query the query
-	 * @return
+	 * @return a pruned copy of the given query
 	 */
 	public Query pruneQuery(Query query) {
 		Query copy = query.cloneQuery();
@@ -79,8 +94,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	@Override
 	public void visit(ElementGroup el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}
@@ -172,8 +186,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 
 	@Override
 	public void visit(ElementUnion el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
-
-import java.util.Set;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+
+import java.util.Set;
 
 /**
  * This heuristic combines the following criteria to assign a
@@ -75,28 +75,30 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
 	// heuristic parameters
 	
-	@ConfigOption(name = "expansionPenaltyFactor", defaultValue="0.02")
+	@ConfigOption(description = "how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)", defaultValue="0.02")
 	private double expansionPenaltyFactor = 0.02;
 	
-	@ConfigOption(name = "gainBonusFactor", defaultValue="0.5")
+	@ConfigOption(description = "how accuracy gain should be weighted versus accuracy itself (typical value: 1.00)", defaultValue="0.5")
 	private double gainBonusFactor = 0.5;
 	
-	@ConfigOption(name = "nodeChildPenalty", defaultValue="0.0001")
-	private double nodeChildPenalty = 0.0001; // (use higher values than 0.0001 for simple learning problems);
+	@ConfigOption(description = "penalty factor for the search tree node child count (use higher values for simple learning problems)", defaultValue="0.0001")
+	private double nodeChildPenalty = 0.0001;
 	
-	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
+	@ConfigOption(description = "the score value for the start node", defaultValue="0.1")
 	private double startNodeBonus = 0.1; //was 2.0
 	
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
-	@ConfigOption(name = "negativeWeight", defaultValue="1.0")
+	@ConfigOption(description = "weighting factor on the number of true negatives (true positives are weigthed with 1)", defaultValue="1.0")
 	private double negativeWeight = 1.0; // was 0.8;
 	
-	@ConfigOption(name = "negationPenalty", defaultValue="0")
+	@ConfigOption(description = "penalty value to deduce for using a negated class expression (complementOf)", defaultValue="0")
 	private int negationPenalty = 0;
-	
+
 	// examples
+	@NoConfigOption
 	private int nrOfNegativeExamples;
+	@NoConfigOption
 	private int nrOfExamples;
 	
 	@Deprecated
@@ -134,6 +136,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(ExampleBasedNode node1, ExampleBasedNode node2) {
 		double score1 = getNodeScore(node1);
 		double score2 = getNodeScore(node2);
@@ -226,5 +229,45 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 
 	public void setNrOfExamples(int nrOfExamples) {
 		this.nrOfExamples = nrOfExamples;
+	}
+
+	public double getGainBonusFactor() {
+		return gainBonusFactor;
+	}
+
+	public void setGainBonusFactor(double gainBonusFactor) {
+		this.gainBonusFactor = gainBonusFactor;
+	}
+
+	public double getNodeChildPenalty() {
+		return nodeChildPenalty;
+	}
+
+	public void setNodeChildPenalty(double nodeChildPenalty) {
+		this.nodeChildPenalty = nodeChildPenalty;
+	}
+
+	public double getStartNodeBonus() {
+		return startNodeBonus;
+	}
+
+	public void setStartNodeBonus(double startNodeBonus) {
+		this.startNodeBonus = startNodeBonus;
+	}
+
+	public double getNegativeWeight() {
+		return negativeWeight;
+	}
+
+	public void setNegativeWeight(double negativeWeight) {
+		this.negativeWeight = negativeWeight;
+	}
+
+	public int getNegationPenalty() {
+		return negationPenalty;
+	}
+
+	public void setNegationPenalty(int negationPenalty) {
+		this.negationPenalty = negationPenalty;
 	}
 }

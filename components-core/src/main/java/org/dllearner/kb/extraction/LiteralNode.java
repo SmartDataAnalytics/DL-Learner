@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -104,33 +103,15 @@ public class LiteralNode extends Node {
 	
 	public boolean isDouble(){
 		try{
-			if(l.getDatatypeURI().contains("double")){return true;}
-			else{return false;}
-	
-			//l.getFloat();
-			
-			//l.getDouble();
-			//return true;
+			return l.getDatatypeURI() != null && l.getDatatypeURI().contains("double");
 		}catch (Exception e) {
 			return false;
-		}/*
-		try{
-			l.getDouble();
-			return true;
-		}catch (Exception e) {
-			return false;
-		}*/
+		}
 	}
 	
 	public boolean isFloat(){
 		try{
-			if(l.getDatatypeURI().contains("float")){return true;}
-			else{return false;}
-	
-			//l.getFloat();
-			
-			//l.getDouble();
-			//return true;
+			return l.getDatatypeURI() != null && l.getDatatypeURI().contains("float");
 		}catch (Exception e) {
 			return false;
 		}
@@ -138,45 +119,18 @@ public class LiteralNode extends Node {
 	
 	public boolean isInt(){
 		try{
-			if(l.getDatatypeURI().contains("int")){return true;}
-			else{return false;}
-	
-			//l.getFloat();
-			
-			//l.getDouble();
-			//return true;
+			return l.getDatatypeURI() != null && l.getDatatypeURI().contains("int");
 		}catch (Exception e) {
 			return false;
 		}
-		
-		
-	/*try{
-			l.getInt();
-			return true;
-		}catch (Exception e) {
-			return false;
-		}*/
 	}
 	
 	public boolean isBoolean(){
 		try{
-			if(l.getDatatypeURI().contains("boolean")){return true;}
-			else{return false;}
-	
-			//l.getFloat();
-			
-			//l.getDouble();
-			//return true;
+			return l.getDatatypeURI() != null && l.getDatatypeURI().contains("boolean");
 		}catch (Exception e) {
 			return false;
 		}
-		
-		/*try{
-			l.getBoolean();
-			return true;
-		}catch (Exception e) {
-			return false;
-		}*/
 	}
 	
 	public boolean isString(){

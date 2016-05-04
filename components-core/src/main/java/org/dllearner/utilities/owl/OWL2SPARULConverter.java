@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,29 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.coode.owlapi.rdf.model.AbstractTranslator;
-import org.coode.owlapi.rdf.model.RDFLiteralNode;
-import org.coode.owlapi.rdf.model.RDFNode;
-import org.coode.owlapi.rdf.model.RDFResourceNode;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import com.google.common.collect.ComparisonChain;
+import org.semanticweb.owlapi.io.*;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
 import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * A converter of OWL axioms or OWL ontology changes into SPARQL 1.1 Update commands.
+ *
+ * @author Lorenz Buehmann
+ */
 public class OWL2SPARULConverter
 		extends
-		AbstractTranslator<RDFNode, RDFResourceNode, RDFResourceNode, RDFLiteralNode> {
+		AbstractTranslator<RDFNode, RDFResource, RDFResourceIRI, RDFLiteral> {
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
@@ -49,24 +48,29 @@ public class OWL2SPARULConverter
 	public OWL2SPARULConverter(OWLOntology ontology, boolean useStrongTyping) {
 		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping, new OWLAnonymousIndividualsWithMultipleOccurrences());
 	}
-	
-	public String convert(OWLOntology ontology) {
-		return convert(ontology, true);
+
+	/**
+	 * Converts an OWL axioms to a SPARQL 1.1 Update command.
+	 *
+	 * @param axiom the OWL axiom
+	 * @param add    whether the axiom has to be added('ADD') or removed('DELETE')
+	 * @return the SPARQL 1.1 Update command
+	 */
+	public String convert(OWLAxiom axiom, boolean add) {
+		return convert(Collections.singleton(axiom), add);
 	}
-	
-	public String convert(OWLOntology ontology, boolean add) {
-		return convert(ontology.getAxioms());
-	}
-	
-	public String convert(Collection<OWLAxiom> axioms) {
-		return convert(axioms, true);
-	}
-	
+
+	/**
+	 * Converts a set of OWL axioms to a SPARQL 1.1 Update command.
+	 *
+	 * @param axioms the OWL axioms
+	 * @param add    whether those axioms have to be added('ADD') or removed('DELETE')
+	 * @return the SPARQL 1.1 Update command
+	 */
 	public String convert(Collection<OWLAxiom> axioms, boolean add) {
 		sb = new StringBuilder();
 		for (OWLAxiom ax : axioms) {
-			sb.append(add ? "INSERT DATA"
-					: "DELETE DATA");
+			sb.append(add ? "INSERT DATA" : "DELETE DATA");
 			sb.append("{");
 			ax.accept(this);
 			sb.append("}");
@@ -75,8 +79,32 @@ public class OWL2SPARULConverter
 		return sb.toString();
 	}
 
-	public String translate(List<OWLOntologyChange> changes) {
+	/**
+	 * Converts an OWL ontology change to a SPARQL 1.1 Update command.
+	 *
+	 * @param change the OWL ontology change
+	 * @return the SPARQL 1.1 Update command
+	 */
+	public String convert(OWLOntologyChange change) {
+		return convert(Collections.singletonList(change));
+	}
+
+	/**
+	 * Converts a list of OWL ontology changes to a SPARQL 1.1 Update command.
+	 *
+	 * @param changes the ontology changes
+	 * @return the SPARQL 1.1 Update command
+	 */
+	public String convert(List<OWLOntologyChange> changes) {
 		sb = new StringBuilder();
+
+		// sort by type of change
+		Collections.sort(changes, (o1, o2) -> ComparisonChain.start()
+				.compareTrueFirst(o1.isAddAxiom(), o2.isAddAxiom())
+				.compare(o1.getAxiom(), o2.getAxiom())
+				.result());
+
+		// convert to SPARQL 1.1 Update
 		for (OWLOntologyChange change : changes) {
 			sb.append(change instanceof RemoveAxiom ? "DELETE DATA"
 					: "INSERT DATA");
@@ -89,35 +117,39 @@ public class OWL2SPARULConverter
 	}
 
 	@Override
-	protected void addTriple(RDFResourceNode subject, RDFResourceNode pred,
-			RDFNode object) {
+	protected void addTriple(@Nonnull RDFResource subject, @Nonnull RDFResourceIRI pred,
+							 @Nonnull RDFNode object) {
 		sb.append(subject).append(" ").append(pred).append(" ").append(object);
 
 	}
 
+	@Nonnull
 	@Override
-	protected RDFResourceNode getAnonymousNode(Object key) {
-		return new RDFResourceNode(System.identityHashCode(key), false, false);
+	protected RDFResourceBlankNode getAnonymousNode(@Nonnull Object key) {
+		return new RDFResourceBlankNode(System.identityHashCode(key), false, false);
 	}
 
+	@Nonnull
 	@Override
-	protected RDFResourceNode getPredicateNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object o) {
+		return new RDFResourceBlankNode(false, false);
 	}
 
+	@Nonnull
 	@Override
-	protected RDFResourceNode getResourceNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResourceIRI getPredicateNode(@Nonnull IRI iri) {
+		return new RDFResourceIRI(iri);
 	}
 
+	@Nonnull
 	@Override
-	protected RDFLiteralNode getLiteralNode(OWLLiteral literal) {
-		if (literal.getDatatype() != null) {
-			return new RDFLiteralNode(literal.toString(), literal.getDatatype()
-					.getIRI());
-		} else {
-			return new RDFLiteralNode(literal.toString(), literal.getLang());
-		}
+	protected RDFResource getResourceNode(@Nonnull IRI iri) {
+		return new RDFResourceIRI(iri);
+	}
 
+	@Nonnull
+	@Override
+	protected RDFLiteral getLiteralNode(@Nonnull OWLLiteral literal) {
+		return new RDFLiteral(literal);
 	}
 }

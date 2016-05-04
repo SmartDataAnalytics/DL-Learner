@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,15 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -34,6 +26,9 @@ import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import javax.annotation.Nonnull;
+import java.util.*;
 
 /**
  * This class takes Descritptions and a reasoner and orders the 
@@ -146,7 +141,6 @@ public class DescriptionSubsumptionTree {
 			}
 		}
 
-
 		/**
 		 * @return the first, i.e. the shortest class expression of this node
 		 */
@@ -208,7 +202,7 @@ public class DescriptionSubsumptionTree {
 		}
 
 		@Override
-		public int compareTo(Node node) {
+		public int compareTo(@Nonnull Node node) {
 			if (this.equals(node)) {
 				return 0;
 			}
@@ -286,7 +280,7 @@ public class DescriptionSubsumptionTree {
 				break;
 			}
 			if (evaluatedDescription.getAccuracy() > accuracyThreshold) {
-				newSet.add((EvaluatedDescription) evaluatedDescription);
+				newSet.add(evaluatedDescription);
 				logger.warn(evaluatedDescription);
 			}
 			i++;

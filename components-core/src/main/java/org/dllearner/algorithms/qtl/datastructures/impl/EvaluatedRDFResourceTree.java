@@ -1,18 +1,37 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import com.google.common.collect.ComparisonChain;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.learningproblems.QueryTreeScore;
 
-import com.google.common.collect.ComparisonChain;
+import java.util.Collection;
+import java.util.Set;
+
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResourceTree>{
 	
@@ -39,8 +58,8 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 	// the corresponding description set lazily
 	private EvaluatedDescription<? extends Score> description;
 	
-	// the query trees of which the underlying query tree was generated from
-	private Set<RDFResourceTree> baseQueryTrees = new HashSet<>();
+	// the query trees of which this query tree was generated from
+	private Set<RDFResourceTree> baseQueryTrees = new TreeSet<>();
 
 	public EvaluatedRDFResourceTree(RDFResourceTree tree, Collection<RDFResourceTree> falseNegatives, 
 			Collection<RDFResourceTree> falsePositives, QueryTreeScore score) {
@@ -127,16 +146,6 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 		return score;
 	}
 
-	@Override
-	public int compareTo(EvaluatedRDFResourceTree other) {
-		return ComparisonChain.start()
-//		         .compare(this.getScore(), other.getScore())
-		         .compare(other.getScore(), this.getScore())
-		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription())
-		         .result();
-	}
-	
-	
 	/**
 	 * @return the query tree as OWL class expression
 	 */
@@ -150,13 +159,26 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 		this.description = description;
 	}
 	
+	/**
+	 * @return the query tree as OWL class expression with score
+	 */
 	public EvaluatedDescription<? extends Score> asEvaluatedDescription(){
+		// lazy generation
 		if(description == null){
 			description = new EvaluatedDescription(QueryTreeUtils.toOWLClassExpression(getTree()), score);
 		}
 		return description;
 	}
 	
+	@Override
+	public int compareTo(EvaluatedRDFResourceTree other) {
+		return ComparisonChain.start()
+		         .compare(other.getScore(), this.getScore()) // score
+		         .compare(this.baseQueryTrees.toString(), other.baseQueryTrees.toString()) // base query trees
+		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription()) // class expression representation
+		         .result();
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

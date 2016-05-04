@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
 import java.net.MalformedURLException;
@@ -25,7 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -63,14 +61,15 @@ public class ComponentTest {
 		reasoner.init();
 		
 		OWLDataFactory df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("http://localhost/foo#");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://localhost/foo#");
 		
 		// create a learning problem and set positive and negative examples
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
-		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> positiveExamples = new TreeSet<>();
 		positiveExamples.add(df.getOWLNamedIndividual("heinz", pm));
 		positiveExamples.add(df.getOWLNamedIndividual("alex", pm));
-		Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> negativeExamples = new TreeSet<>();
 		negativeExamples.add(df.getOWLNamedIndividual("jan", pm));
 		negativeExamples.add(df.getOWLNamedIndividual("anna", pm));
 		negativeExamples.add(df.getOWLNamedIndividual("hanna", pm));

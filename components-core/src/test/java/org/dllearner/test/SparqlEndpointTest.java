@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
 import java.util.HashSet;
@@ -37,13 +36,13 @@ import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SparqlEndpointTest {
 	private static Logger logger = Logger.getRootLogger();
-	static Set<String> working = new HashSet<String>();
-	static Set<String> notworking = new HashSet<String>();
+	static Set<String> working = new HashSet<>();
+	static Set<String> notworking = new HashSet<>();
 	
 	public static void main(String[] args) {
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		FileAppender fileAppender =null; ;
+		FileAppender fileAppender =null;
 		try{
 			fileAppender = new FileAppender(layout,"endpoints.txt",false);
 		}catch (Exception e) {e.printStackTrace();}

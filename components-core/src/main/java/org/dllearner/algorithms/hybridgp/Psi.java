@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.hybridgp;
 
 import java.util.Random;
@@ -158,7 +157,7 @@ public class Psi implements GeneticRefinementOperator {
 			
 		
 		// ein refinement zufällig auswählen
-		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[0]);
+		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[refinements.size()]);
 		// kein refinement gefunden
 		if(array.length==0) {
 			if(debug) {
@@ -185,6 +184,7 @@ public class Psi implements GeneticRefinementOperator {
 		return returnConceptClone;
 	}
 	
+	@Override
 	public Program applyOperator(Program program) {
 		psiApplicationStartTime = System.nanoTime();
 		nrOfRequests++;

@@ -12,14 +12,14 @@ public interface EntityCandidatesTrie {
 	 * @param s
 	 * @param e
 	 */
-	public void addEntry(List<Token> s, OWLEntity e);
+	void addEntry(List<Token> s, OWLEntity e);
 	
 	
 	/**
 	 * Gets set of candidate entities for a list of tokens
 	 * @return
 	 */
-	public Set<EntityScorePair> getCandidateEntities(List<Token> tokens);
+	Set<EntityScorePair> getCandidateEntities(List<Token> tokens);
 
 
 	/**
@@ -29,11 +29,11 @@ public interface EntityCandidatesTrie {
      *
 	 * @return string generating the path of the longest match in the trie
 	 */
-	public List<Token> getGeneratingStringForLongestMatch(List<Token> tokens);
+	List<Token> getGeneratingStringForLongestMatch(List<Token> tokens);
 
     /**
      * Gets the longest matching string
      * @return
      */
-    public List<Token> getLongestMatchingText(List<Token> tokens);
+    List<Token> getLongestMatchingText(List<Token> tokens);
 }

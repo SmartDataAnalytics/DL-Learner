@@ -1,6 +1,23 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,11 +37,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.http.HTTPException;
 
+import com.hp.hpl.jena.graph.NodeFactory;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -641,7 +656,7 @@ public class NBR<N> {
 					Map<Integer, N> node2Label = new HashMap<>();
 					for(QueryTree<N> c : child.getChildren()){
 						if(determiningNodeIds.contains(c.getId())){
-							node2Label.put(Integer.valueOf(c.getId()), c.getUserObject());
+							node2Label.put(c.getId(), c.getUserObject());
 							c.setUserObject((N)"?");
 						}
 					}
@@ -1303,7 +1318,7 @@ public class NBR<N> {
 	                	if(current.getObject().toString().equals(label)){
 	                		node = current.getObject();
 	                		position = ((ElementTriplesBlock) el).getPattern().getList().indexOf(current);
-	                		add = Triple.create(current.getSubject(), current.getPredicate(), Node.createVariable("x" + nodeId));
+	                		add = Triple.create(current.getSubject(), current.getPredicate(), NodeFactory.createVariable("x" + nodeId));
 	                		iter.remove();
 	                	}
 	                }

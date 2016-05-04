@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.dllearner.utilities.Files;
-
 
 public class TableColumn implements Serializable {
 
@@ -44,7 +42,6 @@ public TableColumn(String header) {
 	this.header = header;
 }
 
-
 public TableColumn( String[] entries) {
 	this.entries = Arrays.asList(entries);
 }
@@ -58,7 +55,6 @@ public TableColumn(String header, String[] entries) {
 public TableColumn( List<String> entries) {
 	this.entries = entries;
 }
-
 
 public String getHeader() {
 	return header;
@@ -114,6 +110,5 @@ public static TableColumn deSerialize(File f){
 	
 	return ret;
 }
-
 
 }

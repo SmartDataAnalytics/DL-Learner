@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,21 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.dllearner.utilities.datastructures.RDFNodeTuple;
+
+import java.util.*;
 
 public class BlankNodeCollector {
 
@@ -45,7 +38,7 @@ public class BlankNodeCollector {
 	
 	public static void addBlankNode(int id, RDFNodeTuple t){
 		if(blankNodes.get(id)==null){
-			blankNodes.put(id, new TreeSet<RDFNodeTuple>());
+			blankNodes.put(id, new TreeSet<>());
 			}
 		blankNodes.get(id).add(t);
 		//System.out.println("added: "+id+" "+t);

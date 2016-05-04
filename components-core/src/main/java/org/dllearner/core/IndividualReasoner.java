@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 import java.util.Map;
@@ -68,14 +67,14 @@ public interface IndividualReasoner {
 	SortedSet<OWLIndividual> hasType(OWLClassExpression description, Set<OWLIndividual> individuals);
 	
 	/**
-	 * Gets all instances of a given class OWLClassExpression in the knowledge base.
+	 * Gets all instances of a given class expression in the knowledge base.
 	 * @param description An OWL class description.
 	 * @return All instances of the class description.
 	 */
 	SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description);
 	
 	/**
-	 * Performs a query for all instances of the given class OWLClassExpression and
+	 * Performs a query for all instances of the given class expression and
 	 * its negation. (Note that in OWL it is possible that the reasoner can
 	 * neither deduce that an individual is instance of a class nor its 
 	 * negation.) This method might be more efficient that performing a 

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
@@ -18,11 +33,11 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ComparisonChain;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -39,7 +54,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable, Comparable<RDFResourceTree>{
 	
 	public enum Rendering {
 		INDENTED, BRACES
@@ -198,6 +213,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
+	 * @param edge
+	 *            the edge from the root node to the possible child nodes
+	 * @return TRUE if there is at least one child connected by the given edge,
+	 *         otherwise FALSE
+	 */
+	public boolean hasChildren(Node edge) {
+		return edge2Children.get(edge) != null;
+	}
+	
+	/**
 	 * @return all distinct outgoing edges.
 	 */
 	public SortedSet<Node> getEdges() {
@@ -273,6 +298,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public String getStringRepresentation(Rendering syntax, String baseIRI, PrefixMapping pm) {
 		return getStringRepresentation(false, syntax, baseIRI, pm);
+	}
+	
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 * 
+	 * @param stopIfChildIsResourceNode do not show children of nodes that are resources
+	 * @return the query tree
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
+		return getStringRepresentation(stopIfChildIsResourceNode, null, null, PrefixCCPrefixMapping.Full);
 	}
 	    
 	/**
@@ -443,5 +478,17 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			}
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(RDFResourceTree other) {
+		return ComparisonChain.start().
+			compare(this.getData(), other.getData(), new NodeComparator()). // root node
+			compare(this.getNumberOfChildren(), other.getNumberOfChildren()). // number of direct children
+			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
+			result();
 	}
 }

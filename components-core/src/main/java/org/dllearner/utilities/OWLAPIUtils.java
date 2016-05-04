@@ -1,45 +1,54 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities;
-
-import java.util.*;
-
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.ISODateTimeFormat;
-import org.joda.time.format.ISOPeriodFormat;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
-
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.jetbrains.annotations.NotNull;
+import org.joda.time.DateTime;
+import org.joda.time.format.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
+import org.slf4j.Logger;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
+ * A collection of utility methods for the OWL API.
+ *
  * @author Lorenz Buehmann
  *
  */
 public class OWLAPIUtils {
 	
 	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
+
+	public static final OWLOntologyManager	manager	= OWLManager.createOWLOntologyManager();
+	public static final OWLDataFactory factory = manager.getOWLDataFactory();
 	
     public final static Set<OWLDatatype> intDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.INT,
@@ -56,7 +65,8 @@ public class OWLAPIUtils {
     public final static Set<OWLDatatype> floatDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.FLOAT,
 			XSD.DOUBLE,
-			OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
+			factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI())
+
 	));
     public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<>(Collections.singletonList(
 			XSD.BOOLEAN
@@ -67,8 +77,8 @@ public class OWLAPIUtils {
 	 * without time zone offsets.
 	 */
     public final static Set<OWLDatatype> owl2TimeDatatypes = Sets.newTreeSet(Arrays.asList(
-    		OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME),
-        	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP)
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME.getIRI()),
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI())
         ));
     
     public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
@@ -92,7 +102,7 @@ public class OWLAPIUtils {
 		javaTypeMap = new TreeMap<>();
 		javaTypeMap.put(XSD.BYTE, Byte.class);
 		javaTypeMap.put(XSD.SHORT, Short.class);
-		javaTypeMap.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL), Double.class);
+		javaTypeMap.put(factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI()), Double.class);
 		javaTypeMap.put(XSD.INT, Integer.class);
 		javaTypeMap.put(XSD.INTEGER, Integer.class);
 		javaTypeMap.put(XSD.POSITIVE_INTEGER, Integer.class);
@@ -117,7 +127,7 @@ public class OWLAPIUtils {
 		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
-		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+		dateTimeFormatters.put(factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI()), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 
 	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeParsers = new HashMap<>(dateTimeFormatters);
@@ -168,11 +178,19 @@ public class OWLAPIUtils {
         .toFormatter());
 		
 	}
-	
+
+	/**
+	 * @param entityType the OWL entity type
+	 * @return the name of the OWL entity type
+	 */
 	public static String getPrintName(EntityType entityType) {
         return entityType.getPrintName().toLowerCase();
 	}
-	
+
+	/**
+	 * @param lit the OWL literal
+	 * @return whether the OWL literal is an integer, i.e. whether the datatype is some integer
+	 */
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
 		return intDatatypes.contains(lit.getDatatype());
 	}
@@ -184,21 +202,25 @@ public class OWLAPIUtils {
 	public static boolean isNumericDatatype(OWLDatatype datatype){
 		return numericDatatypes.contains(datatype);
     }
-	
+
+	/**
+	 * Convenience method that converts a set of OWL class expressions to a set of OWL classes.
+	 * @param classExpressions a set of OWL class expressions
+	 * @return a set of OWL classes
+	 */
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
 		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
 	}
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
+
 	
-	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, boolean sfp) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
-				return parser.parseClassExpression();
-			} catch (ParserException e) {
+				return fromManchester(s, reasoner, dataFactory, sfp);
+			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
 			}
@@ -207,7 +229,24 @@ public class OWLAPIUtils {
 		}
 
 	}
-	
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		return classExpressionPropertyExpander(startClass, reasoner, dataFactory, false);
+	}
+
+	@NotNull
+	public static OWLClassExpression fromManchester(String expr, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, new SimpleOWLEntityChecker(reasoner));
+		return parser.parse(expr);
+	}
+
+	@NotNull
+	public static OWLClassExpression fromManchester(String expr, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, boolean shortForm) {
+		SimpleOWLEntityChecker oec = new SimpleOWLEntityChecker(reasoner);
+		oec.setAllowShortForm(shortForm);
+		ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, oec);
+		return parser.parse(expr);
+	}
+
 	/**
 	 * Checks whether the given value is in the closed interval [min,max], i.e.
 	 * the value is greater than min and lower than max.
@@ -248,5 +287,31 @@ public class OWLAPIUtils {
 		}
 		
 		return false;
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, final OWLDataFactory df, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, df::getOWLThing, logger);
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger, boolean sfp) {
+		if(startClass == null) {
+			if (defaultClass != null)
+				startClass = defaultClass.get();
+		} else {
+			try {
+				startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df, sfp);
+			} catch (ManchesterOWLSyntaxParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				startClass = defaultClass.get();
+				logger.warn("Using "+ startClass +" instead.");
+			}
+		}
+		return startClass;
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, defaultClass, logger, false);
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, boolean sfp, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, null, logger, sfp);
 	}
 }

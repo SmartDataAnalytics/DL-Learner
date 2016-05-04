@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
-
-
 
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
@@ -36,21 +33,6 @@ public abstract class AbstractComponent implements Component {
 	 */
 	public boolean isInitialized() {
 		return initialized;
-	}
-	
-	/**
-	 * Returns the name of this component. By default, "unnamed
-	 * component" is returned, but all implementations of components
-	 * are strongly encouraged to provide a static method returning
-	 * the name.
-	 * 
-	 * Use the DLComponent annotation instead of setting a name through this method.
-	 * 
-	 * @return The name of this component.
-	 */
-	@Deprecated
-	public static String getName() {
-		return "unnamed component";
 	}
 	
 }

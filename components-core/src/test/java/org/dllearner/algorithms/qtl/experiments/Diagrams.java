@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.experiments;
 
@@ -8,13 +23,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 
 import com.google.common.base.Charsets;
@@ -23,6 +37,11 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.JavaPlot.Key;
+import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.panayotis.gnuplot.style.PlotStyle;
+import com.panayotis.gnuplot.style.Style;
 
 /**
  * @author Lorenz Buehmann
@@ -49,9 +68,9 @@ public class Diagrams {
 		int[] nrOfExamplesIntervals = {
 				5,
 				10,
-				15,
+//				15,
 				20, 
-				25,
+//				25,
 				30
 				}; 
 		
@@ -60,7 +79,7 @@ public class Diagrams {
 				0.1,
 				0.2,
 				0.3,
-				0.4,
+//				0.4,
 //				0.6
 				};
 		
@@ -68,10 +87,16 @@ public class Diagrams {
 		measure2ColumnName.put(HeuristicType.FMEASURE, "avg_fscore_best_returned");
 		measure2ColumnName.put(HeuristicType.PRED_ACC, "avg_predacc_best_returned");
 		measure2ColumnName.put(HeuristicType.MATTHEWS_CORRELATION, "avg_mathcorr_best_returned");
+		
 		HeuristicType[] measures = {
 				HeuristicType.PRED_ACC, 
 				HeuristicType.FMEASURE, 
 				HeuristicType.MATTHEWS_CORRELATION};
+		
+		String[] labels = {
+				"A_1", 
+				"F_1", 
+				"MCC"};
 		
 		// get distinct noise intervals
 		
@@ -96,7 +121,7 @@ public class Diagrams {
 				}
 				 s += "\n";
 			}
-			Files.write(s, new File(dir, "examplesVsFscore-" + noise + ".tsv"), Charsets.UTF_8);
+			Files.write(s, new File(dir, "examplesVsScore-" + noise + ".tsv"), Charsets.UTF_8);
 		}
 		
 		// noise vs fscore
@@ -111,50 +136,84 @@ public class Diagrams {
 			
 			String gnuplot = "";
 			
-			Map<HeuristicType, double[][]> h2data = new TreeMap<>();
-			for (HeuristicType measure : measures) {
-				ps = conn.prepareStatement(String.format(sql, measure2ColumnName.get(measure)));
-				ps.setString(1, measure.toString());
-				ps.setInt(2, nrOfExamples);
-				ResultSet rs = ps.executeQuery();
-				s+= measure;
-				 
-				int length = 0;
-				if (rs != null) {
-					rs.beforeFirst();
-					rs.last();
-					length = rs.getRow();
-				}
-				if(length > 0) {
-					double[][] data = new double[length][2];
-					rs.beforeFirst();
-					int row = 0;
-					while(rs.next()) {
-						double noise = rs.getDouble(1);
-						double avgFscore = rs.getDouble(2);
-						s += "\t" + avgFscore;
-						
-						data[row][0] = noise;
-						data[row][1] = avgFscore;
-						row++;
-					}
-					
-					gnuplot += "\"" + measure.name() + "\"" + "\n";
-					for (double[] line : data) {
-						gnuplot += Joiner.on(",").join(Arrays.asList(ArrayUtils.toObject(line)));
-						gnuplot += "\n";
-					}
-					gnuplot += "\n\n";
-					h2data.put(measure, data);
-					 s += "\n";
-				}
-			}
-			if(!h2data.isEmpty()) {
-				input.put(nrOfExamples, h2data);
+			// F-score
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_fscore_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			ResultSet rs = ps.executeQuery();
+			gnuplot += "\"F_1\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
 			}
 			
-			Files.write(s, new File(dir, "noiseVsFscore-" + nrOfExamples + ".tsv"), Charsets.UTF_8);
-			Files.write(gnuplot.trim(), new File(dir, "noiseVsFscore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
+			// precision
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_precision_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"precision\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+
+			// recall
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_recall_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"recall\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
+			// MCC
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_mathcorr_best_returned from eval_overall WHERE heuristic_measure = 'MATTHEWS_CORRELATION' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"MCC\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+		
+			
+			// baseline F-score
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement("SELECT noise,avg_fscore_baseline from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"baseline F_1\"\n";
+			while(rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
+			// baseline MCC
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_mathcorr_baseline from eval_overall WHERE heuristic_measure = 'MATTHEWS_CORRELATION' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"baseline MCC\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
+			Files.write(gnuplot.trim(), new File(dir, "noiseVsScore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
 		}
 		if(!input.isEmpty()) {
 //			plotNoiseVsFscore(input);
@@ -162,52 +221,51 @@ public class Diagrams {
 		
 	}
 	
-//	public static void plotNoiseVsFscore(NavigableMap<Integer, Map<HeuristicType, double[][]>> input) {
-//		JavaPlot p = new JavaPlot();
-//		p.set("xlabel", "'Noise'");
-//		p.set("ylabel", "'Objective Function'");
-//		p.set("xtics", "0,.1,.4");
-//		p.set("ytics", "0,.2,1");
-//		p.set("xrange", "[0:.4]");
-//        
-//        // last element 
-//        Entry<Integer, Map<HeuristicType, double[][]>> lastEntry = input.lastEntry();
-//        
-//        
-//		for (Entry<Integer, Map<HeuristicType, double[][]>> entry : input.entrySet()) {
-//			Integer nrOfExamples = entry.getKey();
-//			
-//			Map<HeuristicType, double[][]> h2data = entry.getValue();
-//			int pointStyle = 5;
-//			for (Entry<HeuristicType, double[][]> entry2 : h2data.entrySet()) {
-//				HeuristicType heuristic = entry2.getKey();
-//				double[][] data = entry2.getValue();
-//				
-//				PlotStyle myPlotStyle = new PlotStyle();
-//		        myPlotStyle.setStyle(Style.LINESPOINTS);
-//		        myPlotStyle.setLineWidth(1);
-//		        myPlotStyle.setPointType(pointStyle);
-//		        pointStyle += 2;
-//		        
-//				DataSetPlot s = new DataSetPlot(data);
-//				s.setPlotStyle(myPlotStyle);
-//				s.setTitle(heuristic.name());
-//				p.addPlot(s);
-//				
-//			}
-//			
-//			if(entry.equals(lastEntry)) {
-//				p.setKey(Key.OUTSIDE);
-//			} else {
-//				p.setKey(Key.OFF);
-//			}
-//			p.setTitle(nrOfExamples.toString());
-//			p.newGraph();
-//		}
-//		
-//		p.newGraph();
-//       
-//        p.plot();
-//	}
+	public static void plotNoiseVsFscore(NavigableMap<Integer, Map<HeuristicType, double[][]>> input) {
+		JavaPlot p = new JavaPlot();
+		p.set("xlabel", "'Noise'");
+		p.set("ylabel", "'Objective Function'");
+		p.set("xtics", "0,.1,.4");
+		p.set("ytics", "0,.2,1");
+		p.set("xrange", "[0:.4]");
+        
+        // last element 
+        Entry<Integer, Map<HeuristicType, double[][]>> lastEntry = input.lastEntry();
+        
+        
+		for (Entry<Integer, Map<HeuristicType, double[][]>> entry : input.entrySet()) {
+			Integer nrOfExamples = entry.getKey();
+			
+			Map<HeuristicType, double[][]> h2data = entry.getValue();
+			int pointStyle = 5;
+			for (Entry<HeuristicType, double[][]> entry2 : h2data.entrySet()) {
+				HeuristicType heuristic = entry2.getKey();
+				double[][] data = entry2.getValue();
+				
+				PlotStyle myPlotStyle = new PlotStyle();
+		        myPlotStyle.setStyle(Style.LINESPOINTS);
+		        myPlotStyle.setLineWidth(1);
+		        myPlotStyle.setPointType(pointStyle);
+		        pointStyle += 2;
+		        
+				DataSetPlot s = new DataSetPlot(data);
+				s.setPlotStyle(myPlotStyle);
+				s.setTitle(heuristic.name());
+				p.addPlot(s);
+				
+			}
+			
+			if(entry.equals(lastEntry)) {
+				p.setKey(Key.OUTSIDE);
+			} else {
+				p.setKey(Key.OFF);
+			}
+			p.setTitle(nrOfExamples.toString());
+			p.newGraph();
+		}
+		p.newGraph();
+       
+        p.plot();
+	}
 
 }

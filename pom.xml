@@ -4,23 +4,22 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
+	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<compiler.version>1.7</compiler.version>
+		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- convenience to define GWT version in one place -->
-		<gwt.version>2.3.0</gwt.version>
-
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.6.4</slf4j.version>
+        <slf4j.version>1.7.16</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>5.3.0</solr.version>
-        <owlapi.version>3.5.4</owlapi.version>
-        <spring.version>3.2.13.RELEASE</spring.version>
+        <owlapi.version>4.1.4</owlapi.version>
+        <spring.version>4.2.4.RELEASE</spring.version>
         <jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
+		<pellet.version>2.4.0-dllearner</pellet.version>
 	</properties>
 
 	<modules>
@@ -28,7 +27,7 @@
 		<module>components-ext</module>
 		<module>interfaces</module>
 		<module>scripts</module>
-  </modules>
+	</modules>
 
 
 	<!--This is the SCM information, which needs to be here so we can use the
@@ -37,33 +36,98 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-	 	<tag>1.2</tag>
-  </scm>
+		<tag>1.2</tag>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>AKSW, Department of Computer Science, University of Leipzig</name>
+		<url>http://www.aksw.org</url>
+	</organization>
+
+	<inceptionYear>2007</inceptionYear>
+
+	<developers>
+		<developer>
+			<id>lorenz</id>
+			<name>Lorenz Buehmann</name>
+			<email>buehmann@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>patrick</id>
+			<name>Patrick Westphal</name>
+			<email>pwestphal@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>simon</id>
+			<name>Simon Bin</name>
+			<email>sbin@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>jens</id>
+			<name>Jens Lehmann</name>
+			<email>lehmann@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
 
 	<build>
-	<!-- - Plugin Management defines the plugins that the child components can 
-		use - It's good practice to do this as we can ensure all children use common 
-		versions - of the plugins, and we can look in one place to see all plugin 
-		dependencies. -->
-	<pluginManagement>
-		<plugins>
-			<!--Surefire - for JUnits -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.18.1</version>
-			</plugin>
-			<!--Maven Compiler Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>${compiler.version}</source>
-					<target>${compiler.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-				</configuration>
-			</plugin>
+		<!-- - Plugin Management defines the plugins that the child components can
+            use - It's good practice to do this as we can ensure all children use common
+            versions - of the plugins, and we can look in one place to see all plugin
+            dependencies. -->
+		<pluginManagement>
+			<plugins>
+				<!--Surefire - for JUnits -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.19</version>
+				</plugin>
+				<!--Maven Compiler Plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.3</version>
+					<configuration>
+						<source>${compiler.version}</source>
+						<target>${compiler.version}</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<compilerArgs>
+							<arg>-Xlint:all,-options,-path</arg>
+						</compilerArgs>
+					</configuration>
+				</plugin>
 
 			<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm 
 				putting this in so we can create a jar for the test classes - in components 
@@ -76,7 +140,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.3.2</version>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<id>sign</id>
@@ -91,6 +155,11 @@
 					<storepass>Store password</storepass>
 					<keypass>Key password</keypass>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
 			</plugin>
 			<!--JAR the Sources -->
 			<plugin>
@@ -109,7 +178,7 @@
 			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>2.8</version>
+				<version>2.11</version>
 				<configuration>
 				<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
 					<header>license_header.txt</header>
@@ -117,8 +186,8 @@
 			            <owner>Jens Lehmann</owner>
 			            <email>lehmann@informatik.uni-leipzig.de</email>
 			        </properties>
-			       <includes><include>src/**/*.java</include>
-			       
+			       <includes>
+					   <include>src/**/*.java</include>
 			       </includes>
 			        <excludes>
 			            <exclude>**/README</exclude>
@@ -132,13 +201,14 @@
 			            <exclude>src/**/*.html</exclude>
 			            <exclude>src/**/*.jj</exclude>
 			            <exclude>src/**/*.txt</exclude>
+						<exclude>package-info.java</exclude>
 			        </excludes>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>2.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -158,7 +228,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.2</version>
+				<version>2.5.3</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
@@ -174,25 +244,126 @@
 		<installProject>false</installProject>
 		<verbose>true</verbose>
 
-		<gitFlowConfig>
-			<productionBranch>master</productionBranch>
-			<developmentBranch>develop</developmentBranch>
-			<featureBranchPrefix>feature/</featureBranchPrefix>
-			<releaseBranchPrefix>release/</releaseBranchPrefix>
-			<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-			<supportBranchPrefix>support/</supportBranchPrefix>
-			<versionTagPrefix></versionTagPrefix>
-		</gitFlowConfig>
-	</configuration>
-</plugin>
-			<!-- <plugin>
+						<gitFlowConfig>
+							<productionBranch>master</productionBranch>
+							<developmentBranch>develop</developmentBranch>
+							<featureBranchPrefix>feature/</featureBranchPrefix>
+							<releaseBranchPrefix>release/</releaseBranchPrefix>
+							<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+							<supportBranchPrefix>support/</supportBranchPrefix>
+							<versionTagPrefix></versionTagPrefix>
+						</gitFlowConfig>
+					</configuration>
+				</plugin>
+				<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.4</version>
+                	<configuration>
+						<!--<skipDeploy>true</skipDeploy>-->
+					</configuration>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>2.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+				<plugin>
+					<!-- the plugin to generate changelog and release announcements -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changes-plugin</artifactId>
+					<configuration>
+						<developmentTeam>DL-Learner team</developmentTeam>
+						<!-- the changes filtered source changes file -->
+						<xmlPath>${basedir}/etc/changes.xml</xmlPath>
+						<templateDirectory>etc/templates</templateDirectory>
+						<issueManagementSystems>
+							<issueManagementSystem>changes.xml</issueManagementSystem>
+						</issueManagementSystems>
+					</configuration>
+					<executions>
+						<execution>
+							<!-- checking if the changes file is well-formed -->
+							<id>check-changes</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>changes-check</goal>
+							</goals>
+						</execution>
+						<execution>
+							<!-- generating of the Changes.txt file -->
+							<id>generate-changes-file</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>Changes.txt</announcementFile>
+								<template>changes.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- generation of the e-mail announcement message announcement.txt -->
+							<id>generate-email-announcement</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>announcement.txt</announcementFile>
+								<template>announcement.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<!--<plugins>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
-			</plugin> -->
-		</plugins>
-	</pluginManagement>
-</build>
+				<executions>
+					<execution>
+						<id>stage-for-scm-publish</id>
+						<phase>post-site</phase>
+						<goals>
+							<goal>stage</goal>
+						</goals>
+						<configuration>
+							<skipDeploy>false</skipDeploy>&lt;!&ndash; MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-publish-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>scm-publish</id>
+						<phase>site-deploy</phase>
+						<goals>
+							<goal>publish-scm</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>-->
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+	</dependencies>
 
 	<dependencyManagement>
 		<!-- - Dependency Management defines the dependencies at the parent level
@@ -203,62 +374,60 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
-            <dependency>
-                <groupId>org.semanticweb.elk</groupId>
-                <artifactId>elk-owlapi</artifactId>
-                <version>0.4.1</version>
-            </dependency>
+
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
 				<version>3.5</version>
 			</dependency>
 			<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-reasoner</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-debugging</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-util</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-api</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-apibinding</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-impl</artifactId>
-			<version>${owlapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapitools-concurrentimpl</artifactId>
-			<version>1.1.1</version>
-		</dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-distribution</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-reasoner</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-debugging</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-util</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-api</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-apibinding</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-impl</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapitools-concurrentimpl</artifactId>
+				<version>4.1.0</version>
+			</dependency>
 
 	<!-- OWL API compatible reasoners -->
+			<!-- Pellet -->
+			<!-- orignal groupId: com.clarkparsia.pellet -->
 			<dependency>
 				<groupId>com.clarkparsia.pellet</groupId>
 				<artifactId>pellet-distribution</artifactId>
-				<version>2.3.3-dllearner</version>
+				<version>${pellet.version}</version>
 				<type>pom</type>
 				<exclusions>
 					<exclusion>
@@ -275,41 +444,59 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-		
+			<!-- Trowl - no support for OWL API v4 yet-->
+			<!--<dependency>-->
+				<!--<groupId>eu.trowl</groupId>-->
+				<!--<artifactId>trowl-core</artifactId>-->
+				<!--<version>1.5.0</version>-->
+			<!--</dependency>-->
+			<!-- ELK -->
 			<dependency>
-				<groupId>eu.trowl</groupId>
-				<artifactId>trowl-core</artifactId>
-				<version>1.5.0</version>
+				<groupId>org.semanticweb.elk</groupId>
+				<artifactId>elk-owlapi</artifactId>
+				<version>0.4.3-dllearner</version>
 			</dependency>
-			
+			<!-- JFact -->
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>jfact</artifactId>
+				<version>4.0.3</version>
+			</dependency>
+			<!-- HermiT (OWL API v4 fork) -->
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>org.semanticweb.hermit</artifactId>
+				<version>1.3.8.413</version>
+			</dependency>
+			<!-- Fact++ -->
+			<dependency>
+				<groupId>com.google.code.factplusplus</groupId>
+				<artifactId>factpp-owlapi</artifactId>
+				<version>1.6.2</version>
+			</dependency>
+			<!-- OWLlink -->
+			<dependency>
+				<groupId>net.sourceforge.owlapi.owllink</groupId>
+				<artifactId>owllink</artifactId>
 				<version>1.2.2</version>
 			</dependency>
-		
-			<dependency>
-				<groupId>org.semanticweb.hermit</groupId>
-				<artifactId>hermit</artifactId>
-				<version>1.3.8</version>
-			</dependency>
 
-            <!-- SOLR Dependency -->
-            <dependency>
-                <groupId>org.apache.solr</groupId>
-                <artifactId>solr-core</artifactId>
-                <version>${solr.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-jdk14</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+			<!-- SOLR Dependency -->
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-core</artifactId>
+				<version>${solr.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-jdk14</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
 			<!-- 
             <dependency>
@@ -327,11 +514,11 @@
 
 			<!--Available via central, we use the latest with minor mods to DL Learner
 				source (IE Dig related code) -->
-			
+
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20140107</version>
+				<version>20151123</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->
@@ -369,11 +556,11 @@
 				<version>0.5.4</version>
 			</dependency>
 
-            <dependency>
-                <groupId>org.apache.xmlbeans</groupId>
-                <artifactId>xmlbeans</artifactId>
-                <version>2.6.0</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.xmlbeans</groupId>
+				<artifactId>xmlbeans</artifactId>
+				<version>2.6.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>com.jamonapi</groupId>
@@ -384,14 +571,14 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
-				<version>2.4.1</version>
+				<version>2.4.2</version>
 			</dependency>
-			
+
 			<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.2</version>
-		</dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.10</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
@@ -410,18 +597,6 @@
 				<artifactId>junit</artifactId>
 				<version>4.12</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.factplusplus</groupId>
-				<artifactId>factpp-owlapi</artifactId>
-				<version>1.6.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.sourceforge.owlapi.owllink</groupId>
-				<artifactId>owllink</artifactId>
-				<version>1.2.2</version>
 			</dependency>
 
 			<!--Dependencies that are generated as part of this parent pom -->
@@ -466,47 +641,47 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.189</version>
+				<version>1.4.190</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.36</version>
+				<version>5.1.38</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.4-1203-jdbc42</version>
+				<version>9.4-1206-jdbc42</version>
 			</dependency>
 
 			<dependency>
-				<groupId>weka</groupId>
-				<artifactId>weka</artifactId>
-				<version>3.6.5</version>
+				<groupId>nz.ac.waikato.cms.weka</groupId>
+				<artifactId>weka-dev</artifactId>
+				<version>3.7.13</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>18.0</version>
+				<version>19.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
 				<artifactId>pdb2rdf-parser</artifactId>
 				<version>0.0.8</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <!--This pom is including a modified version of Jena that is out of sync with what we're using-->
-                    <exclusion>
-                        <groupId>com.hp.hpl.jena</groupId>
-                        <artifactId>jena</artifactId>
-                    </exclusion>
-                </exclusions>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<!--This pom is including a modified version of Jena that is out of sync with what we're using-->
+					<exclusion>
+						<groupId>com.hp.hpl.jena</groupId>
+						<artifactId>jena</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -535,113 +710,124 @@
 			</dependency>
 
 			<!-- Spring -->
-	        <dependency>
-	        	<groupId>org.springframework</groupId>
-	        	<artifactId>spring-context</artifactId>
-	        	<version>${spring.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-	        </dependency>
 			<dependency>
-	        	<groupId>org.springframework</groupId>
-	        	<artifactId>spring-beans</artifactId>
-	        	<version>${spring.version}</version>
-	        </dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
 
-            <!--BEGIN Logging Dependencies-->
+			<!--BEGIN Logging Dependencies-->
 
-            <!--This is the api jar, it's needed at compile time-->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+			<!--This is the api jar, it's needed at compile time-->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
 
-            <!--This is the bridge that ties calls from the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+			<!--This is the bridge that ties calls from the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
 
-            <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
+			<!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
 
-            <!--Bridge from JCL to SLF4J.  Then we go from SLF4J to our desired logging framework (which for DL-Learner interfaces is Log4J).
+			<!--Bridge from JCL to SLF4J.  Then we go from SLF4J to our desired logging framework (which for DL-Learner interfaces is Log4J).
              - JCL is in use by Spring and so this lets us control the output from the Spring libraries in the same way we control anything else.
              - This is also a runtime dependency.
              -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <!--END Logging Dependencies-->
-
-            <!--It seems that later versions of this causes a lot of problems for some of the libraries we depend on-->
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.6.0</version>
-            </dependency>
-
-            <dependency>
-	<groupId>org.apache.commons</groupId>
-	<artifactId>commons-lang3</artifactId>
-	<version>3.4</version>
-</dependency>
-            
 			<dependency>
-			    <groupId>gurobi</groupId>
-			    <artifactId>gurobi</artifactId>
-			    <version>5.0.1</version>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
 			</dependency>
-			
+			<!--END Logging Dependencies-->
+
+			<!--Explicit xml-api dependency so we can update xerces-->
 			<dependency>
-	<groupId>joda-time</groupId>
-	<artifactId>joda-time</artifactId>
-	<version>2.8.1</version>
-</dependency>
-            <dependency>
-            	<groupId>edu.berkeley.compbio</groupId>
-            	<artifactId>jlibsvm</artifactId>
-            	<version>0.911</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.aksw</groupId>
-            	<artifactId>semlibsvm</artifactId>
-            	<version>3.20-SNAPSHOT</version>
-            </dependency>
+			  <groupId>xml-apis</groupId>
+			  <artifactId>xml-apis</artifactId>
+			  <version>1.4.01</version>
+			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.11.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>gurobi</groupId>
+				<artifactId>gurobi</artifactId>
+				<version>5.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.9.1</version>
+			</dependency>
+			<dependency>
+				<groupId>edu.berkeley.compbio</groupId>
+				<artifactId>jlibsvm</artifactId>
+				<version>0.911</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>google-collections</artifactId>
+						<groupId>com.google.collections</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.aksw</groupId>
+				<artifactId>semlibsvm</artifactId>
+				<version>3.20</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<repositories>
-	<repository>
-		<id>maven.aksw.internal</id>
-		<name>University Leipzig, AKSW Maven2 Repository</name>
-		<url>http://maven.aksw.org/repository/internal</url>
-		<releases />
-	</repository>
-	<repository>
-		<id>maven.aksw.snapshots</id>
-		<name>University Leipzig, AKSW Maven2 Repository</name>
-		<url>http://maven.aksw.org/repository/snapshots</url>
-		<snapshots />
-	</repository>
-	<repository>
-        <id>davidsoergel.releases</id>
-        <name>David Soergel's Maven Repository</name>
-        <url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
-	</repository>
-</repositories>
+		<repository>
+			<id>maven.aksw.internal</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/repository/internal</url>
+			<releases />
+		</repository>
+		<repository>
+			<id>maven.aksw.snapshots</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/repository/snapshots</url>
+			<snapshots />
+		</repository>
+		<repository>
+			<id>davidsoergel.releases</id>
+			<name>David Soergel's Maven Repository</name>
+			<url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<repository>
@@ -654,29 +840,94 @@
 			<name>AKSW Snapshot Repository</name>
 			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
-	<!-- start - location where site is deployed - username/password for site.deployments in server.xml -->
+		<!-- start - location where site is deployed - username/password for site.deployments in server.xml -->
 		<site>
 			<id>site.deployments</id>
 			<name>Site deployments</name>
-			<url>scp://prod0.aksw.org/var/www/aksw.org/javadoc/</url>
+			<url>scp://[2001:638:902:2010:0:168:35:165]/site</url>
 		</site>
 		<!-- end - location where site is deployed - username/password for site.deployments in server.xml -->
 	</distributionManagement>
 
-<reporting>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-javadoc-plugin</artifactId>
-			<version>2.10.3</version>
-			<configuration>
-				<links>
-					<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
-				</links>
-			</configuration>
-		</plugin>
-	</plugins>
-</reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.8.1</version>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<show>public</show>
+					<!--aggregate>true</aggregate -->
+					<links>
+						<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+					</links>
+					<maxmemory>2g</maxmemory>
+					<minmemory>128m</minmemory>
+
+					<header></header>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>${compiler.version}</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right'
+						src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
+						border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
+						under the terms of the GNU General Public License.&lt;br
+						/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.11</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>github-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/AKSW/DL-Learner/issues</url>
+	</issueManagement>
+
+	<mailingLists>
+		<mailingList>
+			<name>DL-Learner discussion</name>
+			<subscribe>https://lists.sourceforge.net/lists/listinfo/dl-learner-discussion</subscribe>
+			<archive>http://sourceforge.net/p/dl-learner/mailman/dl-learner-discussion/</archive>
+		</mailingList>
+	</mailingLists>
 
 	<profiles>
 		<profile>
@@ -700,17 +951,56 @@
 				</plugins>
 			</build>
 		</profile>
+		<!-- these actions will be activated only when staging a release -->
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<!-- sign released artifacts using PGP, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- generate javadocs, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<links>
+								<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+							</links>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<maxmemory>512m</maxmemory>
+									<minmemory>128m</minmemory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
-	<dependencies>
-		<dependency>
-			<groupId>edu.berkeley.compbio</groupId>
-			<artifactId>jlibsvm</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>google-collections</artifactId>
-					<groupId>com.google.collections</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
+
 </project>

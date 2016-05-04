@@ -1,14 +1,29 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
@@ -18,21 +33,14 @@ import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
+import org.semanticweb.owlapi.profiles.Profiles;
 
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -75,8 +83,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	
 	public AbstractSchemaGenerator(Model model) {
 		// enable reasoning on model
-		OntModel infModel = ModelFactory.createOntologyModel(reasoningProfile, model);
-		this.model = infModel;
+		this.model = ModelFactory.createOntologyModel(reasoningProfile, model);
 		this.qef = new QueryExecutionFactoryModel(this.model);
 		this.reasoner = new SPARQLReasoner(qef);
 	}
@@ -94,13 +101,13 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	 * @param owlProfile the OWL profile
 	 */
 	public void setAxiomTypes(OWLProfile owlProfile) {
-		if(owlProfile.getIRI().equals(OWLProfile.OWL2_EL)){
+		if(owlProfile.equals(Profiles.OWL2_EL.getOWLProfile())){
 			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_RL)){
-			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_QL)){
-			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_DL)){
+		} else if(owlProfile.equals(Profiles.OWL2_RL.getOWLProfile())){
+
+		} else if(owlProfile.equals(Profiles.OWL2_QL.getOWLProfile())){
+
+		} else if(owlProfile.equals(Profiles.OWL2_DL.getOWLProfile())){
 			
 		} else {
 			throw new IllegalArgumentException("OWL profile " + owlProfile.getName() + " not supported.");
@@ -138,6 +145,23 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		}
 		return entities;
 	}
+
+	/**
+	 * Return the entities contained in the current knowledge base for the given entity type.
+	 *
+	 * @param entityType the entity type
+	 */
+	protected <T extends OWLEntity> SortedSet<T> getEntities(EntityType<T> entityType) {
+		SortedSet<T> entitiesForType = new TreeSet<>();
+		for (OWLEntity entity : getEntities()) {
+			if (entity.isType(entityType)) {
+				entitiesForType.add((T) entity);
+			}
+		}
+		return entitiesForType;
+//		Stream<T> s = entities.stream().filter(e -> e.isType(entityType)).map(e -> (T) e);
+//		return s.collect(Collectors.toList());
+	}
 	
 	/**
 	 * @param accuracyThreshold the accuracyThreshold to set
@@ -146,7 +170,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		this.accuracyThreshold = accuracyThreshold;
 	}
 	
-	protected List<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
+	protected Set<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
 		// get the algorithm class
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		
@@ -172,7 +196,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 			learner.start();
 			
 			// return the result
-			return learner.getCurrentlyBestAxioms(accuracyThreshold);
+			return new TreeSet<>(learner.getCurrentlyBestAxioms(accuracyThreshold));
 		} catch (Exception e) {
 			throw new Exception("Generation of " + axiomType.getName() + " axioms failed.", e);
 		}

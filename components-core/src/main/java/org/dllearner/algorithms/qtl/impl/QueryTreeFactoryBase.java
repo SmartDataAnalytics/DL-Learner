@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.impl;
 
@@ -62,7 +61,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
 public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private int nodeId;
-	private Comparator<Statement> comparator = new StatementComparator();
+	private final Comparator<Statement> comparator = new StatementComparator();
 
 	private int maxDepth = 3;
 
@@ -211,33 +210,33 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	public static String encode(String s) {
 		char[] htmlChars = s.toCharArray();
-		StringBuffer encodedHtml = new StringBuffer();
-		for (int i = 0; i < htmlChars.length; i++) {
-			switch (htmlChars[i]) {
-			case '<':
-				encodedHtml.append("&lt;");
-				break;
-			case '>':
-				encodedHtml.append("&gt;");
-				break;
-			case '&':
-				encodedHtml.append("&amp;");
-				break;
-			case '\'':
-				encodedHtml.append("&#39;");
-				break;
-			case '"':
-				encodedHtml.append("&quot;");
-				break;
-			case '\\':
-				encodedHtml.append("&#92;");
-				break;
-			case (char) 133:
-				encodedHtml.append("&#133;");
-				break;
-			default:
-				encodedHtml.append(htmlChars[i]);
-				break;
+		StringBuilder encodedHtml = new StringBuilder();
+		for (char htmlChar : htmlChars) {
+			switch (htmlChar) {
+				case '<':
+					encodedHtml.append("&lt;");
+					break;
+				case '>':
+					encodedHtml.append("&gt;");
+					break;
+				case '&':
+					encodedHtml.append("&amp;");
+					break;
+				case '\'':
+					encodedHtml.append("&#39;");
+					break;
+				case '"':
+					encodedHtml.append("&quot;");
+					break;
+				case '\\':
+					encodedHtml.append("&#92;");
+					break;
+				case (char) 133:
+					encodedHtml.append("&#133;");
+					break;
+				default:
+					encodedHtml.append(htmlChar);
+					break;
 			}
 		}
 		return encodedHtml.toString();

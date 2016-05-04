@@ -1,10 +1,27 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.sparql;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Joiner;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.core.Var;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -14,12 +31,11 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.core.Var;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 //import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -82,10 +98,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		qef = new QueryExecutionFactoryModel(baseModel);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
 		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		return getConciseBoundedDescription(resourceURI, depth, false);
 	}
@@ -112,6 +130,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this.allowedPropertyNamespaces.addAll(namespaces);
 	}
 	
+	@Override
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
 	}
@@ -170,13 +189,9 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			filter += "FILTER(";
 					
 			filter += Joiner.on(" && ").join(
-						Iterables.transform(propertyBlacklist, 
-								new Function<String, String>() {
-									public String apply(String input) {
-										return var.toString() + " != <" + input + ">";
-									}
-								}
-						)
+					propertyBlacklist.stream()
+							.map(input -> var.toString() + " != <" + input + ">")
+							.collect(Collectors.toList())
 					);
 			filter += ")\n";
 		}
@@ -216,6 +231,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return filter;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 		propertyBlacklist.addAll(properties);
 	}

@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.utils;
 
 import java.util.ArrayList;
@@ -61,7 +79,6 @@ public class SetUtils{
 	 * @return
 	 */
 	public static <T> List<T> union(List<T> list1,List<T> list2){
-		
 		List<T> result= intersection(list1, list2);// take the common elements between  list 2 and list 2
 		
 		for(T elem:list1){ //add the element that are in list1 but not in result yet
@@ -86,11 +103,8 @@ public class SetUtils{
 	 * @return
 	 */
 	public static <T> boolean areEquals(List<T>l1, List<T> l2){
-		// due insiemi sono uguali se uno � incluso nell'altro
-		if (l1.containsAll(l2)&&l2.containsAll(l1))
-			return true;
-		
-		return false;
+		return l1.containsAll(l2) && l2.containsAll(l1);
+
 	}
 	
 	/**

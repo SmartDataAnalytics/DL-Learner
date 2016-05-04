@@ -1,64 +1,34 @@
 package org.dllearner.scripts;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.jena.riot.RDFDataMgr;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.dllearner.utilities.OwlApiJenaUtils;
-import org.mindswap.pellet.jena.PelletReasonerFactory;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDisjointClassesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredOntologyGenerator;
-import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
-
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.RDFDataMgr;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.mindswap.pellet.jena.PelletReasonerFactory;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.util.*;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Infgen {
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
+						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
-					} catch (OWLOntologyStorageException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -87,17 +57,17 @@ public class Infgen {
 		inf.write(new FileOutputStream(out));
 	}
 	
-	private static void reasonWithHermit(String in, String out, boolean copy) throws FileNotFoundException, IOException, OWLOntologyStorageException, OWLOntologyCreationException {
+	private static void reasonWithHermit(String in, String out, boolean copy) throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {
         OWLOntologyManager manager=OWLManager.createOWLOntologyManager();
         File inputOntologyFile = new File(in);
         OWLOntology ontology=manager.loadOntologyFromOntologyDocument(inputOntologyFile);
-        org.semanticweb.HermiT.Reasoner.ReasonerFactory factory
-        = new org.semanticweb.HermiT.Reasoner.ReasonerFactory();
+        org.semanticweb.HermiT.ReasonerFactory factory
+        = new org.semanticweb.HermiT.ReasonerFactory();
         // The factory can now be used to obtain an instance of HermiT as an OWLReasoner.
         org.semanticweb.HermiT.Configuration c
         = new org.semanticweb.HermiT.Configuration();
         OWLReasoner reasoner=factory.createReasoner(ontology, c);
-        List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+        List<InferredAxiomGenerator<? extends OWLAxiom>> generators= new ArrayList<>();
         generators.add(new InferredSubClassAxiomGenerator());
         generators.add(new InferredClassAssertionAxiomGenerator());
         generators.add(new InferredDisjointClassesAxiomGenerator() {
@@ -125,7 +95,7 @@ public class Infgen {
 
         InferredOntologyGenerator iog=new InferredOntologyGenerator(reasoner,generators);
         OWLOntology inferredAxiomsOntology=manager.createOntology();
-        iog.fillOntology(manager, inferredAxiomsOntology);
+        iog.fillOntology(manager.getOWLDataFactory(), inferredAxiomsOntology);
         if (copy) {
         	manager.addAxioms(inferredAxiomsOntology, ontology.getAxioms());
         	Model m1 = OwlApiJenaUtils.getModel(inferredAxiomsOntology);
@@ -151,7 +121,7 @@ public class Infgen {
 		model.write(new FileOutputStream(out));
 	}
 
-	private static void loadThroughJena2(String in, String out) throws OWLOntologyCreationException, FileNotFoundException {
+	private static void loadThroughJena2(String in, String out) throws FileNotFoundException {
 		
 		Model model = RDFDataMgr.loadModel("file://"+in);
 		System.out.println("ltj; size:"+model.size());

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import com.hp.hpl.jena.graph.Node;
@@ -69,36 +68,43 @@ public class RDFBlankNode implements RDFNode {
 		return blankNode.canAs(view);
 	}
 
+	@Override
 	public RDFNode inModel(Model m) {
 		
 		return blankNode.inModel(m);
 	}
 
+	@Override
 	public boolean isAnon() {
 		
 		return blankNode.isAnon();
 	}
 
+	@Override
 	public boolean isLiteral() {
 		
 		return blankNode.isLiteral();
 	}
 
+	@Override
 	public boolean isResource() {
 		
 		return blankNode.isResource();
 	}
 
+	@Override
 	public boolean isURIResource() {
 		
 		return blankNode.isURIResource();
 	}
 
+	@Override
 	public Object visitWith(RDFVisitor rv) {
 		
 		return blankNode.visitWith(rv);
 	}
 
+	@Override
 	public Node asNode() {
 		
 		return blankNode.asNode();

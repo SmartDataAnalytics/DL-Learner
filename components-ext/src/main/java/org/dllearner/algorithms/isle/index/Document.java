@@ -13,19 +13,19 @@ public interface Document {
      *
      * @return this document's text content
      */
-    public String getContent();
+    String getContent();
 
     /**
      * Returns the uncleaned content, i.e., as originally retrieved, of this document represented as string.
      *
      * @return uncleaned content of this document
      */
-    public String getRawContent();
+    String getRawContent();
     
     /**
      * Returns the uncleaned content with POS tags in form of word1/pos1 word2/pos2 ... as string.
      *
      * @return uncleaned content with POS tags
      */
-    public String getPOSTaggedContent();
+    String getPOSTaggedContent();
 }

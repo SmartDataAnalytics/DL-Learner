@@ -52,7 +52,6 @@ public class MyMonKey  implements MonKey{
 	          this.details=keyItem.getDetails();
 	      }
 
-
 	      
 	      /** Returns the label for the monitor */
 	      public String getLabel() {
@@ -176,7 +175,6 @@ public class MyMonKey  implements MonKey{
 	    public List getRowDisplayData(List rowData) {
 	        return getRowData(rowData);
 	    }
-
 
 	    
 	    public String toString() {

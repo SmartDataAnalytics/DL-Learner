@@ -1,7 +1,40 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities;
+
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.Namespaces;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -9,43 +42,17 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Set;
 
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
-import org.semanticweb.owlapi.vocab.Namespaces;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.impl.LiteralLabel;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
-
 /**
  * @author Lorenz Buehmann
  *
  */
 public class OwlApiJenaUtils {
 	
-	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+
+	private static final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+
+	private static int ONT_COUNTER = 0;
 
 	/**
 	 * Converts a JENA API model into an OWL API ontology.
@@ -58,6 +65,7 @@ public class OwlApiJenaUtils {
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					model.write(os, "TURTLE", null);
 					try {
@@ -84,9 +92,10 @@ public class OwlApiJenaUtils {
 
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
-						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
+						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
 					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
@@ -165,7 +174,7 @@ public class OwlApiJenaUtils {
 	 */
 	public static Set<Statement> asStatements(Set<OWLAxiom> axioms) {
 		try {
-			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(axioms);
+			OWLOntology ontology = man.createOntology(axioms, IRI.create("http://dllearner.org/converter" + ONT_COUNTER++));
 			Model model = getModel(ontology);
 			return model.listStatements().toSet();
 		} catch (OWLOntologyCreationException e) {

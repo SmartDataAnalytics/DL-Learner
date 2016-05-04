@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.schema;
 
@@ -9,7 +24,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -21,10 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * {@inheritDoc}
@@ -80,7 +91,7 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 				for (AxiomType<? extends OWLAxiom> axiomType : applicableAxiomTypes) {
 					// apply the appropriate learning algorithm
 					try {
-						List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
+						Set<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
 						generatedAxioms.addAll(axioms);
 					} catch (Exception e) {
 						LOGGER.error("Exception occured for axiom type "

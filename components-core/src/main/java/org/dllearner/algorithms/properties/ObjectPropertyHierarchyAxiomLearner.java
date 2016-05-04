@@ -1,31 +1,34 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
+
+import com.hp.hpl.jena.query.*;
+import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 
 /**
  * A learning algorithm for object property hierarchy axioms.
@@ -56,8 +59,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
+	@ConfigOption(defaultValue = "false")
 	protected boolean strictMode = false;
 
+	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
 	protected double beta = 1.0;
 	
 	public ObjectPropertyHierarchyAxiomLearner(SparqlEndpointKS ks) {
@@ -86,6 +91,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		return SAMPLE_QUERY;
 	}
 	
+	@Override
 	protected void run() {
 		
 		// get the candidates
@@ -294,7 +300,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	/**
 	 * @param strictMode the strictMode to set
 	 */
-	public void setUseStrictMode(boolean strictMode) {
+	public void setStrictMode(boolean strictMode) {
 		this.strictMode = strictMode;
 	}
 

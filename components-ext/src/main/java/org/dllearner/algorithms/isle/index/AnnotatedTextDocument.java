@@ -3,10 +3,11 @@
  */
 package org.dllearner.algorithms.isle.index;
 
+import org.semanticweb.owlapi.model.OWLEntity;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.semanticweb.owlapi.model.OWLEntity;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -23,10 +24,9 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 		this.document = document;
 		this.annotations = annotations;
 		
-		entities = new HashSet<OWLEntity>();
-		for (SemanticAnnotation annotation : annotations) {
-			entities.add(annotation.getEntity());
-		}
+		entities = annotations.stream()
+				.map(SemanticAnnotation::getEntity)
+				.collect(Collectors.toCollection(HashSet<OWLEntity>::new));
 	}
 
 	/* (non-Javadoc)

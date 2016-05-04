@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.util;
 
 import java.net.URL;
@@ -63,15 +81,14 @@ public class SPARQLEndpointEx extends SparqlEndpoint {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ENDPOINT\n");
-		sb.append("Label: ").append(getLabel()).append("\n");
-		sb.append("URL: ").append(getURL()).append("\n");
-		sb.append("Default Graph URI: ").append(getDefaultGraphURIs()).append("\n");
-		sb.append("Named Graph URI: ").append(getNamedGraphURIs()).append("\n");
-		sb.append("Predicate Filters: ").append(getPredicateFilters()).append("\n");
-		
-		return sb.toString();
+		String sb = "ENDPOINT\n" +
+				"Label: " + getLabel() + "\n" +
+				"URL: " + getURL() + "\n" +
+				"Default Graph URI: " + getDefaultGraphURIs() + "\n" +
+				"Named Graph URI: " + getNamedGraphURIs() + "\n" +
+				"Predicate Filters: " + getPredicateFilters() + "\n";
+
+		return sb;
 	}
 	
 	@Override

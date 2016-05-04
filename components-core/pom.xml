@@ -10,113 +10,114 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.3-SNAPSHOT</version>
 	</parent>
-	
+
 	<profiles>
-	<profile>
-		<id>release</id>
-		<build>
-			<plugins>
-				<!--Surefire - for JUnits -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<!-- Uncomment this when the junits are independent of a runtime directory -->
-						<!--<includes> -->
-						<!--<include>org/dllearner/test/junit/*</include> -->
-						<!--</includes> -->
-						<excludes>
-							<exclude>org/dllearner/test/*</exclude>
-							<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
-							<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
-							<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
-							<!--This line excludes inner classes -->
-							<exclude>**/*$*</exclude>
-						</excludes>
-					</configuration>
-				</plugin>
-				<!-- Jar the tests up into a separate jar so other components tests' 
-					can leverage them -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<executions>
-						<execution>
-							<goals>
-								<goal>test-jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<!-- <plugin> -->
-				<!-- <groupId>com.mycila</groupId> -->
-				<!-- <artifactId>license-maven-plugin</artifactId> -->
-				<!-- <configuration> -->
-				<!-- <header>src/etc/header.txt</header> -->
-				<!-- </configuration> -->
-				<!-- </plugin> -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.8</version>
-					<configuration>
-						<licenseName>gpl_v3</licenseName>
-						<organizationName>AKSW</organizationName>
-						<inceptionYear>2007</inceptionYear>
-						<roots>
-							<root>src/main/java</root>
-							<root>src/test/java</root>
-						</roots>
-						<addSvnKeyWords>true</addSvnKeyWords>
-					</configuration>
-					<executions>
-						<execution>
-							<id>download-licenses</id>
-							<goals>
-								<goal>download-licenses</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<configuration>
-						<header></header>
-						<show>public</show>
-						<nohelp>true</nohelp>
-						<destDir>doc/javadoc</destDir>
-						<doctitle>DL-Learner Javadoc</doctitle>
-						<author>true</author>
-						<nodeprecated>false</nodeprecated>
-						<nodeprecatedlist>false</nodeprecatedlist>
-						<noindex>false</noindex>
-						<nonavbar>false</nonavbar>
-						<notree>false</notree>
-						<overview>src/etc/overview.html</overview>
-						<source>${compiler.version}</source>
-						<sourcepath>src/main/java</sourcepath>
-						<splitindex>true</splitindex>
-						<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
-						<use>true</use>
-						<version>true</version>
-						<linksource>true</linksource>
-						<bottom>&lt;img style='float:right'
-							src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
-							border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
-							under the terms of the GNU General Public License.&lt;br
-							/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
-						<encoding>ISO-8859-1</encoding>
-						<windowtitle>DL-Learner Javadoc</windowtitle>
-						<additionalparam>-Xdoclint:none</additionalparam>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</profile>
-</profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!--Surefire - for JUnits -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<!-- Uncomment this when the junits are independent of a runtime directory -->
+							<!--<includes> -->
+							<!--<include>org/dllearner/test/junit/*</include> -->
+							<!--</includes> -->
+							<excludes>
+								<exclude>org/dllearner/test/*</exclude>
+								<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
+								<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
+								<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
+								<!--This line excludes inner classes -->
+								<exclude>**/*$*</exclude>
+							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+						</configuration>
+					</plugin>
+					<!-- Jar the tests up into a separate jar so other components tests'
+                        can leverage them -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>test-jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- <plugin> -->
+					<!-- <groupId>com.mycila</groupId> -->
+					<!-- <artifactId>license-maven-plugin</artifactId> -->
+					<!-- <configuration> -->
+					<!-- <header>src/etc/header.txt</header> -->
+					<!-- </configuration> -->
+					<!-- </plugin> -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>1.8</version>
+						<configuration>
+							<licenseName>gpl_v3</licenseName>
+							<organizationName>AKSW</organizationName>
+							<inceptionYear>2007</inceptionYear>
+							<roots>
+								<root>src/main/java</root>
+								<root>src/test/java</root>
+							</roots>
+							<addSvnKeyWords>true</addSvnKeyWords>
+						</configuration>
+						<executions>
+							<execution>
+								<id>download-licenses</id>
+								<goals>
+									<goal>download-licenses</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<header></header>
+							<show>public</show>
+							<nohelp>true</nohelp>
+							<destDir>doc/javadoc</destDir>
+							<doctitle>DL-Learner Javadoc</doctitle>
+							<author>true</author>
+							<nodeprecated>false</nodeprecated>
+							<nodeprecatedlist>false</nodeprecatedlist>
+							<noindex>false</noindex>
+							<nonavbar>false</nonavbar>
+							<notree>false</notree>
+							<overview>src/etc/overview.html</overview>
+							<source>${compiler.version}</source>
+							<sourcepath>src/main/java</sourcepath>
+							<splitindex>true</splitindex>
+							<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
+							<use>true</use>
+							<version>true</version>
+							<linksource>true</linksource>
+							<bottom>&lt;img style='float:right'
+								src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
+								border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
+								under the terms of the GNU General Public License.&lt;br
+								/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+							<encoding>ISO-8859-1</encoding>
+							<windowtitle>DL-Learner Javadoc</windowtitle>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -124,20 +125,21 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<!-- Uncomment this when the junits are independent of a runtime directory -->
-					<!--<includes> -->
-					<!--<include>org/dllearner/test/junit/*</include> -->
-					<!--</includes> -->
-					<excludes>
-						<exclude>org/dllearner/test/*</exclude>
-						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
-						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
-						<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
-						<!--This line excludes inner classes -->
-						<exclude>**/*$*</exclude>
-					</excludes>
-				</configuration>
+				<!--<configuration>-->
+					<!--&lt;!&ndash; Uncomment this when the junits are independent of a runtime directory &ndash;&gt;-->
+					<!--&lt;!&ndash;<includes> &ndash;&gt;-->
+					<!--&lt;!&ndash;<include>org/dllearner/test/junit/*</include> &ndash;&gt;-->
+					<!--&lt;!&ndash;</includes> &ndash;&gt;-->
+					<!--<excludes>-->
+						<!--<exclude>org/dllearner/test/*</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>-->
+						<!--<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>-->
+						<!--&lt;!&ndash;This line excludes inner classes &ndash;&gt;-->
+						<!--<exclude>**/*$*</exclude>-->
+					<!--</excludes>-->
+							<!--<argLine>-Dlog4j.configuration=log4j.properties</argLine>-->
+				<!--</configuration>-->
 			</plugin>
 			<!-- Jar the tests up into a separate jar so other components tests' can 
 				leverage them -->
@@ -152,6 +154,73 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<skipDeploy>true</skipDeploy>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<!-- Deploy the web site -->
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<!-- select the Maven phase in which the plugin will be executed -->
+						<phase>site-deploy</phase>
+						<configuration>
+							<!-- Plugin configuration ges here -->
+
+							<server>github</server>
+
+							<!-- The commit message -->
+							<message>Creating site for ${project.name} ${project.version}</message>
+							<!-- The location where the site is uploaded -->
+							<path>${project.version}</path>
+							<!-- Use merge or override the content -->
+							<merge>true</merge>
+							<noJekyll>true</noJekyll>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Code coverage -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.6.201602180812</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -160,17 +229,17 @@
 			<groupId>org.ini4j</groupId>
 			<artifactId>ini4j</artifactId>
 		</dependency>
-    
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-    
+
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-api</artifactId>
 		</dependency>
@@ -193,35 +262,35 @@
 			<type>pom</type>
 		</dependency>
 
-    <!--
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-    -->
+		<!--
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+            </dependency>
+        -->
 
-      <!--   <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-        </dependency> -->
-    <!-- 
-         <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-        </dependency>
-    -->
+		<!--   <dependency>
+              <groupId>org.apache.jena</groupId>
+              <artifactId>jena-arq</artifactId>
+          </dependency> -->
+		<!--
+             <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-core</artifactId>
+            </dependency>
+        -->
 		<!--JSON is in Central -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
 
-    <!--
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-        </dependency>
-    -->
+		<!--
+            <dependency>
+                <groupId>org.apache.xmlbeans</groupId>
+                <artifactId>xmlbeans</artifactId>
+            </dependency>
+        -->
 
 		<dependency>
 			<groupId>com.google.code.factplusplus</groupId>
@@ -234,9 +303,31 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.semanticweb.hermit</groupId>
-			<artifactId>hermit</artifactId>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>org.semanticweb.hermit</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.semanticweb.elk</groupId>
+			<artifactId>elk-owlapi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>de.tudresden.inf.lat.cel</groupId>
+			<artifactId>reasoner</artifactId>
+			<version>0.5.1</version>
+		</dependency>
+		<!--
+             <dependency>
+                <groupId>de.tudresden.inf.lat.cel</groupId>
+                <artifactId>jsexp</artifactId>
+                <version>0.1.0</version>
+            </dependency>
+        -->
+		<!--<dependency>
+			<groupId>eu.trowl</groupId>
+			<artifactId>trowl-core</artifactId>
+		</dependency>-->
 
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -260,17 +351,17 @@
 			<version>1.0</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>fuzzydll</groupId> -->
-<!-- 			<artifactId>fuzzyowl2fuzzydlparser</artifactId> -->
-<!-- 			<version>1.0</version> -->
-<!-- 		</dependency> -->
+		<!-- 		<dependency> -->
+		<!-- 			<groupId>fuzzydll</groupId> -->
+		<!-- 			<artifactId>fuzzyowl2fuzzydlparser</artifactId> -->
+		<!-- 			<version>1.0</version> -->
+		<!-- 		</dependency> -->
 
 		<dependency>
-      <groupId>org.fuzzy</groupId>
-      <artifactId>fuzzyowl</artifactId>
-      <version>1.0</version>
-    </dependency>
+			<groupId>org.fuzzy</groupId>
+			<artifactId>fuzzyowl</artifactId>
+			<version>1.0</version>
+		</dependency>
 
         <!-- This module is a library module, so it needs only to have the slf api dependency to enable logging -->
     <!--
@@ -307,26 +398,7 @@
         	<version>1.6</version>
         </dependency>
     -->
-        <dependency>
-            <groupId>org.semanticweb.elk</groupId>
-            <artifactId>elk-owlapi</artifactId>
-        </dependency>
-           <dependency>
-        	<groupId>de.tudresden.inf.lat.cel</groupId>
-        	<artifactId>reasoner</artifactId>
-        	<version>0.5.1</version>
-        </dependency>
-    <!--
-         <dependency>
-        	<groupId>de.tudresden.inf.lat.cel</groupId>
-        	<artifactId>jsexp</artifactId>
-        	<version>0.1.0</version>
-        </dependency>
-    -->
-        <dependency>
-        	<groupId>eu.trowl</groupId>
-        	<artifactId>trowl-core</artifactId>
-        </dependency>
+
     <!--
          <dependency>
          	<groupId>xerces</groupId>
@@ -335,86 +407,120 @@
          </dependency>
     -->
 
-           <dependency>
-            <groupId>uk.ac.shef.wit</groupId>
-            <artifactId>simmetrics</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        <dependency>
-				<groupId>com.thoughtworks.xstream</groupId>
-				<artifactId>xstream</artifactId>
-				<version>1.4.3</version>
-			</dependency>
-    <!--
-			<dependency>
-				<groupId>xpp3</groupId>
-				<artifactId>xpp3_min</artifactId>
-				<version>1.1.4c</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.kxml</groupId>
-				<artifactId>kxml2-min</artifactId>
-				<version>2.3.0</version>
-			</dependency>
-    -->
+		<dependency>
+			<groupId>uk.ac.shef.wit</groupId>
+			<artifactId>simmetrics</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.3</version>
+		</dependency>
+		<!--
+                <dependency>
+                    <groupId>xpp3</groupId>
+                    <artifactId>xpp3_min</artifactId>
+                    <version>1.1.4c</version>
+                </dependency>
+                <dependency>
+                    <groupId>net.sf.kxml</groupId>
+                    <artifactId>kxml2-min</artifactId>
+                    <version>2.3.0</version>
+                </dependency>
+        -->
 
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-			</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
-			<dependency>
-				<groupId>org.aksw.jena-sparql-api</groupId>
-				<artifactId>jena-sparql-api-core</artifactId>
-				<exclusions>
-					<exclusion>
-						<artifactId>slf4j-ext</artifactId>
-						<groupId>org.slf4j</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.aksw.jena-sparql-api</groupId>
-				<artifactId>jena-sparql-api-cache-h2</artifactId>
-			</dependency>
+		<dependency>
+			<groupId>org.aksw.jena-sparql-api</groupId>
+			<artifactId>jena-sparql-api-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-ext</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.aksw.jena-sparql-api</groupId>
+			<artifactId>jena-sparql-api-cache-h2</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 		</dependency>
-    <!--
+		<!--
+                <dependency>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                    <version>1.4.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+
+        -->
+
+		<!--
+    <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+    </dependency>
+        -->
+		<!-- <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-stable</artifactId>
+            <version>3.6.9</version>
+        </dependency> -->
+		<dependency>
+			<groupId>org.aksw</groupId>
+			<artifactId>semlibsvm</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.berkeley.compbio</groupId>
+			<artifactId>jlibsvm</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.martiansoftware</groupId>
+			<artifactId>jsap</artifactId>
+			<version>2.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
+		</dependency>
+
+
+			<dependency>
+				<groupId>net.sf.jopt-simple</groupId>
+				<artifactId>jopt-simple</artifactId>
+				<scope>test</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-compress</artifactId>
-				<version>1.4.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-			</dependency>
-		
-    -->
-
-    <!--
-<dependency>
-	<groupId>joda-time</groupId>
-	<artifactId>joda-time</artifactId>
-</dependency>
-    -->
-			<!-- <dependency>
-				<groupId>nz.ac.waikato.cms.weka</groupId>
-				<artifactId>weka-stable</artifactId>
-				<version>3.6.9</version>
-			</dependency> -->
-			<dependency>
-				<groupId>org.aksw</groupId>
-				<artifactId>semlibsvm</artifactId>
+				<artifactId>commons-email</artifactId>
+				<version>1.4</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>org.reflections</groupId>
-				<artifactId>reflections</artifactId>
-				<version>0.9.9-RC1</version>
+				<groupId>com.panayotis.gnuplot</groupId>
+				<artifactId>javaplot</artifactId>
+				<version>0.5.0</version>
+				<scope>test</scope>
 			</dependency>
+
 	</dependencies>
 </project>

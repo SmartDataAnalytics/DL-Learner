@@ -1,41 +1,22 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.AxiomLearningProgressMonitor;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.SilentAxiomLearningProgressMonitor;
-import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.OWLAPIUtils;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -45,6 +26,24 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
+import org.dllearner.core.*;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.OWLAPIUtils;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is a wrapper class to handle more than one property axiom type in a more intelligent way,
@@ -237,14 +236,12 @@ public class MultiPropertyAxiomLearner {
 	
 	public Set<OWLObject> getPositives(AxiomType<? extends OWLAxiom> axiomType, EvaluatedAxiom<OWLAxiom> axiom){
 		AbstractAxiomLearningAlgorithm la = algorithms.get(axiomType);
-		Set<OWLObject> positiveExamples = la.getPositiveExamples(axiom);
-		return positiveExamples;
+		return la.getPositiveExamples(axiom);
 	}
 
 	public Set<OWLObject> getNegatives(AxiomType<? extends OWLAxiom> axiomType, EvaluatedAxiom<OWLAxiom> axiom){
 		AbstractAxiomLearningAlgorithm la = algorithms.get(axiomType);
-		Set<OWLObject> negativeExamples = la.getNegativeExamples(axiom);
-		return negativeExamples;
+		return la.getNegativeExamples(axiom);
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){

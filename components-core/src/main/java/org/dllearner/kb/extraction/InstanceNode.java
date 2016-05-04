@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.net.URI;
@@ -201,7 +200,7 @@ public class InstanceNode extends Node {
 			if(one.getURIString().equals(OWLVocabulary.OWL_DIFFERENT_FROM)){
 				OWLIndividual o = factory.getOWLNamedIndividual(one.getBPart().getIRI());
 				
-				ax = factory.getOWLDifferentIndividualsAxiom(new OWLIndividual[]{me,o});
+				ax = factory.getOWLDifferentIndividualsAxiom(me, o);
 			}else{
 			
 				//create axiom
@@ -220,49 +219,51 @@ public class InstanceNode extends Node {
 		for (DatatypePropertyNode one : datatypeProperties) {
 			OWLDataProperty p = factory.getOWLDataProperty(one.getIRI());
 			Literal ln = one.getBPart().getLiteral();
-			
-			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
-				//skip
-				//OWLCommentAnnotation comment = factory.getOWL(one.b.toString());
-				//owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
-			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)){
-				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(ln.getString()));
-				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
-				owlAPIOntologyCollector.addAxiom(ax);
-			}else{
-			
-			try{
-				
-				if(one.getBPart().isFloat()){
-					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getFloat()));
-				} else if(one.getBPart().isDouble()){
-					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getDouble()));
-				} else if(one.getBPart().isInt()){
-					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getInt()));
-				} else if(one.getBPart().isBoolean()){
-					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getBoolean()));
-				}else if(one.getBPart().isString()){
-					//System.out.println(ln.getString()+" "+one.getBPart().isBoolean());
-					owlAPIOntologyCollector.addAxiom(
-					factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getString()));
-					
-				}
-				
-				else {
-					tail("strange dataytype in ontology conversion" + one.getURIString()+" datatype: "+one.getBPart().getNTripleForm());
-				}
-				
-				//handover
-				one.toOWLOntology(owlAPIOntologyCollector);
-			
-			}catch (Exception e) {
-				e.printStackTrace();
-				tail("strange dataytype in ontology conversion" + one.getURIString()+" datatype: "+one.getBPart().getNTripleForm());
-			}
+
+			switch (one.getURIString()) {
+				case OWLVocabulary.RDFS_COMMENT:
+					//skip
+					//OWLCommentAnnotation comment = factory.getOWL(one.b.toString());
+					//owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+					break;
+				case OWLVocabulary.RDFS_LABEL:
+					OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(ln.getString()));
+					OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
+					owlAPIOntologyCollector.addAxiom(ax);
+					break;
+				default:
+
+					try {
+
+						if (one.getBPart().isFloat()) {
+							owlAPIOntologyCollector.addAxiom(
+									factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getFloat()));
+						} else if (one.getBPart().isDouble()) {
+							owlAPIOntologyCollector.addAxiom(
+									factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getDouble()));
+						} else if (one.getBPart().isInt()) {
+							owlAPIOntologyCollector.addAxiom(
+									factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getInt()));
+						} else if (one.getBPart().isBoolean()) {
+							owlAPIOntologyCollector.addAxiom(
+									factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getBoolean()));
+						} else if (one.getBPart().isString()) {
+							//System.out.println(ln.getString()+" "+one.getBPart().isBoolean());
+							owlAPIOntologyCollector.addAxiom(
+									factory.getOWLDataPropertyAssertionAxiom(p, me, ln.getString()));
+
+						} else {
+							tail("strange dataytype in ontology conversion" + one.getURIString() + " datatype: " + one.getBPart().getNTripleForm());
+						}
+
+						//handover
+						one.toOWLOntology(owlAPIOntologyCollector);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						tail("strange dataytype in ontology conversion" + one.getURIString() + " datatype: " + one.getBPart().getNTripleForm());
+					}
+					break;
 			}
 			//factory.getOWLDataPropertyAssertionAxiom()
 			//returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()

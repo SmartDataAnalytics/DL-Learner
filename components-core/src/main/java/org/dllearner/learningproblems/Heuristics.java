@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
 /**
@@ -55,7 +54,13 @@ public class Heuristics {
 			  ( (1+ beta * beta) * (precision * recall)
 					/ (beta * beta * precision + recall) );
 	}
-	
+
+	public static double getFScoreBalanced(double recall, double precision, double beta) {
+		// balanced F measure
+		return (precision + recall == 0) ? 0 :
+		  ( (1+Math.sqrt(beta)) * (precision * recall)
+				/ (Math.sqrt(beta) * precision + recall) );
+	}
 	/**
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
 	 * here (A=arithmetic), but is not an established notion in machine learning.
@@ -182,6 +187,16 @@ public class Heuristics {
 			throw new IllegalArgumentException();
 		}
 		return (noise * nrOfPositiveExamples) < nrOfNegClassifiedPositives;
+	}
+
+	// see paper: p'
+	public static double p1(int success, int total) {
+		return (success+2)/(double)(total+4);
+	}
+
+	// see paper: expression used in confidence interval estimation
+	public static double p3(double p1, int total) {
+		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
 	}
 
 	/**

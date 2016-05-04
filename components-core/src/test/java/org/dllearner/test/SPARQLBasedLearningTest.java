@@ -1,16 +1,29 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.test;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -27,7 +40,6 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
@@ -41,10 +53,9 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
 import com.google.common.collect.Sets;
-import com.google.gson.internal.bind.TimeTypeAdapter;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -80,8 +91,8 @@ public class SPARQLBasedLearningTest {
 		OWLOntology schemaOntology = man.loadOntology(IRI.create(ontologyURL));
 		// OWL API does not support rdf:langString so far
 		Set<OWLDataPropertyRangeAxiom> rangeAxioms = schemaOntology.getAxioms(AxiomType.DATA_PROPERTY_RANGE);
-		Set<OWLAxiom> toRemove = new HashSet<OWLAxiom>();
-		Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> toRemove = new HashSet<>();
+		Set<OWLAxiom> toAdd = new HashSet<>();
 		for (OWLDataPropertyRangeAxiom ax : rangeAxioms) {
 			OWLDatatype datatype = ax.getRange().asOWLDatatype();
 			if(datatype.equals(df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")))) {

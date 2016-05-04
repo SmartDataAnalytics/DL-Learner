@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.semkernel;
 
 import java.io.BufferedReader;
@@ -280,7 +298,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 String mpUriStr = oboPrefix + mpId.replace(":", "_");
 
                 if (!mgi2mp.containsKey(mgiId)) {
-                    mgi2mp.put(mgiId, new TreeSet<String>());
+                    mgi2mp.put(mgiId, new TreeSet<>());
                 }
                 mgi2mp.get(mgiId).add(mpUriStr);
             }
@@ -490,7 +508,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 String goUriStr = oboPrefix + goId.replace(":", "_");
 
                 if (!mgi2go.containsKey(mgiId)) {
-                    mgi2go.put(mgiId, new TreeSet<String>());
+                    mgi2go.put(mgiId, new TreeSet<>());
                 }
                 mgi2go.get(mgiId).add(goUriStr);
             }

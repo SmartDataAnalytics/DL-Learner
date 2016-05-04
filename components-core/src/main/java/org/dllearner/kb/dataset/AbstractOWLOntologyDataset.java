@@ -1,29 +1,25 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.dataset;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.io.Files;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -35,8 +31,15 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.google.common.io.Files;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
@@ -59,7 +62,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
 	protected Map<URL, String> ontologyURLs = new HashMap<>();
 	
-	private final int nrOfThreads = 1;
+	private static final int nrOfThreads = 1;
 	private boolean analyze = false;
 	
 	public AbstractOWLOntologyDataset(String name, boolean analyze) {
@@ -231,12 +234,11 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
 	private OWLOntology loadFromLocal(URL url){
 		String filename = getFilename(url);
-		for(File parent : Arrays.asList(directory)){
+		for(File parent : Collections.singletonList(directory)){
 			File file = new File(parent, filename);
 			if(file.exists()){
 				try {
-					OWLOntology ontology = man.loadOntologyFromOntologyDocument(file);
-					return ontology;
+					return man.loadOntologyFromOntologyDocument(file);
 				} catch(Exception e){
 					e.printStackTrace();
 					File to = new File(errorSubdirectory, filename);

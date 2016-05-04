@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.examples;
 
@@ -45,7 +44,7 @@ public class DBpediaExample {
 	static QueryTreeFactory factory = new QueryTreeFactoryBase();
 	
 	public static List<RDFResourceTree> getPosExampleTrees(){
-		List<RDFResourceTree> posExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> posExampleTrees = new ArrayList<>();
 		
 		posExampleTrees.add(factory.getQueryTree("Leibnitz", getLeibnitzExampleModel()));
 		posExampleTrees.add(factory.getQueryTree("MaxImmelmann", getMaxImmelmannExampleModel()));
@@ -54,7 +53,7 @@ public class DBpediaExample {
 	}
 	
 	public static List<RDFResourceTree> getNegExampleTrees(){
-		List<RDFResourceTree> negExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> negExampleTrees = new ArrayList<>();
 		
 		negExampleTrees.add(factory.getQueryTree("CharlesGarnier", getCharlesGarnierExampleModel()));
 		

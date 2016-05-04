@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
 import java.net.URL;
@@ -31,8 +30,6 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 
 public class TestOneQueryForMusicRecommender {
-
-
 
 static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 "<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">"+
@@ -60,7 +57,6 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 "</results>"+
 "</sparql>";
 
-
 	public static void main(String[] args) {
 
 		String p1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
@@ -70,7 +66,6 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 		System.out.println("SparqlQuery: ");
 		System.out.println(sparqlQueryString);
 		System.out.println("wget -S -O test.txt "+"'http://dbtune.org:2105/sparql/?query="+sparqlQueryString+"'");
-
 
 		ResultSet rs = ResultSetFactory.fromXML(xml);
 		@SuppressWarnings("unchecked")
@@ -93,7 +88,6 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 			//ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			//ResultSetFormatter.outputAsJSON(baos, rs);
 
-
 			//System.out.println( baos.toString("UTF-8"));
 		} catch (Exception e) {
 			// should never happen as UTF-8 is supported
@@ -101,16 +95,6 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 
 		}
 
-
-
-
-
-
-
-
 	}
-
-
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
+
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 /**
  * @author Jens Lehmann
@@ -35,19 +35,16 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
  */
 public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	
+	@ConfigOption()
 	protected SortedSet<OWLIndividual> positiveExamples;
+	@ConfigOption()
 	protected SortedSet<OWLIndividual> negativeExamples;
+
 	protected SortedSet<OWLIndividual> allExamples;
-	
+	@ConfigOption()
 	protected SortedSet<FuzzyIndividual> fuzzyExamples;
 
-	protected Map<OWLIndividual,Double> fuzzyEx;
-	
-	public Map<OWLIndividual, Double> getFuzzyEx() {
-		return fuzzyEx;
-	}
-
-	public void setFuzzyEx(Map<OWLIndividual, Double> fuzzyEx) {
+	public void setFuzzyExamples(Map<OWLIndividual, Double> fuzzyEx) {
 		fuzzyExamples = new TreeSet<>();
 
 		for (OWLIndividual i : fuzzyEx.keySet()) {

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.experiments;
 
@@ -34,26 +49,12 @@ import com.hp.hpl.jena.util.iterator.Filter;
  */
 public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
-	static SparqlEndpoint endpoint;
-	
-	static {
-		try {
-			endpoint = SparqlEndpoint.getEndpointDBpedia();
-			endpoint = new SparqlEndpoint(
-//			new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
-					"http://dbpedia.org");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-	public DBpediaEvaluationDataset() {
+	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		// set KS
+		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
 			ks = new SparqlEndpointKS(endpoint);
-			ks.setCacheDir("./cache-qtl/qtl-qald-iswc2015-cache;mv_store=false");
+			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
 			ks.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
@@ -83,8 +84,10 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
 	
+	@Override
+	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
-		return Lists.<Filter<Statement>>newArrayList(
+		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 			new PredicateDropStatementFilter(StopURIsRDFS.get()),

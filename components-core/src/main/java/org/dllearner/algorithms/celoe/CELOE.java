@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,28 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.celoe;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -51,43 +35,23 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.OWLAPIUtils;
-import org.dllearner.utilities.TreeUtils;
+import org.dllearner.refinementoperators.*;
+import org.dllearner.utilities.*;
 import org.dllearner.utilities.datastructures.SearchTree;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.PropertyContext;
+import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -97,11 +61,12 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("CloneDoesntCallSuperClone")
 @ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOE extends AbstractCELA implements Cloneable{
 
-	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
-	private static Marker sparql_debug = MarkerFactory.getMarker("SD");
+	private static final Logger logger = LoggerFactory.getLogger(CELOE.class);
+	private static final Marker sparql_debug = MarkerFactory.getMarker("SD");
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -113,12 +78,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private LengthLimitedRefinementOperator operator;
 
 	private SearchTree<OENode> searchTree;
-	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
+	@ConfigOption(defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
 	// the class with which we start the refinement process
-	@ConfigOption(
-			name = "startClass",
-			defaultValue = "owl:Thing",
+	@ConfigOption(defaultValue = "owl:Thing",
 			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
 			exampleValue = "ex:Male or http://example.org/ontology/Female")
 	private OWLClassExpression startClass;
@@ -129,7 +92,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
-	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
+	@ConfigOption(defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
 	private OWLClassExpression bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
@@ -168,43 +131,43 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
-	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	@ConfigOption(defaultValue="false", description="specifies whether to write a search tree")
 	private boolean writeSearchTree = false;
 
-	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	@ConfigOption(defaultValue="log/searchTree.txt", description="file to use for the search tree")
 	private String searchTreeFile = "log/searchTree.txt";
 
-	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	@ConfigOption(defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 	private boolean replaceSearchTree = false;
 	
-	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
+	@ConfigOption(defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 	private int maxNrOfResults = 10;
 
-	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 
-	@ConfigOption(name = "filterDescriptionsFollowingFromKB", defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
+	@ConfigOption(defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
 	private boolean filterDescriptionsFollowingFromKB = false;
 
-	@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
+	@ConfigOption(defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 	private boolean reuseExistingDescription = false;
 
-	@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	@ConfigOption(defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTests = 0;
 
-	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	@ConfigOption(defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTestsAfterImprovement = 0;
 	
-	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "0", description = "maximum execution of the algorithm in seconds after last improvement")
 	private int maxExecutionTimeInSecondsAfterImprovement = 0;
 	
-	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
+	@ConfigOption(defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = false;
 	
-	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
+	@ConfigOption(defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
 
-	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	@ConfigOption(defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
 	private boolean stopOnFirstDefinition = false;
 	
 	private int expressionTestCountLastImprovement;
@@ -215,7 +178,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 	private boolean expandAccuracy100Nodes = false;
 	private double currentHighestAccuracy;
-	
+
+	// option to keep track of best score during algorithm run
+	private boolean keepTrackOfBestScore = false;
+	private SortedMap<Long, Double> runtimeVsBestScore = new TreeMap<>();
+
 	
 	public CELOE() {}
 	
@@ -273,10 +240,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return problems;
 	}
 	
-	public static String getName() {
-		return "CELOE";
-	}
-
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();
@@ -308,18 +271,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		// start at owl:Thing by default
-		if (startClass == null) {
-			startClass = computeStartClass();
-		} else {
-			try {
-				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
-			} catch (Exception e) {
-				logger.warn("Error parsing start class.", e);
-				logger.warn("Using owl:Thing instead.");
-				this.startClass = dataFactory.getOWLThing();
-			}
-		}
-		
+		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, this::computeStartClass, logger);
+
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
@@ -386,7 +339,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
-				
+
 				// get length of class expression
 				int length = OWLClassExpressionUtils.getLength(refinement);
 				
@@ -508,15 +461,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = searchTree.descendingIterator();
-		if (logger.isDebugEnabled()) {
+		if (logger.isTraceEnabled()) {
 			for (OENode N:searchTree.getNodeSet()) {
-				logger.debug(sparql_debug,"`getnext:"+N);
+				logger.trace(sparql_debug,"`getnext:"+N);
 			}
 		}
 
 		while(it.hasNext()) {
 			OENode node = it.next();
-			logger.debug(sparql_debug,"``"+node+node.getAccuracy());
+			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 			} else {
@@ -533,7 +486,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// expand node horizontically
 	private TreeSet<OWLClassExpression> refineNode(OENode node) {
-		logger.debug(sparql_debug,"REFINE NODE " + node);
+		logger.trace(sparql_debug,"REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -556,27 +509,27 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 */
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		String sparql_debug_out = "";
-		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description;
+		if (logger.isTraceEnabled()) sparql_debug_out = "DESC: " + description;
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-			logger.debug(sparql_debug, sparql_debug_out + "REDUNDANT");
+			logger.trace(sparql_debug, sparql_debug_out + "REDUNDANT");
 			return false;
 		}
 		
 		// check whether the class expression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-			logger.debug(sparql_debug, sparql_debug_out + "NOT ALLOWED");
+			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
 		
 		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
-		logger.debug(sparql_debug, sparql_debug_out);
+		logger.trace(sparql_debug, sparql_debug_out);
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
-		logger.debug(sparql_debug, "`acc:"+accuracy);
+		logger.trace(sparql_debug, "`acc:"+accuracy);
 		mon.stop();
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
@@ -620,7 +573,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewrite(node.getExpression());
-			
+
 			if(niceDescription.equals(classToDescribe)) {
 				return false;
 			}
@@ -740,14 +693,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
 	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
-		if(cls.isOWLThing()) {
-			return false;
-		}
-		return (description instanceof OWLNaryBooleanClassExpression &&
-				((OWLNaryBooleanClassExpression)description).getOperands().contains(cls));
+		return !cls.isOWLThing() && (description instanceof OWLNaryBooleanClassExpression && ((OWLNaryBooleanClassExpression) description).getOperands().contains(cls));
 //        return description.containsConjunct(cls) ||
 //                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
-    }
+	}
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 		// (it can still be at higher depth, e.g. if intersections are nested in unions)
@@ -807,6 +756,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		descriptions = new TreeSet<>();
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
+		runtimeVsBestScore.clear();
 	}
 	
 	private void printAlgorithmRunStats() {
@@ -826,6 +776,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			timeLastImprovement = System.nanoTime();
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
+
+			// track new best accuracy if enabled
+			if(keepTrackOfBestScore) {
+				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
+			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 		}
 	}
@@ -838,7 +793,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -1088,10 +1043,62 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
 		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
+
+	/**
+	 * Whether to keep track of the best score during the algorithm run.
+	 *
+	 * @param keepTrackOfBestScore
 	 */
+	public void setKeepTrackOfBestScore(boolean keepTrackOfBestScore) {
+		this.keepTrackOfBestScore = keepTrackOfBestScore;
+	}
+
+	/**
+	 * @return a map containing time points at which a hypothesis with a better score than before has been found
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore() {
+		return runtimeVsBestScore;
+	}
+
+	/**
+	 * Return a map that contains
+	 * <ol>
+	 *     <li>entries with time points at which a hypothesis with a better score than before has been found</li>
+	 *     <li>entries with the current best score for each defined interval time point</li>
+	 * </ol>
+	 *
+	 * @param ticksIntervalTimeValue at which time point the current best score is tracked periodically
+	 * @param ticksIntervalTimeUnit the time unit of the periodic time point values
+	 *
+	 * @return the map
+	 *
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore(long ticksIntervalTimeValue, TimeUnit ticksIntervalTimeUnit) {
+		SortedMap<Long, Double> map = new TreeMap<>(runtimeVsBestScore);
+
+		// add entries for fixed time points if enabled
+		if(ticksIntervalTimeValue > 0) {
+			long ticksIntervalInMs = TimeUnit.MILLISECONDS.convert(ticksIntervalTimeValue, ticksIntervalTimeUnit);
+
+			// add  t = 0 -> 0
+			map.put(0L, 0d);
+
+			for(long t = ticksIntervalInMs; t <= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds); t += ticksIntervalInMs) {
+				// add value of last entry before this time point
+				map.put(t, map.get(runtimeVsBestScore.headMap(t).lastKey()));
+			}
+
+			// add  entry for t = totalRuntime
+			long totalRuntimeMs = Math.min(TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds), TimeUnit.NANOSECONDS.toMillis(totalRuntimeNs));
+			map.put(totalRuntimeMs, map.get(map.lastKey()));
+		}
+
+		return map;
+	}
+
+	/* (non-Javadoc)
+			 * @see java.lang.Object#clone()
+			 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return new CELOE(this);
@@ -1160,9 +1167,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		alg.setSearchTreeFile("log/search-tree.log");
 		alg.setReplaceSearchTree(true);
 		alg.init();
+		alg.setKeepTrackOfBestScore(true);
 		
 		alg.start();
-		
+
+		SortedMap<Long, Double> map = alg.getRuntimeVsBestScore(1, TimeUnit.SECONDS);
+		System.out.println(MapUtils.asTSV(map, "runtime", "best_score"));
+
 	}
 	
 }

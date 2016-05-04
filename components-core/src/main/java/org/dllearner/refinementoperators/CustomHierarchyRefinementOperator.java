@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2012, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -21,7 +21,6 @@ package org.dllearner.refinementoperators;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-
 
 /**
  * 

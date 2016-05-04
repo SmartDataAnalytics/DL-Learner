@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,21 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.examples;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.KnowledgeSource;
@@ -40,6 +26,13 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.URLencodeUTF8;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Creates a temporary file with all the data collected for examples.
@@ -89,10 +82,6 @@ public class ExampleDataCollector {
 			lp.setPositiveExamples(Helper.getIndividualSet(pos));
 			lp.setNegativeExamples(Helper.getIndividualSet(neg));
 			OCEL la = new OCEL(lp, rc);
-//			la.getConfigurator().setUseNegation(false);
-//			la.getConfigurator().setUseAllConstructor(false);
-//			la.getConfigurator().setUseExistsConstructor(false);
-			la.setUseDataHasValueConstructor(true);
 			for(KnowledgeSource ks: tmp){
 				ks.init();
 			}

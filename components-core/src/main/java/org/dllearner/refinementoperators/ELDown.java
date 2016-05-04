@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,43 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.el.ELDescriptionEdge;
-import org.dllearner.algorithms.el.ELDescriptionEdgeComparator;
-import org.dllearner.algorithms.el.ELDescriptionNode;
-import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
-import org.dllearner.algorithms.el.TreeAndRoleSet;
-import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
+import org.dllearner.algorithms.el.*;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLProperty;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.*;
 
 //import com.jamonapi.Monitor;
 //import com.jamonapi.MonitorFactory;
@@ -76,6 +53,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Jens Lehmann
  *
  */
+//@ComponentAnn(name = "EL Downward refinement operator", shortName = "eldown", version = 0.1)
 public class ELDown extends RefinementOperatorAdapter {
 
 	private static Logger logger = Logger.getLogger(ELDown.class);	
@@ -108,7 +86,8 @@ public class ELDown extends RefinementOperatorAdapter {
 	private ELDescriptionTreeComparator treeComp = new ELDescriptionTreeComparator();
 	private ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
-	
+
+	@ConfigOption(description = "maximum depth", defaultValue = "2")
 	private int maxClassExpressionDepth = 2;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();

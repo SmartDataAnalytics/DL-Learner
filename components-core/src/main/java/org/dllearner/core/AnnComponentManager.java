@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,34 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.AccMethod;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration
@@ -139,7 +130,7 @@ public class AnnComponentManager {
 				reflectionScanner = new Reflections("org.dllearner");
 			}
 			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
-			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class);
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class, true);
 			for (Class<?> clazz
 					: Sets.intersection(
 							componentClasses,
@@ -157,13 +148,8 @@ public class AnnComponentManager {
 			}
 		}
 		// conversion of class strings to objects
-		components = new TreeSet<>(new Comparator<Class<? extends Component>>() {
-
-			@Override
-			public int compare(Class<? extends Component> o1,
-							   Class<? extends Component> o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
+		components = new TreeSet<>((Comparator<Class<? extends Component>>) (o1, o2) -> {
+			return o1.getName().compareTo(o2.getName());
 		});
 		componentNames = new DualHashBidiMap<>();
 		componentNamesShort = new DualHashBidiMap<>();
@@ -221,10 +207,9 @@ public class AnnComponentManager {
 	 * instance of <code>ComponentManager</code>.
 	 */
 	public SortedSet<String> getComponentStrings() {
-		SortedSet<String> result = new TreeSet<>();
-        for (Class<? extends Component> component : getComponents()) {
-        	result.add(getShortName(component));
-        }
+		SortedSet<String> result = getComponents().stream()
+				.map(AnnComponentManager::getShortName)
+				.collect(Collectors.toCollection(TreeSet::new));
 		return result;
 	}
 
@@ -236,12 +221,11 @@ public class AnnComponentManager {
      */
     public SortedSet<String> getComponentStringsOfType(Class type) {
 
-    	SortedSet<String> result = new TreeSet<>();
-        for (Class<? extends Component> component : getComponentsOfType(type)) {
-        	result.add(getShortName(component));
-        }
+    	SortedSet<String> result = getComponentsOfType(type).stream()
+			    .map(AnnComponentManager::getShortName)
+			    .collect(Collectors.toCollection(TreeSet::new));
 
-        return result;
+	    return result;
     }
     
     /**
@@ -270,14 +254,11 @@ public class AnnComponentManager {
      */
     public Collection<Class<? extends Component>> getComponentsOfType(Class type) {
 
-        Collection<Class<? extends Component>> result = new ArrayList<>();
-        for (Class<? extends Component> component : components) {
-            if (type.isAssignableFrom(component)) {
-                result.add(component);
-            }
-        }
+        Collection<Class<? extends Component>> result = components.stream()
+		        .filter(component -> type.isAssignableFrom(component))
+		        .collect(Collectors.toCollection(ArrayList::new));
 
-        return result;
+	    return result;
     }
 
 	/**
@@ -355,7 +336,8 @@ public class AnnComponentManager {
 		LearningProblem.class,
 		ReasonerComponent.class,
 		RefinementOperator.class,
-		Heuristic.class
+		Heuristic.class,
+		AccMethod.class
 	};
 
 	/**

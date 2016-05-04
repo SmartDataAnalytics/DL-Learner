@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,14 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
 
 import com.google.common.collect.ComparisonChain;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.util.NodeComparator;
 import org.dllearner.kb.extraction.LiteralNode;
-
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * A container which can hold two Strings, mainly used as a helper.
@@ -49,6 +47,7 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 		return b.equals(t.b) && a.equals(t.a);
 	}
 
+	@Override
 	public int compareTo(RDFNodeTuple t) {
 		NodeComparator comparator = new NodeComparator();
 		return ComparisonChain.start().

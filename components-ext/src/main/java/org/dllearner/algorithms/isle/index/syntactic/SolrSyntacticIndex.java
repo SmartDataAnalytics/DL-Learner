@@ -3,33 +3,13 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -41,16 +21,15 @@ import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -67,7 +46,7 @@ public class SolrSyntacticIndex implements Index{
 	
 	long totalNumberOfDocuments = -1;
 	
-	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
+	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<>());
 	private OWLOntology ontology;
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
@@ -105,12 +84,12 @@ public class SolrSyntacticIndex implements Index{
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
-		final Set<OWLEntity> owlEntities = new TreeSet<OWLEntity>();
+		final Set<OWLEntity> owlEntities = new TreeSet<>();
 		owlEntities.addAll(ontology.getClassesInSignature());
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
-		final Map<Set<OWLEntity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
+		final Map<Set<OWLEntity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<>());
 		
 		//fA resp. fB
 		owlEntities.addAll(classes);
@@ -156,8 +135,6 @@ public class SolrSyntacticIndex implements Index{
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("entity_frequencies.obj"));
 			oos.writeObject(frequencyCache);
 			oos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,7 +148,7 @@ public class SolrSyntacticIndex implements Index{
 	 */
 	@Override
 	public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
-		Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
+		Set<AnnotatedDocument> documents = new HashSet<>();
 		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
@@ -191,9 +168,7 @@ public class SolrSyntacticIndex implements Index{
 								TextDocumentGenerator.getInstance().generateDocument((String) doc.getFieldValue(searchField)), 
 								Collections.EMPTY_SET));
 					}
-				} catch (SolrServerException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (SolrServerException | IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -211,9 +186,7 @@ public class SolrSyntacticIndex implements Index{
 		    q.setRows(0);  // don't actually request any data
 		    try {
 				totalNumberOfDocuments = solr.query(q).getResults().getNumFound();
-			} catch (SolrServerException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (SolrServerException | IOException e) {
 				e.printStackTrace();
 			}
 		}

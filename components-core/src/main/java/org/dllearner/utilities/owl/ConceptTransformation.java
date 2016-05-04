@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,34 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.NNF;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
-import org.semanticweb.owlapi.model.OWLRestriction;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
-
-import com.google.common.collect.Sets;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.*;
 
 /**
  * Concept transformation and concept checking methods.
@@ -79,8 +61,7 @@ public class ConceptTransformation {
 	 */
 	public static OWLClassExpression nnf(OWLClassExpression ce) {
 		NNF nnfGen = new NNF(new OWLDataFactoryImpl());
-		OWLClassExpression nnf = ce.accept(nnfGen);
-		return nnf;
+		return ce.accept(nnfGen);
 	}
 	
 	/**
@@ -249,15 +230,13 @@ public class ConceptTransformation {
 			
 			if(pe.isAnonymous()) {
 				if(filler.isOWLThing()) {
-					OWLClassExpression domain = rs.getDomain(pe.getNamedProperty());
-					filler = domain;
+					filler = rs.getDomain(pe.getNamedProperty());
 				} else if(filler.isAnonymous()){
 					filler = replaceRange(filler, rs);
 				}
 			} else {
 				if(filler.isOWLThing()) {
-					OWLClassExpression range = rs.getRange(pe.asOWLObjectProperty());
-					filler = range;
+					filler = rs.getRange(pe.asOWLObjectProperty());
 				} else if(filler.isAnonymous()){
 					filler = replaceRange(filler, rs);
 				}

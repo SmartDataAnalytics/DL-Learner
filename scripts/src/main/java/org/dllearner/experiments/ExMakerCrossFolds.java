@@ -19,13 +19,9 @@
 
 package org.dllearner.experiments;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
+
+import java.util.*;
 
 public class ExMakerCrossFolds {
 	private static Logger logger = Logger.getLogger(ExMakerCrossFolds.class);
@@ -58,15 +54,15 @@ public class ExMakerCrossFolds {
 		 int i = 1;
 		 int totalsize = 0;
 		 StringBuffer b = new StringBuffer();
-		 b.append("Number of folds "+l.size()+"\n");
+		 b.append("Number of folds ").append(l.size()).append("\n");
 		 for (Examples examples : l) {
-			 b.append("Fold: "+(i++)+"\n");
+			 b.append("Fold: ").append(i++).append("\n");
 			 b.append(examples.toString());
 			 b.append("\n");
 			
 			 totalsize+=examples.size();
 		}
-		 b.append("total size: "+totalsize);
+		 b.append("total size: ").append(totalsize);
 		 logger.info(b.toString());
 	}
 	
@@ -82,13 +78,13 @@ public class ExMakerCrossFolds {
 			return null;
 		}
 		
-		List<Examples> foldSets = new ArrayList<Examples>();
+		List<Examples> foldSets = new ArrayList<>();
 		double foldPercentage = 1.0d/((double)folds);
 		int tenPercentPos = (int)Math.floor(((double)examples.sizeTotalOfPositives())*foldPercentage);
 		int tenPercentNeg = (int)Math.floor(((double)examples.sizeTotalOfNegatives())*foldPercentage);
 		
-		List<String> posRemaining =  new ArrayList<String>(examples.getPositiveExamples());
-		List<String> negRemaining  = new ArrayList<String>(examples.getNegativeExamples());
+		List<String> posRemaining = new ArrayList<>(examples.getPositiveExamples());
+		List<String> negRemaining  = new ArrayList<>(examples.getNegativeExamples());
 		Collections.shuffle(posRemaining);
 		Collections.shuffle(negRemaining);
 		
@@ -97,8 +93,8 @@ public class ExMakerCrossFolds {
 //		Examples oneFold;
 		for(int i = 0; i<folds;i++){
 //			logger.trace("Foldprogess: "+i+" of "+folds);
-			SortedSet<String> newPos = new TreeSet<String>();
-			SortedSet<String> newNeg = new TreeSet<String>();
+			SortedSet<String> newPos = new TreeSet<>();
+			SortedSet<String> newNeg = new TreeSet<>();
 			String one = "";
 
 			for(int a =0; a<tenPercentPos&& !posRemaining.isEmpty();a++){
@@ -116,7 +112,7 @@ public class ExMakerCrossFolds {
 			foldSets.add(tmp);
 
 		}
-		List<Examples> ret = new ArrayList<Examples>();
+		List<Examples> ret = new ArrayList<>();
 		for(int i =0; i<foldSets.size();i++){
 			Examples oneFold = new Examples();
 			oneFold.addPosTest(foldSets.get(i).getPositiveExamples());

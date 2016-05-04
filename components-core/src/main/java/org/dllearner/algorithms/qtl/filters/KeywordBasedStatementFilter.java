@@ -1,23 +1,33 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.filters;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-
-
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.util.iterator.Filter;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class KeywordBasedStatementFilter extends Filter<Statement> {
 	
@@ -69,7 +79,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 			if(v >= threshold){
 				return true;
 			} else {
-				values.add(Double.valueOf(v));
+				values.add(v);
 			}
 		} 
 		double sum = 0;
@@ -117,10 +127,10 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 			} else {
 				String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
 				if (isSimiliar2QuestionWord(predicate, s)){
-					cache.put(s.getPredicate(), Boolean.valueOf(true));
+					cache.put(s.getPredicate(), true);
 					return true;
 				} else {
-					cache.put(s.getPredicate(), Boolean.valueOf(false));
+					cache.put(s.getPredicate(), false);
 					return false;
 				}
 			}
@@ -136,20 +146,20 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 					object = s.getObject().asLiteral().getLexicalForm();
 				}
 				if(isSimiliar2QuestionWord(object, s)){
-					cache.put(s.getObject(), Boolean.valueOf(true));
+					cache.put(s.getObject(), true);
 					return true;
 				} else {
-					cache.put(s.getObject(), Boolean.valueOf(false));
+					cache.put(s.getObject(), false);
 					return false;
 				}
 			}
 		} else {
 			String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
 			if (isSimiliar2QuestionWord(predicate, s)){
-				cache.put(s.getPredicate(), Boolean.valueOf(true));
+				cache.put(s.getPredicate(), true);
 				return true;
 			} else {
-				cache.put(s.getPredicate(), Boolean.valueOf(false));
+				cache.put(s.getPredicate(), false);
 			}
 			String object = null;
 			if(s.getObject().isURIResource()){
@@ -159,10 +169,10 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 				object = s.getObject().asLiteral().getLexicalForm();
 			}
 			if(isSimiliar2QuestionWord(object, s)){
-				cache.put(s.getObject(), Boolean.valueOf(true));
+				cache.put(s.getObject(), true);
 				return true;
 			} else {
-				cache.put(s.getObject(), Boolean.valueOf(false));
+				cache.put(s.getObject(), false);
 			}
 			return false;
 		}

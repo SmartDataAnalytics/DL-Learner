@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,38 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.celoe;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -59,36 +37,23 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.refinementoperators.SynchronizedRefinementOperator;
+import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.TreeUtils;
 import org.dllearner.utilities.datastructures.SynchronizedSearchTree;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.PropertyContext;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.dllearner.utilities.owl.*;
+import org.semanticweb.owlapi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * The PCELOE is an experimental, parallel implementation of the CELOE algorithm.
@@ -108,20 +73,19 @@ public class PCELOE extends AbstractCELA {
 	private LengthLimitedRefinementOperator operator;
 
 	private SynchronizedSearchTree<OENode> searchTree;
-	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
+	@ConfigOption(defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic;
 	// the class with which we start the refinement process
-	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	@ConfigOption(defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private OWLClassExpression startClass;
 
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
 //	private TreeSet<OWLClassExpression> descriptions;
 	private SortedSet<OWLClassExpression> descriptions;
 
-
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
-	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
+	@ConfigOption(defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
 	private OWLClassExpression bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
@@ -148,7 +112,6 @@ public class PCELOE extends AbstractCELA {
 	// but it can also suppress quite useful expressions
 	private boolean forceMutualDifference = false;
 
-
 	// statistical variables
 		private int expressionTests = 0;
 		private int minHorizExp = 0;
@@ -166,60 +129,59 @@ public class PCELOE extends AbstractCELA {
 	// important: do not initialise those with empty sets
 		// null = no settings for allowance / ignorance
 		// empty set = allow / ignore nothing (it is often not desired to allow no class!)
-		@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+		@ConfigOption(defaultValue="false", description="specifies whether to write a search tree")
 		private boolean writeSearchTree = false;
 
-		@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+		@ConfigOption(defaultValue="log/searchTree.txt", description="file to use for the search tree")
 		private String searchTreeFile = "log/searchTree.txt";
 
-		@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+		@ConfigOption(defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 		private boolean replaceSearchTree = false;
 		
-		@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
+		@ConfigOption(defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 		private int maxNrOfResults = 10;
 
-		@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+		@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 		private double noisePercentage = 0.0;
 
-		@ConfigOption(name = "filterDescriptionsFollowingFromKB", defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
+		@ConfigOption(defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
 		private boolean filterDescriptionsFollowingFromKB = false;
 
-		@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
+		@ConfigOption(defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 		private boolean reuseExistingDescription = false;
 
-		@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+		@ConfigOption(defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 		private int maxClassExpressionTests = 0;
 
-		@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+		@ConfigOption(defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 		private int maxClassExpressionTestsAfterImprovement = 0;
 
-		@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+		@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
 		private int maxExecutionTimeInSeconds = 10;
 
-		@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+		@ConfigOption(defaultValue = "0", description = "maximum execution of the algorithm in seconds")
 		private int maxExecutionTimeInSecondsAfterImprovement = 0;
 
-		@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
+		@ConfigOption(defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 		private boolean terminateOnNoiseReached = false;
 
-		@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
+		@ConfigOption(defaultValue="7", description="maximum depth of description")
 		private double maxDepth = 7;
 
-		@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+		@ConfigOption(defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
 		private boolean stopOnFirstDefinition = false;
-
 
 		@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 		private boolean expandAccuracy100Nodes = false;
 		private double currentHighestAccuracy;
 
-	@ConfigOption(name = "nrOfThreads", defaultValue="2", description="number of threads running in parallel")
+	@ConfigOption(defaultValue="2", description="number of threads running in parallel")
 	private int nrOfThreads = 2;
 
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
 
-	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<OENode>());
+	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<>());
 	private volatile double highestAccuracy = 0.0;
 
 	public PCELOE() {}
@@ -256,7 +218,6 @@ public class PCELOE extends AbstractCELA {
 		}
 		setOperator(op);
 
-
 		setReuseExistingDescription(celoe.reuseExistingDescription);
 		setSingleSuggestionMode(celoe.singleSuggestionMode);
 		setStartClass(celoe.startClass);
@@ -270,10 +231,6 @@ public class PCELOE extends AbstractCELA {
 
 	public PCELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-	}
-
-	public static String getName() {
-		return "PCELOE";
 	}
 
 	@Override
@@ -375,8 +332,6 @@ public class PCELOE extends AbstractCELA {
 		isRunning = true;
 		reset();
 		nanoStartTime = System.nanoTime();
-
-
 
 		addNode(startClass, null);
 
@@ -818,7 +773,6 @@ public class PCELOE extends AbstractCELA {
 				return false;
 		    }
 
-
 	private boolean terminationCriteriaSatisfied() {
 		return
 		stop ||
@@ -836,7 +790,7 @@ public class PCELOE extends AbstractCELA {
 //		nodes = new TreeSet<OENode>(heuristic);
 		searchTree = new SynchronizedSearchTree(heuristic);
 		//Sets.synchronizedNavigableSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
-		descriptions = Collections.synchronizedSortedSet(new TreeSet<OWLClassExpression>());
+		descriptions = Collections.synchronizedSortedSet(new TreeSet<>());
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		highestAccuracy = 0.0;
@@ -871,7 +825,7 @@ public class PCELOE extends AbstractCELA {
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -1231,7 +1185,6 @@ public class PCELOE extends AbstractCELA {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
-
 
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();

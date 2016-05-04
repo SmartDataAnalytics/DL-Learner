@@ -19,91 +19,36 @@
  */
 package org.dllearner.cli;
 
-import static java.util.Arrays.asList;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.SecureRandom;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.AxiomLearningAlgorithm;
-import org.dllearner.core.AxiomLearningProgressMonitor;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.*;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.EnrichmentVocabulary;
@@ -114,45 +59,26 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.formats.ManchesterSyntaxDocumentFormat;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.net.*;
+import java.security.SecureRandom;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * Command Line Interface for Enrichment.
@@ -215,7 +141,7 @@ public class Enrichment {
 	private double threshold = 0.7;
 	private int chunksize = 1000;
 	private boolean omitExistingAxioms;
-	private List<String> allowedNamespaces = new ArrayList<String>();
+	private List<String> allowedNamespaces = new ArrayList<>();
 	private int maxNrOfPositiveExamples = 20;
 	private int maxNrOfNegativeExamples = 20;
 
@@ -246,7 +172,7 @@ public class Enrichment {
 
 	AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 
-	private OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	public Enrichment(SparqlEndpoint se, OWLEntity resource, double threshold, int nrOfAxiomsToLearn,
 			boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds,
@@ -283,15 +209,15 @@ public class Enrichment {
 			}
 		}
 
-		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		classAlgorithms = new LinkedList<>();
 //		classAlgorithms.add(DisjointClassesLearner.class);
 //		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);
 
-		algorithmRuns = new LinkedList<AlgorithmRun>();
+		algorithmRuns = new LinkedList<>();
 
-		learnedOWLAxioms = new HashSet<OWLAxiom>();
-		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
+		learnedOWLAxioms = new HashSet<>();
+		learnedEvaluatedAxioms = new HashSet<>();
 	}
 
 	public void setAllowedNamespaces(List<String> allowedNamespaces) {
@@ -314,7 +240,7 @@ public class Enrichment {
 		}
 	}
 
-	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
+	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException {
 		reasoner = new SPARQLReasoner(ks);
 		reasoner.init();
 
@@ -328,7 +254,7 @@ public class Enrichment {
 		if(resource == null) {
 
 			// loop over all entities and call appropriate algorithms
-			Set<OWLProperty> processedProperties = new HashSet<OWLProperty>();
+			Set<OWLProperty> processedProperties = new HashSet<>();
 			if(processClasses){
 				Set<OWLClass> classes = reasoner.getOWLClasses();
 				filterByNamespaces(classes);
@@ -493,7 +419,7 @@ public class Enrichment {
 		startTime = System.currentTimeMillis();
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint(), reasoner);
 		SortedSet<OWLIndividual> negExamples = finder.getNegativeExamples(nc, posExamples, maxNrOfNegativeExamples);
-		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples, negExamples);
+		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<>(posExamples, negExamples);
 		runTime = System.currentTimeMillis() - startTime;
 		System.out.println("done (" + negExamples.size()+ " examples found in " + runTime + " ms)");
 
@@ -525,7 +451,7 @@ public class Enrichment {
 			}
 			ksFragment = new OWLAPIOntology(ontology);
 			try {
-				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("/tmp/test.ttl"));
+				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream("/tmp/test.ttl"));
 			} catch (OWLOntologyStorageException | FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -545,8 +471,7 @@ public class Enrichment {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setAccuracyMethod(HeuristicType.FMEASURE);
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 
@@ -564,7 +489,7 @@ public class Enrichment {
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
-        List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = new LinkedList<EvaluatedAxiom<OWLAxiom>>();
+        List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = new LinkedList<>();
         for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
@@ -573,7 +498,7 @@ public class Enrichment {
         		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom<OWLAxiom>(axiom, new AxiomScore(score.getAccuracy())));
+        	learnedAxioms.add(new EvaluatedAxiom<>(axiom, new AxiomScore(score.getAccuracy())));
         }
         System.out.println(prettyPrint(learnedAxioms));
         learnedEvaluatedAxioms.addAll(learnedAxioms);
@@ -594,7 +519,7 @@ public class Enrichment {
 	private Model getFragmentMultithreaded(final SparqlEndpointKS ks, Set<OWLIndividual> individuals){
 		Model model = ModelFactory.createDefaultModel();
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		List<Future<Model>> futures = new ArrayList<Future<Model>>();
+		List<Future<Model>> futures = new ArrayList<>();
 		for (final OWLIndividual ind : individuals) {
 			futures.add(threadPool.submit(new Callable<Model>() {
 				@Override
@@ -607,9 +532,7 @@ public class Enrichment {
 		for (Future<Model> future : futures) {
 			try {
 				model.add(future.get());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
@@ -626,6 +549,7 @@ public class Enrichment {
 			e.printStackTrace();
 		}
 		if(classAlgorithms.contains(algorithmClass)) {
+
 			ConfigHelper.configure(learner, "classToDescribe", entity);
 		} else {
 			ConfigHelper.configure(learner, "propertyToDescribe", entity);
@@ -695,7 +619,7 @@ public class Enrichment {
 		if(defaultNamespace == null || defaultNamespace.isEmpty()){
 			defaultNamespace = DEFAULT_NS;
 		}
-		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		List<OWLAxiom> axioms = new ArrayList<>();
 
 		OWLDataFactory f = new OWLDataFactoryImpl();
 
@@ -705,7 +629,6 @@ public class Enrichment {
 		//add type SuggestionSet
 		OWLAxiom ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SuggestionSet, ind);
 		axioms.add(ax);
-
 
 		//create instance for algorithm run
 		String algorithmRunID = defaultNamespace + generateId();
@@ -746,13 +669,7 @@ public class Enrichment {
 		axioms.add(ax);
 
 		//add used input to algorithm run instance
-		OWLNamedIndividual knowldegeBaseInd = null;
-		try {
-			knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
 		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
 		axioms.add(ax);
 		if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {
@@ -779,7 +696,6 @@ public class Enrichment {
 			axioms.addAll(ind2Axioms.getValue());
 		}
 
-
 //		printManchesterOWLSyntax(axioms, defaultNamespace);
 //		printTurtleSyntax(axioms);
 //		printNTriplesSyntax(axioms);
@@ -797,20 +713,16 @@ public class Enrichment {
 		try {
 			System.out.println("ENRICHMENT[");
 
-			ManchesterOWLSyntaxOntologyFormat manSyntaxFormat = new ManchesterOWLSyntaxOntologyFormat();
+			ManchesterSyntaxDocumentFormat manSyntaxFormat = new ManchesterSyntaxDocumentFormat();
 			manSyntaxFormat.setDefaultPrefix(defaultNamespace);
 			manSyntaxFormat.setPrefix("enrichment", "http://www.dl-learner.org/enrichment.owl#");
 
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-			OWLOntology ontology = man.createOntology(new HashSet<OWLAxiom>(axioms), IRI.create(defaultNamespace + "enrichment"));
+			OWLOntology ontology = man.createOntology(new HashSet<>(axioms), IRI.create(defaultNamespace + "enrichment"));
 			OWLManager.createOWLOntologyManager().saveOntology(ontology, manSyntaxFormat, new SystemOutDocumentTarget());
 
-
-
 			System.out.println("]");
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
+		} catch (OWLOntologyCreationException | OWLOntologyStorageException e) {
 			e.printStackTrace();
 		}
 	}
@@ -853,21 +765,20 @@ public class Enrichment {
 	private void filter(Model model) {
 		// filter out triples with String literals, as therein often occur
 		// some syntax errors and they are not relevant for learning
-		List<Statement> statementsToRemove = new ArrayList<Statement>();
-		List<Statement> statementsToAdd = new ArrayList<Statement>();
-		for (Iterator<Statement> iter = model.listStatements().toList().iterator(); iter.hasNext();) {
-			Statement st = iter.next();
+		List<Statement> statementsToRemove = new ArrayList<>();
+		List<Statement> statementsToAdd = new ArrayList<>();
+		for (Statement st : model.listStatements().toList()) {
 			RDFNode subject = st.getSubject();
 			RDFNode object = st.getObject();
 
-			if(object.isAnon()){
-				if(!model.listStatements(object.asResource(), null, (RDFNode)null).hasNext()){
+			if (object.isAnon()) {
+				if (!model.listStatements(object.asResource(), null, (RDFNode) null).hasNext()) {
 					statementsToRemove.add(st);
 				}
-			} else if(st.getPredicate().equals(RDF.type) &&
-					(object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode()))){
+			} else if (st.getPredicate().equals(RDF.type) &&
+					(object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode()))) {
 				//remove statements like <x a owl:Class>
-					statementsToRemove.add(st);
+				statementsToRemove.add(st);
 			} else {
 				// fix URIs with spaces
 				Resource newSubject = (Resource) subject;
@@ -890,9 +801,9 @@ public class Enrichment {
 					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
 						newObject = model.createLiteral("shortened", "en");
 					}
-					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1l, 1l);
+					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1L, 1L);
 				}
-				if(validTriple){
+				if (validTriple) {
 					statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));
 				}
 				statementsToRemove.add(st);
@@ -905,7 +816,7 @@ public class Enrichment {
 
 	Model getModel(List<OWLAxiom> axioms) {
 		try {
-			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms));
+			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms));
 			Model model = OwlApiJenaUtils.getModel(ontology);
 			model.setNsPrefix("enr", "http://www.dl-learner.org/enrichment.owl#");
 			return model;
@@ -935,7 +846,7 @@ public class Enrichment {
 
 			OWLAnnotationProperty confAnnoProp = factory.getOWLAnnotationProperty(IRI.create(EnrichmentVocabulary.NS
 					+ "confidence"));
-			Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+			Set<OWLAxiom> axioms = new HashSet<>();
 			for (EvaluatedAxiom evAx : learnedEvaluatedAxioms) {
 				OWLAxiom ax = evAx.getAxiom();
 				if (withConfidenceAsAnnotations) {
@@ -958,7 +869,7 @@ public class Enrichment {
 	private void printTurtleSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)));
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms)));
 			model.write(System.out, "TURTLE");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {
@@ -973,7 +884,7 @@ public class Enrichment {
 	private void printNTriplesSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)));
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms)));
 			model.write(System.out, "N-TRIPLES");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {
@@ -1069,7 +980,6 @@ public class Enrichment {
 		parser.acceptsAll(asList("cls"),
 				"Specifies whether compute axiom for classes.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 
-
 		//username and password if endpoint is protected
 		parser.acceptsAll(asList("u", "username"), "Specify the username.")
 		.withOptionalArg().ofType(String.class);
@@ -1136,11 +1046,11 @@ public class Enrichment {
 						System.exit(0);
 					}
 
-					LinkedList<String> defaultGraphURIs = new LinkedList<String>();
+					LinkedList<String> defaultGraphURIs = new LinkedList<>();
 					if(graph != null) {
 						defaultGraphURIs.add(graph.toString());
 					}
-					SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<String>());
+					SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<>());
 //					Path tempDirectory = Files.createTempDirectory("dllearner");
 					String cacheDir = System.getProperty("java.io.tmpdir") + File.separator + "dl-learner";
 					ks = new SparqlEndpointKS(se, cacheDir);
@@ -1235,7 +1145,7 @@ public class Enrichment {
 			// print output in correct format
 			if(options.has("f")) {
 				List<AlgorithmRun> runs = e.getAlgorithmRuns();
-				List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+				List<OWLAxiom> axioms = new LinkedList<>();
 				for(AlgorithmRun run : runs) {
 					axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
 				}
@@ -1274,12 +1184,11 @@ public class Enrichment {
 				try {
 					OWLOntology ontology = e.getGeneratedOntology(options.has("a"));
 					OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), os);
+					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLDocumentFormat(), os);
 				} catch (OWLOntologyStorageException e1) {
 					throw new Error("Could not save ontology.");
 				}
 			}
-
 
 		}
 
@@ -1295,6 +1204,5 @@ public class Enrichment {
 		String host = url.getHost();
 		return host != null && !"".equals(host);
 	}
-
 
 }

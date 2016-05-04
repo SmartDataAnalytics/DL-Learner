@@ -1,9 +1,25 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLProperty;
@@ -32,7 +48,9 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			"CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}");
 	
 	protected ParameterizedSparqlString COUNT_QUERY = TRIPLES_COUNT_QUERY;
-	
+
+	@ConfigOption(defaultValue = "true", description = "make SPARQL OWL queries a bit more strict (currently: also test " +
+			"if a class is an owl:Class in some cases)")
 	protected boolean strictOWLMode = true;
 	
 	
@@ -58,6 +76,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		this.strictOWLMode = strictOWLMode;
 	}
 	
+	@Override
 	protected ParameterizedSparqlString getSampleQuery(){
 		return GET_SAMPLE_QUERY;
 	}

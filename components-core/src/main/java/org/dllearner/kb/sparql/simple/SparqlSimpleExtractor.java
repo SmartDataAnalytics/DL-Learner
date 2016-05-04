@@ -1,18 +1,33 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.sparql.simple;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.*;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
+import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.OwlApiJenaUtils;
@@ -22,40 +37,31 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.util.*;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
 public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
-
-    @ConfigOption(name = "endpointURL", description = "URL of the SPARQL endpoint", required = true)
+    @ConfigOption(description = "URL of the SPARQL endpoint", required = true)
     private String endpointURL = null;
+    @OutVariable
     private OntModel model = null;
-    @ConfigOption(name = "instances", description = "List of the instances to use", required = true)
+    @ConfigOption(description = "List of the instances to use", required = true)
     private List<String> instances = null;
-    @ConfigOption(name = "aboxfilter", description = "Filter for the tbox, can use variable ?s, ?p amd ?o", required = false)
+    @ConfigOption(description = "Filter for the tbox, can use variable ?s, ?p amd ?o", required = false)
     private String aboxfilter = null;
-    @ConfigOption(name = "tboxfilter", description = "Filter for the tbox, can use variable ?example and ?class", required = false)
+    @ConfigOption(description = "Filter for the tbox, can use variable ?example and ?class", required = false)
     private String tboxfilter = null;
 
-    @ConfigOption(name = "recursionDepth", description = "recursion depth", required = true)
+    @ConfigOption(description = "recursion depth", required = true)
     private int recursionDepth = 0;
 
-    @ConfigOption(name = "defaultGraphURI", description = "default graph URI", required = true)
+    @ConfigOption(description = "default graph URI", required = true)
     private String defaultGraphURI = null;
-    @ConfigOption(name = "sparqlQuery", description = "Sparql Query", required = false)
+
+    @ConfigOption(description = "Sparql Query", required = false)
     private String sparqlQuery = null;
-    @ConfigOption(name = "ontologySchemaUrls", description = "List of Ontology Schema URLs", required = true)
+    @ConfigOption(description = "List of Ontology Schema URLs", required = true)
     private List<String> ontologySchemaUrls = null;
 
     private SchemaIndexer indexer;
@@ -111,7 +117,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
         return result;
     }
-
 
     @Override
     public void init() throws ComponentInitException {
@@ -176,7 +181,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
                 alreadyQueried.addAll(instancesSet);
                 instancesSet = difference(alreadyQueried, model);
 
-
             }
 
             log.info("recursion depth: {} reached, {} new instances",recursionDepth,instancesSet.size());
@@ -195,7 +199,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             executor.executeQuery(sparqlQuery, endpointURL, model, null);
             monQueryingABox.stop();
         }
-
 
         TBoxQueryGenerator tGenerator = new TBoxQueryGenerator();
 
@@ -303,15 +306,17 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         this.tboxfilter = tboxfilter;
     }
 
+    public String getSparqlQuery() {
+        return sparqlQuery;
+    }
+
+    public void setSparqlQuery(String sparqlQuery) {
+        this.sparqlQuery = sparqlQuery;
+    }
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
         return OwlApiJenaUtils.getOWLOntology(model);
     }
-
-    public static String getName(){
-    	return "efficient SPARQL fragment extractor";
-    }
-
 
 }

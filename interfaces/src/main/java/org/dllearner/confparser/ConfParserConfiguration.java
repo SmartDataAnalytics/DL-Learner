@@ -52,16 +52,14 @@ public class ConfParserConfiguration implements IConfiguration {
             } else {
             	StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
             }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (ParseException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public Collection<String> getBeanNames() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         Map<String,List<ConfFileOption>> beans = parser.getConfOptionsByBean();
         result.addAll(beans.keySet());
         return result;
@@ -119,7 +117,7 @@ public class ConfParserConfiguration implements IConfiguration {
     @Override
     public Collection<IConfigurationProperty> getConfigurationProperties(String beanName) {
         List<ConfFileOption> confFileOptions = parser.getConfOptionsByBean(beanName);
-        Collection<IConfigurationProperty> result = new ArrayList<IConfigurationProperty>();
+        Collection<IConfigurationProperty> result = new ArrayList<>();
 
         for (ConfFileOption confFileOption : confFileOptions) {
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
-
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -35,6 +30,10 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -66,7 +65,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 	private int errorIndex = 0;
 	
-	@ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
     private HeuristicType accuracyMethod = HeuristicType.PRED_ACC;
 	
 	public FuzzyPosNegLPStandard() {}
@@ -89,15 +88,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
 		}
 		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "fuzzy pos neg learning problem";
 	}
 
 	@Override
@@ -425,8 +415,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			total = instancesCovered + instancesNotCovered;
 			if(total > 10) {
 				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesCovered, total);
-				double p2 = ClassLearningProblem.p3(p1, total);
+				double p1 = Heuristics.p1(instancesCovered, total);
+				double p2 = Heuristics.p3(p1, total);
 				lowerBorderA = Math.max(0, p1 - p2);
 				upperBorderA = Math.min(1, p1 + p2);
 				double size = upperBorderA - lowerBorderA;
@@ -468,7 +458,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// but improves performance a lot);
 		// for learning a superclass of a defined class, similar observations apply;
 
-
 		int testsPerformed = 0;
 		int instancesDescription = 0;
 //		boolean estimatedB = false;
@@ -484,8 +473,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			if(testsPerformed > 10) {
 				
 				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesDescription, testsPerformed);
-				double p2 = ClassLearningProblem.p3(p1, testsPerformed);
+				double p1 = Heuristics.p1(instancesDescription, testsPerformed);
+				double p2 = Heuristics.p3(p1, testsPerformed);
 				double lowerBorder = Math.max(0, p1 - p2);
 				double upperBorder = Math.min(1, p1 + p2);
 				int lowerEstimate = (int) (lowerBorder * negativeExamples.size());

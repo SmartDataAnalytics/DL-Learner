@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
 import java.util.HashSet;
@@ -273,9 +272,9 @@ public final class Utility {
 			
 			// create new entries if necessary
 			if(tmp == null)
-				cachedDisjoints.put(d1, new TreeMap<OWLClassExpression, Boolean>());
+				cachedDisjoints.put(d1, new TreeMap<>());
 			if(!cachedDisjoints.containsKey(d2))
-				cachedDisjoints.put(d2, new TreeMap<OWLClassExpression, Boolean>());
+				cachedDisjoints.put(d2, new TreeMap<>());
 			
 			// add result symmetrically in the OWLClassExpression matrix
 			cachedDisjoints.get(d1).put(d2, result);

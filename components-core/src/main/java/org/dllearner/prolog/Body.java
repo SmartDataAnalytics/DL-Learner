@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.prolog;
 
 import java.util.ArrayList;
@@ -46,8 +45,8 @@ public class Body {
 	}
 
 	public boolean isGround() {
-		for (int i = 0; i < literals.size(); i++) {
-			if (!((Literal) literals.get(i)).isGround())
+		for (Literal literal : literals) {
+			if (!literal.isGround())
 				return false;
 		}
 
@@ -57,8 +56,7 @@ public class Body {
 	public Body getInstance(Variable variable, Term term) {
 		Body newbody = new Body();
 
-		for (int i = 0; i < literals.size(); i++) {
-			Literal literal = (Literal) literals.get(i);
+		for (Literal literal : literals) {
 			newbody.addLiteral(literal.getInstance(variable, term));
 		}
 
@@ -82,7 +80,7 @@ public class Body {
 		StringBuffer ret = new StringBuffer();
 
 		for (int i = 0; i < literals.size(); i++) {
-			ret.append(((Literal) literals.get(i)).toPLString());
+			ret.append(literals.get(i).toPLString());
 			if (i + 1 < literals.size())
 				ret.append(", ");
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -169,18 +168,24 @@ public class ClassNode extends Node {
 		for (DatatypePropertyNode one : datatypeProperties) {
 			//FIXME add languages
 			// watch for tail
-			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
-				OWLAnnotation annoComment = factory.getOWLAnnotation(factory.getRDFSComment(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
-				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoComment);
-				owlAPIOntologyCollector.addAxiom(ax);
-				
-			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)) {
-				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
-				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
-				owlAPIOntologyCollector.addAxiom(ax);
-			}else {
-				tail(true, "in ontology conversion: no other datatypes, but annotation is allowed for classes."+" data property is: "+one.getURIString()+" connected with: "+one.getBPart().getNTripleForm());
-				
+			switch (one.getURIString()) {
+				case OWLVocabulary.RDFS_COMMENT: {
+					OWLAnnotation annoComment = factory.getOWLAnnotation(factory.getRDFSComment(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
+					OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoComment);
+					owlAPIOntologyCollector.addAxiom(ax);
+
+					break;
+				}
+				case OWLVocabulary.RDFS_LABEL: {
+					OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
+					OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
+					owlAPIOntologyCollector.addAxiom(ax);
+					break;
+				}
+				default:
+					tail(true, "in ontology conversion: no other datatypes, but annotation is allowed for classes." + " data property is: " + one.getURIString() + " connected with: " + one.getBPart().getNTripleForm());
+
+					break;
 			}
 		
 		}

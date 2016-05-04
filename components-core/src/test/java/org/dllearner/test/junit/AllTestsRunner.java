@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
-
-import junit.framework.TestSuite;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -57,20 +54,25 @@ public class AllTestsRunner{
 		
 		// runs everything except example test
 		Result result = JUnitCore.runClasses(
-				ClassExpressionTests.class,
-				ComponentTests.class,
-				ELDescriptionTreeTests.class,
-				ELDownTests.class,
-				HeuristicTests.class,
-				ParserTests.class,
-				RefinementOperatorTests.class,
-				SimulationTests.class,
-				UtilitiesTests.class);
+				ClassExpressionTest.class,
+				ComponentTest.class,
+				ELDescriptionTreeTest.class,
+				ELDownTest.class,
+				HeuristicTest.class,
+				ParserTest.class,
+				RefinementOperatorTest.class,
+				SimulationTest.class,
+				UtilitiesTest.class);
 
-		for (Failure failure : result.getFailures()) {
-			System.err.println(failure.toString());
+		if(result.wasSuccessful()) {
+			System.out.println("All tests succeeded!");
+		} else {
+			System.err.println("Some tests failed:");
+
+			for (Failure failure : result.getFailures()) {
+				System.err.println(failure.toString());
+			}
 		}
-		System.out.println(result.wasSuccessful());
 	}
 
 }

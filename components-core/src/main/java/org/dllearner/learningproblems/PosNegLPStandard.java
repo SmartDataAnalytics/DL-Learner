@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
-
-import java.util.SortedSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.utilities.CoverageAdapter;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.SortedSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -36,7 +36,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * 2-valued, because we only distinguish between covered and non-covered
  * examples. (A 3-valued problem distinguishes between covered examples,
  * examples covered by the negation of the concept, and all other examples.) The
- * 2-valued learning problem is often more useful for OWLClassExpression Logics due to
+ * 2-valued learning problem is often more useful for Description Logics due to
  * (the Open World Assumption and) the fact that negative knowledge, e.g. that a
  * person does not have a child, is or cannot be expressed.
  * 
@@ -77,15 +77,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public void init() throws ComponentInitException {
 		super.init();
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "pos neg learning problem";
-	}
 
 	/**
 	 * Computes score of a given concept using the reasoner.
@@ -97,22 +88,23 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	@Override
 	public ScorePosNeg computeScore(OWLClassExpression concept, double noise) {
 
-		Coverage[] cc = getReasoningUtil().getCoverage(concept, positiveExamples, negativeExamples);
+		Coverage[] cc = reasoningUtil.getCoverage(concept, positiveExamples, negativeExamples);
 
 		// TODO: this computes accuracy twice - more elegant method should be implemented
-		double accuracy = accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
+		double accuracy = reasoningUtil.getAccuracyOrTooWeakExact2(accuracyMethod, cc, noise);
+		CoverageAdapter.CoverageAdapter2 c2 = new CoverageAdapter.CoverageAdapter2(cc);
 
 		return new ScoreTwoValued(
 				OWLClassExpressionUtils.getLength(concept),
 				getPercentPerLengthUnit(),
-				cc[0].trueSet, cc[0].falseSet, cc[1].trueSet, cc[1].falseSet,
+				c2.posAsPos(), c2.posAsNeg(), c2.negAsPos(), c2.negAsNeg(),
 				accuracy);
 
 	}
 
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		return getReasoningUtil().getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
 	/* (non-Javadoc)

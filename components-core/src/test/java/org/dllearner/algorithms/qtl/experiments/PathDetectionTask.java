@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.experiments;
 
 import java.io.File;
@@ -17,7 +35,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -79,10 +96,10 @@ public class PathDetectionTask implements Callable<Path> {
 						lines = Files.readLines(file, Charsets.UTF_8);
 						ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
 						String object = split.remove(split.size() - 1);
-						List<Set<String>> propertyClusters = new ArrayList<Set<String>>();
+						List<Set<String>> propertyClusters = new ArrayList<>();
 						
 						for (String clusterString : split) {
-							Set<String> cluster = new TreeSet<String>();
+							Set<String> cluster = new TreeSet<>();
 							for (String property : Splitter.on(",").trimResults().split(clusterString)) {
 								cluster.add(property.replace("[", "").replace("]", ""));
 							}
@@ -184,7 +201,7 @@ public class PathDetectionTask implements Callable<Path> {
 					query += String.format("optional{?o%d ?p%d ?o%d .", i-1, i, i);
 				}
 				for(int i = 1; i < maxDepth; i++) {
-					query += String.format("}");
+					query += "}";
 				}
 				query += "}";
 				QueryExecutionFactory qef = new QueryExecutionFactoryPaginated(ks.getQueryExecutionFactory(), 500000);
@@ -195,7 +212,7 @@ public class PathDetectionTask implements Callable<Path> {
 		}
 		
 		private List<Set<String>> getCooccuringPropertiesOnPath(Model model, OWLClass cls, List<Set<String>> propertiesOnPath, int clusterSize) {
-			List<Set<String>> properties = new ArrayList<Set<String>>();
+			List<Set<String>> properties = new ArrayList<>();
 			
 			String query = "SELECT DISTINCT "; 
 			for(int i = 0; i < clusterSize; i++) {
@@ -218,7 +235,7 @@ public class PathDetectionTask implements Callable<Path> {
 			
 			if(clusterSize > 1) {
 				String filter = "FILTER(";
-				List<String> conditions = new ArrayList<String>();
+				List<String> conditions = new ArrayList<>();
 				for(int i = 0; i < clusterSize; i++) {
 					for(int j = i + 1; j < clusterSize; j++) {
 						conditions.add("(?p" + i + "!=" + "?p" + j + ")");
@@ -252,22 +269,22 @@ public class PathDetectionTask implements Callable<Path> {
 				
 				properties.add(propertyCluster);
 			}
-			return new ArrayList<Set<String>>(new HashSet<Set<String>>(properties));
+			return new ArrayList<>(new HashSet<>(properties));
 		}
 		
 		private Path findPathOfDepthN(OWLClass cls, Model model, int depth) {
 			// generate possible property paths of length n
 
-			List<List<Set<String>>> paths = new ArrayList<List<Set<String>>>();
+			List<List<Set<String>>> paths = new ArrayList<>();
 			paths.add(Lists.<Set<String>>newArrayList());
 
 			for (int i = 0; i < depth; i++) {
-				List<List<Set<String>>> pathsNew = new ArrayList<List<Set<String>>>();
+				List<List<Set<String>>> pathsNew = new ArrayList<>();
 				for (List<Set<String>> path : paths) {
 					int clusterSize = rndGen.nextInt(3) + 1;
 					List<Set<String>> propertyClusters = getCooccuringPropertiesOnPath(model, cls, path, depth == 1 ? 2 : 1);
 					for (Set<String> propertyCluster : propertyClusters) {
-						List<Set<String>> newPath = new ArrayList<Set<String>>(path);
+						List<Set<String>> newPath = new ArrayList<>(path);
 						newPath.add(propertyCluster);
 						pathsNew.add(newPath);
 					}
@@ -294,7 +311,6 @@ public class PathDetectionTask implements Callable<Path> {
 					query += " && ?o1_" + i + " != ?o2_" + i;
 				}
 				query += ") } GROUP BY ?o HAVING(count(distinct ?s1) >= " + minNrOfExamples + ") ORDER BY DESC(?cnt)";
-
 
 				System.out.println(Thread.currentThread().getId() + ":Testing path: " + path);
 				System.out.println(query);

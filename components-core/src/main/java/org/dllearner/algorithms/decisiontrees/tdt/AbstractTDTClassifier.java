@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.tdt;
 
 import java.util.ArrayList;
@@ -28,88 +46,75 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 
 	protected boolean stop;
 
-
 	public double getPuritythreshold() {
 		return puritythreshold;
 	}
-
 
 	public void setPuritythreshold(double puritythreshold) {
 		this.puritythreshold = puritythreshold;
 	}
 
-
 //	public int getBeam() {
 //		return beam;
 //	}
-
 
 //	public void setBeam(int beam) {
 //		this.beam = beam;
 //	}
 
-
 	public boolean isBinaryClassification() {
 		return binaryClassification;
 	}
-
 
 	public void setBinaryClassification(boolean binaryClassification) {
 		this.binaryClassification = binaryClassification;
 	}
 
-
 	public OWLClassExpression getClassToDescribe() {
 		return classToDescribe;
 	}
-
 
 	public void setClassToDescribe(OWLClassExpression classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 
-
 	public TreeInductionHeuristics getHeuristic() {
 		return heuristic;
 	}
-
 
 	public void setHeuristic(TreeInductionHeuristics heuristic) {
 		this.heuristic = heuristic;
 	}
 
-
 	public RefinementOperator getOperator() {
 		return operator;
 	}
-
 
 	public void setOperator(RefinementOperator operator) {
 		this.operator = operator;
 	}
 
-	@ConfigOption(defaultValue = "0.05", name = "PURITY_THRESHOLD", description = "Purity threshold for setting a leaf")
+	@ConfigOption(defaultValue = "0.05", description = "Purity threshold for setting a leaf")
 	protected  double puritythreshold;
 
-	//@ConfigOption(defaultValue = "4", name = "beam")
+	//@ConfigOption(defaultValue = "4")
 	//protected int  beam;
 	
-	@ConfigOption(defaultValue = "false", name = "BINARYCLASSIFICATION", description = "if it is a binary classification problem")
+	@ConfigOption(defaultValue = "false", description = "if it is a binary classification problem")
 	protected boolean binaryClassification;
 	
-	@ConfigOption(defaultValue = "false", name = "ccp", description = "value for limiting the number of generated concepts")
+	@ConfigOption(defaultValue = "false", description = "value for limiting the number of generated concepts")
 	protected boolean ccp;
 	
 	public boolean isCcp() {
 		return ccp;
 	}
 
-
 	public void setCcp(boolean ccp) {
 		this.ccp = ccp;
 	}
 
-	@ConfigOption(defaultValue = "false", name = "missingValueTreatment", description = "for overcoming the problem of missing values in tree algorithms.tree.models")
+	@ConfigOption(defaultValue = "false", description = "for overcoming the problem of missing values in tree algorithms.tree.models")
 	protected boolean missingValueTreatmentForTDT;
 	protected double prPos;
 	protected double prNeg;
@@ -122,12 +127,9 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	@ConfigOption(description = "the refinement operator instance to use", defaultValue = "DLTreesRefinementOperator")
 	protected RefinementOperator operator;
 
-
-
 	public boolean isMissingValueTreatmentForTDT() {
 		return missingValueTreatmentForTDT;
 	}
-
 
 	public void setMissingValueTreatmentForTDT(boolean missingValueTreatmentForTDT) {
 		this.missingValueTreatmentForTDT = missingValueTreatmentForTDT;
@@ -195,8 +197,6 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		
 		
 
-
-
 	}
 
 	@Override
@@ -212,12 +212,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		return (!stop);
 	}
 
-
-
 	public abstract DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,	SortedSet<OWLIndividual> undExs);
-
-
-
 
 	public	int  classify(OWLIndividual indTestEx, DLTree trees) {
 
@@ -233,13 +228,10 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 
 		//} // for c
 
-
-
 	}
 
 	
 	public int classifyExample(OWLIndividual indTestEx, DLTree tree) {
-
 
 		Stack<DLTree> stack= new Stack<>();
 		//OWLDataFactory dataFactory = kb.getDataFactory();
@@ -351,10 +343,7 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 	else
 		return -1;
 
-
 }
-
-
 
 /*protected OWLClassExpression selectBestConcept(OWLClassExpression[] concepts, ArrayList<OWLIndividual> posExs, ArrayList<OWLIndividual> negExs,
 		ArrayList<OWLIndividual> undExs, double prPos, double prNeg) {
@@ -391,8 +380,6 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 	System.out.printf("best gain: %f \t split #%d\n", bestGain, bestConceptIndex);
 	return concepts[bestConceptIndex];
 }*/
-
-
 
 public AbstractTDTClassifier() {
 	super();
@@ -433,9 +420,6 @@ public AbstractTDTClassifier() {
 	return counts;
 
 }*/
-
-
-
 
 //public abstract void prune(Integer[] pruningSet, AbstractTree tree, AbstractTree subtree);
 }

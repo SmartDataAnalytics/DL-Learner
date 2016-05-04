@@ -1,18 +1,27 @@
-/*\
- * Copyright  2006 Klaus Rogall, Hamburg, Germany (klaus.rogall@web.de). All rights reserved.
- * _____________________________________________________________________________________________________________________
- * 
- * This class is "Open Source" as defined by the Open Source Initiative (OSI). You can redistribute it and/or modify it
- * under the terms of the BSD License. The license text is appended to the end of this file.
-\*/
-
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.dllearner.algorithms.decisiontrees.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 
 /**
  * Methoden zur Erzeugung von Kombinationen.
@@ -23,18 +32,14 @@ public class Combination {
     /* ______________________________________________________________________________________________________________ *\
     \* Konstanten                                                                                                     */
 
-
     /* ______________________________________________________________________________________________________________ *\
     \* Klassenvariablen                                                                                               */
-
 
     /* ______________________________________________________________________________________________________________ *\
     \* Instanzvariablen                                                                                               */
 
-
     /* ______________________________________________________________________________________________________________ *\
     \* Konstruktoren                                                                                                  */
-
 
     /**
      * Erzeugt eine Instanz dieser Klasse.
@@ -48,10 +53,8 @@ public class Combination {
         super();
     }
 
-
     /* ______________________________________________________________________________________________________________ *\
     \* Instanzmethoden                                                                                                */
-
 
     /* ______________________________________________________________________________________________________________ *\
     \* Klassenmethoden                                                                                                */
@@ -101,7 +104,7 @@ public class Combination {
         
         if (n == 0)
         {
-            result.add(new ArrayList<T>());
+            result.add(new ArrayList<>());
             
             return result;
         }
@@ -135,7 +138,6 @@ public class Combination {
         
         return result;
     }
-
 
     /* ______________________________________________________________________________________________________________ *\
     \* Klassen                                                                                                        */

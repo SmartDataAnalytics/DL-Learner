@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,31 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OWLAPIBugDemo {
 
@@ -54,7 +42,7 @@ public class OWLAPIBugDemo {
             File f = new File("src/dl-learner/org/dllearner/tools/ore/inconsistent.owl");
             IRI physicalURI = IRI.create(f.toURI());
             SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyURI, physicalURI);
-            manager.addIRIMapper(mapper);
+            manager.getIRIMappers().add(mapper);
 
             OWLOntology ontology = manager.createOntology(ontologyURI);
             OWLDataFactory factory = manager.getOWLDataFactory();
@@ -62,14 +50,14 @@ public class OWLAPIBugDemo {
             // create a set of two individuals
             OWLIndividual a = factory.getOWLNamedIndividual(IRI.create(ontologyURI + "#a"));
             OWLIndividual b = factory.getOWLNamedIndividual(IRI.create(ontologyURI + "#b"));
-            Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+            Set<OWLIndividual> inds = new HashSet<>();
             inds.add(a);
             inds.add(b);
             
             // create a set of two classes
             OWLClass c = factory.getOWLClass(IRI.create(ontologyURI + "#c"));
             OWLClass d = factory.getOWLClass(IRI.create(ontologyURI + "#d"));
-            Set<OWLClass> classes = new HashSet<OWLClass>();
+            Set<OWLClass> classes = new HashSet<>();
             classes.add(c);
             classes.add(d);            
             
@@ -88,9 +76,6 @@ public class OWLAPIBugDemo {
     		OWLAxiom axiom3 = factory.getOWLObjectPropertyDomainAxiom(p, c);
             AddAxiom addAxiom3 = new AddAxiom(ontology, axiom3);
             manager.applyChange(addAxiom3);
-            
-            Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-            ontologies.add(ontology);
             
             OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology);
             

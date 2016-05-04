@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
 
 import org.apache.log4j.Logger;
@@ -45,11 +44,12 @@ public class RawAgreement {
 
 		float O_poss = 0;
 		int n_k;
-		for (int k = 0; k < K; k++) {
+		for (short[] aMat : mat) {
 			n_k = 0;
 			for (int j = 0; j < C; j++) {
-				n_k += mat[k][j];
-			}System.out.println(n_k);
+				n_k += aMat[j];
+			}
+			System.out.println(n_k);
 			O_poss += (n_k * (n_k - 1));
 		}
 		logger.debug("O_poss = " + O_poss);

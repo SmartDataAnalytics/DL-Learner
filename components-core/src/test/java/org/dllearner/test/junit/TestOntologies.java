@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
 
 import java.util.Collections;
@@ -40,8 +39,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1, SWORE, MDM };
-	
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1, SWORE, MDM }
+
 	public static AbstractReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
 		String owlFile = "";
@@ -153,14 +152,10 @@ public final class TestOntologies {
 			AbstractReasonerComponent rc = new OWLAPIReasoner(Collections.singleton(source));
 			rc.init();
 			return rc;	
-		} catch(ParseException e) {
-			e.printStackTrace();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
+		} catch(ParseException | OWLOntologyCreationException | ComponentInitException e) {
 			e.printStackTrace();
 		}
-		
+
 		throw new Error("Test ontology could not be created.");	
 	}
 	

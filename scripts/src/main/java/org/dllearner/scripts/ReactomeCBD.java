@@ -1,5 +1,12 @@
 package org.dllearner.scripts;
 
+import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -7,23 +14,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ReactomeCBD {
     private static final Logger logger = LoggerFactory.getLogger(ReactomeCBD.class);
     private static String dumpFilePath = "/tmp/tr.owl";
     private static String cbdFilePath = "/tmp/tr_cbd.owl";
     private static int cbdDepth = 30;
-    private static List<String> exampleUris = new ArrayList<String>(Arrays.asList(
+    private static List<String> exampleUris = new ArrayList<>(Arrays.asList(
             // positive
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
@@ -36,7 +32,7 @@ public class ReactomeCBD {
             "http://www.reactome.org/biopax/48887#Degradation10",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2187",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1273"
-            ));
+    ));
 
     public static void main (String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -57,6 +53,6 @@ public class ReactomeCBD {
             logger.info("  Also done");
         }
 
-        man.saveOntology(cbdOnt, new RDFXMLOntologyFormat(), new FileOutputStream(new File(cbdFilePath)));
+        man.saveOntology(cbdOnt, new RDFXMLDocumentFormat(), new FileOutputStream(new File(cbdFilePath)));
     }
 }

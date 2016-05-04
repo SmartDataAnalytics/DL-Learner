@@ -1,41 +1,28 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.owl;
 
+import org.semanticweb.owlapi.model.*;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
-
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataComplementOf;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataRangeVisitor;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectInverseOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 
 /**
  * Computes the length of a class expression.
@@ -47,7 +34,16 @@ public class OWLClassExpressionLengthCalculator implements
 		OWLClassExpressionVisitor, OWLPropertyExpressionVisitor,
 		OWLDataRangeVisitor {
 
+	private OWLClassExpressionLengthMetric metric;
 	private int length;
+
+	public OWLClassExpressionLengthCalculator(OWLClassExpressionLengthMetric metric) {
+		this.metric = metric;
+	}
+
+	public OWLClassExpressionLengthCalculator() {
+		this.metric = OWLClassExpressionLengthMetric.getDefaultMetric();
+	}
 
 	/**
 	 * Computes the length of a class expression.
@@ -69,7 +65,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLClass ce) {
-		length++;
+		length += metric.classLength;
 	}
 
 	/*
@@ -85,7 +81,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLClassExpression op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.objectIntersectionLength;
 	}
 
 	/*
@@ -101,7 +97,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLClassExpression op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.objectUnionLength;
 	}
 
 	/*
@@ -114,7 +110,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
 		ce.getOperand().accept(this);
-		length++;
+		length += metric.objectComplementLength;
 	}
 
 	/*
@@ -128,7 +124,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectSomeValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.objectSomeValuesLength;
 	}
 
 	/*
@@ -142,7 +138,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectAllValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.objectAllValuesLength;
 	}
 
 	/*
@@ -155,7 +151,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.objectHasValueLength;
 	}
 
 	/*
@@ -169,7 +165,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectMinCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -183,7 +179,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectExactCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -197,7 +193,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectMaxCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -210,7 +206,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectHasSelf ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.objectHasValueLength;
 	}
 
 	/*
@@ -222,7 +218,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectOneOf ce) {
-		length++;
+		length += metric.objectOneOfLength;
 	}
 
 	/*
@@ -236,7 +232,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataSomeValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.dataSomeValuesLength;
 	}
 
 	/*
@@ -250,7 +246,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataAllValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.dataAllValuesLength;
 	}
 
 	/*
@@ -263,7 +259,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.dataHasValueLength;
 	}
 
 	/*
@@ -277,7 +273,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataMinCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -291,7 +287,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataExactCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -305,7 +301,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataMaxCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -316,7 +312,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectProperty property) {
-		length++;
+		length += metric.objectProperyLength;
 	}
 
 	/*
@@ -327,7 +323,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectInverseOf property) {
-		length += 2;
+		length += metric.objectInverseLength;
 	}
 
 	/*
@@ -338,8 +334,11 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataProperty property) {
-		length++;
+		length += metric.dataProperyLength;
 	}
+
+	@Override
+	public void visit(@Nonnull OWLAnnotationProperty property) {}
 
 	/*
 	 * (non-Javadoc)
@@ -350,7 +349,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDatatype node) {
-		length++;
+		length += metric.datatypeLength;
 	}
 
 	/*
@@ -362,7 +361,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataOneOf node) {
-		length++;
+		length += metric.dataOneOfLength;
 	}
 
 	/*
@@ -374,7 +373,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataComplementOf node) {
-		length += 2;
+		length += metric.dataComplementLength;
 	}
 
 	/*
@@ -390,7 +389,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLDataRange op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.dataIntersectionLength;
 	}
 
 	/*
@@ -406,7 +405,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLDataRange op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.dataUnionLength;
 	}
 
 	/*

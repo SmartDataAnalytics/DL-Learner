@@ -1,29 +1,34 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Lorenz Buehmann 
@@ -33,7 +38,8 @@ public class SyntheticDataGenerator {
 	
 	private static final String NS = "http://dl-learner.org/data/";
 	
-	PrefixManager pm = new DefaultPrefixManager(NS);
+	PrefixManager pm = new DefaultPrefixManager();
+
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 	OWLDataFactory df = man.getOWLDataFactory();
@@ -43,6 +49,10 @@ public class SyntheticDataGenerator {
 	RandomDataGenerator rnd = new RandomDataGenerator();
 	
 	OWLOntology ontology;
+
+	public SyntheticDataGenerator() {
+		pm.setDefaultPrefix(NS);
+	}
 	
 	
 	/**
@@ -104,7 +114,7 @@ public class SyntheticDataGenerator {
 	 * Add n fresh individuals to given class.
 	 */
 	private List<OWLIndividual> addIndividuals(OWLClass cls, int n){
-		List<OWLIndividual> individuals = new ArrayList<OWLIndividual>();
+		List<OWLIndividual> individuals = new ArrayList<>();
 		
 		for (int i = 0; i < n; i++) {
 			OWLIndividual ind = df.getOWLNamedIndividual(sfp.getShortForm(cls.getIRI()).toLowerCase() + i, pm);

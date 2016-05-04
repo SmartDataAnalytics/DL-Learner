@@ -25,7 +25,7 @@ public class StopWordFilter {
 	
 	public StopWordFilter() {
 		try {
-			stopWords = new HashSet<String>(Files.readLines(new File(stopWordfile), Charsets.UTF_8));
+			stopWords = new HashSet<>(Files.readLines(new File(stopWordfile), Charsets.UTF_8));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

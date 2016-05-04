@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
 
 import java.util.Comparator;
@@ -38,6 +37,7 @@ public class SubsumptionComparator implements Comparator<OWLClassExpression> {
 		return compare(concept1, concept2);
 	}
 
+	@Override
 	public int compare(OWLClassExpression concept1, OWLClassExpression concept2) {
 		// return true if concept1 is a super concept of concept2
 		boolean value1 = rs.isSuperClassOf(concept1, concept2);

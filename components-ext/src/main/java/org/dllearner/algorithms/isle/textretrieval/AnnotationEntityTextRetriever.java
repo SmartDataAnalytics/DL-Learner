@@ -3,32 +3,18 @@
  */
 package org.dllearner.algorithms.isle.textretrieval;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Joiner;
 import org.dllearner.algorithms.isle.TextDocumentGenerator;
 import org.dllearner.algorithms.isle.index.LinguisticUtil;
 import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.kb.OWLAPIOntology;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Joiner;
-
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -79,10 +65,10 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	 */
 	@Override
 	public Map<List<Token>, Double> getRelevantText(OWLEntity entity) {
-		Map<List<Token>, Double> textWithWeight = new HashMap<List<Token>, Double>();
+		Map<List<Token>, Double> textWithWeight = new HashMap<>();
 		
 		for (OWLAnnotationProperty property : properties) {
-			Collection<OWLAnnotation> annotations = property.getAnnotations(ontology);
+			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(entity, ontology, property);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
@@ -116,10 +102,10 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	
 	@Override
 	public Map<String, Double> getRelevantTextSimple(OWLEntity entity) {
-		Map<String, Double> textWithWeight = new HashMap<String, Double>();
+		Map<String, Double> textWithWeight = new HashMap<>();
 		
 		for (OWLAnnotationProperty property : properties) {
-			Collection<OWLAnnotation> annotations = property.getAnnotations(ontology);
+			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(entity, ontology, property);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
@@ -159,7 +145,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	public Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology) {
 		Map<OWLEntity, Set<List<Token>>> entity2RelevantText = new HashMap<>();
 		
-		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+		Set<OWLEntity> schemaEntities = new HashSet<>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.owl;
 
 import java.util.HashSet;
@@ -51,7 +50,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
     private static final OWLClass OWL_NOTHING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
     
-    private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    private OWLDataFactory df = new OWLDataFactoryImpl();
     
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This

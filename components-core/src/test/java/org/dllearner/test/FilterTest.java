@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
 import java.util.SortedSet;
@@ -96,7 +95,7 @@ public class FilterTest {
 	
 	@SuppressWarnings("deprecation")
 	static void testShort(){
-		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
+		SortedSet<StringTuple> tupleset = new TreeSet<>();
 		sc.reset();
 		for (int i = 0; i < howmany; i++) {
 			
@@ -135,8 +134,8 @@ public class FilterTest {
 	
 	@SuppressWarnings("deprecation")
 	static void  testShortWithFilter(){
-		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
-		SortedSet<StringTuple> afterfilter= new TreeSet<StringTuple>();
+		SortedSet<StringTuple> tupleset = new TreeSet<>();
+		SortedSet<StringTuple> afterfilter= new TreeSet<>();
 		/*RuleExecutor re = new  RuleExecutor();
 		
 	

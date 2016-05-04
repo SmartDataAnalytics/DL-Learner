@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.config;
 
 import java.lang.annotation.ElementType;
@@ -35,13 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigOption {
-
-    /**
-     * The name of this config option.
-     * @return The name of this config option.
-     */
-    String name() default "ZZZZZZZZ";
-
     /**
      * The description of this config option
      * @return The description of this config option

@@ -1,20 +1,33 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.dsttdt.models;
 
+import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
+import org.dllearner.algorithms.decisiontrees.tdt.model.AbstractTree;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
-import org.dllearner.algorithms.decisiontrees.dsttdt.models.DSTDLTree;
-import org.dllearner.algorithms.decisiontrees.dsttdt.models.EvidentialModel;
-import org.dllearner.algorithms.decisiontrees.tdt.model.AbstractTree;
-import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class DSTDLTree extends AbstractTree implements EvidentialModel{
 
 	private class DLNode {
@@ -41,9 +54,9 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 			return this.concept.toString();
 		}
 		
+		@Override
 		public Object clone(){
-			DLNode cloned= new DLNode(concept,m);
-			return cloned;
+			return new DLNode(concept,m);
 		}
 		
 	}
@@ -85,7 +98,6 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		return root.m;
 	}
 
-
 	public void setPosTree(DSTDLTree subTree) {
 		//System.out.println("--->"+(this.root==null));
 		this.root.pos = subTree;
@@ -115,6 +127,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		return root.neg;
 	}
 	
+	@Override
 	public Object clone(){
 		DSTDLTree elem= new DSTDLTree();
 		DLNode cloned= (DLNode)root.clone(); 
@@ -184,8 +197,8 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		else{
 			//OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 			// tail recursive calls
-			associate(tree.getPosSubTree(),df,leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
-			associate(tree.getNegSubTree(),df, leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
+			associate(tree.getPosSubTree(),df,leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
+			associate(tree.getNegSubTree(),df, leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
 		}
 	
 	}

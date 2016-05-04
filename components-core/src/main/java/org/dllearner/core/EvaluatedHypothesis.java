@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import com.google.common.collect.ComparisonChain;
@@ -92,7 +92,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score> 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(EvaluatedHypothesis<T, S> o) {
+	public int compareTo(@NotNull EvaluatedHypothesis<T, S> o) {
 		return ComparisonChain.start()
 				.compare(score.getAccuracy(), o.score.getAccuracy())
 				.compare(hypothesis, o.getDescription())

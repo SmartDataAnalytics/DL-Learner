@@ -3,9 +3,9 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import java.util.Set;
-
 import org.semanticweb.owlapi.model.OWLEntity;
+
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -17,7 +17,7 @@ public interface Index {
      * Returns a set of documents based on how the underlying index is processing the given
      * search string.
      *
-     * @param searchString query specifying the documents to retrieve
+     * @param entity Entity specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
 	Set<AnnotatedDocument> getDocuments(OWLEntity entity);
@@ -26,7 +26,7 @@ public interface Index {
      * Returns a set of documents based on how the underlying index is processing the given
      * search string.
      *
-     * @param searchString query specifying the documents to retrieve
+     * @param entity Entity specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
 	long getNumberOfDocumentsFor(OWLEntity entity);
@@ -35,7 +35,7 @@ public interface Index {
      * Returns a set of documents based on how the underlying index is processing the given
      * search string.
      *
-     * @param searchString query specifying the documents to retrieve
+     * @param entities Entities specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
 	long getNumberOfDocumentsFor(OWLEntity... entities);

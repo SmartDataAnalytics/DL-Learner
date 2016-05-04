@@ -42,12 +42,12 @@ public class Table implements Serializable{
 	
 	enum Formats {
 		LATEX, GNUPLOT
-	};
+	}
+
+	private SortedSet<String> experimentNames = new TreeSet<>();
+	private SortedSet<String> labels = new TreeSet<>();
 	
-	private SortedSet<String> experimentNames = new TreeSet<String>();
-	private SortedSet<String> labels = new TreeSet<String>();
-	
-	private List<TableRowColumn> tableRowColumns = new ArrayList<TableRowColumn>();
+	private List<TableRowColumn> tableRowColumns = new ArrayList<>();
 	private int length;
 
 	public static void main(String[] args) {
@@ -232,8 +232,8 @@ public class Table implements Serializable{
 	}
 	
 	private void _sortByLabel(){
-		List<String> l = new ArrayList<String>(labels);
-		List<TableRowColumn> newTrc = new ArrayList<TableRowColumn>();
+		List<String> l = new ArrayList<>(labels);
+		List<TableRowColumn> newTrc = new ArrayList<>();
 		
 		for (String s : l) {
 			for (TableRowColumn trc : tableRowColumns) {
@@ -245,8 +245,8 @@ public class Table implements Serializable{
 		tableRowColumns = newTrc;
 	}
 	private void _sortByExperimentName(){
-		List<String> l = new ArrayList<String>(experimentNames);
-		List<TableRowColumn> newTrc = new ArrayList<TableRowColumn>();
+		List<String> l = new ArrayList<>(experimentNames);
+		List<TableRowColumn> newTrc = new ArrayList<>();
 		
 		for (String s : l) {
 			for (TableRowColumn trc : tableRowColumns) {

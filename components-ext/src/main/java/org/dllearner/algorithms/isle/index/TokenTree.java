@@ -1,24 +1,13 @@
 package org.dllearner.algorithms.isle.index;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import java.util.*;
 
 /**
  * Tree for finding longest matching Token sequence
@@ -279,13 +268,11 @@ public class TokenTree {
         for (String s : Splitter.on(" ").split("this is a token tree")) {
             tokens1.add(new Token(s, s, s, false, false));
         }
-        ;
 
         List<Token> tokens2 = Lists.newLinkedList();
         for (String s : Splitter.on(" ").split("this is a tokenized tree")) {
             tokens2.add(new Token(s, s, s, false, false));
         }
-        ;
 
         OWLDataFactory df = new OWLDataFactoryImpl();
         TokenTree tree = new TokenTree();
@@ -300,7 +287,6 @@ public class TokenTree {
         for (String s : Splitter.on(" ").split("this is a very nice tokenized tree")) {
             tokens3.add(new Token(s, s, s, false, false));
         }
-        ;
         System.out.println(tree.getLongestMatch(tokens3));
     }
 

@@ -1,23 +1,18 @@
 package org.dllearner.scripts;
 
+import org.dllearner.examples.MouseDiabetes;
+import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.dllearner.examples.MouseDiabetes;
-import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MouseDiabetesCBD {
     private static final Logger logger = LoggerFactory.getLogger(MouseDiabetesCBD.class);
@@ -27,7 +22,7 @@ public class MouseDiabetesCBD {
 	public static int nrOfPosExamples = 5;
 	public static int nrOfNegExamples = 5;
 	
-	private static List<OWLIndividual> exampleUris = new ArrayList<OWLIndividual>();
+	private static List<OWLIndividual> exampleUris = new ArrayList<>();
 
     public static void main (String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -39,9 +34,9 @@ public class MouseDiabetesCBD {
         OWLAxiomCBDGenerator cbdGenartor = new OWLAxiomCBDGenerator(ontology);
         cbdGenartor.setFetchCompleteRelatedTBox(true);
         
-        List<OWLIndividual> posExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadPosExamples());
+        List<OWLIndividual> posExamples = new ArrayList<>(MouseDiabetes.loadPosExamples());
         exampleUris.addAll(posExamples.subList(0, nrOfPosExamples ));
-        List<OWLIndividual> negExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadNegExamples());
+        List<OWLIndividual> negExamples = new ArrayList<>(MouseDiabetes.loadNegExamples());
         exampleUris.addAll(negExamples.subList(0, nrOfNegExamples ));
 
         OWLOntology cbdOnt = man.createOntology();
@@ -54,6 +49,6 @@ public class MouseDiabetesCBD {
             logger.info("  Also done");
         }
 
-        man.saveOntology(cbdOnt, new RDFXMLOntologyFormat(), new FileOutputStream(new File(cbdFilePath)));
+        man.saveOntology(cbdOnt, new RDFXMLDocumentFormat(), new FileOutputStream(new File(cbdFilePath)));
     }
 }

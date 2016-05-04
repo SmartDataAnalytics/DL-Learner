@@ -1,18 +1,27 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.learningproblems;
 
-import java.io.File;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -21,18 +30,18 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A learning problem in which positive and negative examples are classes, i.e.
@@ -45,16 +54,19 @@ import com.google.common.collect.Sets;
  * @author Lorenz Buehmann
  *
  */
+@ComponentAnn(name = "Class as Instance LP", shortName = "classasinstance", version = 0.1)
 public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLClass>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 
-	@ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
+	@ConfigOption(description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
 	private double percentPerLengthUnit = 0.05;
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 
+	@ConfigOption()
 	protected Set<OWLClass> positiveExamples = new TreeSet<>();
+	@ConfigOption()
 	protected Set<OWLClass> negativeExamples = new TreeSet<>();
 	
 	

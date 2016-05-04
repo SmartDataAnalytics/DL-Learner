@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
-
-import java.util.Arrays;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+import java.util.Arrays;
 
 /**
  * Computes the Fleiss' Kappa value as described in (Fleiss, 1971). 
@@ -79,8 +78,8 @@ public class FleissKappa
 		float[] p = new float[k];
 		for (int j = 0; j < k; j++) {
 			p[j] = 0;
-			for (int i = 0; i < N; i++) {
-				p[j] += mat[i][j];
+			for (short[] aMat : mat) {
+				p[j] += aMat[j];
 			}
 			p[j] /= N * n;
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
 import java.util.Collections;
@@ -121,7 +120,7 @@ public class MathOperations {
 	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
 		List<List<Integer>> combosTmp = new LinkedList<>();
-		decompose(number, number, new LinkedList<Integer>(), combosTmp);
+		decompose(number, number, new LinkedList<>(), combosTmp);
 		return combosTmp;
 	}
 	
@@ -136,7 +135,7 @@ public class MathOperations {
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
 		List<List<Integer>> combosTmp = new LinkedList<>();
-		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
+		decompose(length, maxValue, new LinkedList<>(), combosTmp);
 		return combosTmp;
 	}	
 	

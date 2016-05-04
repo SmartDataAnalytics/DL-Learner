@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import java.util.HashMap;
@@ -116,7 +115,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 		if(resultsetcount>999) {
 			logger.warn("SparqlTupelAquisitor retrieved more than 1000 results, there might some be missing");
 		}
-		return ((cachedSet=resources.get(uri))==null)?new TreeSet<RDFNodeTuple>():cachedSet;
+		return ((cachedSet=resources.get(uri))==null)? new TreeSet<>():cachedSet;
 	}
 	
 	@Override
