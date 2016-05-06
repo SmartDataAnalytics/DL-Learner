@@ -752,25 +752,25 @@
 			<version>2.8.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>gurobi</groupId>
-			<artifactId>gurobi</artifactId>
-		</dependency>
-    -->
-    <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-beans</artifactId>
-    </dependency>
-	</dependencies>
+                    <dependency>
+                            <groupId>gurobi</groupId>
+                            <artifactId>gurobi</artifactId>
+                    </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+    </dependencies>
 
-<reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>javacc-maven-plugin</artifactId>
-        <version>2.6</version>
-      </plugin>
-    </plugins>
-  </reporting>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
