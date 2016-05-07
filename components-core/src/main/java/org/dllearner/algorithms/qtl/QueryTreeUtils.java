@@ -172,6 +172,16 @@ public class QueryTreeUtils {
 	public static <N> int getNrOfNodes(QueryTree<N> tree) {
 		return tree.getChildrenClosure().size();
 	}
+
+	/**
+	 * Returns the number of nodes in the given query tree, i.e. the size of
+	 * the children closure.
+	 * @param tree the query tree
+	 * @return the number of nodes
+	 */
+	public static int getNrOfNodes(RDFResourceTree tree) {
+		return getNodes(tree).size();
+	}
 	
 	/**
 	 * Returns the set of edges that occur in the given query tree, i.e. the 
@@ -209,7 +219,7 @@ public class QueryTreeUtils {
 	 * @param tree
 	 * @return the set of edges in the query tree
 	 */
-	public static <N> double getComplexity(RDFResourceTree tree) {
+	public static double getComplexity(RDFResourceTree tree) {
 		
 		double varNodeWeight = 0.8;
 		double resourceNodeWeight = 1.0;
