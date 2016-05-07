@@ -142,6 +142,16 @@ public class QueryTreeUtils {
 	public static int getNrOfNodes(RDFResourceTree tree) {
 		return getNodes(tree).size();
 	}
+
+	/**
+	 * Returns the number of nodes in the given query tree, i.e. the size of
+	 * the children closure.
+	 * @param tree the query tree
+	 * @return the number of nodes
+	 */
+	public static int getNrOfNodes(RDFResourceTree tree) {
+		return getNodes(tree).size();
+	}
 	
 	/**
 	 * Returns the set of edges that occur in the given query tree, i.e. the 
