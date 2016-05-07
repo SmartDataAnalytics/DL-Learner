@@ -55,7 +55,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.core.Var;
 
-public class PathDetectionTask implements Callable<Path> {
+public class PathDetectionTask implements Callable<List<Path>> {
 		
 		private OWLClass cls;
 		private SparqlEndpointKS ks;
@@ -81,7 +81,7 @@ public class PathDetectionTask implements Callable<Path> {
 		 * @see java.util.concurrent.Callable#call()
 		 */
 		@Override
-		public Path call() throws Exception {
+		public List<Path> call() throws Exception {
 			if(!cancelled) {
 				
 				// check if class was already processed
@@ -94,18 +94,27 @@ public class PathDetectionTask implements Callable<Path> {
 					List<String> lines;
 					try {
 						lines = Files.readLines(file, Charsets.UTF_8);
-						ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
-						String object = split.remove(split.size() - 1);
-						List<Set<String>> propertyClusters = new ArrayList<>();
-						
-						for (String clusterString : split) {
-							Set<String> cluster = new TreeSet<>();
-							for (String property : Splitter.on(",").trimResults().split(clusterString)) {
-								cluster.add(property.replace("[", "").replace("]", ""));
+
+						List<Path> paths = new ArrayList<>();
+
+						// each 5th line contains the path
+						for (int i = 0; i < lines.size(); i += 4) {
+							ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
+							String object = split.remove(split.size() - 1);
+							List<Set<String>> propertyClusters = new ArrayList<>();
+
+							for (String clusterString : split) {
+								Set<String> cluster = new TreeSet<>();
+								for (String property : Splitter.on(",").trimResults().split(clusterString)) {
+									cluster.add(property.replace("[", "").replace("]", ""));
+								}
+								propertyClusters.add(cluster);
 							}
-							propertyClusters.add(cluster);
+
+							paths.add(new Path(cls, propertyClusters, object));
 						}
-						return new Path(cls, propertyClusters, object);
+
+						return paths;
 					} catch (IOException e) {
 						throw new RuntimeException("Path loading failed. ", e);
 					}
@@ -119,27 +128,30 @@ public class PathDetectionTask implements Callable<Path> {
 					// analyze
 					System.out.println(Thread.currentThread().getId() + ":" + "Searching for " + cls.toStringID() + " path of length " + depth + "...");
 					s = System.currentTimeMillis();
-					Path path = findPathOfDepthN(cls, data, depth);
+					List<Path> paths = findPathsOfDepthN(cls, data, depth, 1000);
 					System.out.println(Thread.currentThread().getId() + ":" + "Finished searching for " + cls.toStringID() + " path of length " + depth + " in " + "ms");
 				
-					if(path == null) {
+					if(paths.isEmpty()) {
 						System.out.println(Thread.currentThread().getId() + ":" + "Could not find " + cls.toStringID() + " path of length " + depth + ".");
 					} else {
-						System.out.println(Thread.currentThread().getId() + ":" + "Path found:" + path);
+						System.out.println(Thread.currentThread().getId() + ":" + "Paths found:" + paths);
 						
 						// serialize
 						String delimiter = "\t";
 						try {
-							String content = Joiner.on(delimiter).join(path.getProperties()) + delimiter + path.getObject() + "\n";
-							content += path.asSPARQLQuery(Var.alloc("s")) + "\n";
-							content += path.asSPARQLPathQuery(Var.alloc("s"));
-							Files.write(content, file, Charsets.UTF_8);
+							for (Path path : paths) {
+								String content = Joiner.on(delimiter).join(path.getProperties()) + delimiter + path.getObject() + "\n";
+								content += path.asSPARQLQuery(Var.alloc("s")) + "\n";
+								content += path.asSPARQLPathQuery(Var.alloc("s"));
+								content += "\n#\n";
+								Files.append(content, file, Charsets.UTF_8);
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 					
-					return path;
+					return paths;
 				}
 			}
 			return null;
@@ -272,7 +284,7 @@ public class PathDetectionTask implements Callable<Path> {
 			return new ArrayList<>(new HashSet<>(properties));
 		}
 		
-		private Path findPathOfDepthN(OWLClass cls, Model model, int depth) {
+		private List<Path> findPathsOfDepthN(OWLClass cls, Model model, int depth, int limit) {
 			// generate possible property paths of length n
 
 			List<List<Set<String>>> paths = new ArrayList<>();
@@ -295,6 +307,7 @@ public class PathDetectionTask implements Callable<Path> {
 				
 			Collections.shuffle(paths, new Random(123));
 			// randomly search in possible paths for query
+			List<Path> foundPaths = new ArrayList<>();
 			for (List<Set<String>> path : paths) {
 				String query = "SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {";
 				query +=  "?s1 a <" + cls.toStringID() + "> . ?s2 a <" + cls.toStringID() + "> . ";
@@ -332,16 +345,20 @@ public class PathDetectionTask implements Callable<Path> {
 					int cnt = qs.getLiteral("cnt").getInt();
 
 					if(cnt >= minNrOfExamples) { //should always be true because of HAVING clause
-						return new Path(cls, path, object);
+						foundPaths.add(new Path(cls, path, object));
+
+						if(foundPaths.size() == limit) {
+							return foundPaths;
+						}
 					}
 				}
 			}
 
-			return null;
+			return foundPaths;
 		}
 
-		public RunnableFuture<Path> newTask() {
-	        return new FutureTask<Path>(PathDetectionTask.this) {
+		public RunnableFuture<List<Path>> newTask() {
+	        return new FutureTask<List<Path>>(PathDetectionTask.this) {
 	            @Override
 	            public boolean cancel(boolean mayInterruptIfRunning) {
 	                PathDetectionTask.this.cancelTask();

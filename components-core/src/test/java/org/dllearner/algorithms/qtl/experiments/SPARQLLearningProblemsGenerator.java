@@ -19,6 +19,7 @@
 package org.dllearner.algorithms.qtl.experiments;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -28,7 +29,9 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,6 +85,7 @@ public class SPARQLLearningProblemsGenerator {
 		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
 		Collections.shuffle(classesList, new Random(123));
 		classes = classesList;
+//		classes = Sets.newHashSet(new OWLClassImpl(IRI.create("http://semantics.crl.ibm.com/univ-bench-dl.owl#TennisFan")));
 
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		List<Future<Path>> futures = new ArrayList<>();
@@ -113,12 +117,12 @@ public class SPARQLLearningProblemsGenerator {
 
 //				int depth = rndGen.nextInt(maxDepth) + 1;
 
-				Future<Path> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
+				Future<List<Path>> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
 //				futures.add(future);
 				try {
-					 Path path = future.get();
+					 List<Path> path = future.get();
 			    	  if(path != null) {
-			    		  paths.add(path);
+			    		  paths.addAll(path);
 			    	  }
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
