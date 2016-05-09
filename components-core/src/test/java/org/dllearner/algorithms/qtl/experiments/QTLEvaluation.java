@@ -568,10 +568,20 @@ public class QTLEvaluation {
 									logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
 									logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
 
+									// write examples to disk
+									File dir = new File(benchmarkDirectory, "data/" + hash(sparqlQuery));
+									dir.mkdirs();
+									Files.write(Joiner.on("\n").join(examples.correctPosExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tp"), Charsets.UTF_8);
+									Files.write(Joiner.on("\n").join(examples.correctNegExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tn"), Charsets.UTF_8);
+									Files.write(Joiner.on("\n").join(examples.falsePosExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".fp"), Charsets.UTF_8);
+
 									// compute baseline
 									logger.info("Computing baseline...");
 									RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
-									logger.info("done. \nBaseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
+									logger.info("Baseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
 									logger.info("Evaluating baseline...");
 									Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
 									logger.info("Baseline score:\n" + baselineScore);
@@ -1089,13 +1099,16 @@ public class QTLEvaluation {
 		Score score = computeScore(targetSPARQLQuery, bestTree.getTree(), noise);
 		return new Pair<>(bestTree, score);
 	}
+
+	private String hash(String query) {
+		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
+	}
 	
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
 		logger.info("Generating examples for query ..." + sparqlQuery);
 
 		// generate hash for the query
-		HashFunction hf = Hashing.md5();
-		String queryHash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).hash().toString();
+		String queryHash = hash(sparqlQuery);
 
 		// create examples folder
 		File examplesDirectory = new File(cacheDirectory, "examples");
