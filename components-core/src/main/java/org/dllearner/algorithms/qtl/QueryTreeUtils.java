@@ -143,6 +143,7 @@ public class QueryTreeUtils {
 		return getNodes(tree).size();
 	}
 	
+
 	/**
 	 * Returns the set of edges that occur in the given query tree, i.e. the 
 	 * closure of the edges.

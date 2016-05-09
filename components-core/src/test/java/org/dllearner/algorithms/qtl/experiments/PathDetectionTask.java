@@ -328,13 +328,13 @@ public class PathDetectionTask implements Callable<List<Path>> {
 			try (QueryExecution qe = qef.createQueryExecution(query)) {
 				qe.setTimeout(1, TimeUnit.MINUTES);
 
-				ResultSet rs = qe.execSelect();
+					ResultSet rs = qe.execSelect();
 
 				while (rs.hasNext()) {
 					QuerySolution qs = rs.next();
 
-					String object = qs.getResource("o").getURI();
-					int cnt = qs.getLiteral("cnt").getInt();
+						String object = qs.getResource("o").getURI();
+						int cnt = qs.getLiteral("cnt").getInt();
 
 					if (cnt >= minNrOfExamples) { //should always be true because of HAVING clause
 						foundPaths.add(new Path(cls, path, object));
