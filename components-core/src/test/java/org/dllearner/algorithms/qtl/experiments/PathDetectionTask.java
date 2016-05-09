@@ -309,48 +309,52 @@ public class PathDetectionTask implements Callable<List<Path>> {
 			// randomly search in possible paths for query
 			List<Path> foundPaths = new ArrayList<>();
 			for (List<Set<String>> path : paths) {
-				String query = "SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {";
-				query +=  "?s1 a <" + cls.toStringID() + "> . ?s2 a <" + cls.toStringID() + "> . ";
-				for(int i = 0; i < path.size(); i++) {
-					Set<String> propertyCluster = path.get(i);
-					
-					for (String property : propertyCluster) {
-						query += (i == 0 ? "?s1" : ("?o1_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o1_" + (i+1))) + " .";
-						query += (i == 0 ? "?s2" : ("?o2_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o2_" + (i+1))) + " .";
+				try {
+					String query = "SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {";
+					query +=  "?s1 a <" + cls.toStringID() + "> . ?s2 a <" + cls.toStringID() + "> . ";
+					for(int i = 0; i < path.size(); i++) {
+						Set<String> propertyCluster = path.get(i);
+
+						for (String property : propertyCluster) {
+							query += (i == 0 ? "?s1" : ("?o1_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o1_" + (i+1))) + " .";
+							query += (i == 0 ? "?s2" : ("?o2_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o2_" + (i+1))) + " .";
+						}
 					}
-				}
-				query += "FILTER(?s1 != ?s2 ";
-				for (int i = 1; i < path.size(); i++) {
-					query += " && ?o1_" + i + " != ?o2_" + i;
-				}
-				query += ") } GROUP BY ?o HAVING(count(distinct ?s1) >= " + minNrOfExamples + ") ORDER BY DESC(?cnt)";
+					query += "FILTER(?s1 != ?s2 ";
+					for (int i = 1; i < path.size(); i++) {
+						query += " && ?o1_" + i + " != ?o2_" + i;
+					}
+					query += ") } GROUP BY ?o HAVING(count(distinct ?s1) >= " + minNrOfExamples + ") ORDER BY DESC(?cnt)";
 
-				System.out.println(Thread.currentThread().getId() + ":Testing path: " + path);
-				System.out.println(query);
+					System.out.println(Thread.currentThread().getId() + ":Testing path: " + path);
+					System.out.println(query);
 
-				QueryExecution qe;
+					QueryExecution qe;
 //				if (depth >= 3) {
 					qe = ks.getQueryExecutionFactory().createQueryExecution(query);
 //				} else {
 //					qe = new QueryExecutionFactoryModel(model).createQueryExecution(query);
 //				}
 
-				ResultSet rs = qe.execSelect();
+					ResultSet rs = qe.execSelect();
 
-				QuerySolution qs;
-				while(rs.hasNext()) {
-					qs = rs.next();
+					QuerySolution qs;
+					while(rs.hasNext()) {
+						qs = rs.next();
 
-					String object = qs.getResource("o").getURI();
-					int cnt = qs.getLiteral("cnt").getInt();
+						String object = qs.getResource("o").getURI();
+						int cnt = qs.getLiteral("cnt").getInt();
 
-					if(cnt >= minNrOfExamples) { //should always be true because of HAVING clause
-						foundPaths.add(new Path(cls, path, object));
+						if(cnt >= minNrOfExamples) { //should always be true because of HAVING clause
+							foundPaths.add(new Path(cls, path, object));
 
-						if(foundPaths.size() == limit) {
-							return foundPaths;
+							if(foundPaths.size() == limit) {
+								return foundPaths;
+							}
 						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
