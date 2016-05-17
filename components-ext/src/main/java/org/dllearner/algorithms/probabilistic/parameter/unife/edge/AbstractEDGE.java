@@ -21,6 +21,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import static org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE.PossibleOutputFormat.*;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import unife.edge.EDGE;
@@ -29,7 +30,7 @@ import unife.exception.IllegalValueException;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
@@ -93,7 +94,14 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     // ontology obtained by merging all the sources
     protected OWLOntology sourcesOntology;
     
+    public AbstractEDGE() {
+        
+    }
 
+    public AbstractEDGE(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
+        super(lp, targetAxioms);
+    }
+    
     /**
      * Get the Log-Likelihood of all the examples/queries.
      *

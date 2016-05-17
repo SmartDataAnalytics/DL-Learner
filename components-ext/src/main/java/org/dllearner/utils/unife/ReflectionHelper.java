@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
  * Utility class that uses reflection to get values of private fields and
  * methods during the test phase.
  *
- * @author Giuseppe Cota <giuseta@gmail.com>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public class ReflectionHelper {
 

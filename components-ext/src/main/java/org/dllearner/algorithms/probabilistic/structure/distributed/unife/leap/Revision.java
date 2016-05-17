@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 class Revision implements Comparable<Revision>, Serializable {

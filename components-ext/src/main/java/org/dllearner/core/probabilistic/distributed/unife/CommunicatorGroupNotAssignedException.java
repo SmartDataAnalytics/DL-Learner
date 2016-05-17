@@ -8,7 +8,7 @@ package org.dllearner.core.probabilistic.distributed.unife;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public class CommunicatorGroupNotAssignedException extends RuntimeException {

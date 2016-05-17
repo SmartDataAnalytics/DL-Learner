@@ -8,7 +8,7 @@ package org.dllearner.core.probabilistic.unife;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public class StructureLearningException extends RuntimeException {

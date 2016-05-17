@@ -13,7 +13,7 @@ import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public abstract class AbstractEDGEDistributed extends AbstractEDGE

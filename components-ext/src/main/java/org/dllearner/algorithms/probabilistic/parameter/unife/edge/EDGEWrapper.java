@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import unife.bundle.logging.BundleLoggerFactory;
 import unife.edge.EDGE;
@@ -24,7 +26,7 @@ import unife.edge.EDGE;
  * probabilistic reasoning. This class stores an instantiation of EDGE and
  * invokes its methods in order to compute the parameters.
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 @ComponentAnn(name = "EDGEWrapper", shortName = "edge", version = 1.0)
@@ -36,6 +38,11 @@ public class EDGEWrapper extends AbstractEDGE {
     private boolean fullyInitialized = false;
 
     public EDGEWrapper() {
+        edge = new EDGE();
+    }
+
+    public EDGEWrapper(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
+        super(lp, targetAxioms);
         edge = new EDGE();
     }
 

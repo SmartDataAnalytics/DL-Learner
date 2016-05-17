@@ -22,7 +22,7 @@ package org.dllearner.core.probabilistic.unife;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public class ParameterLearningException extends RuntimeException {
 

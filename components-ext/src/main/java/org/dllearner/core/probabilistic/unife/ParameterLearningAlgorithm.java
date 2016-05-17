@@ -10,7 +10,7 @@ import org.dllearner.core.LearningAlgorithm;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public interface ParameterLearningAlgorithm extends LearningAlgorithm {

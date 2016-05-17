@@ -18,7 +18,7 @@ import unife.edge.EDGEMPISingleStep;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 @ComponentAnn(name = "EDGEDistributedSingleStep", shortName = "edgesingle", version = 1.0)

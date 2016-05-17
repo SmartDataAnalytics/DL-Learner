@@ -69,7 +69,7 @@ import unife.math.utilities.MathUtilities;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 @ComponentAnn(name = "LEAPDistributed", shortName = "leapdistr", version = 1.0)

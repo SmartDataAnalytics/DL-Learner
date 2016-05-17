@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
@@ -29,6 +31,14 @@ import unife.bundle.utilities.BundleUtilities;
 public class LEAP extends AbstractLEAP {
 
     private static final Logger logger = LoggerFactory.getLogger(LEAP.class);
+
+    public LEAP() {
+        
+    }
+    
+    public LEAP(AbstractCELA cela, AbstractEDGE lpr) {
+        super(cela, lpr);
+    }
 
     @Override
     public void init() throws ComponentInitException {

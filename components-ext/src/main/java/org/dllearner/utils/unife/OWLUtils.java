@@ -25,8 +25,11 @@ import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -35,7 +38,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public class OWLUtils {
@@ -160,6 +163,18 @@ public class OWLUtils {
                 break;
         }
         resultOntology.getOWLOntologyManager().saveOntology(resultOntology, formatter, IRI.create(new File(outputFile)));
+    }
+    
+    public static Set<OWLAxiom> convertIndividualsToAssertionalAxioms(
+            Set<OWLIndividual> individuals, OWLClassExpression ce) {
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLDataFactory owlFactory = manager.getOWLDataFactory();
+        Set<OWLAxiom> assertionalAxioms = new HashSet<>();
+        for (OWLIndividual ind : individuals) {
+            OWLAxiom axiom = owlFactory.getOWLClassAssertionAxiom(ce, ind);
+            assertionalAxioms.add(axiom);
+        }
+        return assertionalAxioms;
     }
 
 }

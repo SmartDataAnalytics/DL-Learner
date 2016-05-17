@@ -26,7 +26,7 @@ import org.dllearner.core.Component;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public interface ProbabilisticReasoner extends Component {

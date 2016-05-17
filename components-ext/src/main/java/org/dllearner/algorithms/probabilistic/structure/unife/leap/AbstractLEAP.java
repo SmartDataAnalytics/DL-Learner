@@ -29,8 +29,11 @@ import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.core.probabilistic.unife.AbstractPSLA;
 import org.dllearner.core.probabilistic.unife.StructureLearningException;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
+import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.utils.unife.ReflectionHelper;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -49,20 +52,31 @@ import unife.bundle.utilities.BundleUtilities;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public abstract class AbstractLEAP extends AbstractPSLA {
 
     private static final Logger logger = Logger.getLogger(LEAP.class.getName());
 
-    @ConfigOption(defaultValue = "owl:learnedClass", description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+    @ConfigOption(defaultValue = "owl:learnedClass", description = "You can "
+            + "specify a start class for the algorithm. To do this, you have to "
+            + "use Manchester OWL syntax without using prefixes.")
     private OWLClass dummyClass;
 
-    @ConfigOption(description = "accuracy used during the computation of the probabilistic values (number of digital places)", defaultValue = "5")
+    @ConfigOption(description = "accuracy used during the computation of the "
+            + "probabilistic values (number of digital places)", defaultValue = "5")
     protected int accuracy = 5;
 
     protected AbstractEDGE edge;
+    
+    public AbstractLEAP() {
+        
+    }
+    
+    public AbstractLEAP(AbstractCELA cela, AbstractParameterLearningAlgorithm pla) {
+        super(cela, pla);
+    }
 
     @Override
     public void init() throws ComponentInitException {
@@ -75,7 +89,9 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         logger.debug("getting the individuals");
         Set<OWLIndividual> positiveIndividuals;
         Set<OWLIndividual> negativeIndividuals;
-        AbstractClassExpressionLearningProblem learningProblem = cela.getLearningProblem();
+        if (learningProblem == null) {
+            learningProblem = cela.getLearningProblem();
+        }
         if (learningProblem instanceof PosNegLP) {
             positiveIndividuals = ((PosNegLP) learningProblem).getPositiveExamples();
             negativeIndividuals = ((PosNegLP) learningProblem).getNegativeExamples();
@@ -101,25 +117,27 @@ public abstract class AbstractLEAP extends AbstractPSLA {
 
         } else {
             try {
-                throw new LearningProblemUnsupportedException(learningProblem.getClass(), this.getClass());
+                throw new LearningProblemUnsupportedException(((AbstractClassExpressionLearningProblem) learningProblem).getClass(), this.getClass());
             } catch (LearningProblemUnsupportedException e) {
                 throw new ComponentInitException(e.getMessage());
             }
         }
         // convert the individuals into assertional axioms
         logger.debug("convert the individuals into assertional axioms");
-        OWLDataFactory owlFactory = manager.getOWLDataFactory();
-        Set<OWLAxiom> positiveExamples = new HashSet<>();
-        for (OWLIndividual ind : positiveIndividuals) {
-            OWLAxiom axiom = owlFactory.getOWLClassAssertionAxiom(dummyClass, ind);
-            positiveExamples.add(axiom);
-        }
+//        OWLDataFactory owlFactory = manager.getOWLDataFactory();
+        Set<OWLAxiom> positiveExamples = OWLUtils.convertIndividualsToAssertionalAxioms(positiveIndividuals, dummyClass);
+//        Set<OWLAxiom> positiveExamples = new HashSet<>();
+//        for (OWLIndividual ind : positiveIndividuals) {
+//            OWLAxiom axiom = owlFactory.getOWLClassAssertionAxiom(dummyClass, ind);
+//            positiveExamples.add(axiom);
+//        }
 
-        Set<OWLAxiom> negativeExamples = new HashSet<>();
-        for (OWLIndividual ind : negativeIndividuals) {
-            OWLAxiom axiom = owlFactory.getOWLClassAssertionAxiom(dummyClass, ind);
-            negativeExamples.add(axiom);
-        }
+        Set<OWLAxiom> negativeExamples = OWLUtils.convertIndividualsToAssertionalAxioms(negativeIndividuals, dummyClass);
+//        Set<OWLAxiom> negativeExamples = new HashSet<>();
+//        for (OWLIndividual ind : negativeIndividuals) {
+//            OWLAxiom axiom = owlFactory.getOWLClassAssertionAxiom(dummyClass, ind);
+//            negativeExamples.add(axiom);
+//        }
 
         edge.setPositiveExampleAxioms(positiveExamples);
         edge.setNegativeExampleAxioms(negativeExamples);

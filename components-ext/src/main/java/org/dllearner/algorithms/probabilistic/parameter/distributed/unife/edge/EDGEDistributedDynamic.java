@@ -20,11 +20,10 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import unife.bundle.logging.BundleLoggerFactory;
 import unife.edge.EDGEMPIDynamic;
-import unife.edge.EDGEMPIDynamicNew;
 
 /**
  *
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 @ComponentAnn(name = "EDGEDistributedDynamic", shortName = "edgedynamic", version = 1.0)
@@ -42,7 +41,7 @@ public class EDGEDistributedDynamic extends AbstractEDGEDistributed {
     private boolean fullyInitialized = false;
 
     public EDGEDistributedDynamic() {
-        edge = new EDGEMPIDynamicNew();
+        edge = new EDGEMPIDynamic();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class EDGEDistributedDynamic extends AbstractEDGEDistributed {
         stop = false;
 
         try {
-            EDGEMPIDynamicNew edgeDyn = (EDGEMPIDynamicNew) edge;
+            EDGEMPIDynamic edgeDyn = (EDGEMPIDynamic) edge;
             if (!fullyInitialized) {
                 List<OWLAxiom> positiveExamplesList = new ArrayList<>(positiveExampleAxioms);
                 if (maxPositiveExamples > 0) {

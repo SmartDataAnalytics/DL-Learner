@@ -1,4 +1,4 @@
-package org.dllearner.unife.probceloe;
+package org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

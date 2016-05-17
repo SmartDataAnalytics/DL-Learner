@@ -64,7 +64,7 @@ import unife.edge.mpi.MPIUtilities;
  * testing
  *
  * @author Jens Lehmann
- * @author Giuseppe Cota <giuseta@gmail.com>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public class LEAPCrossValidation extends CrossValidation {
 

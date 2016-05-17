@@ -13,7 +13,7 @@ import org.dllearner.core.Component;
  * It is used to indicate the classes that are supposed to be used inside a
  * distributed environment that uses MPI to communicate.
  * 
- * @author Giuseppe Cota <giuseta@gmail.com>, Riccardo Zese
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
 public interface DistributedComponent extends Component {
