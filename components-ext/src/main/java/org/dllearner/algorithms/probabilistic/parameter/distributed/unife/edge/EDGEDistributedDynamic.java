@@ -15,9 +15,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
-import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import unife.bundle.logging.BundleLoggerFactory;
 import unife.edge.EDGEMPIDynamic;
 

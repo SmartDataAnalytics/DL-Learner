@@ -2,10 +2,11 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
-import java.util.TreeSet;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentAnn;
@@ -15,11 +16,17 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dllearner.core.probabilistic.unife.StructureLearningException;
+import org.dllearner.exceptions.UnsupportedLearnedAxiom;
+import static org.dllearner.utils.unife.GeneralUtils.safe;
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
@@ -33,9 +40,9 @@ public class LEAP extends AbstractLEAP {
     private static final Logger logger = LoggerFactory.getLogger(LEAP.class);
 
     public LEAP() {
-        
+
     }
-    
+
     public LEAP(AbstractCELA cela, AbstractEDGE lpr) {
         super(cela, lpr);
     }
@@ -79,19 +86,35 @@ public class LEAP extends AbstractLEAP {
         NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions = cela.getCurrentlyBestEvaluatedDescriptions();
         // convert the class expressions into axioms
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        LinkedHashSet<OWLSubClassOfAxiom> candidateAxioms = convertIntoAxioms(manager, evaluatedDescriptions);
+        Set<? extends OWLAxiom> candidateAxioms;
+        if (getClassAxiomType().equalsIgnoreCase("subClassOf") || getClassAxiomType().equalsIgnoreCase("both")) {
+            candidateAxioms = convertIntoSubClassOfAxioms(manager, evaluatedDescriptions);
+        } else {
+            candidateAxioms = convertIntoEquivalentClassesAxioms(manager, evaluatedDescriptions);
+        }
         // perform a greedy search 
-        logger.debug("Start greedy search");
+        logger.info("Start greedy search");
         // temporaneo i raffinamenti dopo dovranno essere assegnati ad ogni processo
-        Set<OWLSubClassOfAxiom> learnedAxioms = greedySearch(candidateAxioms);
-        logger.debug("Greedy search finished");
+        Set<OWLAxiom> learnedAxioms = null;
+        try {
+            learnedAxioms = greedySearch(candidateAxioms);
+        } catch (UnsupportedLearnedAxiom ex) {
+            logger.error(ex.getMessage());
+            System.exit(-1);
+        }
+        logger.info("Greedy search finished");
 
         OWLOntology finalOntology = edge.getSourcesOntology();
         // In case replace super class
         if (cela.getLearningProblem() instanceof ClassLearningProblem) {
-            finalOntology = replaceSuperClass(finalOntology, learnedAxioms);
+            try {
+                finalOntology = replaceDummyClass(finalOntology, learnedAxioms);
+            } catch (UnsupportedLearnedAxiom ex) {
+                logger.error(ex.getMessage());
+                System.exit(-1);
+            }
         } else {
-            for (OWLAxiom axiom : learnedAxioms) {
+            for (OWLAxiom axiom : safe(learnedAxioms)) {
                 logger.info("Learned Axiom: " + axiom);
             }
         }
@@ -106,46 +129,154 @@ public class LEAP extends AbstractLEAP {
         printTimings(totalTimeMills, celaTimeMills, edge.getTimeMap());
     }
 
+    /**
+     * Returns the name of the algorithm.
+     *
+     * @return "LEAP"
+     */
     public static String getName() {
         return "LEAP";
     }
 
-    private Set<OWLSubClassOfAxiom> greedySearch(LinkedHashSet<OWLSubClassOfAxiom> candidateAxioms) {
+    /**
+     * This method performs a greedy search in the space of Theories. Given a
+     * set of axioms it executes a loop for each axiom. For each iteration it
+     * adds an axiom into the knowledge base and if the log-likelihood (LL)
+     * increases the axiom is kept otherwise it is removed from the ontology.
+     * For EquivalentClassesAxiom: if we keep an EquivalentClassesAxiom because
+     * the LL has increased but a SubClassOfAxiom with the same classes has been
+     * already added, the SubClassOfAxiom is removed.
+     *
+     * @param candidateAxioms the set of candidate axiom that we would like to
+     * add in the knowledge base.
+     * @return the set of axioms added in the knowledge base.
+     */
+    private Set<OWLAxiom> greedySearch(Set<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
         BigDecimal bestLL = edge.getLL();
         logger.debug("Resetting EDGE");
         edge.reset();
         OWLOntology ontology = edge.getLearnedOntology();
-        edge.changeSourcesOntology(ontology);
-        LinkedHashSet<OWLSubClassOfAxiom> learnedAxioms = new LinkedHashSet<>();
-        OWLDataFactory df = OWLManager.getOWLDataFactory();
-        for (OWLSubClassOfAxiom axiom : candidateAxioms) {
-            logger.debug("Adding axiom: " + axiom);
-            try {
-                addAxiom(ontology, axiom);
-            } catch (InconsistencyException iex) {
-                logger.info(iex.getMessage());
-                logger.info("Trying with the next class expression");
-                continue;
+        edge.changeSourcesOntology(ontology); // queste operazioni fanno perdere tempo, sono da ottimizzare
+        LinkedHashSet<OWLAxiom> learnedAxioms = new LinkedHashSet<>();
+        OWLDataFactory df = ontology.getOWLOntologyManager().getOWLDataFactory();
+        String infoMsg = "Type of axiom to learn: ";
+        switch (getClassAxiomType().toLowerCase()) {
+            case "subclassof":
+                infoMsg += "subClassOf axioms";
+                break;
+            case "equivalentclasses":
+                infoMsg += "equivalentClasses axioms";
+                break;
+            case "both":
+                infoMsg += "subClassOf and equivalentClasses axioms";
+                break;
+            default:
+                throw new UnsupportedLearnedAxiom("LEAP cannot learn this type of axioms: " + getClassAxiomType());
+        }
+        logger.info(infoMsg);
+        int i = 0;
+        for (OWLAxiom axiom : candidateAxioms) {
+            if (i >= 0) {
+                logger.info("Adding axiom: " + axiom);
+                try {
+                    addAxiom(ontology, axiom);
+                } catch (InconsistencyException iex) {
+                    logger.info(iex.getMessage());
+                    logger.info("Trying with the next class expression");
+                    continue;
+                }
+                logger.info("Axiom added.");
+                logger.info("Running parameter learner");
+                edge.start();
+                BigDecimal currLL = edge.getLL();
+                logger.info("Current Log-Likelihood: " + currLL);
+                if (getClassAxiomType().equalsIgnoreCase("both")) {
+                // Not supported yet
+                    // TO DO: I need to save the probabilistic values before adding 
+                    // the equivalentClasses axiom. Because if I add the equivalentClasses axiom
+                    // and the resulting Log-likelihood is worse than adding the 
+                    // subClassOf axiom, then I need to recover the previously 
+                    // computated probabilistic values
+                    // (without running EDGE again)
+                    throw new UnsupportedOperationException("Not supported yet.");
+                    /* To uncomment in the future after the modifications of EDGE
+                     logger.info("Trying to add the corresponding equivalent axiom");
+                     logger.debug("but first I remove the axiom: " + axiom);
+                     removeAxiom(ontology, axiom);
+                     // here i need to sava the probabilistic values. A solution could be
+                     // to modify EDGE. It should update the PMap object when it learns the
+                     // parameters and EDGE should read it when the learned ontology
+                     // is requested
+                     OWLEquivalentClassesAxiom equivAxiom = OWLUtils.convertSubClassOfIntoEquivalentClassesAxiom((OWLSubClassOfAxiom) axiom);
+                     logger.debug("Adding axiom: " + equivAxiom);
+                     try {
+                     addAxiom(ontology, axiom);
+                     } catch (InconsistencyException iex) {
+                     logger.info(iex.getMessage());
+                     logger.info("Trying with the next class expression");
+                     continue;
+                     }
+                     logger.info("Running parameter learner");
+                     edge.start();
+                     BigDecimal currLL2 = edge.getLL();
+                     // if adding the equivalentClasses axioms leads to better log-likelihood I keep it
+                     if (currLL2.compareTo(currLL) > 0) {
+                     currLL = currLL2;
+                     axiom = equivAxiom;
+                     } else {
+                     removeAxiom(ontology, equivAxiom);
+                     ontology.getOWLOntologyManager().addAxiom(ontology, axiom);
+                     }*/
+                }
+                if (currLL.compareTo(bestLL) > 0) {
+                    logger.info("Log-Likelihood enhanced. Updating ontologies...");
+                    // I recover the annotation containing the learned probabilistic values
+                    OWLAnnotation annotation = df.
+                            getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY,
+                                    df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
+                    OWLAxiom updatedAxiom;
+                    if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+                        updatedAxiom = df.getOWLSubClassOfAxiom(
+                                ((OWLSubClassOfAxiom) axiom).getSubClass(),
+                                ((OWLSubClassOfAxiom) axiom).getSuperClass(),
+                                Collections.singleton(annotation));
+                    } else {
+                        if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+
+                            // I have to remove the subsumption a
+//                        for (OWLClass subClass : ((OWLEquivalentClassesAxiom) axiom).getNamedClasses()) {
+//                            if (subClass.compareTo(getDummyClass()) != 0) {
+////                                subClass = c;
+//                                for (OWLAxiom lax : learnedAxioms) {
+//                                    
+//                                    if (lax.isOfType(AxiomType.SUBCLASS_OF)
+//                                            && ((OWLSubClassOfAxiom) lax).getSubClass().compareTo(subClass) == 0) {
+//                                        logger.in removeAxiom(ontology, lax
+//                                        );
+//                                        learnedAxioms.remove(lax);
+//                                        break;
+//                                    }
+//                                }
+//                                break;
+//                            }
+//                        }
+                            updatedAxiom = df.getOWLEquivalentClassesAxiom(
+                                    ((OWLEquivalentClassesAxiom) axiom).getClassExpressions(),
+                                    Collections.singleton(annotation));
+                        } else {
+                            throw new UnsupportedLearnedAxiom("The axiom to add is not supported: "
+                                    + BundleUtilities.getManchesterSyntaxString(axiom));
+                        }
+                    }
+                    learnedAxioms.add(updatedAxiom);
+                    updateOntology(); // queste operazioni fanno perdere tempo, sono da ottimizzare
+                    bestLL = currLL;
+                } else {
+                    logger.info("Log-Likelihood worsened. Removing Last Axiom...");
+                    removeAxiom(ontology, axiom);
+                }
             }
-            logger.info("Axiom added.");
-            logger.info("Running parameter learner");
-            edge.start();
-            BigDecimal currLL = edge.getLL();
-            logger.info("Current Log-Likelihood: " + currLL);
-            if (currLL.compareTo(bestLL) > 0) {
-                logger.info("Log-Likelihood enhanced. Updating ontologies...");
-                OWLAnnotation annotation = df.
-                        getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY,
-                                df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
-                OWLSubClassOfAxiom updatedAxiom = df.getOWLSubClassOfAxiom(axiom.getSubClass(),
-                        axiom.getSuperClass(), Collections.singleton(annotation));
-                learnedAxioms.add(updatedAxiom);
-                updateOntology();
-                bestLL = currLL;
-            } else {
-                logger.info("Log-Likelihood worsened. Removing Last Axiom...");
-                removeAxiom(ontology, axiom);
-            }
+            i++;
         }
         return learnedAxioms;
     }

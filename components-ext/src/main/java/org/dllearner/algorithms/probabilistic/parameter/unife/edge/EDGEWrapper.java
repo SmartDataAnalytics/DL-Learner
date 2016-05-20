@@ -9,16 +9,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import unife.bundle.logging.BundleLoggerFactory;
 import unife.edge.EDGE;
 
 /**

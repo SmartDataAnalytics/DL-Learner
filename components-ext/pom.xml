@@ -15,6 +15,20 @@
         <version>1.3-SNAPSHOT</version>
     </parent>
     <dependencies>
+        
+                <!-- EDGE dependency -->
+        <dependency>
+            <groupId>unife</groupId>
+            <artifactId>edge</artifactId>
+            <version>3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>manpageGenerator-maven-plugin</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>components-core</artifactId>
@@ -90,7 +104,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
@@ -102,18 +116,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- EDGE dependency -->
-        <dependency>
-            <groupId>unife</groupId>
-            <artifactId>edge</artifactId>
-            <version>3.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>manpageGenerator-maven-plugin</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
         <!--        <dependency>
             <groupId>openMPI</groupId>
@@ -121,33 +124,33 @@
             <version>1.8.6</version>
         </dependency>-->
         
-        <!--
+        
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
             </dependency>
-        -->
+        
         <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-        <!-- dependency>
+<!--        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.11</version>
             <scope>runtime</scope>
-        </dependency-->
+        </dependency>-->
 
         <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
-        <!--
+        
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
             </dependency>
-        -->
-        <!-- dependency>
+        
+<!--         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>1.5.11</version>
             <scope>runtime</scope>
-        </dependency-->
+         </dependency>-->
         <!--END Logging Dependencies-->
 
         <!--

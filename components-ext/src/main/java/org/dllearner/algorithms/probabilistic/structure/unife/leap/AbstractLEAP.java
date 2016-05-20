@@ -31,6 +31,7 @@ import org.dllearner.core.probabilistic.unife.StructureLearningException;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
+import org.dllearner.exceptions.UnsupportedLearnedAxiom;
 import org.dllearner.utils.unife.ReflectionHelper;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utils.unife.OWLUtils;
@@ -40,12 +41,15 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.springframework.beans.factory.annotation.Autowired;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
@@ -68,12 +72,17 @@ public abstract class AbstractLEAP extends AbstractPSLA {
             + "probabilistic values (number of digital places)", defaultValue = "5")
     protected int accuracy = 5;
 
+    @ConfigOption(description = "This is used to set the type of class axiom to learn. Accepted values (case insensitive): 'subClassOf', 'equivalentClasses', 'both'",
+            required = false,
+            defaultValue = "subClassOf")
+    private String classAxiomType = "subClassOf";
+
     protected AbstractEDGE edge;
-    
+
     public AbstractLEAP() {
-        
+
     }
-    
+
     public AbstractLEAP(AbstractCELA cela, AbstractParameterLearningAlgorithm pla) {
         super(cela, pla);
     }
@@ -83,7 +92,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         // create dummy class
         if (dummyClass == null) {
-            dummyClass = manager.getOWLDataFactory().getOWLClass(IRI.create("owl:learnedClass"));
+            dummyClass = manager.getOWLDataFactory().getOWLClass(IRI.create("https://sites.google.com/a/unife.it/ml/disponte:learnedClass"));
         }
 
         logger.debug("getting the individuals");
@@ -198,29 +207,55 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         this.accuracy = accuracy;
     }
 
-    protected LinkedHashSet<OWLSubClassOfAxiom> convertIntoAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+    protected LinkedHashSet<OWLSubClassOfAxiom> convertIntoSubClassOfAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
         LinkedHashSet<OWLSubClassOfAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
         OWLDataFactory factory = manager.getOWLDataFactory();
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
+//            if (classAxiomType.equalsIgnoreCase("subClassOf") || classAxiomType.equalsIgnoreCase("both")) {
             OWLSubClassOfAxiom axiom = factory.
                     getOWLSubClassOfAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
             axioms.add(axiom);
+//            }
+//            if (classAxiomType.equalsIgnoreCase("equivalentClasses") || classAxiomType.equalsIgnoreCase("both")) {
+//                OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
+//                axioms.add(axiom);
+//            }
         }
         return axioms;
     }
 
-    protected OWLOntology replaceSuperClass(OWLOntology finalOntology, Set<OWLSubClassOfAxiom> learnedAxioms) {
+    protected LinkedHashSet<OWLEquivalentClassesAxiom> convertIntoEquivalentClassesAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+        LinkedHashSet<OWLEquivalentClassesAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
+            OWLAnnotation annotation = factory.
+                    getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
+
+            OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
+            axioms.add(axiom);
+
+        }
+        return axioms;
+    }
+
+    /**
+     *
+     * @param finalOntology
+     * @param learnedAxioms
+     * @return
+     */
+    protected OWLOntology replaceDummyClass(OWLOntology finalOntology, Set<OWLAxiom> learnedAxioms) throws UnsupportedLearnedAxiom {
         logger.debug("Replacing super class \"dummyClass\" with \"classToDescribe\"");
         ClassLearningProblem clp = (ClassLearningProblem) cela.getLearningProblem();
         OWLOntologyManager man = finalOntology.getOWLOntologyManager();
         OWLDataFactory df = man.getOWLDataFactory();
-        int numInitialAxioms = finalOntology.getAxiomCount();
+        int numInitialAxioms = finalOntology.getLogicalAxiomCount();
         // remove the learned Axioms
         //man.removeAxiom(finalOntology, learnedAxioms.iterator().next());
-        Set<OWLSubClassOfAxiom> learnedAxiomsCopy = new LinkedHashSet<>(learnedAxioms);
-        for (OWLAxiom axiom : finalOntology.getAxioms(AxiomType.SUBCLASS_OF)) {
+        Set<OWLAxiom> learnedAxiomsCopy = new LinkedHashSet<>(learnedAxioms);
+        for (OWLAxiom axiom : finalOntology.getLogicalAxioms(Imports.EXCLUDED)) {
             for (OWLAxiom axiomToRemove : learnedAxiomsCopy) {
                 // conviene usare una copia di probAddedAxioms 
                 //in maniera tale da eliminare gli assiomi gi� trovati durante la ricerca e 
@@ -233,7 +268,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
                 }
             }
         }
-        int numAxiomsAfterRemove = finalOntology.getAxiomCount();
+        int numAxiomsAfterRemove = finalOntology.getLogicalAxiomCount();
         // check if correctly removed
         if (numAxiomsAfterRemove != numInitialAxioms - learnedAxioms.size()) {
             String msg = "Error during the replacement of super class: "
@@ -245,21 +280,46 @@ public abstract class AbstractLEAP extends AbstractPSLA {
             logger.error(msg);
             throw new StructureLearningException(msg);
         }
-        LinkedHashSet<OWLSubClassOfAxiom> newAxioms = new LinkedHashSet<>();
-        for (OWLSubClassOfAxiom axiom : learnedAxioms) {
-            OWLSubClassOfAxiom newAxiom = df.getOWLSubClassOfAxiom(axiom.getSubClass(),
-                    clp.getClassToDescribe(), axiom.getAnnotations());
+        LinkedHashSet<OWLAxiom> newAxioms = new LinkedHashSet<>();
+        for (OWLAxiom axiom : learnedAxioms) {
+            OWLAxiom newAxiom;
+            if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+                newAxiom = df.getOWLSubClassOfAxiom(
+                        ((OWLSubClassOfAxiom) axiom).getSubClass(),
+                        clp.getClassToDescribe(),
+                        axiom.getAnnotations());
+            } else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+                OWLClassExpression clazz = null;
+                for (OWLClassExpression c : ((OWLEquivalentClassesAxiom) axiom).getClassExpressions()){
+
+                    if (c.compareTo(getDummyClass()) != 0) {
+                        clazz = c;
+                        break;
+                    }
+                }
+                if (clazz == null) {
+                    throw new UnsupportedLearnedAxiom("The learned axiom " + axiom
+                            + "has a null class");
+                }
+                newAxiom = df.getOWLEquivalentClassesAxiom(
+                        clazz,
+                        clp.getClassToDescribe(),
+                        axiom.getAnnotations());
+            } else {
+                throw new UnsupportedLearnedAxiom("The learned axiom " + axiom
+                        + "is not supported");
+            }
             newAxioms.add(newAxiom);
             logger.info("Learned Axiom: " + newAxiom);
         }
         man.addAxioms(finalOntology, newAxioms);
         // check if correctly added
-        if (finalOntology.getAxiomCount() != numAxiomsAfterRemove + learnedAxioms.size()) {
+        if (numInitialAxioms != numAxiomsAfterRemove + learnedAxioms.size()) {
             String msg = "Error during the replacement of super class: "
                     + "Axiom addition was incorrect."
                     + " numAxiomsAfterRemove: " + numAxiomsAfterRemove
                     + " numAxioms to add: " + learnedAxioms.size()
-                    + " numAxioms added: " + (finalOntology.getAxiomCount() - numAxiomsAfterRemove);;
+                    + " numAxioms added: " + (numInitialAxioms - numAxiomsAfterRemove);;
             logger.error(msg);
             throw new StructureLearningException(msg);
         }
@@ -267,6 +327,16 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         return finalOntology;
     }
 
+    /**
+     * It tries to add the axiom into the ontology. If there is an inconsistency
+     * after adding the axiom the axiom is removed from the ontology and an
+     * InconsistencyException is thrown.
+     *
+     * @param ontology ontology to modify
+     * @param axiom axiom to add
+     * @throws InconsistencyException if adding the exceptions leads to an
+     * inconsistency
+     */
     protected void addAxiom(OWLOntology ontology, OWLAxiom axiom) throws InconsistencyException {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
         manager.addAxiom(ontology, axiom);
@@ -283,6 +353,21 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     protected void removeAxiom(OWLOntology ontology, OWLAxiom axiom) {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
         manager.removeAxiom(ontology, axiom);
+    }
+
+    /**
+     * @return the classAxiomType
+     */
+    public String getClassAxiomType() {
+        return classAxiomType;
+    }
+
+    /**
+     * @param classAxiomType the classAxiomType to set
+     */
+    @Autowired
+    public void setClassAxiomType(String classAxiomType) {
+        this.classAxiomType = classAxiomType;
     }
 
 }

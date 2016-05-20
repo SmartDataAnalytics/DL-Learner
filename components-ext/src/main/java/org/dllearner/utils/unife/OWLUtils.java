@@ -23,11 +23,13 @@ import org.semanticweb.owlapi.formats.FunctionalSyntaxDocumentFormat;
 import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -35,6 +37,8 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import unife.bundle.utilities.BundleUtilities;
 
 /**
  *
@@ -164,7 +168,7 @@ public class OWLUtils {
         }
         resultOntology.getOWLOntologyManager().saveOntology(resultOntology, formatter, IRI.create(new File(outputFile)));
     }
-    
+
     public static Set<OWLAxiom> convertIndividualsToAssertionalAxioms(
             Set<OWLIndividual> individuals, OWLClassExpression ce) {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -177,4 +181,13 @@ public class OWLUtils {
         return assertionalAxioms;
     }
 
+    public static OWLEquivalentClassesAxiom convertSubClassOfIntoEquivalentClassesAxiom(OWLSubClassOfAxiom axiom) {
+        OWLDataFactory df = OWLManager.getOWLDataFactory();
+        OWLClassExpression class1 = axiom.getSubClass();
+        OWLClassExpression class2 = axiom.getSuperClass();
+        Set<OWLAnnotation> annotations = axiom.getAnnotations();
+        OWLEquivalentClassesAxiom equivAxiom = df.getOWLEquivalentClassesAxiom(
+                class2, class2, annotations);
+        return equivAxiom;
+    }
 }

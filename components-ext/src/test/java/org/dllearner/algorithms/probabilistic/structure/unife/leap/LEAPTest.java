@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap;
+package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 
 import static junit.framework.TestCase.assertTrue;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGEWrapper;
-import org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ClosedWorldReasoner;
@@ -24,6 +22,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
@@ -38,6 +38,9 @@ public class LEAPTest {
     static AbstractEDGE lpr;
     static AbstractCELA cela;
 
+    private static final Logger logger = LoggerFactory.getLogger(LEAPTest.class);
+    
+    
     @BeforeClass
     public static void setUpClass() throws ComponentInitException {
         System.out.println("Current dir: " + System.getProperty("user.dir"));
@@ -76,10 +79,13 @@ public class LEAPTest {
     @Test
     public void testCase1() throws Exception {
         System.out.println("Test case 1");
+        System.out.println("Debug logger: " + logger.isDebugEnabled());
         LEAP leap = new LEAP(cela, lpr);
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);
         leap.init();
+        leap.setClassAxiomType("equivalentClasses");
+        //leap.setClassAxiomType("subClassOf");
         leap.start();
         assertTrue( true );
     }

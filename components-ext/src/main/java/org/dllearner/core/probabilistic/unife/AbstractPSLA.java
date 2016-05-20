@@ -33,8 +33,8 @@ public abstract class AbstractPSLA implements ProbabilisticStructureLearningAlgo
      * algorithm implementations.
      */
     protected AbstractLearningProblem learningProblem;
-    
-        protected String outFormat = "OWLXML";
+
+    protected String outFormat = "OWLXML";
 
     protected String outputFile = "learnedOntology.owl";
 
@@ -63,7 +63,7 @@ public abstract class AbstractPSLA implements ProbabilisticStructureLearningAlgo
 
     @Autowired
     public void setClassExpressionLearningAlgorithm(AbstractCELA la) {
-        this.cela =  la;
+        this.cela = la;
     }
 
     @Override

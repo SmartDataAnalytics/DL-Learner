@@ -5,15 +5,9 @@
  */
 package org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.probabilistic.distributed.unife.DistributedComponent;
-import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
-import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import unife.edge.EDGEMPISingleStep;
 
 /**

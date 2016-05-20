@@ -16,7 +16,6 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-//import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
@@ -397,6 +396,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
         sourcesOntology = ontology;
         edge.setOntologies(ontology);
         learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) new OWLAPIOntology(ontology)));
+//        learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) ontology));
     }
 
     public void reset() {
