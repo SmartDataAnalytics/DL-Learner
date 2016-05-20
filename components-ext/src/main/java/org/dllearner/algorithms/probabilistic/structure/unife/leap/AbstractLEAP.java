@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
@@ -50,6 +49,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.parameters.Imports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
@@ -61,7 +62,7 @@ import unife.bundle.utilities.BundleUtilities;
  */
 public abstract class AbstractLEAP extends AbstractPSLA {
 
-    private static final Logger logger = Logger.getLogger(LEAP.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(AbstractLEAP.class);
 
     @ConfigOption(defaultValue = "owl:learnedClass", description = "You can "
             + "specify a start class for the algorithm. To do this, you have to "

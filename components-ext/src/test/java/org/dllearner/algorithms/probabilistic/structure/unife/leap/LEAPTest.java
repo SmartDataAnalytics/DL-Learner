@@ -80,6 +80,7 @@ public class LEAPTest {
     public void testCase1() throws Exception {
         System.out.println("Test case 1");
         System.out.println("Debug logger: " + logger.isDebugEnabled());
+        logger.debug("adfd");
         LEAP leap = new LEAP(cela, lpr);
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);

@@ -252,6 +252,7 @@
                         <exclude>org/dllearner/algorithm/tbsl/*</exclude>
                         <exclude>org/dllearner/algorithm/qtl/*</exclude>
                     </excludes>
+                    <argLine>-Dlog4j.configuration=log4j.properties -Dlog4j.debug</argLine>
                 </configuration>
             </plugin>
             <plugin>
