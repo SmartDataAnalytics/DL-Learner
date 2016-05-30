@@ -18,11 +18,11 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.util.List;
-import java.util.SortedMap;
-
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.List;
+import java.util.SortedMap;
 
 public class ExamplesWrapper {
 	List<String> correctPosExamples;
