@@ -26,7 +26,9 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.riot.WebContent;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
 import org.dllearner.core.*;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
@@ -105,9 +107,25 @@ public class MultiPropertyAxiomLearner {
 	public void setAxiomTypes(Set<AxiomType<? extends OWLAxiom>> axiomTypes){
 		this.axiomTypes = axiomTypes;
 	}
+
+	private void checkConfigOptions() {
+		if(multiThreaded && maxNrOfThreads == 1) {
+			logger.warn("You enabled multi-threaded execution but set the number of threads to 1. " +
+								"You probably want to increase this value.");
+		}
+
+		if (useSampling && maxExecutionTimeMilliseconds <= 0) {
+			logger.warn(
+					"You enabled sampling but set no execution timeout. This means that the whole data will be loaded " +
+							"locally which might be time and resource consuming. We suggest to either set a timeout or " +
+							"disable the sampling in that case.");
+		}
+	}
 	
 	public void start(){
 		startTime = System.currentTimeMillis();
+
+		checkConfigOptions();
 		
 		//check if entity is empty
 		int popularity = reasoner.getPopularity(entity);
@@ -142,23 +160,34 @@ public class MultiPropertyAxiomLearner {
 					
 					@Override
 					public void run() {
-						SparqlEndpointKS ks = MultiPropertyAxiomLearner.this.ks;
-						
-						// get sample if enabled
-						if(useSampling){
-							Model sample = generateSample(entity, cluster);
-							ks = new LocalModelBasedSparqlEndpointKS(sample);
-						}
-						
-						// process each axiom type
-						for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
-							try {
-								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);
-								results.put(axiomType, result);
-							} catch (Exception e) {
-								logger.error("An error occurred while generating " + axiomType.getName() + 
-										" axioms for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID(), e);
+						try {
+							SparqlEndpointKS ks = MultiPropertyAxiomLearner.this.ks;
+
+							// get sample if enabled
+							if(useSampling){
+								Model sample = generateSample(entity, cluster);
+
+								// if the sample is empty, we skip and show warning
+								if(sample.isEmpty()) {
+									logger.warn("Empty sample. Skipped learning.");
+									return;
+								}
+
+								ks = new LocalModelBasedSparqlEndpointKS(sample);
 							}
+
+							// process each axiom type
+							for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
+								try {
+									List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);
+									results.put(axiomType, result);
+								} catch (Exception e) {
+									logger.error("An error occurred while generating " + axiomType.getName() +
+											" axioms for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID(), e);
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 				});
@@ -245,7 +274,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){
-		logger.info("Generating sample for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID() + "...");
+		logger.info("Generating sample (" + cluster + ") for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID() + "...");
 		Model sample = ModelFactory.createDefaultModel();
 		
 		ParameterizedSparqlString sampleQueryTemplate = cluster.getSampleQuery();
@@ -261,14 +290,22 @@ public class MultiPropertyAxiomLearner {
 			// get next sample
 			logger.debug("Extending sample...");
 			query.setOffset(i++ * pageSize);
-			QueryExecution qe = qef.createQueryExecution(query);
-			Model tmp = qe.execConstruct();
-			sample.add(tmp);
-			
-			// if last call returned empty model, we can leave loop
-			isEmpty = tmp.isEmpty();
+			logger.debug("sending query\n" + query);
+			try (QueryExecution qe=qef.createQueryExecution(query)) {
+				((QueryEngineHTTP)qe).setModelContentType(WebContent.contentTypeRDFXML);
+				Model tmp = qe.execConstruct();
+				sample.add(tmp);
+
+				// if last call returned empty model, we can leave loop
+				isEmpty = tmp.isEmpty();
+			} catch (Exception e) {
+				logger.error("Query execution failed for\n" + query, e);
+			}
 		}
 		logger.info("Finished generating sample. Sample size: " + sample.size() + " triples");
+		if(isEmpty) {
+			logger.info("Sample contains the whole relevant data.");
+		}
 		return sample;
 	}
 	
@@ -289,7 +326,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	/**
-	 * @param multiThreaded the multiThreaded to set
+	 * @param multiThreaded whether to enable multi-threaded execution (@see setMaxNrOfThreads)
 	 */
 	public void setMultiThreaded(boolean multiThreaded) {
 		this.multiThreaded = multiThreaded;
@@ -303,7 +340,8 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	/**
-	 * Set the maximum execution time.
+	 * Set the maximum execution time. Note, this value represents the total computation time of all axiom types that have
+	 * been set, thus, it's recommended to increase the runtime.
 	 * @param executionTimeDuration the execution time
 	 * @param executionTimeUnit the time unit
 	 */
@@ -314,13 +352,22 @@ public class MultiPropertyAxiomLearner {
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://dbpedia.org/sparql"), "http://dbpedia.org");
 //		endpoint = SparqlEndpoint.getEndpointDBpedia();
-		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(new SparqlEndpointKS(endpoint));
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+		ks.init();
+
 		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/league"));
+
+		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(ks);
+		la.setUseSampling(true);
 		la.setEntityToDescribe(entity);
-		la.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				AxiomType.OBJECT_PROPERTY_RANGE, 
+		la.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+				AxiomType.OBJECT_PROPERTY_DOMAIN,
+				AxiomType.OBJECT_PROPERTY_RANGE,
+				AxiomType.SUB_OBJECT_PROPERTY, AxiomType.EQUIVALENT_OBJECT_PROPERTIES,
 				AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY, AxiomType.IRREFLEXIVE_OBJECT_PROPERTY,
-				AxiomType.INVERSE_OBJECT_PROPERTIES));
+				AxiomType.INVERSE_OBJECT_PROPERTIES
+		)
+		);
 		la.setMaxExecutionTime(1, TimeUnit.MINUTES);
 		la.start();
 		
