@@ -366,7 +366,6 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     /**
      * @param classAxiomType the classAxiomType to set
      */
-    @Autowired
     public void setClassAxiomType(String classAxiomType) {
         this.classAxiomType = classAxiomType;
     }
