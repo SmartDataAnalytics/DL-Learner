@@ -23,7 +23,6 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.Set;
@@ -116,16 +115,9 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
 			
-			int nrOfPosExamples = overlap;
-			
-			int nrOfNegExamples = popularity - nrOfPosExamples;
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, p),
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, p), score));
 		}
 	}
 	
@@ -167,32 +159,12 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int overlap = qs.getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
 
-			int nrOfPosExamples = overlap;
-			
-			int nrOfNegExamples = popularity - nrOfPosExamples;
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, candidate),
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, candidate), score));
 		}
 	}
-	
-	public double computeScore(int candidatePopularity, int popularity, int overlap){
-		// compute the estimated precision
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
 
-		// compute the estimated recall
-		double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-		// compute the final score
-		double score = Heuristics.getFScore(recall, precision, beta);
-		
-		return score;
-	}
-	
 	public abstract T getAxiom(OWLObjectProperty property, OWLObjectProperty otherProperty);
 	
 	/**
