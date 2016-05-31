@@ -23,7 +23,6 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.Set;
@@ -117,16 +116,9 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
-			
-			int nrOfPosExamples = overlap;
-			
-			int nrOfNegExamples = popularity - nrOfPosExamples;
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, p),
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
+
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, p), score));
 		}
 	}
 	
@@ -168,26 +160,10 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 			int overlap = qs.getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
 
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, candidate),
-							new AxiomScore(score)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, candidate), score));
 		}
-	}
-	
-	public double computeScore(int candidatePopularity, int popularity, int overlap){
-		// compute the estimated precision
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
-
-		// compute the estimated recall
-		double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-		// compute the final score
-		double score = Heuristics.getFScore(recall, precision, beta);
-		
-		return score;
 	}
 
 	/**

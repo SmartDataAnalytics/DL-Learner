@@ -22,6 +22,7 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -68,7 +69,16 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 	}
 	
 	@Override
-	public double computeScore(int candidatePopularity, int popularity, int overlap) {
-		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
+	public AxiomScore computeScore(int candidatePopularity, int popularity, int overlap) {
+		AxiomScore score = super.computeScore(candidatePopularity, popularity, overlap);
+
+		// we need to invert the value
+		AxiomScore invertedScore = new AxiomScore(
+				1 - score.getAccuracy(),
+				1 - score.getConfidence(),
+				score.getNrOfPositiveExamples(), score.getNrOfNegativeExamples(),
+				score.isSampleBased());
+
+		return invertedScore;
 	}
 }

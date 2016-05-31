@@ -155,7 +155,7 @@ public class AxiomAlgorithms {
 		public static final AxiomTypeCluster OBJECT_PROPERTY_TRANSITIVITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(TRANSITIVE_OBJECT_PROPERTY),
 				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?o ?entity ?o1 . ?s ?entity ?o1 .} "
-						+ "WHERE {?s ?entity ?o . ?o ?entity ?o1 . OPTIONAL {?s ?entity ?o1 .}}"));
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?o ?entity ?o1 . ?s ?entity ?o1 .}}"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_DOMAIN),
