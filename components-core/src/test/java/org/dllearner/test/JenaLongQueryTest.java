@@ -18,10 +18,10 @@
  */
 package org.dllearner.test;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.sparql.engine.http.HttpQuery;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 
 

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.junit.Test;
 
-import com.hp.hpl.jena.graph.NodeFactory;
+import org.apache.jena.graph.NodeFactory;
 
 public class QueryTreeEditDistanceTest {
 

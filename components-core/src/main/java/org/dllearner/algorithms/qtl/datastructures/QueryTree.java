@@ -30,9 +30,9 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNod
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Literal;
 
 /**
  * 

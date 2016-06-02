@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-import com.hp.hpl.jena.graph.Node;
+import org.apache.jena.graph.Node;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 

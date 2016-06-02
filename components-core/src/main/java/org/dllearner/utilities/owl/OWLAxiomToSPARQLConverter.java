@@ -74,9 +74,9 @@ import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.Syntax;
 
 public class OWLAxiomToSPARQLConverter implements OWLAxiomVisitor{
 	

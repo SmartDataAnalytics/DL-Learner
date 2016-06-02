@@ -1,8 +1,8 @@
 package org.dllearner.utilities;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.AccMethodApproximate;
 import org.dllearner.learningproblems.AccMethodThreeValued;

@@ -18,7 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.util;
 
-import com.hp.hpl.jena.sparql.core.Var;
+import org.apache.jena.sparql.core.Var;
 
 /**
  * @author Lorenz Buehmann

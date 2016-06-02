@@ -26,9 +26,9 @@ import org.dllearner.algorithms.qtl.operations.lcs.LCS;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 
 /**
  * @author Lorenz Buehmann

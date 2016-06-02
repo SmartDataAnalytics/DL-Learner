@@ -21,12 +21,12 @@ package org.dllearner.cli;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -429,7 +429,7 @@ public class Enrichment {
 			ksFragment = ksCached;
 			rc = rcCached;
 		} else {
-			System.out.print("extracting fragment ... ");//com.hp.hpl.jena.shared.impl.JenaParameters.enableEagerLiteralValidation = true;
+			System.out.print("extracting fragment ... ");//org.apache.jena.shared.impl.JenaParameters.enableEagerLiteralValidation = true;
 			startTime = System.currentTimeMillis();
 			Model model;
 			if(ks.isRemote()){
@@ -464,7 +464,7 @@ public class Enrichment {
 			ksCached = ksFragment;
 			rcCached = rc;
 //			for (Individual ind : posExamples) {
-//				System.out.println(ResultSetFormatter.asText(com.hp.hpl.jena.query.QueryExecutionFactory.create("SELECT * WHERE {<" + ind.getName() + "> ?p ?o. OPTIONAL{?o a ?o_type}}",model).execSelect()));
+//				System.out.println(ResultSetFormatter.asText(org.apache.jena.query.QueryExecutionFactory.create("SELECT * WHERE {<" + ind.getName() + "> ?p ?o. OPTIONAL{?o a ?o_type}}",model).execSelect()));
 //			}
 		}
 

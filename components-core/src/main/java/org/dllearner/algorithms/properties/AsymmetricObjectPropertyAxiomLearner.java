@@ -32,7 +32,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 
 @ComponentAnn(name = "asymmetric object property axiom learner", shortName = "oplasymm", version = 0.1, description="A learning algorithm for asymmetric object property axioms.")
 public class AsymmetricObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLAsymmetricObjectPropertyAxiom> {

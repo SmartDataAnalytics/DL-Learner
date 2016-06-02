@@ -35,9 +35,9 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 
 @ComponentAnn(name = "functional object property axiom learner", shortName = "oplfunc", version = 0.1, description="A learning algorithm for functional object property axioms.")
 public class FunctionalObjectPropertyAxiomLearner extends

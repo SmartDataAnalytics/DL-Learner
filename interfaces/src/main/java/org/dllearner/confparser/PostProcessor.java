@@ -19,9 +19,9 @@
  */
 package org.dllearner.confparser;
 
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import joptsimple.internal.Strings;
 import org.apache.commons.collections15.CollectionUtils;
 import org.dllearner.cli.ConfFileOption;

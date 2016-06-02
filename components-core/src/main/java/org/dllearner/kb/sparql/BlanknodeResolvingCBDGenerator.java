@@ -22,9 +22,9 @@ import java.util.Set;
 
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * @author Lorenz Buehmann

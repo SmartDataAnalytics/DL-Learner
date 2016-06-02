@@ -18,7 +18,7 @@
  */
 package org.dllearner.algorithms.properties;
 
-import com.hp.hpl.jena.query.*;
+import org.apache.jena.query.*;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.dllearner.core.ComponentAnn;
