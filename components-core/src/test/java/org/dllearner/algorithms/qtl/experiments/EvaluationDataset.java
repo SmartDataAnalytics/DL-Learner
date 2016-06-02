@@ -24,9 +24,9 @@ import java.util.List;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.util.iterator.Filter;
 
 /**
  * Contains a knowledge base and a set of SPARQL queries.

@@ -91,8 +91,8 @@ public class OWLAPIUtils {
     
     public final static Set<OWLDatatype> periodDatatypes = Sets.newTreeSet(Arrays.asList(
     		XSD.DURATION,
-    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
-    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration"))
+    		new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
+    		new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "dayTimeDuration"))
         ));
 	
 	public static final Set<OWLDatatype> numericDatatypes = Sets.union(intDatatypes, floatDatatypes);
@@ -155,7 +155,7 @@ public class OWLAPIUtils {
 	public static final Map<OWLDatatype, PeriodFormatter> periodFormatters = new HashMap<>();
 	static {
 		periodFormatters.put(XSD.DURATION, ISOPeriodFormat.standard());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration")),
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "dayTimeDuration")),
 				new PeriodFormatterBuilder()//PnDTnHnMnS
         .appendLiteral("P")
         .appendDays()
@@ -168,7 +168,7 @@ public class OWLAPIUtils {
         .appendSecondsWithOptionalMillis()
         .appendSuffix("S")
         .toFormatter());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
 				new PeriodFormatterBuilder()//PnYnM
         .appendLiteral("P")
         .appendYears()

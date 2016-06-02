@@ -16,9 +16,9 @@
         <slf4j.version>1.7.16</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.1.4</owlapi.version>
+        <owlapi.version>4.2.4</owlapi.version>
         <spring.version>4.2.4.RELEASE</spring.version>
-        <jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
+        <jena.sparql.api.version>3.0.1-1</jena.sparql.api.version>
 		<pellet.version>2.4.0-dllearner</pellet.version>
 	</properties>
 

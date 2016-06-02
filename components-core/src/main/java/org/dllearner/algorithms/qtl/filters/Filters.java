@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.semanticweb.owlapi.vocab.SKOSVocabulary;
 
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.RDFS;
 
 public class Filters {
 	

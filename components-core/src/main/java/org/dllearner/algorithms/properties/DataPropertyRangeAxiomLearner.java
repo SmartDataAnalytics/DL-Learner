@@ -32,9 +32,9 @@ import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataRange;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 
 @ComponentAnn(name="data property range learner", shortName="dblrange", version=0.1, description="A learning algorithm for reflexive data property range axioms.")
 public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyRangeAxiom> {

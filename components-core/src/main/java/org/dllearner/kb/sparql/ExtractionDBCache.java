@@ -33,13 +33,13 @@ import java.sql.Statement;
 
 import org.dllearner.utilities.Helper;
 
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-//import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
  * The class is used to cache information about resources to a database.
@@ -213,7 +213,7 @@ public class ExtractionDBCache {
 			for (String ngu : endpoint.getNamedGraphURIs()) {
 				queryExecution.addNamedGraph(ngu);
 			}
-			com.hp.hpl.jena.query.ResultSet tmp = queryExecution.execSelect();
+			org.apache.jena.query.ResultSet tmp = queryExecution.execSelect();
 			ResultSetRewindable rs2 = ResultSetFactory.makeRewindable(tmp);
 			String json = SparqlQuery.convertResultSetToJSON(rs2);
 			

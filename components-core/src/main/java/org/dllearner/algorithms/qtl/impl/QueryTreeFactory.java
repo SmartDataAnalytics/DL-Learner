@@ -20,10 +20,10 @@ package org.dllearner.algorithms.qtl.impl;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.Filter;
 
 /**
  * @author Lorenz Buehmann

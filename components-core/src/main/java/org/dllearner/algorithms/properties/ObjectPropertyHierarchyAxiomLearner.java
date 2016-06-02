@@ -18,7 +18,7 @@
  */
 package org.dllearner.algorithms.properties;
 
-import com.hp.hpl.jena.query.*;
+import org.apache.jena.query.*;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;

@@ -29,11 +29,11 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.core.Var;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.core.Var;
 
 /**
  * @author Lorenz Buehmann

@@ -18,7 +18,7 @@
  */
 package org.dllearner.algorithms.properties;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;

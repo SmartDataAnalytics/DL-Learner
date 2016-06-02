@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 public class CachingConciseBoundedDescriptionGenerator implements ConciseBoundedDescriptionGenerator{
 	

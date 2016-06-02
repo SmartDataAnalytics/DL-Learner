@@ -42,16 +42,16 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.sparql.util.NodeComparator;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.util.NodeComparator;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.util.iterator.Filter;
 
 /**
  * 
@@ -79,7 +79,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(String example, Model model) {
@@ -87,7 +87,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model) {
@@ -95,7 +95,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model, int)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model, int)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(String example, Model model, int maxDepth) {
@@ -103,7 +103,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model, int)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model, int)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth) {
@@ -111,7 +111,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(com.hp.hpl.jena.util.iterator.Filter)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
 	@Override
 	public void addDropFilters(Filter<Statement>... dropFilters) {
