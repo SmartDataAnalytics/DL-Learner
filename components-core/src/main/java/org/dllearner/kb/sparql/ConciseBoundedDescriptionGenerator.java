@@ -20,7 +20,7 @@ package org.dllearner.kb.sparql;
 
 import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * According to the definition at http://www.w3.org/Submission/CBD/

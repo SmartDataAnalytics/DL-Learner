@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 
 import org.dllearner.utilities.PrefixCCMap;
 
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 /**
  * A prefix mapping based on http://prefix.cc/

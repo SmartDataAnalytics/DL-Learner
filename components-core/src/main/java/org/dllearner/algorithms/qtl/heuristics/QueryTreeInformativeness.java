@@ -18,8 +18,8 @@
  */
 package org.dllearner.algorithms.qtl.heuristics;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.QueryExecution;
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.QueryExecution;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 

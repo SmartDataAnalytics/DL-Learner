@@ -35,9 +35,9 @@ import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 
 @ComponentAnn(name = "transitive object property axiom learner", shortName = "opltrans", version = 0.1, description="A learning algorithm for transitive object property axioms.")
 public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLTransitiveObjectPropertyAxiom> {

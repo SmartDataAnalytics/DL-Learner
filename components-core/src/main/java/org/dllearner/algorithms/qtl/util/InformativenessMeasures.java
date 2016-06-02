@@ -30,7 +30,7 @@ import org.semanticweb.owlapi.model.OWLProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import com.hp.hpl.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecution;
 
 /**
  * Contains a set of measures to compute the informativeness of a triple based on the work proposed in 

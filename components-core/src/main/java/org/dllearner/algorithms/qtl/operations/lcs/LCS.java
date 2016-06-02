@@ -26,9 +26,9 @@ import java.util.Set;
 import org.dllearner.exceptions.LCSException;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 
 /**
  * Computes the Least Common Subsumer for given rooted RDF graphs. 

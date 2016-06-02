@@ -21,12 +21,12 @@ package org.dllearner.algorithms.properties;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.riot.WebContent;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
@@ -314,7 +314,7 @@ public class MultiPropertyAxiomLearner {
 			query.setOffset(i++ * pageSize);
 			logger.debug("sending query\n" + query);
 			try (QueryExecution qe=qef.createQueryExecution(query)) {
-//				((QueryEngineHTTP)qe).setModelContentType(WebContent.contentTypeRDFXML);
+				((QueryEngineHTTP)qe).setModelContentType(WebContent.contentTypeRDFXML);
 				Model tmp = qe.execConstruct();
 				sample.add(tmp);
 

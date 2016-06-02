@@ -19,7 +19,7 @@
 package org.dllearner.utilities.owl;
 
 import com.google.common.collect.Maps;
-import com.hp.hpl.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.OWL;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.model.*;

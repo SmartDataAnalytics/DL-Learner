@@ -26,9 +26,9 @@ import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLProperty;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * A learning algorithm for property axioms. 

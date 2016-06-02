@@ -18,9 +18,9 @@
  */
 package org.dllearner.kb.aquisitors;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.RDFNode;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 import java.util.*;

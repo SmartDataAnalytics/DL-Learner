@@ -1,8 +1,8 @@
 package org.dllearner.examples;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

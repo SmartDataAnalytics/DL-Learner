@@ -32,9 +32,9 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 
 @ComponentAnn(name = "inverse object property axiom learner", shortName = "oplinv", version = 0.1, description="A learning algorithm for inverse object property axioms.")
 public class InverseObjectPropertyAxiomLearner extends

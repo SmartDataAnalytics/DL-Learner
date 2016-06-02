@@ -18,7 +18,7 @@
  */
 package org.dllearner.kb;
 
-import com.hp.hpl.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;

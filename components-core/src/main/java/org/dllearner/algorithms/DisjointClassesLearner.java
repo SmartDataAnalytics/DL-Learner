@@ -18,9 +18,9 @@
  */
 package org.dllearner.algorithms;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.*;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.*;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
@@ -397,7 +397,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//			for(OntClass cls : model.listOWLClasses().toSet()){
 			//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
 			//				if(superClasses.isEmpty() ||
-			//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
+			//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(org.apache.jena.vocabulary.OWL.Thing.getURI())))){
 			//					topClasses.add(df.getOWLClass(IRI.create(cls.getURI()));
 			//				}
 			//
