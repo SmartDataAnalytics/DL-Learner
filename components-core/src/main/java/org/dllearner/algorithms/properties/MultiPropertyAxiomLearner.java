@@ -326,7 +326,10 @@ public class MultiPropertyAxiomLearner {
 			query.setOffset(i++ * pageSize);
 			logger.debug("sending query\n" + query);
 			try (QueryExecution qe=qef.createQueryExecution(query)) {
-//				((QueryEngineHTTP)qe).setModelContentType(WebContent.contentTypeRDFXML);
+				// set the remaining runtime
+				qe.setTimeout(maxSampleGenerationTimeMilliseconds - (System.currentTimeMillis() - startTime));
+
+				// execute query
 				Model tmp = qe.execConstruct();
 				sample.add(tmp);
 
