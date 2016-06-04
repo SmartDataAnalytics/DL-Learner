@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
+public abstract class AbstractOWLOntologyDataset implements AnalyzedOWLOntologyDataset{
 	
 	protected Collection<OWLOntology> ontologies = new TreeSet<>();
 	protected Collection<OWLOntology> correctOntologies = new TreeSet<>();
@@ -65,7 +65,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	private static final int nrOfThreads = 1;
 	private boolean analyze = false;
 	
-	public AbstractOWLOntologyDataset(String name, boolean analyze) {
+	public AbstractOWLOntologyDataset(File datasetDirectory, String name, boolean analyze) {
 		this.name = name;
 		this.analyze = analyze;
 		//create file structure
@@ -85,8 +85,8 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 		initialize();
 	}
 	
-	public AbstractOWLOntologyDataset(String name) {
-		this(name, false);
+	public AbstractOWLOntologyDataset(File datasetDirectory, String name) {
+		this(datasetDirectory, name, false);
 	}
 	
 	private boolean analyzed(URL url){

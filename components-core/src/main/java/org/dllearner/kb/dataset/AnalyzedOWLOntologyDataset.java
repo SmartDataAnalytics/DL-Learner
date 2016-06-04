@@ -23,11 +23,18 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import java.util.Collection;
 
 /**
- * A collection of OWL ontologies.
+ * A collection of OWL ontologies that have been analyzed w.r.t. incoherency and inconsistency.
  */
-public interface OWLOntologyDataset {
+public interface AnalyzedOWLOntologyDataset extends OWLOntologyDataset{
+
 	/**
-	 * @return the collection of OWL ontologies
+	 * @return the collection of incoherent OWL ontologies
 	 */
-	Collection<OWLOntology> loadOntologies();
+	Collection<OWLOntology> loadIncoherentOntologies();
+
+	/**
+	 * @return the collection of inconsistent OWL ontologies
+	 */
+	Collection<OWLOntology> loadInconsistentOntologies();
+
 }

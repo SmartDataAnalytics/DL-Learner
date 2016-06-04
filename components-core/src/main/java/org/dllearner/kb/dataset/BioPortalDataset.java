@@ -18,6 +18,7 @@
  */
 package org.dllearner.kb.dataset;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -29,8 +30,8 @@ public class BioPortalDataset extends AbstractOWLOntologyDataset{
 	
 	private static final String name = "BioPortal";
 	
-	public BioPortalDataset() {
-		super(name);
+	public BioPortalDataset(File datasetDirectory) {
+		super(datasetDirectory, name);
 	}
 
 	@Override
