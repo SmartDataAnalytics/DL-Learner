@@ -55,7 +55,7 @@ public class OWLPatternDetectionTest {
 		patternFinder.start();
 	}
 
-	@Test
+//	@Test
 	public void testLocalDir(){
 		OntologyRepository repository = new LocalDirectoryOntologyRepository(new File("/media/me/Work-Ext/datasets/owlxml_mowlcorp/files"));
 		repository.initialize();
