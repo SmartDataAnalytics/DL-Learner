@@ -91,6 +91,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
 	public boolean tryPropertyPath = true;
+	// XXX hack
+	public boolean makeItSo = true;
 
 
 	public enum PopularityType {
@@ -494,15 +496,24 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		);
 
 		String query = "SELECT * WHERE {"
-				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
+				+ (tryPropertyPath
+				?"?sub a|(<http://www.w3.org/2000/01/rdf-schema#subClassOf>*/a) <http://www.w3.org/2002/07/owl#Class> . "
+				:"?sub a <http://www.w3.org/2002/07/owl#Class> . ")
 //				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
 				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
 				+ "FILTER(?sub != ?sup)"
 				+ "}";
+		logger.debug(sparql_debug, "fast subsumption hierarchy query="+query);
 		ResultSet rs = executeSelectQuery(query);
-	
+
+		OWLClass top = df.getOWLThing();
+		if (makeItSo) {
+			subsumptionHierarchyDown.put(top, new TreeSet<>());
+		}
+
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
+			logger.debug(sparql_debug, "sub={} sup={}", qs.get("sub"), qs.get("sup"));
 			if (qs.get("sub").isURIResource() && qs.get("sup").isURIResource()) {
 				OWLClass sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
 				OWLClass sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
@@ -522,6 +533,33 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					subsumptionHierarchyUp.put(sub, superClasses);
 				}
 				superClasses.add(sup);
+
+				if (makeItSo) {
+					superClasses.add(top);
+					if (!sup.isOWLThing()) {
+						subsumptionHierarchyDown.get(top).add(sup);
+					}
+					subsumptionHierarchyDown.get(top).add(sub);
+				}
+			}
+		}
+		if (makeItSo) {
+			LinkedList<OWLClassExpression> queue = new LinkedList<>();
+			queue.add(top);
+			while (!queue.isEmpty()) {
+				OWLClassExpression parent = queue.pop();
+				SortedSet<OWLClassExpression> parentSet = subsumptionHierarchyDown.get(parent);
+				for (OWLClassExpression ce : new LinkedHashSet<>(parentSet)) {
+					SortedSet<OWLClassExpression> superSet = subsumptionHierarchyUp.get(ce);
+					if (superSet != null && superSet.contains(parent)) {
+						if (superSet.size() > 1) {
+							superSet.remove(parent);
+							parentSet.remove(ce);
+						} else {
+							queue.push(superSet.first());
+						}
+					}
+				}
 			}
 		}
 		
@@ -650,11 +688,19 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if (!subsumptionHierarchyUp.containsKey(sub)) {
 					subsumptionHierarchyUp.put(sub, new TreeSet<>());
 				}
-				
-				// if there is a super property
-				if(qs.get("sup") != null && qs.get("sup").isURIResource()){
-					OWLDataProperty sup = df.getOWLDataProperty(IRI.create(qs.get("sup").asResource().getURI()));
 
+				OWLDataProperty sup = null;
+				// if there is a super property
+				if(qs.get("sup") != null) {
+					if (qs.get("sup").isURIResource()) {
+						sup = df.getOWLDataProperty(IRI.create(qs.get("sup").asResource().getURI()));
+					}
+				}
+				else if(makeItSo) {
+					sup = df.getOWLTopDataProperty();
+				}
+
+				if (sup != null) {
 					// add sub properties entry
 					if (!subsumptionHierarchyDown.containsKey(sup)) {
 						subsumptionHierarchyDown.put(sup, new TreeSet<>());
@@ -1228,8 +1274,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
-		if(logger.isDebugEnabled()) {
-			logger.debug(sparql_debug, "get individuals result: " + individuals);
+		if(logger.isTraceEnabled()) {
+			logger.trace(sparql_debug, "get individuals result: " + individuals);
 		}
 		return individuals;
 	}
@@ -1264,7 +1310,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			query += " LIMIT " + limit;
 		}
 		if(logger.isDebugEnabled()){
-			logger.debug(sparql_debug, "get individuals query: " + query);
+			logger.debug(sparql_debug, "get individuals count query: " + query);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
@@ -1317,8 +1363,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
-		if(logger.isDebugEnabled()) {
-			logger.debug(sparql_debug, "get individuals excluding result: " + individuals);
+		if(logger.isTraceEnabled()) {
+			logger.trace(sparql_debug, "get individuals excluding result: " + individuals);
 		}
 		return individuals;
 	}
@@ -1488,14 +1534,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		SortedSet<OWLIndividual> objects;
 		while(rs.hasNext()){
 			qs = rs.next();
-			String s = qs.getResource("s").getURI();
-			if (s == null) {
-				System.err.println("s is null;");
-				System.err.println("query = " + query);
-				System.err.println("rs = " + rs);
-				System.exit(1);
-			}
-			sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			Resource s1 = qs.getResource("s");
+			sub = s1.isAnon() ? df.getOWLAnonymousIndividual(s1.asNode().getBlankNodeLabel())
+					: df.getOWLNamedIndividual(IRI.create(s1.getURI()));
 			obj = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
 			objects = subject2objects.get(sub);
 			if(objects == null){
@@ -2043,7 +2084,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		subClasses.remove(description);
 		subClasses.remove(df.getOWLNothing());
-//		System.out.println("Sub(" + description + "):" + subClasses);
+		if(logger.isDebugEnabled()) {
+			logger.debug(sparql_debug, "get subclasses query=" + query);
+			logger.debug(sparql_debug, "Sub(" + description + "):" + subClasses);
+		}
 		return new TreeSet<>(subClasses);
 	}
 	

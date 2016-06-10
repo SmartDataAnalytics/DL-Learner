@@ -10,10 +10,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.OWLAPIUtils;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.net.MalformedURLException;
@@ -24,6 +21,7 @@ import java.util.*;
  * Execute the SAKE Algoritnm
  */
 public class SAKEAlgorithm {
+	final static String NS = "http://www.ontos.com/sake/extractor#";
 	public static void main(String[] args) throws MalformedURLException, ComponentInitException {
 		StringRenderer.setRenderer(StringRenderer.Rendering.DL_SYNTAX);
 
@@ -34,10 +32,13 @@ public class SAKEAlgorithm {
 		ks.init();
 		SPARQLReasoner sparqlReasoner = new SPARQLReasoner(ks);
 		sparqlReasoner.tryPropertyPath = true;
-		sparqlReasoner.init();
 		AbstractReasonerComponent rc = sparqlReasoner;
+		rc.init();
 
 		OWLDataFactory df = new OWLDataFactoryImpl();
+		System.err.println("class hierarchy="+rc.getClassHierarchy());
+		System.err.println("op hierarchy="+rc.getObjectPropertyHierarchy());
+		System.err.println("dp hierarchy="+rc.getDatatypePropertyHierarchy());
 		Set<OWLClass> classes = rc.getClasses();
 		//System.out.println("classes = " + classes);
 		SortedSet<OWLIndividual> failureEvents = rc.getIndividuals(
@@ -53,32 +54,49 @@ public class SAKEAlgorithm {
 		ArrayList<OWLIndividual> samplingList = new ArrayList<OWLIndividual>(nonFatalEvents);
 		Collections.shuffle(samplingList);
 
-		PosNegLPStandard lp = new PosNegLPStandard(rc);
-		lp.setPositiveExamples(fatalEvents);
-		lp.setNegativeExamples(new HashSet<>(samplingList.subList(0, fatalEvents.size())));
-		lp.init();
+		System.err.println("failure events="+fatalEvents);
 
 
-		OWLClassExpression startClass = OWLAPIUtils.fromManchester("Event", rc, df, true);
+		for (int i = 0; i < 5; i++) {
+			System.err.println("now using sample " + (i + 1));
 
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(rc);
-		op.setStartClass(startClass);
-		op.setClassHierarchy(rc.getClassHierarchy());
-		op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
-		op.init();
+			PosNegLPStandard lp = new PosNegLPStandard(rc);
+			lp.setPositiveExamples(fatalEvents);
+			HashSet<OWLIndividual> negativeExamples = new HashSet<>(samplingList.subList(i * fatalEvents.size(), (i + 1) * fatalEvents.size()));
+			lp.setNegativeExamples(negativeExamples);
+			System.err.println("sample=" + negativeExamples);
+			lp.init();
 
-		OEHeuristicRuntime h = new OEHeuristicRuntime();
-		h.init();
 
-		CELOE celoe = new CELOE(lp, rc);
-		celoe.setOperator(op);
-		celoe.setStartClass(startClass);
-		celoe.setMaxExecutionTimeInSeconds(600);
-		celoe.setHeuristic(h);
-		celoe.init();
+			OWLClassExpression startClass = OWLAPIUtils.fromManchester("Event", rc, df, true);
 
-		celoe.start();
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(rc);
+			op.setStartClass(startClass);
+			op.setClassHierarchy(rc.getClassHierarchy());
+			op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
+			op.setUseCardinalityRestrictions(false);
+			op.init();
+
+			OEHeuristicRuntime h = new OEHeuristicRuntime();
+			h.setExpansionPenaltyFactor(0.001);
+			h.init();
+
+			CELOE celoe = new CELOE(lp, rc);
+			celoe.setIgnoredObjectProperties(Collections.singleton(
+					df.getOWLObjectProperty(IRI.create(NS + "hasTelegram"))));
+			celoe.setOperator(op);
+			celoe.setStartClass(startClass);
+			celoe.setMaxExecutionTimeInSeconds(600);
+			celoe.setHeuristic(h);
+			celoe.setReplaceSearchTree(true);
+			celoe.setWriteSearchTree(true);
+			celoe.setSearchTreeFile("sake.tree");
+			celoe.setMaxDepth(15);
+			celoe.init();
+
+			celoe.start();
+		}
 	}
 }
