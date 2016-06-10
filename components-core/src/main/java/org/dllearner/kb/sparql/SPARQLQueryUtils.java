@@ -124,4 +124,8 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_CLASS_INSTANCES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a <%s> .}";
 	public static final String SELECT_INSTANCE_TYPES_QUERY = PREFIXES + "SELECT ?var1 WHERE { <%s> a ?var1 .}";
 	public static final String SELECT_PROPERTY_RELATIONSHIPS_QUERY = PREFIXES + "SELECT ?var1 ?var2 WHERE { ?var1 <%s> ?var2 .}";
+
+	// property paths
+	public static final String SELECT_INSTANCE_TYPES_QUERY_PP = PREFIXES + "SELECT ?var1 WHERE { <%s> a/rdfs:subClassOf* ?var1 .}";
+	public static final String SELECT_CLASSES_QUERY_PP = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf*/a owl:Class .}";
 }

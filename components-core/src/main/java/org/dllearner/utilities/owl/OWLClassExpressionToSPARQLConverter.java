@@ -58,7 +58,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	Stack<String> parentVar = new Stack<>();
 	Stack<OWLClassExpression> parent = new Stack<>();
-	
+	private boolean tryPropertyPath;
+
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
 	}
@@ -71,7 +72,11 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		return mapping;
 	}
 
-	public String convert(String rootVariable, OWLClassExpression expr){
+	public String convert(String rootVariable, OWLClassExpression expr) {
+		return convert(rootVariable,expr,false);
+	}
+	public String convert(String rootVariable, OWLClassExpression expr,boolean tryPropertyPath){
+		this.tryPropertyPath=tryPropertyPath;
 		this.expr = expr;
 		reset();
 		variables.push(rootVariable);
@@ -93,8 +98,11 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, boolean countQuery){
+		return asQuery(rootVariable,expr,countQuery,false);
+	}
+	public Query asQuery(String rootVariable, OWLClassExpression expr, boolean countQuery, boolean tryPropertyPath){
 		String queryString = "SELECT ";
-		String triplePattern = convert(rootVariable, expr);
+		String triplePattern = convert(rootVariable, expr, tryPropertyPath);
 		if(countQuery){
 			queryString += "(COUNT(DISTINCT " + rootVariable + ") AS ?cnt) WHERE {";
 		} else {
@@ -122,9 +130,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities, boolean count){
+		return asQuery(rootVariable, expr, variableEntities, count, false);
+	}
+	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities, boolean count,boolean tryPropertyPath){
 		this.variableEntities = variableEntities;
 		String queryString = "SELECT DISTINCT ";
-		String triplePattern = convert(rootVariable, expr);
+		String triplePattern = convert(rootVariable, expr, tryPropertyPath);
 		if(variableEntities.isEmpty()){
 			queryString += rootVariable + " WHERE {";
 		} else {
@@ -270,7 +281,18 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLClass ce) {
 		if(ce.equals(expr) || !ignoreGenericTypeStatements || !ce.isOWLThing()){
-			sparql += triple(variables.peek(), "a", render(ce));
+			if (tryPropertyPath) {
+				final String subject = variables.peek();
+				final String object = render(ce);
+				final String t0 = newCountVar();
+				sparql += (subject.startsWith("?") ? subject : "<" + subject + ">") +
+//				" a/<http://www.w3.org/2000/01/rdf-schema#subClassOf>* " +
+						// XXX workaround for buggy virtuoso
+				" a|(a/<http://www.w3.org/2000/01/rdf-schema#subClassOf>*) " +
+				object + ".\n";
+			} else {
+				sparql += triple(variables.peek(), "a", render(ce));
+			}
 		}
 	}
 

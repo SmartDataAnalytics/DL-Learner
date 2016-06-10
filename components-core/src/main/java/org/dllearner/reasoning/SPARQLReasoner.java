@@ -90,8 +90,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
-	
-	
+	public boolean tryPropertyPath = true;
+
+
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY
 	}
@@ -168,15 +169,15 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		// this is only done if the reasoner is setup via config file
 		if(qef == null) {
 			if(ks == null) {
-				KnowledgeSource abstract_ks = sources.iterator().next();
-				if (SparqlEndpointKS.class.isAssignableFrom(abstract_ks.getClass())) {
-					ks = (SparqlEndpointKS) abstract_ks;
+				KnowledgeSource abstractKs = sources.iterator().next();
+				if (SparqlEndpointKS.class.isAssignableFrom(abstractKs.getClass())) {
+					ks = (SparqlEndpointKS) abstractKs;
 				} else {
-					OWLFile owl_file = (OWLFile) abstract_ks;
-					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
-					logger.debug(sparql_debug, "file reasoning: " + ((owl_file.getReasoning() == null || owl_file.getReasoning().getReasonerFactory() == null) ? "(none)"
-							: owl_file.getReasoning().getReasonerFactory().getURI()));
-					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getReasoning());
+					OWLFile owlFile = (OWLFile) abstractKs;
+					Model model = RDFDataMgr.loadModel(owlFile.getURL().getFile());
+					logger.debug(sparql_debug, "file reasoning: " + ((owlFile.getReasoning() == null || owlFile.getReasoning().getReasonerFactory() == null) ? "(none)"
+							: owlFile.getReasoning().getReasonerFactory().getURI()));
+					ks = new LocalModelBasedSparqlEndpointKS(model, owlFile.getReasoning());
 				}
 				if (sources.size() > 1) {
 					throw new ComponentInitException("SPARQLReasoner only supports a single knowledge source");
@@ -228,7 +229,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		long start = System.currentTimeMillis();
 		
 		if (batchedMode) {
-			String query = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT ?type (COUNT(?s) AS ?cnt) WHERE {?s a ?type . ?type a owl:Class .} GROUP BY ?type";
+			String query = tryPropertyPath
+			?"PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT ?type (COUNT(?s) AS ?cnt) WHERE {?s a ?type . ?type <http://www.w3.org/2000/01/rdf-schema#subClassOf>*/a owl:Class .} GROUP BY ?type"
+			:"PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT ?type (COUNT(?s) AS ?cnt) WHERE {?s a ?type . ?type a owl:Class .} GROUP BY ?type";
 			ResultSet rs = executeSelectQuery(query);
 			while (rs.hasNext()) {
 				QuerySolution qs = rs.next();
@@ -833,7 +836,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public Set<OWLClass> getTypesImpl(OWLIndividual individual) {
-		String query = String.format(SPARQLQueryUtils.SELECT_INSTANCE_TYPES_QUERY, individual.toStringID());
+		String query = tryPropertyPath
+		? String.format(SPARQLQueryUtils.SELECT_INSTANCE_TYPES_QUERY_PP, individual.toStringID())
+		: String.format(SPARQLQueryUtils.SELECT_INSTANCE_TYPES_QUERY, individual.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		SortedSet<OWLClass> types = asOWLEntities(EntityType.CLASS, rs, "var1");
 		return types;
@@ -924,7 +929,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClass> getOWLClasses(String namespace) {
 		ResultSet rs;
 		if (!laxMode) {
-			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_CLASSES_QUERY);
+			rs = executeSelectQuery(tryPropertyPath
+					? SPARQLQueryUtils.SELECT_CLASSES_QUERY_PP
+					: SPARQLQueryUtils.SELECT_CLASSES_QUERY);
 		} else {
 			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_CLASSES_QUERY_ALT);
 		}
@@ -934,7 +941,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public Set<OWLClass> getNonEmptyOWLClasses() {
-		String query = "SELECT DISTINCT ?var1 WHERE {?var1 a <http://www.w3.org/2002/07/owl#Class>. FILTER EXISTS{[] a ?var1}}";
+		String query = tryPropertyPath
+		? "SELECT DISTINCT ?var1 WHERE {?var1 <http://www.w3.org/2000/01/rdf-schema#subClassOf>*/a <http://www.w3.org/2002/07/owl#Class>. FILTER EXISTS{[] a ?var1}}"
+		: "SELECT DISTINCT ?var1 WHERE {?var1 a <http://www.w3.org/2002/07/owl#Class>. FILTER EXISTS{[] a ?var1}}";
 		ResultSet rs = executeSelectQuery(query);
 		SortedSet<OWLClass> classes = asOWLEntities(EntityType.CLASS, rs, "var1");
 		return classes;
@@ -1196,24 +1205,21 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query;
 		
 		if (indValues != null) {
-			String tp = converter.convert("?ind", description);
+			String tp = converter.convert("?ind", description, tryPropertyPath);
 			query = "SELECT DISTINCT ?ind WHERE { \n"
 					+ "VALUES ?ind { \n";
 			for (OWLIndividual x:indValues) {
 				query += "<" + x.toStringID() + "> ";
 			}
 			query += "}. \n " + tp + "\n}";
-			//query = converter.asQuery("?ind", description).toString();
-			//System.exit(1); // XXX
 		} else {
-			query = converter.asQuery("?ind", description, false).toString();//System.out.println(query);
+			query = converter.asQuery("?ind", description, false, tryPropertyPath).toString();
 		}
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
-//		query = String.format(SPARQLQueryUtils.PREFIXES + " SELECT ?ind WHERE {?ind rdf:type/rdfs:subClassOf* <%s> .}", description.asOWLClass().toStringID());
-		if(logger.isDebugEnabled()){Thread.dumpStack();
-		logger.debug(sparql_debug, "get individuals query: " + query);
+		if(logger.isDebugEnabled()){
+			logger.debug(sparql_debug, "get individuals query: " + query);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
@@ -1222,7 +1228,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
-		logger.debug(sparql_debug, "get individuals result: " + individuals);
+		if(logger.isDebugEnabled()) {
+			logger.debug(sparql_debug, "get individuals result: " + individuals);
+		}
 		return individuals;
 	}
 	
@@ -1240,7 +1248,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query;
 		
 		if (indValues != null) {
-			String tp = converter.convert("?ind", description);
+			String tp = converter.convert("?ind", description, tryPropertyPath);
 			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n"
 					+ "VALUES ?ind { \n";
 			for (OWLIndividual x:indValues) {
@@ -1248,9 +1256,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			}
 			query += "}. \n " + tp + "\n}";
 		} else {
-			query = converter.asQuery("?ind", description, true).toString();
+			query = converter.asQuery("?ind", description, true, tryPropertyPath).toString();
 			System.err.println(query);
-			System.exit(1);
+			System.exit(1); // XXX
 		}
 		if(limit != 0) {
 			query += " LIMIT " + limit;
@@ -1262,7 +1270,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
 			if(qs.get("cnt").isLiteral()){
-				int ret = qs.get("cnt").asLiteral().getInt();logger.debug(sparql_debug, "result: "+ret);
+				int ret = qs.get("cnt").asLiteral().getInt();
+				logger.debug(sparql_debug, "result: "+ret);
 				return ret;
 			}
 		}
@@ -1288,12 +1297,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
 		SortedSet<OWLIndividual> individuals = new TreeSet<>();
+		String wantedP = converter.convert("?ind", wantedClass, tryPropertyPath);
+		String excludeP = converter.convert("?ind", excludeClass, tryPropertyPath);
 		String query =
 				"SELECT DISTINCT ?ind WHERE {" +
-						"?ind a <"+((OWLClass)wantedClass).toStringID() + "> . " +
-						"FILTER NOT EXISTS { ?ind a <" + ((OWLClass)excludeClass).toStringID() + "> } }";
+						wantedP +
+						"FILTER NOT EXISTS { " + excludeP + " } }";
 		if(limit != 0) {
 			query += " LIMIT " + limit;
+		}
+		if(logger.isDebugEnabled()){
+			logger.debug(sparql_debug, "get individuals excluding query: " + query);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -1302,6 +1316,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			if(qs.get("ind").isURIResource()){
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
+		}
+		if(logger.isDebugEnabled()) {
+			logger.debug(sparql_debug, "get individuals excluding result: " + individuals);
 		}
 		return individuals;
 	}
@@ -1424,7 +1441,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) {
-		// TODO Auto-generated method stub
+		logger.warn("getRelatedValued not implemented");
 		return null;
 	}
 
@@ -1471,6 +1488,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		SortedSet<OWLIndividual> objects;
 		while(rs.hasNext()){
 			qs = rs.next();
+			String s = qs.getResource("s").getURI();
+			if (s == null) {
+				System.err.println("s is null;");
+				System.err.println("query = " + query);
+				System.err.println("rs = " + rs);
+				System.exit(1);
+			}
 			sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			obj = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
 			objects = subject2objects.get(sub);
@@ -1642,7 +1666,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
-		// TODO Auto-generated method stub
+		logger.warn("getStringDatatypeMembers not implemented");
 		return null;
 	}
 
@@ -1678,8 +1702,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public Set<OWLObjectProperty> getObjectPropertiesWithDomain(OWLClass domain) {
 		Set<OWLObjectProperty> properties = new TreeSet<>();
-		
-		String query = "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> <" + domain.toStringID() + ">.}";
+
+		// B subclassof A
+		// ?p domain B
+		// -> ?p domain A
+
+		// ?p domain A
+		String query = tryPropertyPath
+		? "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> ?t0 . "
+		  + "<" + domain.toStringID() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?t0 .}"
+		: "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> <" + domain.toStringID() + ">.}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1693,7 +1725,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLObjectProperty> getObjectProperties(OWLClass cls) {
 		Set<OWLObjectProperty> properties = new TreeSet<>();
 		
-		String query = "SELECT DISTINCT ?p WHERE {?s a <" + cls.toStringID() + ">. ?s ?p ?o}";
+		String query = tryPropertyPath
+		?"SELECT DISTINCT ?p WHERE {?s a ?t0 . <" + cls.toStringID() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?t0 . ?s ?p ?o}"
+		:"SELECT DISTINCT ?p WHERE {?s a <" + cls.toStringID() + ">. ?s ?p ?o}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1908,13 +1942,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 //		}
 //		return definitions;
 	}
-
+/*
 	@Override
 	public Set<OWLClassExpression> isSuperClassOfImpl(Set<OWLClassExpression> superClasses, OWLClassExpression subClasses) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	
 	public SortedSet<OWLClassExpression> getMostGeneralClasses() {
 		return hierarchy.getMostGeneralClasses();
