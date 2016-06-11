@@ -274,8 +274,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(initialized) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
-//		System.out.println("subHierarchy: " + subHierarchy);
-//		System.out.println("object properties: " + reasoner.getObjectProperties());
+		if (logger.isTraceEnabled()) {
+			logger.trace("subHierarchy: " + subHierarchy);
+			logger.trace("object properties: " + reasoner.getObjectProperties());
+		}
 
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -502,7 +504,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 			List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
 
-//		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
+		if(logger.isTraceEnabled()) {
+			logger.trace("|- " + description + " " + currDomain + " " + maxLength);
+		}
 
 		// actions needing to be performed if this is the first time the
 		// current domain is used
@@ -1294,6 +1298,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// M is finite and contains elements of length (currently) at most 3
 	private void computeM(OWLClassExpression nc) {
 		long mComputationTimeStartNs = System.nanoTime();
+		logger.debug(sparql_debug, "computeM domain " + nc);
 
 		mA.put(nc, new TreeMap<>());
 		// initialise all possible lengths (1 to mMaxLength)
@@ -1303,6 +1308,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// most general classes, which are not disjoint with nc and provide real refinement
 		SortedSet<OWLClassExpression> m1 = getClassCandidates(nc);
+		if (logger.isTraceEnabled()) {
+			logger.trace("cM1="+m1);
+		}
 		mA.get(nc).get(lengthMetric.classLength).addAll(m1);
 
 		// most specific negated classes, which are not disjoint with nc

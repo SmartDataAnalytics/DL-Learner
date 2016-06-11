@@ -500,8 +500,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				?"?sub a|(<http://www.w3.org/2000/01/rdf-schema#subClassOf>*/a) <http://www.w3.org/2002/07/owl#Class> . "
 				:"?sub a <http://www.w3.org/2002/07/owl#Class> . ")
 //				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
-				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
-				+ "FILTER(?sub != ?sup)"
+				+ "OPTIONAL { ?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
+				+ "FILTER(?sub != ?sup) } "
 				+ "}";
 		logger.debug(sparql_debug, "fast subsumption hierarchy query="+query);
 		ResultSet rs = executeSelectQuery(query);
@@ -513,11 +513,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			logger.debug(sparql_debug, "sub={} sup={}", qs.get("sub"), qs.get("sup"));
-			if (qs.get("sub").isURIResource() && qs.get("sup").isURIResource()) {
+			OWLClass sup = null;
+			if (qs.get("sup") != null && qs.get("sup").isURIResource()) {
+				sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
+			}
+			else if(makeItSo) {
+				sup = df.getOWLThing();
+			}
+			if (qs.get("sub").isURIResource() && sup != null) {
 				OWLClass sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
-				OWLClass sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
-				
+
 				//add subclasses
 				SortedSet<OWLClassExpression> subClasses = subsumptionHierarchyDown.get(sup);
 				if (subClasses == null) {
@@ -548,15 +553,22 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			queue.add(top);
 			while (!queue.isEmpty()) {
 				OWLClassExpression parent = queue.pop();
+				System.err.println("\\"+parent);
 				SortedSet<OWLClassExpression> parentSet = subsumptionHierarchyDown.get(parent);
 				for (OWLClassExpression ce : new LinkedHashSet<>(parentSet)) {
 					SortedSet<OWLClassExpression> superSet = subsumptionHierarchyUp.get(ce);
-					if (superSet != null && superSet.contains(parent)) {
-						if (superSet.size() > 1) {
-							superSet.remove(parent);
-							parentSet.remove(ce);
-						} else {
-							queue.push(superSet.first());
+					if (superSet != null) {
+						if (superSet.contains(parent)) {
+							if (superSet.size() > 1) {
+								superSet.remove(parent);
+								parentSet.remove(ce);
+							}
+						}
+						if (!superSet.contains(parent) && !superSet.isEmpty()) {
+							OWLClassExpression first = superSet.first();
+							if (!queue.contains(first)) {
+								queue.push(first);
+							}
 						}
 					}
 				}
