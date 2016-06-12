@@ -18,11 +18,9 @@
  */
 package org.dllearner.core;
 
-import java.util.Comparator;
-
-import org.dllearner.algorithms.celoe.OENode;
-
 import com.google.common.collect.ComparisonChain;
+
+import java.util.Comparator;
 
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
@@ -32,7 +30,7 @@ import com.google.common.collect.ComparisonChain;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractHeuristic extends AbstractComponent implements Heuristic, Comparator<OENode>{
+public abstract class AbstractHeuristic<T extends AbstractSearchTreeNode<T>> extends AbstractComponent implements Heuristic, Comparator<T>{
 	
 	public AbstractHeuristic() {}
 	
@@ -42,13 +40,13 @@ public abstract class AbstractHeuristic extends AbstractComponent implements Heu
 	}
 	
 	@Override
-	public int compare(OENode node1, OENode node2) {
+	public int compare(T node1, T node2) {
 		return ComparisonChain.start()
 				.compare(getNodeScore(node1), getNodeScore(node2))
 				.compare(node1.getDescription(), node2.getDescription())
 				.result();
 	}
 
-	public abstract double getNodeScore(OENode node);
+	public abstract double getNodeScore(T node);
 
 }

@@ -18,12 +18,12 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import org.dllearner.core.AbstractSearchTreeNode;
+
 import java.util.Collection;
 import java.util.Comparator;
 
-import org.dllearner.core.AbstractSearchTreeNode;
-
-public class SearchTreeNonWeakPartialSet<T extends AbstractSearchTreeNode & WeakSearchTreeNode>
+public class SearchTreeNonWeakPartialSet<T extends AbstractSearchTreeNode<T> & WeakSearchTreeNode>
 	extends SearchTreeNonWeak<T> implements SearchTreePartialSet<T> {
 
 	public SearchTreeNonWeakPartialSet(Comparator<T> comparator) {

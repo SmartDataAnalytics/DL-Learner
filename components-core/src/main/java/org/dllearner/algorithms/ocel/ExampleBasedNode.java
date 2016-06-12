@@ -200,7 +200,12 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public OWLClassExpression getExpression() {
 		return getConcept();
 	}
-	
+
+	@Override
+	public OWLClassExpression getDescription() {
+		return concept;
+	}
+
 	public QualityEvaluationMethod getQualityEvaluationMethod() {
 		return qualityEvaluationMethod;
 	}

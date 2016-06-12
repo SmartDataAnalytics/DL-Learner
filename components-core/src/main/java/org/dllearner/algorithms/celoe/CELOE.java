@@ -79,7 +79,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 
 	private SearchTree<OENode> searchTree;
 	@ConfigOption(defaultValue="celoe_heuristic")
-	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
+	private AbstractHeuristic<OENode> heuristic; // = new OEHeuristicRuntime();
 	// the class with which we start the refinement process
 	@ConfigOption(defaultValue = "owl:Thing",
 			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
@@ -335,7 +335,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-				
+			if (writeSearchTree) {
+				writeSearchTree(refinements);
+			}
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
@@ -348,6 +350,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 					// add node to search tree
 					addNode(refinement, nextNode);
+				} else {
+					logger.trace("" + refinement +". length " + length + " >? " + horizExp + " && depth " + OWLClassExpressionUtils.getDepth(refinement) + " <=? " + maxDepth);
 				}
 			}
 			
@@ -358,7 +362,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// write the search tree (if configured)
 			if (writeSearchTree) {
-				writeSearchTree(refinements);
+				writeSearchTree(null);
 			}
 		}
 		
@@ -787,7 +791,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
 		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
-		if (refinements.size() > 1) {
+		if (refinements != null && refinements.size() > 1) {
 			treeString.append("all expanded nodes:\n");
 			for (OWLClassExpression ref : refinements) {
 				treeString.append("   ").append(ref).append("\n");

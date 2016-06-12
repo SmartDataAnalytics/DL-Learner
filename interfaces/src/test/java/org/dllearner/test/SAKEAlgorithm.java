@@ -2,14 +2,17 @@ package org.dllearner.test;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.StringRenderer;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AccMethodPredAcc;
 import org.dllearner.learningproblems.AccMethodPredAccOCEL;
-import org.dllearner.learningproblems.AccMethodPredAccWeighted;
 import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.OWLAPIUtils;
@@ -29,6 +32,60 @@ public class SAKEAlgorithm {
 	final static String NS = "http://www.ontos.com/sake/extractor#";
 
 	@Test
+	public void testSomething2() throws ComponentInitException, MalformedURLException {
+		boolean sparql = true;
+		StringRenderer.setRenderer(StringRenderer.Rendering.DL_SYNTAX);
+
+		AbstractKnowledgeSource ks;
+		AbstractReasonerComponent rc;
+		SPARQLReasoner sparqlReasoner;
+		if (sparql) {
+			SparqlEndpointKS sparqlEndpointKS = new SparqlEndpointKS();
+			sparqlEndpointKS.setUrl(new URL("http://sake.informatik.uni-leipzig.de:8850/sparql"));
+			sparqlEndpointKS.setDefaultGraphURIs(Collections.singletonList("http://sake-projekt.de"));
+			sparqlEndpointKS.setUseCache(false);
+			sparqlEndpointKS.init();
+			sparqlReasoner = new SPARQLReasoner(sparqlEndpointKS);
+			sparqlReasoner.tryPropertyPath = true;
+			ks = sparqlEndpointKS;
+			rc = sparqlReasoner;
+		} else {
+			OWLFile owlFile = new OWLFile();
+			owlFile.setFileName(System.getenv("HOME")+"/sake-ont/SAKE-event-ontology_v3-plus.ttl");
+			owlFile.init();
+			OWLAPIReasoner owlapiReasoner = new OWLAPIReasoner(owlFile);
+			ks = owlFile;
+			rc = owlapiReasoner;
+		}
+		rc.init();
+
+		System.err.println(""+rc.getClassHierarchy());
+		Map<OWLObjectProperty, OWLClassExpression> opRanges = rc.getObjectPropertyRanges();
+		System.err.println("opRanges="+ opRanges);
+
+
+		OWLDataFactory df = new OWLDataFactoryImpl();
+
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(rc);
+		//if (sparql) {
+
+		//} else {
+			op.setInstanceBasedDisjoints(false);
+		//}
+		op.init();
+
+		OWLClassExpression currDomain = opRanges.get(df.getOWLObjectProperty(IRI.create(NS + "containsFailureData")));
+		Set<OWLClassExpression> refinement1 = op.refine(df.getOWLThing(), 1, null,
+				currDomain);
+		System.err.println("domain:"+currDomain);
+		System.err.println("refinement:"+ refinement1);
+		for (OWLClassExpression ce : refinement1) {
+			System.err.println("refinement of " + ce + ": "+op.refine(ce, 1, null, currDomain));
+		}
+	}
+
+	@Test
 	public void testSomething() throws ComponentInitException, MalformedURLException {
 		StringRenderer.setRenderer(StringRenderer.Rendering.DL_SYNTAX);
 
@@ -44,19 +101,21 @@ public class SAKEAlgorithm {
 
 		OWLDataFactory df = new OWLDataFactoryImpl();
 
+		OWLClassExpression description = OWLAPIUtils.fromManchester("Event and (containsFailureData some owl:Thing)", rc, df, true);
+		OWLClassExpression startClass = OWLAPIUtils.fromManchester("Event", rc, df, true);
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(rc);
-		//op.setLengthMetric(OWLClassExpressionLengthMetric.getOCELMetric());
-		//op.setStartClass(startClass);
-		op.setClassHierarchy(rc.getClassHierarchy());
-		op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
+		op.setLengthMetric(OWLClassExpressionLengthMetric.getOCELMetric());
+		op.setStartClass(startClass);
+		//op.setClassHierarchy(rc.getClassHierarchy());
+		//op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
+		//op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
+			op.setInstanceBasedDisjoints(false);
 		op.setUseCardinalityRestrictions(false);
 		op.init();
 
-		OWLClassExpression description = OWLAPIUtils.fromManchester("Event and hasPredecessor some (Event and containsFailureData some FailureData)", rc, df, true);
 		System.err.println("ce="+description);
-		Set<OWLClassExpression> refinements = op.refine(description, 9);
+		Set<OWLClassExpression> refinements = op.refine(description, 4);
 		for (OWLClassExpression r : refinements) {
 			System.err.println("`" + r);
 		}
@@ -74,12 +133,13 @@ public class SAKEAlgorithm {
 
 		for (int i = 0; i < 5; i++) {
 			System.err.println("now using sample " + (i + 1));
-			AccMethodPredAccWeighted ac = new AccMethodPredAccWeighted(true);
-			ac.setBalanced(true);
+//			AccMethodPredAccWeighted ac = new AccMethodPredAccWeighted(true);
+//			ac.setBalanced(true);
+			AccMethodTwoValued ac = new AccMethodPredAccOCEL(true);
 
 			PosNegLPStandard lp = new PosNegLPStandard(rc);
 			lp.setPositiveExamples(fatalEvents);
-			HashSet<OWLIndividual> negativeExamples = new HashSet<>(samplingList.subList(i * fatalEvents.size() * 10, (i + 1) * fatalEvents.size() * 10));
+			HashSet<OWLIndividual> negativeExamples = new HashSet<>(samplingList.subList(i * fatalEvents.size(), (i + 1) * fatalEvents.size()));
 			lp.setNegativeExamples(negativeExamples);
 			System.err.println("sample=" + negativeExamples.size());
 			lp.setAccuracyMethod(ac);
@@ -87,7 +147,7 @@ public class SAKEAlgorithm {
 
 
 			for (OWLClassExpression r : refinements) {
-				System.err.println("`" + r + ", " + lp.getAccuracyOrTooWeak(r));
+				System.err.println("`" + r + ", " + lp.getAccuracyOrTooWeak(r, 1));
 			}
 		}
 	}
@@ -126,10 +186,12 @@ public class SAKEAlgorithm {
 
 		System.err.println("failure events="+fatalEvents);
 
+		sparqlReasoner.tryPropertyPath=false;
 
 		for (int i = 0; i < 5; i++) {
 			System.err.println("now using sample " + (i + 1));
-			AccMethodTwoValued ac = new AccMethodPredAccOCEL(true);
+			//AccMethodTwoValued ac = new AccMethodPredAccOCEL(true);
+			AccMethodTwoValued ac = new AccMethodPredAcc(true);
 
 			PosNegLPStandard lp = new PosNegLPStandard(rc);
 			lp.setPositiveExamples(fatalEvents);
@@ -150,6 +212,8 @@ public class SAKEAlgorithm {
 			//op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
 			//op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
 			op.setUseCardinalityRestrictions(false);
+			op.setInstanceBasedDisjoints(false);
+			op.setUseBooleanDatatypes(false);
 			op.init();
 
 			OEHeuristicRuntime h = new OEHeuristicRuntime();

@@ -32,7 +32,7 @@ import org.dllearner.core.config.ConfigOption;
  *
  */
 @ComponentAnn(name = "OEHeuristicRuntime", shortName = "celoe_heuristic", version = 0.5)
-public class OEHeuristicRuntime extends AbstractHeuristic{
+public class OEHeuristicRuntime extends AbstractHeuristic<OENode>{
 	
 	
 	@ConfigOption(description = "penalty for long descriptions (horizontal expansion) (strong by default)", defaultValue = "0.1")

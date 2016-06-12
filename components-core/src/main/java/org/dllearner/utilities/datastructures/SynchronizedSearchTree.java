@@ -18,14 +18,13 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractSearchTreeNode;
+
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractSearchTreeNode;
-
-import com.google.common.collect.Sets;
-
-public class SynchronizedSearchTree<T extends AbstractSearchTreeNode> extends AbstractSearchTree<T> {
+public class SynchronizedSearchTree<T extends AbstractSearchTreeNode<T>> extends AbstractSearchTree<T> {
 
 	public SynchronizedSearchTree(Comparator<T> comparator) {
 		super(comparator);

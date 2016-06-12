@@ -1439,11 +1439,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
 			}
 			qe.close();
+			//XXX remove self -> proper way: remove unmeaningful classes
+			meaningfulClasses.remove(index);
 			candidates.addAll(meaningfulClasses);
 			// recursive call, i.e. go class hierarchy down for non-meaningful classes
-//			for (OWLClassExpression cls : Sets.difference(superClasses, meaningfulClasses)) {
-//				candidates.addAll(getNegClassCandidatesRecursive(index, cls));
-//			}
+			for (OWLClassExpression cls : Sets.difference(subClasses, meaningfulClasses)) {
+				candidates.addAll(getClassCandidatesRecursive(index, cls));
+			}
 		} else {
 
 			// we descend the subsumption hierarchy to ensure that we get
@@ -1513,7 +1515,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
 							+ "}";
 			query += "}";
-//			System.out.println(query);
+			if (logger.isDebugEnabled()) {
+				logger.debug(sparql_debug, "getNegClassCandidatesRecursive query=" + query);
+			}
 			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
 			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
 			ResultSet rs = qe.execSelect();

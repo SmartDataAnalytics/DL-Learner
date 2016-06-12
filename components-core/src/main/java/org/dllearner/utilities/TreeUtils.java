@@ -23,12 +23,15 @@ import org.dllearner.utilities.datastructures.AbstractSearchTree;
 
 public class TreeUtils {
 
-	public static String toTreeString(
-			AbstractSearchTree<? extends AbstractSearchTreeNode<? extends AbstractSearchTreeNode>> tree) {
-		return TreeUtils.toTreeString(tree.getRoot());
+	public static
+	<T extends AbstractSearchTreeNode<T>>
+	String toTreeString(AbstractSearchTree<T> tree) {
+		return TreeUtils.toTreeString(tree, tree.getRoot());
 	}
-	public static String toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
-		return TreeUtils.toTreeString(node, 0).toString();
+	public static
+	<T extends AbstractSearchTreeNode<T>>
+	String toTreeString(AbstractSearchTree<T> tree, T node) {
+		return TreeUtils.toTreeString(tree, node, 0).toString();
 	}
 	public static String getRefinementChainString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
 		if(node.getParent()!=null) {
@@ -40,16 +43,17 @@ public class TreeUtils {
 		}
 	}
 
-	private static StringBuilder toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node,
-			int depth) {
+	private static
+	<T extends AbstractSearchTreeNode<T>>
+	StringBuilder  toTreeString(AbstractSearchTree<T> tree, T node, int depth) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(node.toString()).append("\n");
-		for(AbstractSearchTreeNode child : node.getChildren()) {
-			treeString.append(TreeUtils.toTreeString(child, depth+1));
+		treeString.append(node.toString() + " S:"+tree.getHeuristic().getNodeScore(node)).append("\n");
+		for(T child : node.getChildren()) {
+			treeString.append(TreeUtils.<T>toTreeString(tree, child, depth+1));
 		}
 		return treeString;
 	}

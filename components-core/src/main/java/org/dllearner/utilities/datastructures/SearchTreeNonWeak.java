@@ -27,7 +27,7 @@ import java.util.Comparator;
  *
  * @param <T>
  */
-public class SearchTreeNonWeak<T extends AbstractSearchTreeNode & WeakSearchTreeNode> extends SearchTree<T> {
+public class SearchTreeNonWeak<T extends AbstractSearchTreeNode<T> & WeakSearchTreeNode> extends SearchTree<T> {
 
 	public SearchTreeNonWeak(Comparator<T> comparator) {
 		super(comparator);

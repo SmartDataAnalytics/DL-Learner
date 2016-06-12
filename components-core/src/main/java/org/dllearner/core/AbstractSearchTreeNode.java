@@ -18,17 +18,13 @@
  */
 package org.dllearner.core;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.dllearner.utilities.datastructures.AbstractSearchTree;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode> implements SearchTreeNode {
+import java.util.*;
+
+public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode<T>> implements SearchTreeNode {
 
 	protected Set< AbstractSearchTree<T> > trees = new HashSet<>();
 	protected T parent;
@@ -37,12 +33,14 @@ public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode> 
 	@Override
 	public abstract OWLClassExpression getExpression();
 
+	public abstract Comparable<?> getDescription();
+
 	/**
 	 * add a child node to this node
 	 * @param node the child node
 	 */
 	public void addChild(T node) {
-		node.setParent(this);
+		node.setParent((T)this);
 		children.add(node);
 		node.notifyTrees(this.trees);
 	}
@@ -102,4 +100,5 @@ public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode> 
 	public Collection<T> getChildren() {
 		return children;
 	}
+
 }

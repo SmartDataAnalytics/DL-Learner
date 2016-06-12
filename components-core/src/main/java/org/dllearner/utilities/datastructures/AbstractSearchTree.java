@@ -18,11 +18,12 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractSearchTreeNode;
 
 import java.util.*;
 
-public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
+public class AbstractSearchTree <T extends AbstractSearchTreeNode<T>> {
 
 	// all nodes in the search tree (used for selecting most promising node)
 	protected NavigableSet<T> nodes;
@@ -153,4 +154,8 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 		return root;
 	}
 
+	public AbstractHeuristic<T> getHeuristic() {
+		return (sortOrderComp instanceof AbstractHeuristic)
+				? (AbstractHeuristic<T>) sortOrderComp : null;
+	}
 }
