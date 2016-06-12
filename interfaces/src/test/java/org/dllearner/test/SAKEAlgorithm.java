@@ -218,11 +218,15 @@ public class SAKEAlgorithm {
 
 			OEHeuristicRuntime h = new OEHeuristicRuntime();
 			h.setExpansionPenaltyFactor(0.001);
+			h.setStartNodeBonus(0);
 			h.init();
 
 			CELOE celoe = new CELOE(lp, rc);
 			celoe.setIgnoredObjectProperties(Collections.singleton(
 					df.getOWLObjectProperty(IRI.create(NS + "hasTelegram"))));
+			celoe.setIgnoredConcepts(Collections.singleton(
+					(OWLClass) OWLAPIUtils.fromManchester("FailureData_999999", rc, df, true)
+			));
 			celoe.setOperator(op);
 			celoe.setStartClass(startClass);
 			celoe.setMaxExecutionTimeInSeconds(600);

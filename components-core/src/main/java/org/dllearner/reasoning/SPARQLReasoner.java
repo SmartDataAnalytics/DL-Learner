@@ -987,7 +987,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClass> getOWLClasses(String namespace) {
 		ResultSet rs;
 		if (!laxMode) {
-			rs = executeSelectQuery(tryPropertyPath
+			rs = executeSelectQuery((tryPropertyPath||makeItSo/*XXX*/)
 					? SPARQLQueryUtils.SELECT_CLASSES_QUERY_PP
 					: SPARQLQueryUtils.SELECT_CLASSES_QUERY);
 		} else {

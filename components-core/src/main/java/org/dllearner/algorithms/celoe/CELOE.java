@@ -336,7 +336,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
 			if (writeSearchTree) {
-				writeSearchTree(refinements);
+				writeSearchTree(nextNode, refinements);
 			}
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
@@ -362,7 +362,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// write the search tree (if configured)
 			if (writeSearchTree) {
-				writeSearchTree(null);
+				writeSearchTree(nextNode, null);
 			}
 		}
 		
@@ -789,22 +789,24 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 	}
 	
-	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
-		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
-		if (refinements != null && refinements.size() > 1) {
-			treeString.append("all expanded nodes:\n");
-			for (OWLClassExpression ref : refinements) {
-				treeString.append("   ").append(ref).append("\n");
+	private void writeSearchTree(OENode nextNode, TreeSet<OWLClassExpression> refinements) {
+		if (nextNode != null) {
+			StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");;
+			treeString.append("now refining: ").append(nextNode).append("\n");
+			if (refinements != null && refinements.size() > 1) {
+				treeString.append("all expanded nodes:\n");
+				for (OWLClassExpression ref : refinements) {
+					treeString.append("   ").append(ref).append("\n");
+				}
+			}
+			// replace or append
+			if (replaceSearchTree) {
+				Files.createFile(new File(searchTreeFile), treeString.toString());
+			} else {
+				Files.appendToFile(new File(searchTreeFile), treeString.toString());
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
-
-		// replace or append
-		if (replaceSearchTree) {
-			Files.createFile(new File(searchTreeFile), treeString.toString());
-		} else {
-			Files.appendToFile(new File(searchTreeFile), treeString.toString());
-		}
+		Files.appendToFile(new File(searchTreeFile), TreeUtils.toTreeString(searchTree) + "\n");
 	}
 	
 	private void updateMinMaxHorizExp(OENode node) {
