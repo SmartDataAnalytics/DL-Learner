@@ -224,9 +224,9 @@ public class SAKEAlgorithm {
 			CELOE celoe = new CELOE(lp, rc);
 			celoe.setIgnoredObjectProperties(Collections.singleton(
 					df.getOWLObjectProperty(IRI.create(NS + "hasTelegram"))));
-			celoe.setIgnoredConcepts(Collections.singleton(
-					(OWLClass) OWLAPIUtils.fromManchester("FailureData_999999", rc, df, true)
-			));
+			Set<OWLClass> ignoredConcepts = new HashSet<>();
+			ignoredConcepts.add((OWLClass) OWLAPIUtils.fromManchester("FailureData_999999", rc, df, true));
+			ignoredConcepts.add((OWLClass) OWLAPIUtils.fromManchester("Context_11", rc, df, true));
 			celoe.setOperator(op);
 			celoe.setStartClass(startClass);
 			celoe.setMaxExecutionTimeInSeconds(600);
