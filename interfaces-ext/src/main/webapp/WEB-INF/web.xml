@@ -1,0 +1,38 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>DL-Learner</display-name>
+
+    <servlet>
+        <servlet-name>rest</servlet-name>
+        <servlet-class>org.dllearner.server.Rest</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rest</servlet-name>
+        <url-pattern>/rest</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>conf</servlet-name>
+        <servlet-class>org.dllearner.server.ConfGeneratorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>conf</servlet-name>
+        <url-pattern>/conf</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>Enrichment</servlet-name>
+        <servlet-class>org.dllearner.server.EnrichmentServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Enrichment</servlet-name>
+        <url-pattern>/Enrichment</url-pattern>
+    </servlet-mapping>
+</web-app>

@@ -1,0 +1,47 @@
+sparql.type = "sparqls"
+sparql.endpointURL = "http://dbpedia.org/sparql"
+sparql.defaultGraphURI = "http://dbpedia.org"
+sparql.recursionDepth = 2
+sparql.ontologySchemaUrls = {"http://downloads.dbpedia.org/3.6/dbpedia_3.6.owl" }
+sparql.aboxfilter =  "FILTER ( 
+!isLiteral(?o) &&   
+!regex(str(?p), 'http://dbpedia.org/property/website') &&   
+!regex(str(?p), 'http://dbpedia.org/property/wikipage') &&   
+!regex(str(?p), 'http://dbpedia.org/property/wikiPageUsesTemplate')  &&   
+!regex(str(?p), 'http://dbpedia.org/property/reference') &&   
+!regex(str(?p), 'http://www.w3.org/2004/02/skos/core') &&   
+!regex(str(?p), 'http://www.w3.org/2002/07/owl#sameAs') &&   
+!regex(str(?p), 'http://xmlns.com/foaf/0.1/') &&   
+!regex(str(?p), 'http://dbpedia.org/property/wordnet_type') &&   
+!regex(str(?p), 'http://dbpedia.org/property/wikilink')  &&   
+regex(str(?o), '^http://dbpedia.org/resource/') 
+)  "
+sparql.tboxfilter =  "FILTER ( !regex(str(?class), '^http://upload.wikimedia.org/wikipedia') &&
+!regex(str(?class), '^http://dbpedia.org/resource/Template') &&
+!regex(str(?class), '^http://dbpedia.org/resource/Category:') &&
+!regex(str(?class), '^http://umbel.org/umbel/') &&
+!regex(str(?class), '^http://dbpedia.org/class/yago')
+ ) .  " 
+sparql.instances = {
+<INSTANCES>
+ }
+reasoner.type = "fast instance checker"
+reasoner.sources = {sparql}
+lp.type = <LPTYPE>
+lp.positiveExamples = {
+<POSITIVES>
+}
+lp.negativeExamples = {
+<NEGATIVES>
+} 
+lp.reasoner = reasoner
+op.type = "rho"
+op.useNegation = false
+op.useAllConstructor = false
+op.useCardinalityRestrictions = false
+op.useHasValueConstructor = true 
+op.reasoner = reasoner
+alg.type = "ocel"
+alg.reasoner = reasoner
+alg.maxExecutionTimeInSeconds = 30
+alg.noisePercentage = 10.0 
