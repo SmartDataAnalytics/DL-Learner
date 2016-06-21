@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.dllearner.Constants.State;
 import org.dllearner.cli.CLIBase2;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.LearningProblem;
@@ -28,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import static org.dllearner.utils.unife.GeneralUtils.safe;
+import org.semanticweb.owlapi.model.OWLException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -82,10 +84,10 @@ public class OntologyValidation extends CLIBase2 {
         // convert the individuals into assertional axioms
         posTestQueries = OWLUtils.convertIndividualsToAssertionalAxioms(posIndividuals, classExpression);
         negTestQueries = OWLUtils.convertIndividualsToAssertionalAxioms(safe(negIndividuals), classExpression);
-        // run the test queries over the initial ontology
-        Set<OWLProbReasonerResult> posTestResults = computeQueries(posTestQueries);
-        Set<OWLProbReasonerResult> negTestResults = computeQueries(negTestQueries);
         try {
+            // run the test queries over the initial ontology
+            Set<OWLProbReasonerResult> posTestResults = computeQueries(posTestQueries);
+            Set<OWLProbReasonerResult> negTestResults = computeQueries(negTestQueries);
             // write result on output test configuration file
             PrintWriter outFile = new PrintWriter(outputFile, "UTF-8");
             outFile.println("pos: " + posTestResults.size());
@@ -105,9 +107,13 @@ public class OntologyValidation extends CLIBase2 {
                 outFile.println();
             }
             outFile.close();
+        } catch (OWLException owle) {
+            logger.error("Error while computing the probabilities of the test set");
+            System.exit(State.FAILURE.ordinal());
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             logger.error("Impossible to write output file " + outputFile + ". "
                     + "Reason: " + ex.getMessage());
+            System.exit(State.FAILURE.ordinal());
         }
 
     }
@@ -115,7 +121,7 @@ public class OntologyValidation extends CLIBase2 {
     /**
      * It computes a set of probabilistic queries
      */
-    private Set<OWLProbReasonerResult> computeQueries(Set<OWLAxiom> queries) {
+    private Set<OWLProbReasonerResult> computeQueries(Set<OWLAxiom> queries) throws OWLException {
         Set<OWLProbReasonerResult> results = new HashSet<>();
         for (OWLAxiom query : queries) {
             results.add(reasoner.computeQuery(query));

@@ -34,7 +34,7 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
      */
     protected Set<KnowledgeSource> sources;
     
-    private OWLOntology ontology;
+    OWLOntology ontology;
 
     public AbstractProbabilisticReasonerComponent() {
 

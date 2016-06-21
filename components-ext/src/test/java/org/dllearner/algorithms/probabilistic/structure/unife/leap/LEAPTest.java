@@ -8,7 +8,7 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 import static junit.framework.TestCase.assertTrue;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
-import org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGEWrapper;
+import org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -55,7 +55,7 @@ public class LEAPTest {
         lp.setCheckConsistency(false);
         lp.init();
 
-        lpr = new EDGEWrapper(lp, null);
+        lpr = new EDGE(lp, null);
         lpr.setRandomizeAll(true);
         lpr.init();
         

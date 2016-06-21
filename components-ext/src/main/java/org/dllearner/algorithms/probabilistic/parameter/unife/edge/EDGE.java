@@ -16,7 +16,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import unife.edge.EDGE;
+//import unife.edge.EDGE;
 
 /**
  * This class is a wrapper for EDGE algorithm. This algorithm uses BUNDLE for
@@ -27,20 +27,20 @@ import unife.edge.EDGE;
  * <riccardo.zese@unife.it>
  */
 @ComponentAnn(name = "EDGEWrapper", shortName = "edge", version = 1.0)
-public class EDGEWrapper extends AbstractEDGE {
+public class EDGE extends AbstractEDGE {
 
     private static Logger logger
-            = Logger.getLogger(EDGEWrapper.class.getName());
+            = Logger.getLogger(EDGE.class.getName());
 
     private boolean fullyInitialized = false;
 
-    public EDGEWrapper() {
-        edge = new EDGE();
+    public EDGE() {
+        edge = new unife.edge.EDGE();
     }
 
-    public EDGEWrapper(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
+    public EDGE(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
         super(lp, targetAxioms);
-        edge = new EDGE();
+        edge = new unife.edge.EDGE();
     }
 
     @Override

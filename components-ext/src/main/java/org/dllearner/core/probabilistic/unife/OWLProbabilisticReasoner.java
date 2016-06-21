@@ -6,6 +6,7 @@
 package org.dllearner.core.probabilistic.unife;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLException;
 
 /**
  *
@@ -13,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  */
 public interface OWLProbabilisticReasoner extends ProbabilisticReasoner {
     
-    public OWLProbReasonerResult computeQuery(OWLAxiom axiom);
+    public OWLProbReasonerResult computeQuery(OWLAxiom axiom)
+            throws OWLException;
     
 }

@@ -34,7 +34,7 @@ import unife.exception.IllegalValueException;
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
 
-    protected EDGE edge;
+    protected unife.edge.EDGE edge;
 
     public static enum PossibleOutputFormat {
 

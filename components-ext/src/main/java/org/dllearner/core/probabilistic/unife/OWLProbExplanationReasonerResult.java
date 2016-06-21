@@ -7,6 +7,7 @@ package org.dllearner.core.probabilistic.unife;
 
 import java.util.Set;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -16,7 +17,7 @@ public class OWLProbExplanationReasonerResult extends OWLProbReasonerResult {
     
     private Set<Set<OWLAxiom>> explanations;
 
-    public OWLProbExplanationReasonerResult(OWLAxiom axiom, Double probability, Set<Set<OWLAxiom>> explanations) {
+    public OWLProbExplanationReasonerResult(@Nonnull OWLAxiom axiom, @Nonnull Double probability, Set<Set<OWLAxiom>> explanations) {
         super(axiom, probability);
         this.explanations = explanations;
     }
