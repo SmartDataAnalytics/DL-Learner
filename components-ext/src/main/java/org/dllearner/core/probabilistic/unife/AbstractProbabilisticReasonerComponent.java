@@ -11,9 +11,13 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import unife.bundle.logging.BundleLoggerFactory;
 import org.dllearner.reasoning.unife.ProbabilisticReasonerType;
+import org.dllearner.utils.unife.OWLUtils;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -29,6 +33,8 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
      * The underlying knowledge sources.
      */
     protected Set<KnowledgeSource> sources;
+    
+    private OWLOntology ontology;
 
     public AbstractProbabilisticReasonerComponent() {
 
@@ -46,6 +52,11 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
     public AbstractProbabilisticReasonerComponent(KnowledgeSource source) {
         this(Collections.singleton(source));
     }
+    
+    
+    public void init() throws ComponentInitException {
+        ontology = OWLUtils.mergeOntologies(sources);
+    }
 
     /**
      * Gets the knowledge sources used by this reasoner.
@@ -56,10 +67,12 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
         return sources;
     }
 
+    @Autowired
     public void setSources(Set<KnowledgeSource> sources) {
         this.sources = sources;
     }
 
+    @Autowired
     public void setSources(KnowledgeSource... sources) {
         this.sources = new HashSet<KnowledgeSource>(Arrays.asList(sources));
     }
@@ -82,4 +95,11 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
      * @return The probabilistic reasoner type.
      */
     public abstract ProbabilisticReasonerType getReasonerType();
+
+    /**
+     * @return the ontology
+     */
+    public OWLOntology getOntology() {
+        return ontology;
+    }
 }

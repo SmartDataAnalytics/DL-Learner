@@ -9,7 +9,6 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -32,7 +30,6 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
 import org.dllearner.utils.unife.ReflectionHelper;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -40,7 +37,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
@@ -56,7 +52,8 @@ import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
 
 /**
- *
+ * There could be different version of LEAP (sequential, multi-thread, distributed), 
+ * so we need an abstract class.
  * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
