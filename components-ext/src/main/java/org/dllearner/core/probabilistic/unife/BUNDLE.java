@@ -8,12 +8,12 @@ package org.dllearner.core.probabilistic.unife;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.unife.ProbabilisticReasonerType;
-import org.dllearner.utils.unife.GeneralUtils;
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import unife.bundle.Bundle;
 import unife.bundle.QueryResult;
+import unife.utilities.GeneralUtils;
 
 /**
  *
@@ -32,7 +32,7 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
 
     @ConfigOption(description = "accuracy used during the computation of the probabilistic values (number of digital places)", defaultValue = "5")
     private int accuracy = 5;
-    
+
     @ConfigOption(description = "library used for BDD compilation", defaultValue = "buddy")
     private String bddFType = "buddy";
 

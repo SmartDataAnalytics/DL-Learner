@@ -49,7 +49,7 @@ public class OntologyValidation extends CLIBase2 {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(OntologyValidation.class);
 
     //private ParameterLearningAlgorithm pla;
-    private OWLOntology learnedOntology;
+    //private OWLOntology learnedOntology;
 
     //private OWLOntology initialOntology;
     @Autowired
@@ -139,9 +139,9 @@ public class OntologyValidation extends CLIBase2 {
     /**
      * @param learnedOntology the learnedOntology to set
      */
-    public void setLearnedOntology(OWLOntology learnedOntology) {
-        this.learnedOntology = learnedOntology;
-    }
+//    public void setLearnedOntology(OWLOntology learnedOntology) {
+//        this.learnedOntology = learnedOntology;
+//    }
 
 //    /**
 //     * @param initialOntology the initialOntology to set

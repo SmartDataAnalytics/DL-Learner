@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dllearner.core.probabilistic.unife.StructureLearningException;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
-import static org.dllearner.utils.unife.GeneralUtils.safe;
+
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -29,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
+import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
 public class LEAP extends AbstractLEAP {

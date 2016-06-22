@@ -52,8 +52,9 @@ import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
 
 /**
- * There could be different version of LEAP (sequential, multi-thread, distributed), 
- * so we need an abstract class.
+ * There could be different version of LEAP (sequential, multi-thread,
+ * distributed), so we need an abstract class.
+ *
  * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
@@ -74,6 +75,9 @@ public abstract class AbstractLEAP extends AbstractPSLA {
             required = false,
             defaultValue = "subClassOf")
     private String classAxiomType = "subClassOf";
+
+    @ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
+    private int maxExecutionTimeInSeconds = 10; // TO DO: stop when execution time is over
 
     protected AbstractEDGE edge;
 
@@ -288,7 +292,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
                         axiom.getAnnotations());
             } else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
                 OWLClassExpression clazz = null;
-                for (OWLClassExpression c : ((OWLEquivalentClassesAxiom) axiom).getClassExpressions()){
+                for (OWLClassExpression c : ((OWLEquivalentClassesAxiom) axiom).getClassExpressions()) {
 
                     if (c.compareTo(getDummyClass()) != 0) {
                         clazz = c;
@@ -365,6 +369,13 @@ public abstract class AbstractLEAP extends AbstractPSLA {
      */
     public void setClassAxiomType(String classAxiomType) {
         this.classAxiomType = classAxiomType;
+    }
+
+    /**
+     * @param maxExecutionTimeInSeconds the maxExecutionTimeInSeconds to set
+     */
+    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+        this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
     }
 
 }
