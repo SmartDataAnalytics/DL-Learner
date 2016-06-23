@@ -28,10 +28,10 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import static org.dllearner.utils.unife.GeneralUtils.safe;
 import org.semanticweb.owlapi.model.OWLException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import static unife.utilities.GeneralUtils.safe;
 
 /**
  *
