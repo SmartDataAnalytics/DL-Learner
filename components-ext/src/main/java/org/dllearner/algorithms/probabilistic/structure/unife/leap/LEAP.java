@@ -117,6 +117,7 @@ public class LEAP extends AbstractLEAP {
         }
         // final step save the ontology
         try {
+            logger.info("Saving the learned ontology");
             OWLUtils.saveOntology(finalOntology, outputFile, outFormat);
         } catch (OWLOntologyStorageException e) {
             String msg = "Cannot save the learned ontology: " + e.getMessage();

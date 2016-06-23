@@ -90,7 +90,8 @@ public class OWLUtils {
             logger.info("Merging the ontologies...");
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
-            OWLOntology allOntology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
+//            OWLOntology allOntology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
+            OWLOntology allOntology = manager.createOntology(IRI.generateDocumentIRI(), new HashSet<OWLOntology>(owlAPIOntologies));
             //we have to add all import declarations manually here, because this are no axioms
             List<OWLOntologyChange> addImports = new ArrayList<>();
             for (OWLImportsDeclaration i : directImports) {

@@ -19,18 +19,23 @@ import org.dllearner.Constants.State;
 import org.dllearner.cli.CLIBase2;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.probabilistic.unife.OWLProbReasonerResult;
 import org.dllearner.core.probabilistic.unife.OWLProbabilisticReasoner;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utils.unife.OWLUtils;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import static unife.utilities.GeneralUtils.safe;
 
 /**
@@ -50,7 +55,6 @@ public class OntologyValidation extends CLIBase2 {
 
     //private ParameterLearningAlgorithm pla;
     //private OWLOntology learnedOntology;
-
     //private OWLOntology initialOntology;
     @Autowired
     private LearningProblem lp;
@@ -58,7 +62,9 @@ public class OntologyValidation extends CLIBase2 {
     @Autowired
     private OWLProbabilisticReasoner reasoner;
 
-    private OWLClassExpression classExpression;
+    @ConfigOption(description = "learned class",
+            required = true)
+    private OWLClass classExpression;
 
     private String outputFile;
 
@@ -142,7 +148,6 @@ public class OntologyValidation extends CLIBase2 {
 //    public void setLearnedOntology(OWLOntology learnedOntology) {
 //        this.learnedOntology = learnedOntology;
 //    }
-
 //    /**
 //     * @param initialOntology the initialOntology to set
 //     */
@@ -154,6 +159,13 @@ public class OntologyValidation extends CLIBase2 {
      */
     public void setOutputFile(String outputFile) {
         this.outputFile = outputFile;
+    }
+
+    /**
+     * @param classExpression the classExpression to set
+     */
+    public void setClassExpression(OWLClass classExpression) {
+        this.classExpression = classExpression;
     }
 
 }

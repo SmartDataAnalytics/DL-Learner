@@ -14,9 +14,9 @@ import org.semanticweb.owlapi.model.OWLException;
  * 
  * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
-public interface OWLProbabilisticExplanationReasoner extends ProbabilisticReasoner {
+public interface OWLProbabilisticExplanationReasoner extends OWLProbabilisticReasoner {
     
-    public OWLProbExplanationReasonerResult computeQuery(OWLAxiom axiom) 
+    public OWLProbExplanationReasonerResult computeQueryWithExplanations(OWLAxiom axiom) 
             throws OWLException;
             
 }

@@ -5,6 +5,7 @@
  */
 package org.dllearner.core.probabilistic.unife;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.unife.ProbabilisticReasonerType;
@@ -20,6 +21,7 @@ import unife.utilities.GeneralUtils;
  * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
+@ComponentAnn(name = "BUNDLE", shortName = "bundle", version = 1.0)
 public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OWLProbabilisticExplanationReasoner {
 
     private Bundle bundle = new Bundle();
@@ -50,18 +52,23 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
         bundle.setLog(true);
         bundle.setAccuracy(this.accuracy);
         bundle.loadOntologies(ontology);
-
+        bundle.init();
         initialized = true;
 
     }
 
     @Override
-    public OWLProbExplanationReasonerResult computeQuery(OWLAxiom axiom) throws OWLException {
+    public OWLProbExplanationReasonerResult computeQueryWithExplanations(OWLAxiom axiom) throws OWLException {
         QueryResult result = bundle.computeQuery(axiom);
         return new OWLProbExplanationReasonerResult(
                 axiom,
                 result.getQueryProbability().doubleValue(),
                 GeneralUtils.safe(result.getExplanations()));
+    }
+    
+    @Override
+    public OWLProbReasonerResult computeQuery(OWLAxiom axiom) throws OWLException {
+        return computeQueryWithExplanations(axiom);
     }
 
     /**

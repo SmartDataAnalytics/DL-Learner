@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
+import unife.constants.UniFeIRI;
 
 /**
  * There could be different version of LEAP (sequential, multi-thread,
@@ -94,7 +95,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         // create dummy class
         if (dummyClass == null) {
-            dummyClass = manager.getOWLDataFactory().getOWLClass(IRI.create("https://sites.google.com/a/unife.it/ml/disponte:learnedClass"));
+            dummyClass = manager.getOWLDataFactory().getOWLClass(IRI.create(UniFeIRI.DISPONTE + "/learnedClass"));
         }
 
         logger.debug("getting the individuals");
