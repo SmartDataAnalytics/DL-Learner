@@ -62,8 +62,7 @@ public class OntologyValidation extends CLIBase2 {
     @Autowired
     private OWLProbabilisticReasoner reasoner;
 
-    @ConfigOption(description = "learned class",
-            required = true)
+    @ConfigOption(description = "learned class", required = true)
     private OWLClass classExpression;
 
     private String outputFile;
@@ -109,9 +108,9 @@ public class OntologyValidation extends CLIBase2 {
                 outFile.print(q.getProbability() + "-neg");
                 if (it.hasNext()) {
                     outFile.print(",");
-                }
-                outFile.println();
+                }             
             }
+            outFile.println();
             outFile.close();
         } catch (OWLException owle) {
             logger.error("Error while computing the probabilities of the test set");
