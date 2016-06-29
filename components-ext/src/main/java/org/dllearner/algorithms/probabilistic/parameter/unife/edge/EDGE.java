@@ -26,7 +26,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
  */
-@ComponentAnn(name = "EDGEWrapper", shortName = "edge", version = 1.0)
+@ComponentAnn(name = "EDGE", shortName = "edge", version = 1.0)
 public class EDGE extends AbstractEDGE {
 
     private static Logger logger
@@ -75,23 +75,25 @@ public class EDGE extends AbstractEDGE {
             if (!fullyInitialized) {
                 List<OWLAxiom> positiveExamplesList = new ArrayList<>(positiveExampleAxioms);
                 if (maxPositiveExamples > 0) {
-                    logger.debug("max positive examples set: " + maxPositiveExamples);
+                    logger.debug("max number of positive examples to set: " + maxPositiveExamples);
                     //List positiveIndividualsList = new ArrayList(positiveIndividuals);
                     Collections.shuffle(positiveExamplesList);
                     if (maxPositiveExamples < positiveExamplesList.size()) {
                         positiveExamplesList = positiveExamplesList.subList(0, maxPositiveExamples);
                     }
                 }
+                edge.setPositiveExamples(positiveExamplesList);
+                
                 List<OWLAxiom> negativeExamplesList = new ArrayList<>(negativeExampleAxioms);
                 if (maxNegativeExamples > 0) {
-                    logger.debug("max negative examples set: " + maxNegativeExamples);
+                    logger.debug("max number of negative examples to set: " + maxNegativeExamples);
                     Collections.shuffle(negativeExamplesList);
                     if (maxNegativeExamples < negativeExamplesList.size()) {
                         negativeExamplesList = negativeExamplesList.subList(0, maxNegativeExamples);
                     }
                 }
-                edge.setPositiveExamples(positiveExamplesList);
                 edge.setNegativeExamples(negativeExamplesList);
+                edge.init();
                 fullyInitialized = true;
             }
             results = edge.computeLearning();
