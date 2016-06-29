@@ -90,13 +90,10 @@ public class EDGE extends AbstractEDGE {
                         negativeExamplesList = negativeExamplesList.subList(0, maxNegativeExamples);
                     }
                 }
-                logger.debug("qui");
                 edge.setPositiveExamples(positiveExamplesList);
                 edge.setNegativeExamples(negativeExamplesList);
                 fullyInitialized = true;
-                logger.debug("qui");
             }
-            logger.debug("qui");
             results = edge.computeLearning();
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
