@@ -11,10 +11,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.dllearner.Constants.State;
 import org.dllearner.cli.CLIBase2;
 import org.dllearner.core.ComponentAnn;
@@ -25,17 +22,12 @@ import org.dllearner.core.probabilistic.unife.OWLProbabilisticReasoner;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utils.unife.OWLUtils;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import static unife.utilities.GeneralUtils.safe;
 
 /**
