@@ -166,8 +166,9 @@ public class LEAP extends AbstractLEAP {
                 infoMsg += "equivalentClasses axioms";
                 break;
             case "both":
-                infoMsg += "subClassOf and equivalentClasses axioms";
-                break;
+                throw new UnsupportedLearnedAxiom("LEAP cannot learn this type of axioms: " + getClassAxiomType());
+//                infoMsg += "subClassOf and equivalentClasses axioms";
+//                break;
             default:
                 throw new UnsupportedLearnedAxiom("LEAP cannot learn this type of axioms: " + getClassAxiomType());
         }
