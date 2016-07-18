@@ -1,0 +1,10 @@
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dbo:	<http://dbpedia.org/ontology/> .
+@prefix dbpedia:	<http://dbpedia.org/resource/> .
+dbpedia:Immanuel_Kant	dbo:birthDate	"1724-04-22+01:00"^^xsd:date ;
+	dbo:birthPlace	dbpedia:Prussia ,
+		<http://dbpedia.org/resource/K%C3%B6nigsberg> ,
+		dbpedia:Kingdom_of_Prussia ;
+	dbo:era	dbpedia:Age_of_Enlightenment ;
+	dbo:influenced	dbpedia:Johann_Gottlieb_Fichte ,
+		dbpedia:Western_philosophy .
