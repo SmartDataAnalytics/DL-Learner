@@ -18,36 +18,50 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.util.Set;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
-	private static final Logger logger = Logger.getLogger(SymmetricConciseBoundedDescriptionGeneratorImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(SymmetricConciseBoundedDescriptionGeneratorImpl.class);
 	
-	private static final int CHUNK_SIZE = 1000;
-	
-	private ExtractionDBCache cache;
-	private SparqlEndpoint endpoint;
+	private Model baseModel;
+	private QueryExecutionFactory qef;
 	
 	private Set<String> namespaces;
 	private int maxRecursionDepth = 1;
 	
-	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
-		this.endpoint = endpoint;
-		this.cache = cache;
+	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
+		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		if(cache != null){
+			qef = new QueryExecutionFactoryCacheEx(qef, cache);
+		}
+		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
 	
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
 		this(endpoint, null);
+	}
+
+	public SymmetricConciseBoundedDescriptionGeneratorImpl(QueryExecutionFactory qef) {
+		this.qef = qef;
+	}
+
+	public SymmetricConciseBoundedDescriptionGeneratorImpl(Model model) {
+		this.baseModel = model;
+
+		qef = new QueryExecutionFactoryModel(baseModel);
 	}
 	
 	@Override
@@ -58,8 +72,8 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		Model cbd = ModelFactory.createDefaultModel();
-		cbd.add(getModelChunkedResourceIsObject(resourceURI, depth));
-		cbd.add(getModelChunkedResourceIsSubject(resourceURI, depth));
+		cbd.add(getIncomingModel(resourceURI, depth));
+		cbd.add(getOutgoingModel(resourceURI, depth));
 		return cbd;
 	}
 	
@@ -68,151 +82,83 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		this.namespaces = namespaces;
 	}
 	
-	private Model getModelChunkedResourceIsObject(String resource, int depth){
-		String query = makeConstructQueryObject(resource, CHUNK_SIZE, 0, depth);
-		Model all = ModelFactory.createDefaultModel();
-		try {
-			Model model;
-			if(cache == null){
-				model = getModel(query);
-			} else {
-				model = cache.executeConstructQuery(endpoint, query);
-			}
-			all.add(model);
-			int i = 1;
-			while(model.size() != 0){
-//			while(model.size() == CHUNK_SIZE){
-				query = makeConstructQueryObject(resource, CHUNK_SIZE, i * CHUNK_SIZE, depth);
-				if(cache == null){
-					model = getModel(query);
-				} else {
-					model = cache.executeConstructQuery(endpoint, query);
-				}
-				all.add(model);
-				i++;
-			}
-		} catch (UnsupportedEncodingException | SQLException e) {
-			logger.error(e);
-		}
-		return all;
-	}
-	
-	private Model getModelChunkedResourceIsSubject(String resource, int depth){
-		String query = makeConstructQuerySubject(resource, CHUNK_SIZE, 0, depth);
-		Model all = ModelFactory.createDefaultModel();
-		try {
-			Model model;
-			if(cache == null){
-				model = getModel(query);
-			} else {
-				model = cache.executeConstructQuery(endpoint, query);
-			}
-			all.add(model);
-			int i = 1;
-			while(model.size() != 0){
-//			while(model.size() == CHUNK_SIZE){
-				query = makeConstructQuerySubject(resource, CHUNK_SIZE, i * CHUNK_SIZE, depth);
-				if(cache == null){
-					model = getModel(query);
-				} else {
-					model = cache.executeConstructQuery(endpoint, query);
-				}
-				all.add(model);
-				i++;
-			}
-		} catch (UnsupportedEncodingException | SQLException e) {
-			logger.error(e);
-		}
-		return all;
-	}
-	
-	/**
-	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given resource and recursion depth.
-	 * @param resource The resource for which a CONSTRUCT query is created.
-	 * @return The CONSTRUCT query
-	 */
-	private String makeConstructQuerySubject(String resource, int limit, int offset, int depth){
-		StringBuilder sb = new StringBuilder();
-		sb.append("CONSTRUCT {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-		}
-		sb.append("}\n");
-		sb.append("WHERE {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("OPTIONAL{\n");
-			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-		}
-		for(int i = 1; i < depth; i++){
-			sb.append("}");
-		}
-		sb.append("}\n");
-		sb.append("LIMIT ").append(limit).append("\n");
-		sb.append("OFFSET ").append(offset);
-		
-		return sb.toString();
-	}
-	
-	/**
-	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given resource and recursion depth.
-	 * @param resource The resource for which a CONSTRUCT query is created.
-	 * @return The CONSTRUCT query
-	 */
-	private String makeConstructQueryObject(String resource, int limit, int offset, int depth){
-		StringBuilder sb = new StringBuilder();
-		sb.append("CONSTRUCT {\n");
-		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
-		}
-		sb.append("}\n");
-		sb.append("WHERE {\n");
-		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("OPTIONAL{\n");
-			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
-		}
-		for(int i = 1; i < depth; i++){
-			sb.append("}");
-		}
-		sb.append("}\n");
-		sb.append("LIMIT ").append(limit).append("\n");
-		sb.append("OFFSET ").append(offset);
-		
-		return sb.toString();
-	}
-	
-	private Model getModel(String query) throws UnsupportedEncodingException, SQLException{
-		if(logger.isDebugEnabled()){
-			logger.debug("Sending SPARQL query ...");
-			logger.debug("Query:\n" + query);
-		}
+	private Model getIncomingModel(String resource, int depth){
+		String query = makeConstructQueryObject(resource, depth);
 
-		Model model;
-		if(cache == null){
-			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-			for (String dgu : endpoint.getDefaultGraphURIs()) {
-				queryExecution.addDefaultGraph(dgu);
-			}
-			for (String ngu : endpoint.getNamedGraphURIs()) {
-				queryExecution.addNamedGraph(ngu);
-			}			
-			model = queryExecution.execConstruct();
-		} else {
-			model = cache.executeConstructQuery(endpoint, query);
+		System.out.println(query);
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			Model model = qe.execConstruct();
+			return model;
+		} catch (Exception e) {
+			logger.error("Failed to retrieve incoming CBD for " + resource, e);
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug("Got " + model.size() + " new triples in.");
-		}
-		return model;
+		return null;
 	}
 	
-	public static void main(String[] args) {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
-		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
-		cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 1);
+	private Model getOutgoingModel(String resource, int depth){
+		String query = makeConstructQuerySubject(resource, depth);
+
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			Model model = qe.execConstruct();
+			return model;
+		} catch (Exception e) {
+			logger.error("Failed to retrieve outgoing CBD for " + resource, e);
+		}
+		return null;
+	}
+	
+	/**
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given resource and recursion depth.
+	 * @param resource The resource for which a CONSTRUCT query is created.
+	 * @return The CONSTRUCT query
+	 */
+	private String makeConstructQuerySubject(String resource, int depth){
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+		}
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("OPTIONAL{\n");
+			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("}");
+		}
+		sb.append("}\n");
+
+		return sb.toString();
+	}
+	
+	/**
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given resource and recursion depth.
+	 * @param resource The resource for which a CONSTRUCT query is created.
+	 * @return The CONSTRUCT query
+	 */
+	private String makeConstructQueryObject(String resource, int depth){
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
+		}
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("OPTIONAL{\n");
+			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("}");
+		}
+		sb.append("}\n");
+
+		return sb.toString();
 	}
 
 	@Override
@@ -237,6 +183,11 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	 */
 	@Override
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+	}
+
+	public static void main(String[] args) {
+		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
+		cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Berlin", 1);
 	}
 
 }
