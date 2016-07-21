@@ -37,12 +37,13 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
+import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -65,6 +66,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -83,8 +85,8 @@ public class QueryTreeUtils {
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
 	 * a list of nodes starting from the given node.
-	 * @param tree
-	 * @param node
+	 * @param tree the query tree
+	 * @param node the node
 	 */
 	public static List<RDFResourceTree> getPathToRoot(RDFResourceTree tree, RDFResourceTree node) {
 		if(node.isRoot()) {
@@ -111,8 +113,8 @@ public class QueryTreeUtils {
 	/**
 	 * Print the path from the given node to the root of the given tree, i.e.
 	 * a list of nodes starting from the given node.
-	 * @param tree
-	 * @param node
+	 * @param tree the query tree
+	 * @param node the node
 	 */
 	public static String printPathToRoot(RDFResourceTree tree, RDFResourceTree node) {
 		List<RDFResourceTree> path = getPathToRoot(tree, node);
@@ -132,64 +134,38 @@ public class QueryTreeUtils {
 	}
 	
 	/**
-	 * Returns all nodes in the given query tree, i.e. the closure of 
-	 * the children.
-	 * @param tree
-	 * @return 
-	 */
-	public static <N> List<QueryTree<N>> getNodes(QueryTree<N> tree) {
-		return tree.getChildrenClosure();
-	}
-	
-	/**
-	 * Returns all nodes of the given node type in the query tree, i.e. 
-	 * the closure of the children.
-	 * @param tree
-	 * @return 
-	 */
-	public static <N> List<QueryTree<N>> getNodes(QueryTree<N> tree, NodeType nodeType) {
-		// get all nodes
-		List<QueryTree<N>> nodes = tree.getChildrenClosure();
-		
-		// filter by type
-		Iterator<QueryTree<N>> iterator = nodes.iterator();
-		while (iterator.hasNext()) {
-			QueryTree<N> node = iterator.next();
-			if(node.getNodeType() != nodeType) {
-				iterator.remove();
-			}
-			
-		}
-		return nodes;
-	}
-	
-	/**
-	 * Returns the number of nodes in the given query tree, i.e. the number of 
+	 * Returns the number of nodes in the given query tree, i.e. the size of
 	 * the children closure.
-	 * @param tree
-	 * @return 
+	 * @param tree the query tree
+	 * @return the number of nodes
 	 */
-	public static <N> int getNrOfNodes(QueryTree<N> tree) {
-		return tree.getChildrenClosure().size();
+	public static int getNrOfNodes(RDFResourceTree tree) {
+		return getNodes(tree).size();
 	}
 	
 	/**
 	 * Returns the set of edges that occur in the given query tree, i.e. the 
 	 * closure of the edges.
-	 * @param tree
+	 * @param tree the query tree
 	 * @return the set of edges in the query tree
 	 */
-	public static <N> List<QueryTree<N>> getEdges(QueryTree<N> tree) {
-		return tree.getChildrenClosure();
+	public static Set<Node> getEdges(RDFResourceTree tree) {
+		Set<Node> edges = new HashSet<>();
+
+		for(Iterator<RDFResourceTree> it = new LevelOrderTreeTraversal(tree); it.hasNext();) {
+			edges.addAll(it.next().getEdges());
+		}
+
+		return edges;
 	}
 	
 	/**
 	 * Returns the number of edges that occur in the given query tree, which
-	 * is obviously n-1 where n is the number of nodes.
-	 * @param tree
-	 * @return the set of edges in the query tree
+	 * is obviously `n-1` where n is the number of nodes.
+	 * @param tree the query tree
+	 * @return the number of edges in the query tree
 	 */
-	public static <N> int getNrOfEdges(QueryTree<N> tree) {
+	public static int getNrOfEdges(RDFResourceTree tree) {
 		return getNrOfNodes(tree) - 1;
 	}
 	
@@ -206,10 +182,10 @@ public class QueryTreeUtils {
 	 * <div>
 	 * with <code>α, β, γ</code> being the weight of the particular node types.
 	 * </div>
-	 * @param tree
-	 * @return the set of edges in the query tree
+	 * @param tree the query tree
+	 * @return the complexity value
 	 */
-	public static <N> double getComplexity(RDFResourceTree tree) {
+	public static double getComplexity(RDFResourceTree tree) {
 		
 		double varNodeWeight = 0.8;
 		double resourceNodeWeight = 1.0;
@@ -270,8 +246,8 @@ public class QueryTreeUtils {
     
     /**
      * Returns all nodes in the given query tree.
-     * @param tree
-     * @return
+     * @param tree the query tree
+     * @return the nodes
      */
     public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
 		List<RDFResourceTree> nodes = new ArrayList<>();
@@ -286,25 +262,17 @@ public class QueryTreeUtils {
     
     /**
      * Returns all nodes in the given query tree.
-     * @param tree
-     * @return
+     * @param tree the query tree
+     * @return the leaf nodes
      */
     public static List<RDFResourceTree> getLeafs(RDFResourceTree tree) {
-		List<RDFResourceTree> leafs = new ArrayList<>();
-		
-		for (RDFResourceTree node : getNodes(tree)) {
-			if(node.isLeaf()) {
-				leafs.add(node);
-			}
-		}
-		
-		return leafs;
+		return getNodes(tree).stream().filter(GenericTree::isLeaf).collect(Collectors.toList());
 	}
     
     /**
      * Returns the depth of the query tree
-     * @param tree
-     * @return
+     * @param tree the query tree
+     * @return the depth
      */
     public static int getDepth(RDFResourceTree tree) {
 		int maxDepth = 0;
@@ -325,9 +293,9 @@ public class QueryTreeUtils {
     /**
 	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
 	 * tree1.
-	 * @param tree1
-	 * @param tree2
-	 * @return
+	 * @param tree1 the first query tree
+	 * @param tree2 the second query tree
+	 * @return whether <code>tree1</code> is subsumed by <code>tree2</code>
 	 */
     public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
     	// 1.compare the root nodes
@@ -756,21 +724,11 @@ public class QueryTreeUtils {
 		
 		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
 		buildGraph(0, graph, tree, context);
-		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return String.valueOf(vertex.getId());
-			}
-		};
+		VertexNameProvider<Vertex> vertexIDProvider = vertex -> String.valueOf(vertex.getId());
 
 		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
-		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return String.valueOf(edge.getId());
-			}
-		};
+		EdgeNameProvider<Edge> edgeIDProvider = edge -> String.valueOf(edge.getId());
 
 		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
@@ -846,11 +804,7 @@ public class QueryTreeUtils {
 		for(Node edge : new TreeSet<>(tree.getEdges())) {
 			if(edge.equals(RDF.type.asNode())) { // check outgoing rdf:type edges
 				List<RDFResourceTree> children = new ArrayList<>(tree.getChildren(edge));
-				for (RDFResourceTree child : children) {
-					if (!isNonTrivial(child, entailment)) {
-						tree.removeChild(child, edge);
-					}
-				}
+				children.stream().filter(child -> !isNonTrivial(child, entailment)).forEach(child -> tree.removeChild(child, edge));
 			} else {// recursively apply pruning on all subtrees
 				List<RDFResourceTree> children = tree.getChildren(edge);
 				

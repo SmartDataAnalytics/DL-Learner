@@ -62,6 +62,6 @@ public class UOBMLearningProblemsGenerator extends SPARQLLearningProblemsGenerat
 		UOBMLearningProblemsGenerator generator = new UOBMLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
 		generator.generateBenchmark(nrOfSPARQLQueries, minDepth, maxDepth, minNrOfExamples);
 	}
-	
+
 
 }
