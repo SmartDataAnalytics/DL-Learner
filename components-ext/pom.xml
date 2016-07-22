@@ -16,11 +16,11 @@
     </parent>
     <dependencies>
         
-                <!-- EDGE dependency -->
+        <!-- EDGE dependency -->
         <dependency>
             <groupId>unife</groupId>
             <artifactId>edge</artifactId>
-            <version>3.0</version>
+            <version>3.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>${project.groupId}</groupId>
@@ -125,13 +125,13 @@
         </dependency>-->
         
         
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
         
         <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.11</version>
@@ -140,17 +140,17 @@
 
         <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
         
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
         
-<!--         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.5.11</version>
-            <scope>runtime</scope>
-         </dependency>-->
+        <!--         <dependency>
+           <groupId>org.slf4j</groupId>
+           <artifactId>jcl-over-slf4j</artifactId>
+           <version>1.5.11</version>
+           <scope>runtime</scope>
+        </dependency>-->
         <!--END Logging Dependencies-->
 
         <!--
@@ -281,13 +281,14 @@
         <repository>
             <id>ml-unife-maven-repository</id>
             <name>ML@UniFe Maven Repository</name>
-            <!--            <releases>
+            <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
-            </snapshots>-->
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
             <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/releases</url>
         </repository>
     </repositories>

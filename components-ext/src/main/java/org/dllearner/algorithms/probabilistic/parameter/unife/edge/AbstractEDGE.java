@@ -21,6 +21,7 @@ import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import static org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE.PossibleOutputFormat.*;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.mindswap.pellet.utils.Timers;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import unife.edge.EDGE;
@@ -34,7 +35,7 @@ import unife.exception.IllegalValueException;
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
 
-    protected unife.edge.EDGE edge;
+    protected EDGE edge;
 
     public static enum PossibleOutputFormat {
 
@@ -138,6 +139,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             edge.setSeed(seed);
             edge.setShowAll(showAll);
             edge.setTimeOut(timeout);
+            edge.setTimers(new Timers());
             AbstractReasonerComponent rc = learningProblem.getReasoner();
             if (rc instanceof ClosedWorldReasoner) {
                 sourcesOntology = ((ClosedWorldReasoner) rc).getReasonerComponent().getOntology();

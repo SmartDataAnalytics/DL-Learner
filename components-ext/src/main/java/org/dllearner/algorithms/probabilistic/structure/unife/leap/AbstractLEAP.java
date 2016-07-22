@@ -9,12 +9,16 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import org.apache.commons.lang.StringUtils;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
@@ -66,7 +70,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     @ConfigOption(defaultValue = "owl:learnedClass", description = "You can "
             + "specify a start class for the algorithm. To do this, you have to "
             + "use Manchester OWL syntax without using prefixes.")
-    private OWLClass dummyClass;
+    protected OWLClass dummyClass;
 
     @ConfigOption(description = "accuracy used during the computation of the "
             + "probabilistic values (number of digital places)", defaultValue = "5")
@@ -75,10 +79,12 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     @ConfigOption(description = "This is used to set the type of class axiom to learn. Accepted values (case insensitive): 'subClassOf', 'equivalentClasses', 'both'",
             required = false,
             defaultValue = "subClassOf")
-    private String classAxiomType = "subClassOf";
+    protected String classAxiomType = "subClassOf";
 
     @ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
-    private int maxExecutionTimeInSeconds = 10; // TO DO: stop when execution time is over
+    protected int maxExecutionTimeInSeconds = 10; // TO DO: stop when execution time is over
+
+    protected TreeMap<String, Long> timers;
 
     protected AbstractEDGE edge;
 
@@ -92,6 +98,9 @@ public abstract class AbstractLEAP extends AbstractPSLA {
 
     @Override
     public void init() throws ComponentInitException {
+
+        timers = new TreeMap<>();
+
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         // create dummy class
         if (dummyClass == null) {
@@ -156,13 +165,27 @@ public abstract class AbstractLEAP extends AbstractPSLA {
 
     }
 
-    protected void printTimings(long totalTimeMills, long celaTimeMills, Map<String, Long> timeMap) {
+    protected void printTimings(long totalTimeMills, long celaTimeMills, TreeMap<String, Long> timeMap) {
         logger.info("Main: " + totalTimeMills + " ms");
         logger.info("CELOE: " + celaTimeMills + " ms");
-        logger.info("EDGE: " + (timeMap.get("EM") + timeMap.get("Bundle")) + " ms");
-        logger.info("\tBundle: " + timeMap.get("Bundle") + " ms");
-        logger.info("\tEM: " + timeMap.get("EM") + " ms");
-        long timeOther = totalTimeMills - celaTimeMills - (timeMap.get("EM") + timeMap.get("Bundle"));
+        long timeOther = totalTimeMills - celaTimeMills;
+        for (Entry<String, Long> time : timeMap.entrySet()) {
+            String names[] = time.getKey().split("\\.");
+            if (names.length == 1) {
+                timeOther -= time.getValue();
+//                logger.info(timeMap.subMap(names[0], names[0] + Character.MAX_VALUE).toString());
+            }
+            
+            String output = StringUtils.repeat("\t", names.length - 1);
+            output += names[names.length - 1] + ": " + time.getValue() + " ms";
+            logger.info(output);
+
+        }
+
+//        logger.info("EDGE: " + (timeMap.get("EM") + timeMap.get("Bundle")) + " ms");
+//        logger.info("\tBundle: " + timeMap.get("Bundle") + " ms");
+//        logger.info("\tEM: " + timeMap.get("EM") + " ms");
+//        long timeOther = totalTimeMills - celaTimeMills - (timeMap.get("EM") + timeMap.get("Bundle"));
         logger.info("Other: " + timeOther + " ms");
         logger.info("Program client: execution successfully terminated");
     }

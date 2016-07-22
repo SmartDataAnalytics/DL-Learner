@@ -85,8 +85,8 @@ public class LEAPTest {
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);
         leap.init();
-        leap.setClassAxiomType("equivalentClasses");
-        //leap.setClassAxiomType("subClassOf");
+        //leap.setClassAxiomType("equivalentClasses");
+        leap.setClassAxiomType("subClassOf");
         leap.start();
         assertTrue( true );
     }

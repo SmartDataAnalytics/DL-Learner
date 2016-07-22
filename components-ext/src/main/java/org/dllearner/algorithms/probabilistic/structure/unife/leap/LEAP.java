@@ -3,6 +3,7 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
@@ -124,7 +125,7 @@ public class LEAP extends AbstractLEAP {
             throw new StructureLearningException(msg);
         }
         totalTimeMills = System.currentTimeMillis() - totalTimeMills;
-        printTimings(totalTimeMills, celaTimeMills, edge.getTimeMap());
+        printTimings(totalTimeMills, celaTimeMills, timers);
     }
 
     /**
@@ -190,7 +191,7 @@ public class LEAP extends AbstractLEAP {
                 BigDecimal currLL = edge.getLL();
                 logger.info("Current Log-Likelihood: " + currLL);
                 if (getClassAxiomType().equalsIgnoreCase("both")) {
-                // Not supported yet
+                    // Not supported yet
                     // TO DO: I need to save the probabilistic values before adding 
                     // the equivalentClasses axiom. Because if I add the equivalentClasses axiom
                     // and the resulting Log-likelihood is worse than adding the 
@@ -273,6 +274,13 @@ public class LEAP extends AbstractLEAP {
                 } else {
                     logger.info("Log-Likelihood worsened. Removing Last Axiom...");
                     removeAxiom(ontology, axiom);
+                }
+                for (Map.Entry<String, Long> timer : edge.getTimeMap().entrySet()) {
+                    Long previousValue = timers.get(timer.getKey());
+                    if (previousValue == null) {
+                        previousValue = 0L;
+                    }
+                    timers.put(timer.getKey(), previousValue + timer.getValue());
                 }
             }
             i++;
