@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
@@ -69,7 +70,18 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
-    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator());
+    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator() {
+		@Override
+		public int compare(Node o1, Node o2) {
+			int val1 = o1 instanceof NodeInv ? 1 : 0;
+			int val2 = o2 instanceof NodeInv ? 1 : 0;
+
+			if(val1 == val2) {
+				return super.compare(o1, o2);
+			}
+			return val1 - val2;
+		}
+	});
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
     
@@ -384,7 +396,12 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 					if (edge != null) {
 //						sb.append("  ");
 						sb.append(FmtUtils.stringForNode(edge, context));
-						sb.append(" ---> ");
+						if(edge instanceof NodeInv) {
+							sb.append(" <--- ");
+						} else {
+							sb.append(" ---> ");
+						}
+
 					}
 					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context);
 				}
