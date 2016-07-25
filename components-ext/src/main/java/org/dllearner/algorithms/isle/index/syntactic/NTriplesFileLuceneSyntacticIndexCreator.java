@@ -3,23 +3,12 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
+import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RiotReader;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -33,7 +22,13 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import org.apache.jena.graph.Triple;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Creates a Lucene Index for the labels if classes and properties.
@@ -63,7 +58,7 @@ public class NTriplesFileLuceneSyntacticIndexCreator {
 		
 		Set<Document> documents = new HashSet<>();
 		
-		Iterator<Triple> iterator = RiotReader.createIteratorTriples(nTriplesStream, Lang.NTRIPLES, null);
+		Iterator<Triple> iterator = RDFDataMgr.createIteratorTriples(nTriplesStream, Lang.NTRIPLES, null);
 
 		Triple triple;
 		String text;
