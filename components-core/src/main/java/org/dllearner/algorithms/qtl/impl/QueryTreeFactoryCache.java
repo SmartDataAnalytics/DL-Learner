@@ -18,12 +18,12 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.Filter;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+
+import java.util.function.Predicate;
 
 /**
  * 
@@ -59,22 +59,6 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(String example, Model model) {
-		return delegatee.getQueryTree(example, model);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(Resource resource, Model model) {
-		return delegatee.getQueryTree(resource, model);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model, int)
 	 */
 	@Override
@@ -94,7 +78,7 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
 	@Override
-	public void addDropFilters(Filter<Statement>... dropFilters) {
+	public void addDropFilters(Predicate<Statement>... dropFilters) {
 		delegatee.addDropFilters(dropFilters);
 	}
 }
