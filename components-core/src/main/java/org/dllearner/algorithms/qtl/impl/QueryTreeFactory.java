@@ -25,6 +25,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.Filter;
 
+import java.util.function.Predicate;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -32,21 +34,66 @@ import org.apache.jena.util.iterator.Filter;
 public interface QueryTreeFactory {
 
 	/**
-	 * @param maxDepth the maximum depth of the generated query trees.
+	 * Generates a query tree with the given resource as root and the edges based on the data contained in the model.
+	 *
+	 * @param resource the resource URI which is supposed to be the root of the query tree
+	 * @param model the data
+	 * @return the query tree
 	 */
-	void setMaxDepth(int maxDepth);
+	default public RDFResourceTree getQueryTree(String resource, Model model) {
+		return getQueryTree(model.getResource(resource), model);
+	}
 
-	RDFResourceTree getQueryTree(String example, Model model);
+	/**
+	 * Generates a query tree with the given resource as root and the edges based on the data contained in the model.
+	 *
+	 * @param resource the resource which is supposed to be the root of the query tree
+	 * @param model the data
+	 * @return the query tree
+	 */
+	default public RDFResourceTree getQueryTree(Resource resource, Model model) {
+		return getQueryTree(resource, model, maxDepth());
+	}
 
-	RDFResourceTree getQueryTree(Resource resource, Model model);
+	/**
+	 * Generates a query tree with the given resource as root and the edges based on the data contained in the model.
+	 *
+	 * @param resource the resource URI which is supposed to be the root of the query tree
+	 * @param model the data
+	 * @param maxDepth the maximum depth of the query tree
+	 * @return the query tree
+	 */
+	default public RDFResourceTree getQueryTree(String resource, Model model, int maxDepth) {
+		return getQueryTree(model.getResource(resource), model, maxDepth);
+	}
 
-	RDFResourceTree getQueryTree(String example, Model model, int maxDepth);
-
+	/**
+	 * Generates a query tree with the given resource as root and the edges based on the data contained in the model.
+	 *
+	 * @param resource the resource which is supposed to be the root of the query tree
+	 * @param model the data
+	 * @param maxDepth the maximum depth of the query tree
+	 * @return the query tree
+	 */
 	RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth);
 
 	/**
-	 * @param dropFilters the dropFilters to set
+	 * @return the maximum depth of the generated query trees (Default: 3)
 	 */
-	void addDropFilters(Filter<Statement>... dropFilters);
+	default public int maxDepth() {
+		return 3;
+	}
+
+	/**
+	 * @param maxDepth the maximum depth of the generated query trees
+	 */
+	void setMaxDepth(int maxDepth);
+
+	/**
+	 * Adds a set of filters that will be applied on the model before the creation of the query tree.
+	 *
+	 * @param dropFilters the filters
+	 */
+	void addDropFilters(Predicate<Statement>... dropFilters);
 
 }

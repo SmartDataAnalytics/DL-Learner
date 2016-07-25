@@ -18,43 +18,33 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
-import java.io.FileInputStream;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Sets;
+import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.util.NodeComparator;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Sets;
-import org.apache.jena.graph.Node;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.util.NodeComparator;
-import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.util.iterator.ExtendedIterator;
-import org.apache.jena.util.iterator.Filter;
+import java.io.FileInputStream;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
- * 
+ * A base factory for query trees.
+ *
  * @author Lorenz Bühmann
  *
  */
@@ -65,7 +55,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private int maxDepth = 3;
 
-	private Set<Filter<Statement>> dropFilters = new HashSet<>();
+	private Set<Predicate<Statement>> dropFilters = new HashSet<>();
 
 	public QueryTreeFactoryBase() {
 	}
@@ -77,34 +67,15 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model)
-	 */
+
 	@Override
-	public RDFResourceTree getQueryTree(String example, Model model) {
-		return getQueryTree(example, model, maxDepth);
+	public int maxDepth() {
+		return maxDepth;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(Resource resource, Model model) {
-		return getQueryTree(resource, model, maxDepth);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model, int)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(String example, Model model, int maxDepth) {
-		return createTree(model.getResource(example), model, maxDepth);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model, int)
-	 */
+		 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model, int)
+		 */
 	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth) {
 		return createTree(resource, model, maxDepth);
@@ -114,7 +85,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
 	@Override
-	public void addDropFilters(Filter<Statement>... dropFilters) {
+	public void addDropFilters(Predicate<Statement>... dropFilters) {
 		this.dropFilters.addAll(Arrays.asList(dropFilters));
 	}
 
@@ -137,8 +108,8 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 		// filter statement if necessary
 		if (!dropFilters.isEmpty()) {
-			Iterator<Filter<Statement>> iter = dropFilters.iterator();
-			Filter<Statement> keepFilter = iter.next();
+			Iterator<Predicate<Statement>> iter = dropFilters.iterator();
+			Predicate<Statement> keepFilter = iter.next();
 			it = it.filterKeep(keepFilter);
 			while (iter.hasNext()) {it = it.filterKeep(iter.next());
 //				keepFilter = keepFilter.and(iter.next());
@@ -246,15 +217,10 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	public static void main(String[] args) throws Exception {
 		QueryTreeFactory factory = new QueryTreeFactoryBase();
-		Model model = ModelFactory.createDefaultModel();
-		String lang = "RDF/XML";
-		model.read(new FileInputStream("someFile"), null, lang);
-		String exampleURI = "http://example.org/a";
-		RDFResourceTree tree = factory.getQueryTree(exampleURI, model);
+		factory.setMaxDepth(2);
 		factory.addDropFilters(
-				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
-				new PredicateDropStatementFilter(StopURIsRDFS.get()),
-				new PredicateDropStatementFilter(StopURIsOWL.get()),
+				new PredicateDropStatementFilter(Sets.union(Sets.union(StopURIsDBpedia.get(), StopURIsRDFS.get()), StopURIsOWL.get())),
+				new ObjectDropStatementFilter(StopURIsOWL.get()),
 				new NamespaceDropStatementFilter(
 						Sets.newHashSet(
 								"http://dbpedia.org/property/", 
