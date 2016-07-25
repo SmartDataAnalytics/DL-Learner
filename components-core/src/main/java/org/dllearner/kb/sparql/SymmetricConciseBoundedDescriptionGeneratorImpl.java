@@ -20,13 +20,16 @@ package org.dllearner.kb.sparql;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,13 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	private int maxRecursionDepth = 1;
 	
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+													.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
+
 		if(cache != null){
 			qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
@@ -71,9 +80,11 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	
 	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
+		logger.debug("computing CBD of depth {} for {} ...", resourceURI, depth);
 		Model cbd = ModelFactory.createDefaultModel();
 		cbd.add(getIncomingModel(resourceURI, depth));
 		cbd.add(getOutgoingModel(resourceURI, depth));
+		logger.debug("CBD size: {}", cbd.size());
 		return cbd;
 	}
 	
@@ -84,8 +95,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	
 	private Model getIncomingModel(String resource, int depth){
 		String query = makeConstructQueryObject(resource, depth);
-
-		System.out.println(query);
+		logger.debug("computing incoming triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
 			return model;
@@ -97,7 +107,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	
 	private Model getOutgoingModel(String resource, int depth){
 		String query = makeConstructQuerySubject(resource, depth);
-
+		logger.debug("computing outgoing triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
 			return model;
@@ -187,7 +197,11 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 
 	public static void main(String[] args) {
 		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
-		cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Berlin", 1);
+		Resource res = ResourceFactory.createResource("http://dbpedia.org/resource/Leipzig");
+		Model cbd = cbdGen.getConciseBoundedDescription(res.getURI(), 2);
+		System.out.println("#triples =\t" + cbd.size());
+		System.out.println("#triples_out =\t" + cbd.listStatements(res, null, (RDFNode) null).toSet().size());
+		System.out.println("#triples_in =\t" + cbd.listStatements(null, null, res).toSet().size());
 	}
 
 }
