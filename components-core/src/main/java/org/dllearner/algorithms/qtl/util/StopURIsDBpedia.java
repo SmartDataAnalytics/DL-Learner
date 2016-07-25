@@ -43,6 +43,8 @@ public class StopURIsDBpedia {
 			"http://dbpedia.org/ontology/wikiPageModified",
 			"http://dbpedia.org/ontology/wikiPageOutDegree",
 			"http://dbpedia.org/ontology/wikiPageRevisionLink",
+			"http://dbpedia.org/ontology/wikiPageDisambiguates",
+			"http://dbpedia.org/ontology/wikiPageRedirects",
 			"http://www.w3.org/ns/prov#Entity",
 			"http://www.w3.org/2007/05/powder-s#describedby",
 			"http://dbpedia.org/ontology/viafId",
