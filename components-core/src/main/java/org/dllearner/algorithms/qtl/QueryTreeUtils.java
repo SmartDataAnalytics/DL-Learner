@@ -36,6 +36,7 @@ import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
@@ -771,7 +772,15 @@ public class QueryTreeUtils {
 					
 					// process object
 					String objectStr = FmtUtils.stringForNode(object, context);
-					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
+
+					// append triple pattern
+					String tpStr;
+					if(edge instanceof NodeInv) {
+						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, objectStr, predicateStr, subjectStr);
+					} else {
+						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr);
+					}
+					sb.append(tpStr).append("\n");
 					
 					/*
 					 * only if child is var node recursively process children if
