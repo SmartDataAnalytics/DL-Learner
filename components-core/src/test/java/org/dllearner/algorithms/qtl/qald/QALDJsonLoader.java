@@ -118,7 +118,7 @@ public class QALDJsonLoader {
 				String uri = b.getUri().getValue();
 				Model cbd = cbdGen.getConciseBoundedDescription(uri, maxDepth);
 				RDFResourceTree tree = factory.getQueryTree(uri, cbd);
-				System.out.println(tree.getStringRepresentation());
+//				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);
 			});
 
