@@ -22,11 +22,10 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.jena.query.*;
+import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
@@ -100,7 +99,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 			Model model = qe.execConstruct();
 			return model;
 		} catch (Exception e) {
-			logger.error("Failed to retrieve incoming CBD for " + resource, e);
+			logger.error("Failed to retrieve incoming CBD for " + resource + ".\nQuery:\n" + query, e);
 		}
 		return null;
 	}
@@ -197,11 +196,18 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 
 	public static void main(String[] args) {
 		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
-		Resource res = ResourceFactory.createResource("http://dbpedia.org/resource/Leipzig");
-		Model cbd = cbdGen.getConciseBoundedDescription(res.getURI(), 2);
+
+		Resource res = ResourceFactory.createResource("http://dbpedia.org/resource/Santa_Clara,_California");
+
+		Model cbd = cbdGen.getConciseBoundedDescription(res.getURI(), 1);
 		System.out.println("#triples =\t" + cbd.size());
+
 		System.out.println("#triples_out =\t" + cbd.listStatements(res, null, (RDFNode) null).toSet().size());
+		cbd.listStatements(res, null, (RDFNode) null).toList().forEach(System.out::println);
+
 		System.out.println("#triples_in =\t" + cbd.listStatements(null, null, res).toSet().size());
+		cbd.listStatements(null, null, res).toList().forEach(System.out::println);
+
 	}
 
 }
