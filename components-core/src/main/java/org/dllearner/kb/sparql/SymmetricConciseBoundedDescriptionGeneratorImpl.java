@@ -111,7 +111,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 			Model model = qe.execConstruct();
 			return model;
 		} catch (Exception e) {
-			logger.error("Failed to retrieve outgoing CBD for " + resource, e);
+			logger.error("Failed to retrieve outgoing CBD for " + resource + ".\nQuery:\n" + query, e);
 		}
 		return null;
 	}
