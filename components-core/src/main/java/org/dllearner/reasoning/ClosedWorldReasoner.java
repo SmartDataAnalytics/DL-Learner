@@ -228,7 +228,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             Hasher hasher = hf.newHasher();
             hasher.putBoolean(materializeExistentialRestrictions);
             hasher.putBoolean(handlePunning);
-            for (OWLOntology ont : baseReasoner.getOWLAPIOntologies()) {
+            for (OWLOntology ont : Collections.singleton(baseReasoner.getOntology())) {
                 hasher.putInt(ont.getLogicalAxioms().hashCode());
                 hasher.putInt(ont.getAxioms().hashCode());
             }
