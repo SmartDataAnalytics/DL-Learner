@@ -65,7 +65,6 @@ public abstract class AbstractSampleGenerator {
 		this.qef = qef;
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(sampleDepth);
 		cbdGen.addPropertiesToIgnore(Sets.newHashSet(OWL.sameAs.getURI()));
 		
 		reasoner = new SPARQLReasoner(qef);
@@ -116,7 +115,7 @@ public abstract class AbstractSampleGenerator {
 		
 		// load instance data
 		for(OWLIndividual ind : individuals){
-			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());
+			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), sampleDepth);
 			model.add(cbd);
 		}
 		

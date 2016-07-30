@@ -24,7 +24,6 @@ import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
@@ -54,10 +53,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
 	private Set<String> allowedObjectNamespaces = new TreeSet<>();
 	
-	private static final int MAX_RECURSION_DEPTH_DEFAULT = 1;
-	
-	private int maxRecursionDepth = 1;
-	
 	private Model baseModel;
 	private QueryExecutionFactory qef;
 	
@@ -81,9 +76,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this.qef = qef;
 	}
 	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
-
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
 		qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
 				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
@@ -98,11 +91,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		}
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
-	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
-		this(endpoint, cacheDir, MAX_RECURSION_DEPTH_DEFAULT);
-	}
-	
+
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
 		this(endpoint, (String)null);
 	}
@@ -112,17 +101,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		
 		qef = new QueryExecutionFactoryModel(baseModel);
 	}
-	
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI){
-		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
-	}
-	
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth){
-		return getConciseBoundedDescription(resourceURI, depth, false);
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
 	 */
@@ -147,11 +126,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	@Override
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
-	}
-	
-	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
 	}
 	
 	/**

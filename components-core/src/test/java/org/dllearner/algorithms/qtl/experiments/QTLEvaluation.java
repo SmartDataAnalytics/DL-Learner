@@ -242,8 +242,7 @@ public class QTLEvaluation {
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxTreeDepth);
-		
+
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
@@ -1165,7 +1164,7 @@ public class QTLEvaluation {
 		if(rs.hasNext()){
 			Resource object = rs.next().getResource("o");
 			Model cbd = cbdGen.getConciseBoundedDescription(object.getURI(), maxTreeDepth);
-			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd);
+			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd, maxTreeDepth);
 			similarTree.setData(object.asNode());
 			return similarTree;
 		}
@@ -1425,7 +1424,7 @@ public class QTLEvaluation {
 	private RDFResourceTree getQueryTree(String resource){
 		// get CBD
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
 		
 		// rewrite NAN to NaN to avoid parse exception
@@ -1442,7 +1441,7 @@ public class QTLEvaluation {
 		
 		// generate tree
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
-		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
+		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
 
 		// keep track of tree size

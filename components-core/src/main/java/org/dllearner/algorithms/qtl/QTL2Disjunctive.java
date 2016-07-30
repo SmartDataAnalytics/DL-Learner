@@ -211,8 +211,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			treeFactory = new QueryTreeFactoryBase();
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxTreeDepth);
-		
+
 		// set the used heuristic
 		if(heuristic == null){
 			heuristic = new QueryTreeHeuristicSimple();
@@ -260,9 +259,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		if(currentPosExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getPositiveExamples()) {
 				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
 //					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
 					tree2Individual.put(queryTree, ind);
 					currentPosExampleTrees.add(queryTree);
 					currentPosExamples.add(ind);
@@ -279,8 +278,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		if(currentNegExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getNegativeExamples()) {
 				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
 					tree2Individual.put(queryTree, ind);
 					currentNegExampleTrees.add(queryTree);
 					currentNegExamples.add(ind);
