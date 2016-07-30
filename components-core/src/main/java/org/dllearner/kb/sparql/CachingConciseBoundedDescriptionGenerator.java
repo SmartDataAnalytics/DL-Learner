@@ -68,12 +68,8 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	}
 	
 	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		delegatee.setRecursionDepth(maxRecursionDepth);
-	}
-	
-	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
+		delegatee.addPropertiesToIgnore(properties);
 	}
 
 	/* (non-Javadoc)

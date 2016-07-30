@@ -258,7 +258,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		int maxDepth = 2;
-		cbdGenerator.setRecursionDepth(maxDepth);
 
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.setMaxDepth(maxDepth);
@@ -278,7 +277,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		for (String resource : resources) {
 			try {
 				System.out.println(resource);
-				Model model = cbdGenerator.getConciseBoundedDescription(resource);
+				Model model = cbdGenerator.getConciseBoundedDescription(resource, maxDepth);
 				RDFResourceTree tree = treeFactory.getQueryTree(ResourceFactory.createResource(resource), model);
 				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);

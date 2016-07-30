@@ -29,11 +29,47 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
+/**
+ * According to the definition at http://www.w3.org/Submission/CBD/ ...
+ * <p>
+ * An alternative form of description, which includes all statements expressed along both
+ * outbound and inbound arc paths, terminated in like fashion as a concise bounded description but extending from the
+ * starting node in both directions; thus enabling the requesting agent to potentially infer itself any implicit
+ * statements based on symmetric property pairs. We can call this derivative of a concise bounded description a
+ * <em>symmetric concise bounded description</em>.
+ * <p>
+ * Specifically, given a particular node (the starting node) in a particular RDF graph (the source graph), a subgraph of
+ * that particular graph, taken to comprise a symmetric concise bounded description of the resource denoted by the
+ * starting node, can be identified as follows:
+ *
+ * <ol>
+ *     <li>
+ *			Include in the subgraph all statements in the source graph where the object of the statement is the starting node;
+ *     </li>
+ *     <li>
+ *			Recursively, for all statements identified in the subgraph thus far having a blank node subject not equal
+ *			to the starting node, include in the subgraph all statements in the source graph where the object of the
+ *			statement is the blank node in question and which are not already included in the subgraph.
+ *     </li>
+ *     <li>
+ * 			Recursively, for all statements included in the subgraph thus far, for all reifications of each statement
+ * 			in the source graph, include the symmetric concise bounded description beginning from the rdf:Statement
+ * 			node of each reification.
+ *     </li>
+ *     <li>
+ *			Include in the subgraph the concise bounded description beginning from the starting node.
+ *     </li>
+ * </ol>
+ * <p>
+ *
+ * @author Lorenz Buehmann
+ */
 public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricConciseBoundedDescriptionGeneratorImpl.class);
@@ -42,8 +78,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	private QueryExecutionFactory qef;
 	
 	private Set<String> namespaces;
-	private int maxRecursionDepth = 1;
-	
+
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
@@ -71,14 +106,12 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 
 		qef = new QueryExecutionFactoryModel(baseModel);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+	 */
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI){
-		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
-	}
-	
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth){
+	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
 		logger.debug("computing CBD of depth {} for {} ...", resourceURI, depth);
 		Model cbd = ModelFactory.createDefaultModel();
 		cbd.add(getIncomingModel(resourceURI, depth));
@@ -86,14 +119,15 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		logger.debug("CBD size: {}", cbd.size());
 		return cbd;
 	}
-	
+
 	@Override
 	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
 		this.namespaces = namespaces;
 	}
 	
 	private Model getIncomingModel(String resource, int depth){
-		String query = makeConstructQueryObject(resource, depth);
+		String query = makeConstructQueryObject2(resource, depth);
+		System.out.println(query);
 		logger.debug("computing incoming triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
@@ -170,21 +204,44 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		return sb.toString();
 	}
 
-	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
-	}
-	
-	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
+	/**
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given resource and recursion depth.
+	 * @param resource The resource for which a CONSTRUCT query is created.
+	 * @return The CONSTRUCT query
+	 */
+	private String makeConstructQueryObject2(String resource, int depth){
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
+		if(depth > 1) {
+			sb.append("?s0 ").append("?p0_out ").append("?o0_out").append(".\n");
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
+		}
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("?s0 ").append("?p0 ").append("<").append(resource).append(">").append(".\n");
+		if(depth > 1) {
+			sb.append("OPTIONAL{\n");
+			sb.append("?s0 ").append("?p0_out ").append("?o0_out").append(".\n");
+			sb.append("}\n");
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("OPTIONAL{\n");
+			sb.append("?o").append(i).append(" ").append("?p").append(i).append(" ").append("?s").append(i-1).append(".\n");
+
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("}");
+		}
+		sb.append("}\n");
+
+		return sb.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
-	 */
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
-		return null;
+	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)
@@ -194,12 +251,15 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 	}
 
-	public static void main(String[] args) {
-		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
+	public static void main(String[] args) throws Exception{
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+//		endpoint = SparqlEndpoint.getEndpointDBpedia();
+		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(endpoint);
 
 		Resource res = ResourceFactory.createResource("http://dbpedia.org/resource/Santa_Clara,_California");
 
-		Model cbd = cbdGen.getConciseBoundedDescription(res.getURI(), 1);
+		Model cbd = cbdGen.getConciseBoundedDescription(res.getURI(), 2);
 		System.out.println("#triples =\t" + cbd.size());
 
 		System.out.println("#triples_out =\t" + cbd.listStatements(res, null, (RDFNode) null).toSet().size());

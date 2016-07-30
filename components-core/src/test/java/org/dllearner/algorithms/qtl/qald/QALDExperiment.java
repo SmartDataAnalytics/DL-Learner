@@ -182,8 +182,7 @@ public class QALDExperiment {
 		qef = kb.ks.getQueryExecutionFactory();
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxDepth);
-		
+
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
@@ -429,7 +428,7 @@ public class QALDExperiment {
 		if(rs.hasNext()){
 			Resource object = rs.next().getResource("o");
 			Model cbd = cbdGen.getConciseBoundedDescription(object.getURI(), maxTreeDepth);
-			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd);
+			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd, maxTreeDepth);
 			similarTree.setData(object.asNode());
 			return similarTree;
 		}
@@ -652,7 +651,7 @@ public class QALDExperiment {
 	}
 	
 	private RDFResourceTree getQueryTree(String resource){
-		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxDepth);
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
 			String modelAsString = new String(baos.toByteArray());
