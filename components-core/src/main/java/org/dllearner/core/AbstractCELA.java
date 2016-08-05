@@ -451,7 +451,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			usedProperties = Helper.computeEntities(reasoner, EntityType.DATA_PROPERTY);
 		}
-		
+
 		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
