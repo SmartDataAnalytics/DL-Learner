@@ -3,7 +3,9 @@ package org.dllearner.algorithms.meta;
 import com.google.common.collect.Iterables;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -50,6 +52,7 @@ public class DisjunctiveCELA extends AbstractCELA {
 
     // the core learning algorithm
     private final AbstractCELA la;
+    private final AbstractClassExpressionLearningProblem<? extends Score> lp;
 
     private Set<OWLIndividual> currentPosExamples;
     private Set<OWLIndividual> currentNegExamples;
@@ -63,17 +66,14 @@ public class DisjunctiveCELA extends AbstractCELA {
      */
     public DisjunctiveCELA(AbstractCELA la) {
         this.la = la;
+        this.lp = la.getLearningProblem();
     }
 
     @Override
     public void init() throws ComponentInitException {
-        currentPosExamples = new TreeSet<>(((PosNegLP) la.getLearningProblem()).getPositiveExamples());
-        currentNegExamples = new TreeSet<>(((PosNegLP) la.getLearningProblem()).getNegativeExamples());
-
-        // keep copy of the initial pos examples
-        initialPosExamples = new TreeSet<>(currentPosExamples);
-
         la.setMaxExecutionTimeInSeconds(partialSolutionSearchTimeSeconds);
+
+        reset();
     }
 
     @Override
@@ -100,6 +100,14 @@ public class DisjunctiveCELA extends AbstractCELA {
 
     }
 
+    private void reset() {
+        currentPosExamples = new TreeSet<>(((PosNegLP) la.getLearningProblem()).getPositiveExamples());
+        currentNegExamples = new TreeSet<>(((PosNegLP) la.getLearningProblem()).getNegativeExamples());
+
+        // keep copy of the initial pos examples
+        initialPosExamples = new TreeSet<>(currentPosExamples);
+    }
+
     private EvaluatedDescription<? extends Score> computePartialSolution() {
         log.info("computing next partial solution...");
         la.start();
@@ -118,7 +126,7 @@ public class DisjunctiveCELA extends AbstractCELA {
                                                                             .map(EvaluatedHypothesis::getDescription)
                                                                             .collect(Collectors.toSet()));
             // evalute combined solution
-            EvaluatedDescription<? extends Score> combinedSolution = la.getLearningProblem().evaluate(combinedCE);
+            EvaluatedDescription<? extends Score> combinedSolution = lp.evaluate(combinedCE);
             bestEvaluatedDescriptions.add(combinedSolution);
 
             return true;
@@ -137,8 +145,15 @@ public class DisjunctiveCELA extends AbstractCELA {
         currentNegExamples.removeAll(coveredExamples);
 
         // update the learning problem itself // TODO do we need some re-init of the lp afterwards?
-        ((PosNegLP) la.getLearningProblem()).setPositiveExamples(currentPosExamples);
-        ((PosNegLP) la.getLearningProblem()).setNegativeExamples(currentNegExamples);
+        if(lp instanceof PosNegLP) {
+            ((PosNegLP) la.getLearningProblem()).setPositiveExamples(currentPosExamples);
+            ((PosNegLP) la.getLearningProblem()).setNegativeExamples(currentNegExamples);
+        } else if(lp instanceof PosOnlyLP) {
+            ((PosOnlyLP) la.getLearningProblem()).setPositiveExamples(currentPosExamples);
+        } else if(lp instanceof ClassLearningProblem){
+            // TODO
+        }
+
     }
 
     private boolean stoppingCriteriaSatisfied() {
