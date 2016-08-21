@@ -11,6 +11,9 @@ import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -46,24 +49,15 @@ import java.util.stream.Collectors;
  */
 public class QALDJsonLoader {
 
-	public static List<Question> loadQuestions(File file) {
-		try(InputStream is = new FileInputStream(file)){
-			ObjectMapper mapper = new ObjectMapper();
-
-			QALDJson qald = mapper.readValue(is, QALDJson.class);
-			return qald.getQuestions();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
+	public static List<Question> loadQuestions(InputStream is) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		QALDJson qald = mapper.readValue(is, QALDJson.class);
+		return qald.getQuestions();
 	}
 
 	public static void main(String[] args) throws Exception {
 		List<Question> questions = QALDJsonLoader.loadQuestions(
-				new File("/home/me/work/experiments/qtl/qald/qald-6-train-multilingual.json"));
+				new FileInputStream(new File("/home/me/work/experiments/qtl/qald/qald-6-train-multilingual.json")));
 
 		List<Question> filteredQuestions = questions.stream()
 				.filter(q -> !q.isAggregation()) // no aggregation
@@ -91,12 +85,13 @@ public class QALDJsonLoader {
 						)
 				)
 		);
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+//		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
-				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
-						.setModelContentType(WebContent.contentTypeRDFXML))
-				.end()
+//				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+//						.setModelContentType(WebContent.contentTypeRDFXML))
+//				.end()
 				.create();
 		long timeToLive = TimeUnit.DAYS.toMillis(30);
 		CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend("/tmp/qald/sparql", true, timeToLive);
@@ -108,15 +103,19 @@ public class QALDJsonLoader {
 		LGGGenerator lggGen = new LGGGeneratorSimple();
 
 		filteredQuestions.stream()
-				.filter(q -> q.getQuery().getSparql().contains("Goofy"))
+//				.filter(q -> q.getQuery().getSparql().contains("Shatner"))
 				.forEach(q -> {
+					System.out.println(q.getQuestion().get(0).getString());
 			System.out.println(q.getQuery().getSparql());
 			List<Binding> bindings = q.getAnswers().get(0).getResults().getBindings();
 
 			List<RDFResourceTree> trees = new ArrayList<>();
 			bindings.forEach(b -> {
 				String uri = b.getUri().getValue();
+
+//				System.out.println("+++++++++++++++ " + uri + " ++++++++++++++++++");
 				Model cbd = cbdGen.getConciseBoundedDescription(uri, maxDepth);
+//				RDFDataMgr.write(System.out, cbd, RDFFormat.TURTLE_PRETTY);
 				RDFResourceTree tree = factory.getQueryTree(uri, cbd);
 //				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);

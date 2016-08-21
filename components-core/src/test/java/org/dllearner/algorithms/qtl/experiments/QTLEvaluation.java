@@ -87,6 +87,7 @@ import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -141,12 +142,12 @@ public class QTLEvaluation {
 		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
 	}
 
-	QueryExecutionFactory qef;
+	private QueryExecutionFactory qef;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
-	
-	RandomDataGenerator rnd = new RandomDataGenerator();
+
+	private RandomDataGenerator rnd = new RandomDataGenerator();
 
 	private EvaluationDataset dataset;
 	
@@ -155,8 +156,8 @@ public class QTLEvaluation {
 	private int kbSize;
 
 	private boolean splitComplexQueries = true;
-	
-	PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+
+	private PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
 	
 	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
@@ -172,26 +173,26 @@ public class QTLEvaluation {
 	// max. time for each QTL run
 	private int maxExecutionTimeInSeconds = 60;
 
-	int minNrOfPositiveExamples = 9;
+	private int minNrOfPositiveExamples = 9;
 
-	int maxTreeDepth = 3;
-	
-	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
+	private int maxTreeDepth = 3;
+
+	private NoiseMethod noiseMethod = NoiseMethod.RANDOM;
 
 	// whether to override existing results
 	private boolean override = false;
 	
 	// parameters
-	int[] nrOfExamplesIntervals = {
+	private int[] nrOfExamplesIntervals = {
 //					5,
 //					10,
 //					15,
 					20,
 //					25,
 //					30
-					}; 
-			
-	double[] noiseIntervals = {
+					};
+
+	private double[] noiseIntervals = {
 					0.0,
 					0.1,
 //					0.2,
@@ -428,6 +429,7 @@ public class QTLEvaluation {
 			Iterator<String> iterator = queries.iterator();
 			while(iterator.hasNext() && tmp.size() < nrOfQueriesPerDepth) {
 				String queryString = iterator.next();
+				System.out.println(queryString);
 				Query q = QueryFactory.create(queryString);
 				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
 				if(subjectObjectJoinDepth == (depth - 1)) {
@@ -439,7 +441,7 @@ public class QTLEvaluation {
 		return subset;
 	}
 
-	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
+	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
 
@@ -456,7 +458,7 @@ public class QTLEvaluation {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = getSparqlQueries(queriesFile);
+		List<String> queries = dataset.getSparqlQueries();
 		logger.info("#loaded queries: " + queries.size());
 
 		if(maxNrOfProcessedQueries == -1) {
@@ -2032,7 +2034,7 @@ public class QTLEvaluation {
 		
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> benchmarkDirectorySpec = parser.accepts("d", "base directory").withRequiredArg().ofType(File.class).required();
-		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class).required();
+		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class);
 		OptionSpec<URL> endpointURLSpec = parser.accepts("e", "endpoint URL").withRequiredArg().ofType(URL.class).required();
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> overrideSpec = parser.accepts("o", "override previous results").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
@@ -2050,7 +2052,6 @@ public class QTLEvaluation {
         OptionSet options = parser.parse(args);
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
-		File queriesFile = options.valueOf(queriesFileSpec);
 		boolean write2DB = options.valueOf(write2DBSpec);
 		boolean override = options.valueOf(overrideSpec);
 		boolean useEmailNotification = options.valueOf(emailNotificationSpec);
@@ -2061,6 +2062,11 @@ public class QTLEvaluation {
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
 		int nrOfThreads = options.valueOf(nrOfThreadsSpec);
+
+		File queriesFile = null;
+		if(options.has(queriesFileSpec)) {
+			queriesFile = options.valueOf(queriesFileSpec);
+		}
 
 		int[] exampleInterval = null;
 		if(options.has(exampleIntervalsSpec)) {
@@ -2096,9 +2102,10 @@ public class QTLEvaluation {
 			}
 		}
 
-		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint);
+//		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
+		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory, endpoint);
 		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
-		eval.run(queriesFile, maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
+		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
