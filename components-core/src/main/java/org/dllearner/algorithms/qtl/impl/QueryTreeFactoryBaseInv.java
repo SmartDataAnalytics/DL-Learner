@@ -18,19 +18,18 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
-import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.util.NodeComparator;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.util.StatementComparator;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -38,7 +37,6 @@ import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 
@@ -111,13 +109,9 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 	private void fillMap(Resource s, Model model, Map<Resource, SortedSet<Statement>> resource2Statements, boolean inverse) {
 
 		// get all statements
-		ExtendedIterator<Statement> it;
-		if (inverse) {
-			it = model.listStatements(null, null, s);// with object s
-		} else {
-			it = model.listStatements(s, null, (RDFNode) null);// with subject s
-		}
-
+		ExtendedIterator<Statement> it = inverse ?
+				model.listStatements(null, null, s) : // with object s
+				model.listStatements(s, null, (RDFNode) null);// with subject s
 
 		// filter statement if necessary
 		if (!dropFilters.isEmpty()) {
@@ -169,56 +163,6 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 		}
 		currentDepth--;
 	}
-
-	class StatementComparator implements Comparator<Statement> {
-		
-		final NodeComparator nodeComparator = new NodeComparator();
-
-		@Override
-		public int compare(Statement s1, Statement s2) {
-			return ComparisonChain.start()
-					.compare(s1.getSubject().asNode(), s2.getSubject().asNode(), nodeComparator)
-					.compare(s1.getPredicate().asNode(), s2.getPredicate().asNode(), nodeComparator)
-					.compare(s1.getObject().asNode(), s2.getObject().asNode(), nodeComparator)
-					.result();
-		}
-	}
-
-	public static String encode(String s) {
-		char[] htmlChars = s.toCharArray();
-		StringBuilder encodedHtml = new StringBuilder();
-		for (char htmlChar : htmlChars) {
-			switch (htmlChar) {
-				case '<':
-					encodedHtml.append("&lt;");
-					break;
-				case '>':
-					encodedHtml.append("&gt;");
-					break;
-				case '&':
-					encodedHtml.append("&amp;");
-					break;
-				case '\'':
-					encodedHtml.append("&#39;");
-					break;
-				case '"':
-					encodedHtml.append("&quot;");
-					break;
-				case '\\':
-					encodedHtml.append("&#92;");
-					break;
-				case (char) 133:
-					encodedHtml.append("&#133;");
-					break;
-				default:
-					encodedHtml.append(htmlChar);
-					break;
-			}
-		}
-		return encodedHtml.toString();
-	}
-
-	
 
 	public static void main(String[] args) throws Exception {
 		QueryTreeFactory factory = new QueryTreeFactoryBaseInv();

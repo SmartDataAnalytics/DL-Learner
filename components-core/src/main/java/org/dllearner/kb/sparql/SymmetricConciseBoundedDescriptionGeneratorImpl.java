@@ -127,7 +127,6 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	
 	private Model getIncomingModel(String resource, int depth){
 		String query = makeConstructQueryObject2(resource, depth);
-		System.out.println(query);
 		logger.debug("computing incoming triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
