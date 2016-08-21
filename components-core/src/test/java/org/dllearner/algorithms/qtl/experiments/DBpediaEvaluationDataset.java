@@ -18,10 +18,14 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.io.File;
-import java.net.URL;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.io.Files;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -34,14 +38,8 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.util.iterator.Filter;
+import java.io.File;
+import java.util.List;
 
 /**
  * @author Lorenz Buehmann
@@ -49,7 +47,7 @@ import org.apache.jena.util.iterator.Filter;
  */
 public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
-	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint, File queriesFile) {
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
@@ -62,9 +60,7 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		
 		// load SPARQL queries
 		try {
-			URL url = this.getClass().getClassLoader().getResource("org/dllearner/algorithms/qtl/iswc2015-benchmark-queries.txt");
-			File file = new File(url.toURI()); 
-			sparqlQueries = Files.readLines(file, Charsets.UTF_8);
+			sparqlQueries = Files.readLines(queriesFile, Charsets.UTF_8);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,10 +79,15 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("odp-dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#");
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
-	
+
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
+		return queryTreeFilters();
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	public static List<Filter<Statement>> queryTreeFilters() {
 		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),

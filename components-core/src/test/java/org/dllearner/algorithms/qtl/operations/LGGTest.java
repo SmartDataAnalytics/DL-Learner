@@ -189,7 +189,7 @@ private static final String baseIRI = "http://test.org/";
 //	@Test
 	public void correctness() {
 		treeFactory.setMaxDepth(2);
-		java.util.List<Filter<Statement>> var = new DBpediaEvaluationDataset(new File("/tmp/lggtest"), SparqlEndpoint.getEndpointDBpedia()).getQueryTreeFilters();
+		java.util.List<Filter<Statement>> var = DBpediaEvaluationDataset.queryTreeFilters();
 		treeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
 		Model model = ModelFactory.createDefaultModel();

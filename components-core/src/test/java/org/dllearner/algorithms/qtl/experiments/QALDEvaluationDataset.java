@@ -18,10 +18,14 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.io.File;
-import java.net.URL;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.util.iterator.Filter;
+import org.dllearner.algorithms.qtl.qald.QALDJsonLoader;
+import org.dllearner.algorithms.qtl.qald.schema.Question;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -31,25 +35,28 @@ import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.util.iterator.Filter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class DBpediaEvaluationDataset extends EvaluationDataset {
-	
-	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+public class QALDEvaluationDataset extends EvaluationDataset {
+
+	private static final String TRAIN_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-train-multilingual.json?raw=true";
+	private static final String TEST_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-test-multilingual.json?raw=true";
+
+	public QALDEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
@@ -59,15 +66,35 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
-		
-		// load SPARQL queries
+
+		List<Question> questions = null;
 		try {
-			URL url = this.getClass().getClassLoader().getResource("org/dllearner/algorithms/qtl/iswc2015-benchmark-queries.txt");
-			File file = new File(url.toURI()); 
-			sparqlQueries = Files.readLines(file, Charsets.UTF_8);
-		} catch (Exception e) {
+			URL url = new URL(TRAIN_URL);
+			try (InputStream is = url.openStream()) {
+				questions = QALDJsonLoader.loadQuestions(is);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+
+		// filter the questions
+		List<Question> filteredQuestions = questions.stream()
+				.filter(q -> !q.isAggregation()) // no aggregation
+				.filter(q -> q.getAnswertype().equals("resource")) // only resources
+				.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
+				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
+				.sorted((q1, q2) -> Integer.compare(q1.getId(), q2.getId()))
+				.collect(Collectors.toList());
+		
+		// map to SPARQL queries
+		sparqlQueries = filteredQuestions.stream()
+				.map(q -> q.getQuery().getSparql())
+				.map(q -> SPARQLQueryUtils.PREFIXES + " " + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + q) // prepend prefixes
+				.collect(Collectors.toList());
 		
 		reasoner = new SPARQLReasoner(ks);
 		try {
