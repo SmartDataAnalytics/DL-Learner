@@ -232,6 +232,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			defaultValue="true")
 	private boolean useSomeOnly = true;
 
+	private boolean useUnionOf = true;
+
 	// caches for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<>();
 
@@ -245,6 +247,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description = "class expression length metric (should match learning algorithm usage)", defaultValue = "default cel_metric")
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+
 
 	public RhoDRDown() {}
 
@@ -540,7 +543,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(currDomain.isOWLThing()) {
 				if(maxLength>topRefinementsLength)
 					computeTopRefinements(maxLength);
-				refinements = (TreeSet<OWLClassExpression>) topRefinementsCumulative.get(maxLength).clone();
+				refinements = topRefinementsCumulative.containsKey(maxLength) ?
+						(TreeSet<OWLClassExpression>) topRefinementsCumulative.get(maxLength).clone() :
+						new TreeSet<>();
 			} else {
 				if(maxLength>topARefinementsLength.get(currDomain)) {
 					computeTopRefinements(maxLength, currDomain);
@@ -1051,101 +1056,102 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			refinementsLength = topARefinementsLength.get(domain);
 		}
 
-		// compute all possible combinations of the disjunction
-		for(int i = refinementsLength+1; i <= maxLength; i++) {
-			combos.put(i,MathOperations.getCombos(i, mMaxLength));
+			// compute all possible combinations of the disjunction
+			for (int i = refinementsLength + 1; i <= maxLength; i++) {
+				combos.put(i, MathOperations.getCombos(i, mMaxLength));
 
-			// initialise the refinements with empty sets
-			if(domain == null) {
-				topRefinements.put(i, new TreeSet<>());
-			} else {
-				if(!topARefinements.containsKey(domain))
-					topARefinements.put(domain, new TreeMap<>());
-				topARefinements.get(domain).put(i, new TreeSet<>());
-			}
-
-			for(List<Integer> combo : combos.get(i)) {
-
-				// combination is a single number => try to use M
-				if(combo.size()==1) {
-					// note we cannot use "put" instead of "addAll" because there
-					// can be several combos for one length
-					if(domain == null)
-						topRefinements.get(i).addAll(m.get(i));
-					else
-						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
-				// combinations has several numbers => generate disjunct
+				// initialise the refinements with empty sets
+				if (domain == null) {
+					topRefinements.put(i, new TreeSet<>());
 				} else {
+					if (!topARefinements.containsKey(domain))
+						topARefinements.put(domain, new TreeMap<>());
+					topARefinements.get(domain).put(i, new TreeSet<>());
+				}
 
-					// check whether the combination makes sense, i.e. whether
-					// all lengths mentioned in it have corresponding elements
-					// e.g. when negation is deactivated there won't be elements of
-					// length 2 in M
-					boolean validCombo = true;
-					for(Integer j : combo) {
-						if((domain == null && m.get(j).size()==0) ||
-								(domain != null && mA.get(domain).get(j).size()==0))
-							validCombo = false;
-					}
+				for (List<Integer> combo : combos.get(i)) {
 
-					if(validCombo) {
+					// combination is a single number => try to use M
+					if (combo.size() == 1) {
+						// note we cannot use "put" instead of "addAll" because there
+						// can be several combos for one length
+						if (domain == null)
+							topRefinements.get(i).addAll(m.get(i));
+						else
+							topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
+						// combinations has several numbers => generate disjunct
+					} else {
 
-						SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
-						for(Integer j : combo) {
-							if(domain == null)
-								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
-							else
-								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+						// check whether the combination makes sense, i.e. whether
+						// all lengths mentioned in it have corresponding elements
+						// e.g. when negation is deactivated there won't be elements of
+						// length 2 in M
+						boolean validCombo = true;
+						for (Integer j : combo) {
+							if ((domain == null && m.get(j).size() == 0) ||
+									(domain != null && mA.get(domain).get(j).size() == 0))
+								validCombo = false;
 						}
 
-						// convert all concepts in ordered negation normal form
-						Set<OWLObjectUnionOf> tmp = new HashSet<>();
-						for(OWLClassExpression concept : baseSet) {
-							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
-						}
-						baseSet = new TreeSet<>(tmp);
+						if (validCombo && useUnionOf) {
 
-						// apply the exists filter (throwing out all refinements with
-						// double \exists r for any r)
-						// TODO: similar filtering can be done for boolean datatype
-						// properties
-						if(applyExistsFilter) {
-							Iterator<OWLObjectUnionOf> it = baseSet.iterator();
-							while(it.hasNext()) {
-								if(MathOperations.containsDoubleObjectSomeRestriction(it.next()))
-									it.remove();
+							SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
+							for (Integer j : combo) {
+								if (domain == null)
+									baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+								else
+									baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+							}
+
+							// convert all concepts in ordered negation normal form
+							Set<OWLObjectUnionOf> tmp = new HashSet<>();
+							for (OWLClassExpression concept : baseSet) {
+								tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
+							}
+							baseSet = new TreeSet<>(tmp);
+
+							// apply the exists filter (throwing out all refinements with
+							// double \exists r for any r)
+							// TODO: similar filtering can be done for boolean datatype
+							// properties
+							if (applyExistsFilter) {
+								Iterator<OWLObjectUnionOf> it = baseSet.iterator();
+								while (it.hasNext()) {
+									if (MathOperations.containsDoubleObjectSomeRestriction(it.next()))
+										it.remove();
+								}
+							}
+
+							// add computed refinements
+							if (domain == null) {
+								topRefinements.get(i).addAll(baseSet);
+							} else {
+								topARefinements.get(domain).get(i).addAll(baseSet);
 							}
 						}
-
-						// add computed refinements
-						if(domain == null) {
-							topRefinements.get(i).addAll(baseSet);
-						} else {
-							topARefinements.get(domain).get(i).addAll(baseSet);
-						}
 					}
 				}
-			}
 
-			// create cumulative versions of refinements such that they can
-			// be accessed easily
-			TreeSet<OWLClassExpression> cumulativeRefinements = new TreeSet<>();
-			for(int j=1; j<=i; j++) {
-				if(domain == null) {
-					cumulativeRefinements.addAll(topRefinements.get(j));
+				// create cumulative versions of refinements such that they can
+				// be accessed easily
+				TreeSet<OWLClassExpression> cumulativeRefinements = new TreeSet<>();
+				for (int j = 1; j <= i; j++) {
+					if (domain == null) {
+						cumulativeRefinements.addAll(topRefinements.get(j));
+					} else {
+						cumulativeRefinements.addAll(topARefinements.get(domain).get(j));
+					}
+				}
+
+				if (domain == null) {
+					topRefinementsCumulative.put(i, cumulativeRefinements);
 				} else {
-					cumulativeRefinements.addAll(topARefinements.get(domain).get(j));
+					if (!topARefinementsCumulative.containsKey(domain))
+						topARefinementsCumulative.put(domain, new TreeMap<>());
+					topARefinementsCumulative.get(domain).put(i, cumulativeRefinements);
 				}
 			}
 
-			if(domain == null) {
-				topRefinementsCumulative.put(i, cumulativeRefinements);
-			} else {
-				if(!topARefinementsCumulative.containsKey(domain))
-					topARefinementsCumulative.put(domain, new TreeMap<>());
-				topARefinementsCumulative.get(domain).put(i, cumulativeRefinements);
-			}
-		}
 
 		// register new top refinements length
 		if(domain == null)
@@ -1999,6 +2005,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 */
 	public void setUseSomeOnly(boolean useSomeOnly) {
 		this.useSomeOnly = useSomeOnly;
+	}
+
+	public void setUseUnionOf(boolean useUnionOf) {
+		this.useUnionOf = useUnionOf;
 	}
 
 	/**
