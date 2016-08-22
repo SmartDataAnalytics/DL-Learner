@@ -36,7 +36,7 @@ public class LEAPTest {
     static AbstractReasonerComponent rc;
     static ClassLearningProblem lp;
     static AbstractEDGE lpr;
-    static AbstractCELA cela;
+    static CELOE cela;
 
     private static final Logger logger = LoggerFactory.getLogger(LEAPTest.class);
     
@@ -44,7 +44,8 @@ public class LEAPTest {
     @BeforeClass
     public static void setUpClass() throws ComponentInitException {
         System.out.println("Current dir: " + System.getProperty("user.dir"));
-        ks = new OWLFile("../examples/family/father_oe.owl");
+//        ks = new OWLFile("../examples/probabilistic/family/father_oe.owl");
+        ks = new OWLFile("../examples/probabilistic/family/father_oe.owl");
         ks.init();
 
         rc = new ClosedWorldReasoner(ks);
@@ -56,10 +57,13 @@ public class LEAPTest {
         lp.init();
 
         lpr = new EDGE(lp, null);
+        lpr.setRandomize(true);
         lpr.setRandomizeAll(true);
         lpr.init();
         
         cela = new CELOE(lp, rc);
+        cela.setMaxExecutionTimeInSeconds(10);
+        cela.setMaxNrOfResults(10);
         cela.init();
 
     }
@@ -85,8 +89,8 @@ public class LEAPTest {
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);
         leap.init();
-        //leap.setClassAxiomType("equivalentClasses");
-        leap.setClassAxiomType("subClassOf");
+        leap.setClassAxiomType("equivalentClasses");
+//        leap.setClassAxiomType("subClassOf");
         leap.start();
         assertTrue( true );
     }

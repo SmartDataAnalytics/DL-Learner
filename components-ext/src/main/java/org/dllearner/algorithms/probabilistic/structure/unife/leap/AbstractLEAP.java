@@ -8,6 +8,7 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
+import edu.stanford.nlp.util.Factory;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -31,8 +32,10 @@ import org.dllearner.core.probabilistic.unife.AbstractPSLA;
 import org.dllearner.core.probabilistic.unife.StructureLearningException;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.utils.unife.ReflectionHelper;
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -101,10 +104,16 @@ public abstract class AbstractLEAP extends AbstractPSLA {
 
         timers = new TreeMap<>();
 
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        //OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+
+        OWLOntologyManager manager = edge.getSourcesOntology().getOWLOntologyManager();
         // create dummy class
         if (dummyClass == null) {
-            dummyClass = manager.getOWLDataFactory().getOWLClass(IRI.create(UniFeIRI.DISPONTE + "/learnedClass"));
+            OWLDataFactory owlFactory = manager.getOWLDataFactory();
+            dummyClass = owlFactory.getOWLClass(IRI.create(UniFeIRI.DISPONTE + "/learnedClass"));
+            OWLSubClassOfAxiom axiom = owlFactory.
+                    getOWLSubClassOfAxiom(dummyClass, owlFactory.getOWLThing());
+            manager.addAxiom(edge.getSourcesOntology(), axiom);
         }
 
         logger.debug("getting the individuals");
@@ -175,7 +184,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
                 timeOther -= time.getValue();
 //                logger.info(timeMap.subMap(names[0], names[0] + Character.MAX_VALUE).toString());
             }
-            
+
             String output = StringUtils.repeat("\t", names.length - 1);
             output += names[names.length - 1] + ": " + time.getValue() + " ms";
             logger.info(output);
@@ -366,14 +375,17 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     protected void addAxiom(OWLOntology ontology, OWLAxiom axiom) throws InconsistencyException {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
         manager.addAxiom(ontology, axiom);
-        PelletReasoner pelletReasoner = new PelletReasonerFactory().createReasoner(ontology);
+//        PelletReasoner pelletReasoner = new PelletReasonerFactory().createReasoner(ontology);
+        PelletReasoner pelletReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
         if (!pelletReasoner.isConsistent()) {
             String message = "The axiom will make the KB inconsistent.\n"
                     + "It will NOT be added";
             logger.warn(message);
             manager.removeAxiom(ontology, axiom);
+            pelletReasoner.dispose();
             throw new InconsistencyException(message);
         }
+        pelletReasoner.dispose();
     }
 
     protected void removeAxiom(OWLOntology ontology, OWLAxiom axiom) {

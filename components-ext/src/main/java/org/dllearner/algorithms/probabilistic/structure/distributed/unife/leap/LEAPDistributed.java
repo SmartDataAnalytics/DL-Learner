@@ -876,7 +876,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
 
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
         manager.addAxiom(ontology, axiom);
-        PelletReasoner pelletReasoner = new PelletReasonerFactory().createReasoner(ontology);
+        PelletReasoner pelletReasoner = new PelletReasonerFactory().createNonBufferingReasoner(ontology);
         if (!pelletReasoner.isConsistent()) {
             String message = "The axiom will make the KB inconsistent.\n"
                     + "It will NOT be added";

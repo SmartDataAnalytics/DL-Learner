@@ -93,15 +93,15 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
 
     // ontology obtained by merging all the sources
     protected OWLOntology sourcesOntology;
-    
+
     public AbstractEDGE() {
-        
+
     }
 
     public AbstractEDGE(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
         super(lp, targetAxioms);
     }
-    
+
     /**
      * Get the Log-Likelihood of all the examples/queries.
      *
@@ -139,11 +139,9 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             edge.setSeed(seed);
             edge.setShowAll(showAll);
             edge.setTimeOut(timeout);
-            edge.setTimers(new Timers());
+            //edge.setTimers(new Timers());
             AbstractReasonerComponent rc = learningProblem.getReasoner();
             if (rc instanceof ClosedWorldReasoner) {
-                sourcesOntology = ((ClosedWorldReasoner) rc).getReasonerComponent().getOntology();
-            } else if (rc instanceof ClosedWorldReasoner) {
                 sourcesOntology = ((ClosedWorldReasoner) rc).getReasonerComponent().getOntology();
             } else if (rc instanceof OWLAPIReasoner) {
                 sourcesOntology = ((OWLAPIReasoner) rc).getOntology();
@@ -169,7 +167,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
                 return parameter;
             }
         }
-        
+
         return null;
     }
 

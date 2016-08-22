@@ -79,11 +79,13 @@ public class LEAP extends AbstractLEAP {
         // start class expression learning algorithm
         celaTimeMills = System.currentTimeMillis();
         cela.start();
+        cela.getReasoner().releaseKB();
         celaTimeMills = System.currentTimeMillis() - celaTimeMills;
         // get the best class expressions
         NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions = cela.getCurrentlyBestEvaluatedDescriptions();
         // convert the class expressions into axioms
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+//        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLOntologyManager manager = edge.getSourcesOntology().getOWLOntologyManager();
         Set<? extends OWLAxiom> candidateAxioms;
         if (getClassAxiomType().equalsIgnoreCase("subClassOf") || getClassAxiomType().equalsIgnoreCase("both")) {
             candidateAxioms = convertIntoSubClassOfAxioms(manager, evaluatedDescriptions);

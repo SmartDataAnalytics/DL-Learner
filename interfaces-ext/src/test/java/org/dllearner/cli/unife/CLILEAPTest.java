@@ -5,6 +5,9 @@
  */
 package org.dllearner.cli.unife;
 
+import java.io.IOException;
+import org.dllearner.confparser.ParseException;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,14 +42,17 @@ public class CLILEAPTest {
 
     /**
      * Test of main method, of class CLILEAP.
+     * @throws java.lang.Exception
      */
-    //@Test
+//    @Test
     public void testMain1() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/family/run.conf"};
-        CLILEAP.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        assertTrue(true);
+        try {
+            CLILEAP.main(args);
+        } catch (ParseException | IOException | ReasoningMethodUnsupportedException e) {
+            fail();
+        }
     }
 
     @Test
@@ -58,6 +64,24 @@ public class CLILEAPTest {
         assertTrue(true);
     }
 
+    //@Test
+    public void testMain3() throws Exception {
+        System.out.println("main");
+        String[] args = {"../examples/probabilistic/premierleague/run.conf"};
+        CLILEAP.main(args);
+        // TODO review the generated test code and remove the default call to fail.
+        assertTrue(true);
+    }
 
+//    @Test
+    public void testMainTest() {
+        System.out.println("main");
+        String[] args = {"../examples/probabilistic/test/run.conf"};
+        try {
+            CLILEAP.main(args);
+        } catch (Exception e) {
+            fail();
+        }
+    }
 
 }
