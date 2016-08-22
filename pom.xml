@@ -16,7 +16,7 @@
         <slf4j.version>1.7.16</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.1.4</owlapi.version>
+        <owlapi.version>4.2.4</owlapi.version>
         <spring.version>4.2.4.RELEASE</spring.version>
         <jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
 		<pellet.version>2.4.0-dllearner</pellet.version>
@@ -641,7 +641,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.190</version>
+				<version>1.4.192</version>
 			</dependency>
 
 			<dependency>
@@ -688,6 +688,14 @@
 				<artifactId>pdb2rdf-cli</artifactId>
 				<version>0.0.9</version>
 			</dependency>
+
+			<!-- Apache Commons Pool (used in ParCEL) -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-pool2</artifactId>
+				<version>2.4.2</version>
+			</dependency>
+
 
 			<!--used in the webservice in interfaces -->
 			<dependency>

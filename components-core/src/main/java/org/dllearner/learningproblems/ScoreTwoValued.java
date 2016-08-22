@@ -49,7 +49,9 @@ public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
     private double percentPerLengthUnit;
 
 	
-	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg, double accuracy) {
+	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit,
+						  Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg,
+						  double accuracy) {
     	this.conceptLength = conceptLength;
     	this.percentPerLengthUnit = percentPerLengthUnit;
 		this.posAsPos = posAsPos;

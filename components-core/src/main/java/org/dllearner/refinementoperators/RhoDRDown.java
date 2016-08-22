@@ -2047,4 +2047,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		logger.debug("mMaxLength = " + mMaxLength);
 	}
+
+	public void setSplits(Map<OWLDataProperty, List<OWLLiteral>> splits) {
+		this.splits = splits;
+	}
 }
