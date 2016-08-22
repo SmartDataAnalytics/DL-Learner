@@ -54,6 +54,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 //import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -233,6 +236,18 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
 	    for (OWLDataProperty dataProperty : datatypeProperties) {
 		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+			// if no range has been given, infer by values
+			if(ranges.isEmpty()) {
+				Map<OWLDatatype, Long> dt2Frequency = getIndividuals().stream()
+						.map(i -> EntitySearcher.getDataPropertyValues(i, dataProperty, owlAPIOntologies))
+						.flatMap(values -> values.stream().map(v -> v.getDatatype()))
+						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+				// for now, we support only a unique datatype
+				if(dt2Frequency.keySet().size() == 1) {
+					ranges.addAll(dt2Frequency.keySet());
+				}
+			}
+			
 		    Iterator<OWLDataRange> it = ranges.iterator();
 		    if (it.hasNext()) {
 			    OWLDataRange range = it.next();
