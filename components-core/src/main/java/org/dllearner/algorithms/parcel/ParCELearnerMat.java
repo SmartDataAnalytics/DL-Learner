@@ -14,23 +14,30 @@ package org.dllearner.algorithms.parcel;
  *	@author Jens Dietrich
  */
 
+import com.google.common.collect.Sets;
+import org.apache.commons.compress.archivers.sevenz.CLI;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RefinementOperator;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @ComponentAnn(name = "ParCELMature", shortName = "parcelMat", version = 0.1, description = "PARallel and devide&conquer Class Exprerssion Learning with preMature termination prevention")
 public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean {
@@ -941,6 +948,195 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 
 	public int getUncoveredPositiveExamples() {
 		return this.noOfUncoveredPositiveExamples;
+	}
+
+	public static void main(String[] args) throws Exception{
+		Set<String> posExamples = Sets.newHashSet(
+				"http://uca1.abd.muse.massey.ac.nz#showering_004",
+				"http://uca1.abd.muse.massey.ac.nz#showering_005",
+				"http://uca1.abd.muse.massey.ac.nz#showering_006",
+				"http://uca1.abd.muse.massey.ac.nz#showering_009",
+				"http://uca1.abd.muse.massey.ac.nz#showering_011",
+				"http://uca1.abd.muse.massey.ac.nz#showering_012",
+				"http://uca1.abd.muse.massey.ac.nz#showering_015",
+				"http://uca1.abd.muse.massey.ac.nz#showering_016",
+				"http://uca1.abd.muse.massey.ac.nz#showering_018",
+				"http://uca1.abd.muse.massey.ac.nz#showering_024",
+				"http://uca1.abd.muse.massey.ac.nz#showering_025",
+				"http://uca1.abd.muse.massey.ac.nz#showering_027",
+				"http://uca1.abd.muse.massey.ac.nz#showering_029",
+				"http://uca1.abd.muse.massey.ac.nz#showering_030",
+				"http://uca1.abd.muse.massey.ac.nz#showering_034",
+				"http://uca1.abd.muse.massey.ac.nz#showering_035",
+				"http://uca1.abd.muse.massey.ac.nz#showering_036",
+				"http://uca1.abd.muse.massey.ac.nz#showering_040",
+				"http://uca1.abd.muse.massey.ac.nz#showering_041",
+				"http://uca1.abd.muse.massey.ac.nz#showering_042",
+				"http://uca1.abd.muse.massey.ac.nz#showering_043",
+				"http://uca1.abd.muse.massey.ac.nz#showering_045",
+				"http://uca1.abd.muse.massey.ac.nz#showering_048",
+				"http://uca1.abd.muse.massey.ac.nz#showering_049",
+				"http://uca1.abd.muse.massey.ac.nz#showering_050",
+				"http://uca1.abd.muse.massey.ac.nz#showering_051",
+				"http://uca1.abd.muse.massey.ac.nz#showering_056",
+				"http://uca1.abd.muse.massey.ac.nz#showering_057",
+				"http://uca1.abd.muse.massey.ac.nz#showering_059",
+				"http://uca1.abd.muse.massey.ac.nz#showering_060",
+				"http://uca1.abd.muse.massey.ac.nz#showering_064",
+				"http://uca1.abd.muse.massey.ac.nz#showering_068",
+				"http://uca1.abd.muse.massey.ac.nz#showering_070",
+				"http://uca1.abd.muse.massey.ac.nz#showering_071",
+				"http://uca1.abd.muse.massey.ac.nz#showering_074",
+				"http://uca1.abd.muse.massey.ac.nz#showering_080",
+				"http://uca1.abd.muse.massey.ac.nz#showering_081",
+				"http://uca1.abd.muse.massey.ac.nz#showering_082",
+				"http://uca1.abd.muse.massey.ac.nz#showering_083",
+				"http://uca1.abd.muse.massey.ac.nz#showering_087",
+				"http://uca1.abd.muse.massey.ac.nz#showering_088",
+				"http://uca1.abd.muse.massey.ac.nz#showering_089",
+				"http://uca1.abd.muse.massey.ac.nz#showering_090",
+				"http://uca1.abd.muse.massey.ac.nz#showering_093",
+				"http://uca1.abd.muse.massey.ac.nz#showering_094",
+				"http://uca1.abd.muse.massey.ac.nz#showering_095",
+				"http://uca1.abd.muse.massey.ac.nz#showering_097",
+				"http://uca1.abd.muse.massey.ac.nz#showering_105",
+				"http://uca1.abd.muse.massey.ac.nz#showering_106",
+				"http://uca1.abd.muse.massey.ac.nz#showering_109",
+				"http://uca1.abd.muse.massey.ac.nz#showering_110",
+				"http://uca1.abd.muse.massey.ac.nz#showering_112",
+				"http://uca1.abd.muse.massey.ac.nz#showering_113",
+				"http://uca1.abd.muse.massey.ac.nz#showering_115",
+				"http://uca1.abd.muse.massey.ac.nz#showering_116",
+				"http://uca1.abd.muse.massey.ac.nz#showering_119",
+				"http://uca1.abd.muse.massey.ac.nz#showering_122",
+				"http://uca1.abd.muse.massey.ac.nz#showering_124",
+				"http://uca1.abd.muse.massey.ac.nz#showering_125",
+				"http://uca1.abd.muse.massey.ac.nz#showering_127",
+				"http://uca1.abd.muse.massey.ac.nz#showering_129",
+				"http://uca1.abd.muse.massey.ac.nz#showering_131",
+				"http://uca1.abd.muse.massey.ac.nz#showering_133",
+				"http://uca1.abd.muse.massey.ac.nz#showering_135",
+				"http://uca1.abd.muse.massey.ac.nz#showering_139",
+				"http://uca1.abd.muse.massey.ac.nz#showering_140",
+				"http://uca1.abd.muse.massey.ac.nz#showering_142",
+				"http://uca1.abd.muse.massey.ac.nz#showering_144",
+				"http://uca1.abd.muse.massey.ac.nz#showering_145",
+				"http://uca1.abd.muse.massey.ac.nz#showering_146",
+				"http://uca1.abd.muse.massey.ac.nz#showering_147",
+				"http://uca1.abd.muse.massey.ac.nz#showering_149",
+				"http://uca1.abd.muse.massey.ac.nz#showering_150"
+		);
+		Set<String> negExamples = Sets.newHashSet(
+				"http://uca1.abd.muse.massey.ac.nz#showering_001",
+				"http://uca1.abd.muse.massey.ac.nz#showering_002",
+				"http://uca1.abd.muse.massey.ac.nz#showering_003",
+				"http://uca1.abd.muse.massey.ac.nz#showering_007",
+				"http://uca1.abd.muse.massey.ac.nz#showering_008",
+				"http://uca1.abd.muse.massey.ac.nz#showering_010",
+				"http://uca1.abd.muse.massey.ac.nz#showering_013",
+				"http://uca1.abd.muse.massey.ac.nz#showering_014",
+				"http://uca1.abd.muse.massey.ac.nz#showering_017",
+				"http://uca1.abd.muse.massey.ac.nz#showering_019",
+				"http://uca1.abd.muse.massey.ac.nz#showering_020",
+				"http://uca1.abd.muse.massey.ac.nz#showering_021",
+				"http://uca1.abd.muse.massey.ac.nz#showering_022",
+				"http://uca1.abd.muse.massey.ac.nz#showering_023",
+				"http://uca1.abd.muse.massey.ac.nz#showering_026",
+				"http://uca1.abd.muse.massey.ac.nz#showering_028",
+				"http://uca1.abd.muse.massey.ac.nz#showering_031",
+				"http://uca1.abd.muse.massey.ac.nz#showering_032",
+				"http://uca1.abd.muse.massey.ac.nz#showering_033",
+				"http://uca1.abd.muse.massey.ac.nz#showering_037",
+				"http://uca1.abd.muse.massey.ac.nz#showering_038",
+				"http://uca1.abd.muse.massey.ac.nz#showering_039",
+				"http://uca1.abd.muse.massey.ac.nz#showering_044",
+				"http://uca1.abd.muse.massey.ac.nz#showering_046",
+				"http://uca1.abd.muse.massey.ac.nz#showering_047",
+				"http://uca1.abd.muse.massey.ac.nz#showering_052",
+				"http://uca1.abd.muse.massey.ac.nz#showering_053",
+				"http://uca1.abd.muse.massey.ac.nz#showering_054",
+				"http://uca1.abd.muse.massey.ac.nz#showering_055",
+				"http://uca1.abd.muse.massey.ac.nz#showering_058",
+				"http://uca1.abd.muse.massey.ac.nz#showering_061",
+				"http://uca1.abd.muse.massey.ac.nz#showering_062",
+				"http://uca1.abd.muse.massey.ac.nz#showering_063",
+				"http://uca1.abd.muse.massey.ac.nz#showering_065",
+				"http://uca1.abd.muse.massey.ac.nz#showering_066",
+				"http://uca1.abd.muse.massey.ac.nz#showering_067",
+				"http://uca1.abd.muse.massey.ac.nz#showering_069",
+				"http://uca1.abd.muse.massey.ac.nz#showering_072",
+				"http://uca1.abd.muse.massey.ac.nz#showering_073",
+				"http://uca1.abd.muse.massey.ac.nz#showering_075",
+				"http://uca1.abd.muse.massey.ac.nz#showering_076",
+				"http://uca1.abd.muse.massey.ac.nz#showering_077",
+				"http://uca1.abd.muse.massey.ac.nz#showering_078",
+				"http://uca1.abd.muse.massey.ac.nz#showering_079",
+				"http://uca1.abd.muse.massey.ac.nz#showering_084",
+				"http://uca1.abd.muse.massey.ac.nz#showering_085",
+				"http://uca1.abd.muse.massey.ac.nz#showering_086",
+				"http://uca1.abd.muse.massey.ac.nz#showering_091",
+				"http://uca1.abd.muse.massey.ac.nz#showering_092",
+				"http://uca1.abd.muse.massey.ac.nz#showering_096",
+				"http://uca1.abd.muse.massey.ac.nz#showering_098",
+				"http://uca1.abd.muse.massey.ac.nz#showering_099",
+				"http://uca1.abd.muse.massey.ac.nz#showering_100",
+				"http://uca1.abd.muse.massey.ac.nz#showering_101",
+				"http://uca1.abd.muse.massey.ac.nz#showering_102",
+				"http://uca1.abd.muse.massey.ac.nz#showering_103",
+				"http://uca1.abd.muse.massey.ac.nz#showering_104",
+				"http://uca1.abd.muse.massey.ac.nz#showering_107",
+				"http://uca1.abd.muse.massey.ac.nz#showering_108",
+				"http://uca1.abd.muse.massey.ac.nz#showering_111",
+				"http://uca1.abd.muse.massey.ac.nz#showering_114",
+				"http://uca1.abd.muse.massey.ac.nz#showering_117",
+				"http://uca1.abd.muse.massey.ac.nz#showering_118",
+				"http://uca1.abd.muse.massey.ac.nz#showering_120",
+				"http://uca1.abd.muse.massey.ac.nz#showering_121",
+				"http://uca1.abd.muse.massey.ac.nz#showering_123",
+				"http://uca1.abd.muse.massey.ac.nz#showering_126",
+				"http://uca1.abd.muse.massey.ac.nz#showering_128",
+				"http://uca1.abd.muse.massey.ac.nz#showering_130",
+				"http://uca1.abd.muse.massey.ac.nz#showering_132",
+				"http://uca1.abd.muse.massey.ac.nz#showering_134",
+				"http://uca1.abd.muse.massey.ac.nz#showering_136",
+				"http://uca1.abd.muse.massey.ac.nz#showering_137",
+				"http://uca1.abd.muse.massey.ac.nz#showering_138",
+				"http://uca1.abd.muse.massey.ac.nz#showering_141",
+				"http://uca1.abd.muse.massey.ac.nz#showering_143",
+				"http://uca1.abd.muse.massey.ac.nz#showering_148"
+		);
+
+		// load a knowledge base
+		String ontologyPath = "../examples/showering-duration/uca1_150.owl";
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLOntology ontology = man.loadOntologyFromOntologyDocument(new File(ontologyPath));
+		AbstractKnowledgeSource source = new OWLAPIOntology(ontology);
+		source.init();
+
+		// set up a closed-world reasoner
+		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(source);
+		reasoner.init();
+
+		// create a learning problem and set the class to describe
+		ParCELPosNegLP lp = new ParCELPosNegLP(reasoner);
+		lp.setPositiveExamples(posExamples.stream().map(s -> new OWLNamedIndividualImpl(IRI.create(s))).collect(Collectors.toSet()));
+		lp.setNegativeExamples(negExamples.stream().map(s -> new OWLNamedIndividualImpl(IRI.create(s))).collect(Collectors.toSet()));
+		lp.init();
+
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(reasoner);
+		op.setUseHasValueConstructor(true);
+		op.setUseAllConstructor(false);
+		op.setUseStringDatatypes(true);
+		op.setUseDataHasValueConstructor(true);
+		op.setFrequencyThreshold(1);
+		op.init();
+
+		ParCELearnerMat la = new ParCELearnerMat(lp, reasoner);
+//		la.setRefinementOperator(op);
+		la.init();
+
+		la.start();
 	}
 
 }
