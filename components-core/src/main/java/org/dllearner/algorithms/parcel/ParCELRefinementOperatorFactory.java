@@ -31,6 +31,8 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
     private OWLClassExpression startclass;
     private Map<OWLDataProperty, List<OWLLiteral>> splits;
 
+    private RhoDRDown opTemplate;
+
 
     private boolean useNegation = true;
     private boolean useDisjunction = true;
@@ -75,11 +77,20 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
             logger.info("A new refinement operator had been made");
 
         //create a new RhoDRDown and return
-        RhoDRDown refinementOperator = new RhoDRDown();
+        RhoDRDown refinementOperator;
+        if(opTemplate != null) {
+            refinementOperator = new RhoDRDown(opTemplate);
+        } else {
+            refinementOperator = new RhoDRDown();
+        }
+
         refinementOperator.setReasoner(reasoner);
         refinementOperator.setClassHierarchy(classHierarchy);
+        refinementOperator.setUseNumericDatatypes(true);
+        refinementOperator.setUseUnionOf(useDisjunction);
 
         refinementOperator.setUseNegation(this.useNegation);
+        refinementOperator.setUseAllConstructor(false);
 
         if (this.splits != null)
             refinementOperator.setSplits(splits);
@@ -93,6 +104,10 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
     @Override
     public PooledObject<LengthLimitedRefinementOperator> wrap(LengthLimitedRefinementOperator op) {
         return new DefaultPooledObject<>(op);
+    }
+
+    public void setRefinementOperator(RhoDRDown op) {
+        opTemplate = op;
     }
 
     public boolean isUseNegation() {

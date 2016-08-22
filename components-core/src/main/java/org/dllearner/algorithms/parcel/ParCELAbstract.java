@@ -25,7 +25,7 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	protected int numberOfWorkers = 4; // max number of workers will be created
 
 	@ConfigOption(defaultValue = "0", description = "maximum execution of the algorithm in seconds")
-	protected int maxExecutionTimeInSeconds = 0;
+	protected int maxExecutionTimeInSeconds = 100;
 
 	@ConfigOption(defaultValue = "0.0", description = "The percentage of noise within the examples")
 	protected double noisePercentage = 0.0;
