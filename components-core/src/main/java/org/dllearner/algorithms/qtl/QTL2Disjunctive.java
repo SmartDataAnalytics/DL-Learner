@@ -299,6 +299,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public void start() {
+
+		if(currentPosExampleTrees.isEmpty()) {
+			logger.info("No positive examples given!");
+			return;
+		}
+
 		printSetup();
 		logger.info("Running...");
 		
