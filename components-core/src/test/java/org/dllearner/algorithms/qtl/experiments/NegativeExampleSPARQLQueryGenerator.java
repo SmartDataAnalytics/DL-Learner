@@ -28,7 +28,11 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
+import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.expr.*;
 import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +47,6 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.sparql.core.TriplePath;
-import org.apache.jena.sparql.expr.E_NotExists;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementFilter;
 import org.apache.jena.sparql.syntax.ElementGroup;
@@ -75,11 +78,12 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 			logger.trace("Generating neg. examples...");
 			Set<String> negExamples = new HashSet<>();
 			
-			// remove triple patterns as long as enough neg. examples have been found
 			Query query = QueryFactory.create(targetQuery);
 			
 			// generate queries that return neg. examples
-			List<Query> queries = generateQueries(query);
+			List<Query> queries = new ArrayList<>();
+			queries.addAll(generateQueriesByReplacement(query));
+			queries.addAll(generateQueriesByRemoval(query));
 			
 			// get a list of resources for each query
 			for (Query q : queries) {
@@ -101,8 +105,84 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		private ElementFilter getNotExistsFilter(Element el){
 			return new ElementFilter(new E_NotExists(el));
 		}
+
+		private List<Query> generateQueriesByReplacement(Query query) {
+			List<Query> queries = new ArrayList<>();
+
+			QueryUtils utils = new QueryUtils();
+
+			List<Triple> triplePatterns = new ArrayList<>(utils.extractTriplePattern(query));
+
+			for (Triple tp : triplePatterns) {
+				List<Triple> remainingTriplePatterns = new ArrayList<>(triplePatterns);
+				remainingTriplePatterns.remove(tp);
+
+				List<List<Integer>> positions2Replace = new ArrayList<>();
+				if(tp.getSubject().isURI()) {
+					positions2Replace.add(Lists.newArrayList(0));
+					if(tp.getPredicate().isURI()) {
+						positions2Replace.add(Lists.newArrayList(1));
+						positions2Replace.add(Lists.newArrayList(0, 1));
+					} else if(tp.getObject().isURI()) {
+						positions2Replace.add(Lists.newArrayList(2));
+					}
+				} else if(tp.getPredicate().isURI() && !tp.getObject().isVariable()) {
+					positions2Replace.add(Lists.newArrayList(1));
+				}
+
+				for (List<Integer> positions : positions2Replace) {
+					Node s = tp.getSubject();
+					Node p = tp.getPredicate();
+					Node o = tp.getObject();
+					List<ElementFilter> filters = new ArrayList<>();
+					for (Integer pos : positions) {
+						switch (pos) {
+							case 0: {
+								Node var = NodeFactory.createVariable("var0");
+								s = var;
+								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getSubject())))));
+								break;
+							}
+							case 1: {
+								Node var = NodeFactory.createVariable("var1");
+								p = var;
+								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getPredicate())))));
+								break;
+							}
+							case 2: {
+								Node var = NodeFactory.createVariable("var2");
+								o = var;
+								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getObject())))));
+								break;
+							}
+						}
+					}
+
+					Triple newTp = Triple.create(s, p, o);
+
+					List<Triple> newTriplePatterns = new ArrayList<>(remainingTriplePatterns);
+					newTriplePatterns.add(triplePatterns.indexOf(tp), newTp);
+
+					Query newQuery = QueryFactory.create();
+					newQuery.setQuerySelectType();
+					newQuery.addProjectVars(query.getProjectVars());
+
+					ElementTriplesBlock bgp = new ElementTriplesBlock();
+					newTriplePatterns.forEach(bgp::addTriple);
+					ElementGroup eg = new ElementGroup();
+					eg.addElement(bgp);
+					filters.forEach(eg::addElementFilter);
+
+					newQuery.setQueryPattern(eg);
+
+					queries.add(newQuery);
+				}
+			}
+
+			return queries;
+		}
 		
-		private List<Query> generateQueries(Query query) {
+		private List<Query> generateQueriesByRemoval(Query query) {
 			List<Query> queries = new ArrayList<>();
 			
 			// extract paths

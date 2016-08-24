@@ -95,7 +95,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
 				.filter(QALDPredicates.isSubjectTarget())
-				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
+//				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
 				.sorted((q1, q2) -> Integer.compare(q1.getId(), q2.getId())) // sort by ID
 				.collect(Collectors.toList());
 		
