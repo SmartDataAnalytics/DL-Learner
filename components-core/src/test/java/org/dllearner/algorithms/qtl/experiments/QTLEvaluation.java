@@ -465,7 +465,7 @@ public class QTLEvaluation {
 			maxNrOfProcessedQueries = queries.size();
 		}
 
-		queries = filter(queries, maxNrOfProcessedQueries / maxTreeDepth);
+		queries = filter(queries, (int) Math.ceil((double) maxNrOfProcessedQueries / maxTreeDepth));
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
 		
@@ -1446,6 +1446,8 @@ public class QTLEvaluation {
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
 
+		System.out.println(tree.getStringRepresentation());
+
 		// keep track of tree size
 		int size = QueryTreeUtils.getNrOfNodes(tree);
 		treeSizeStats.addValue(size);
@@ -1642,8 +1644,7 @@ public class QTLEvaluation {
 			Set<String> resourcesTmp = new HashSet<>(partialResult);
 			
 			if(resourcesTmp.isEmpty()) {
-				System.err.println("Empty query result");
-				System.err.println(q);
+				logger.error("Empty query result\n" + q);
 //				System.exit(0);
 				return Collections.EMPTY_LIST;
 			}
