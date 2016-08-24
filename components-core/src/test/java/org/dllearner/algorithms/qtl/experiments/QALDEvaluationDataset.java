@@ -25,6 +25,7 @@ import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.qald.QALDJsonLoader;
+import org.dllearner.algorithms.qtl.qald.QALDPredicates;
 import org.dllearner.algorithms.qtl.qald.schema.Question;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
@@ -45,6 +46,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -81,19 +83,25 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 			e.printStackTrace();
 		}
 
+		// prepend missing PREFIXES to SPARQL query
+		questions.stream().forEach(q -> q.getQuery().setSparql(
+				SPARQLQueryUtils.PREFIXES + " " + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + q.getQuery().getSparql()));
+
 		// filter the questions
 		List<Question> filteredQuestions = questions.stream()
 				.filter(q -> !q.isAggregation()) // no aggregation
 				.filter(q -> q.getAnswertype().equals("resource")) // only resources
 				.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
+				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
-				.sorted((q1, q2) -> Integer.compare(q1.getId(), q2.getId()))
+				.filter(QALDPredicates.isSubjectTarget())
+				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
+				.sorted((q1, q2) -> Integer.compare(q1.getId(), q2.getId())) // sort by ID
 				.collect(Collectors.toList());
 		
 		// map to SPARQL queries
 		sparqlQueries = filteredQuestions.stream()
 				.map(q -> q.getQuery().getSparql())
-				.map(q -> SPARQLQueryUtils.PREFIXES + " " + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + q) // prepend prefixes
 				.collect(Collectors.toList());
 		
 		reasoner = new SPARQLReasoner(ks);
@@ -110,7 +118,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("odp-dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#");
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
@@ -135,6 +143,10 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 									"http://www.w3.org/2002/07/owl#equivalentClass", 
 									"http://www.w3.org/2002/07/owl#disjointWith"))
 			);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(new QALDEvaluationDataset(new File("/tmp/test"), SparqlEndpoint.getEndpointDBpedia()).getSparqlQueries().size());
 	}
 
 }
