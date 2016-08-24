@@ -87,7 +87,6 @@ import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -96,6 +95,7 @@ import org.dllearner.utilities.QueryUtils;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.io.*;
@@ -112,6 +112,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -120,7 +121,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("unchecked")
 public class QTLEvaluation {
 	
-	private static final Logger logger = Logger.getLogger(QTLEvaluation.class.getName());
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(QTLEvaluation.class.getName());
 	
 	private static final ParameterizedSparqlString superClassesQueryTemplate2 = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
@@ -429,7 +430,7 @@ public class QTLEvaluation {
 			Iterator<String> iterator = queries.iterator();
 			while(iterator.hasNext() && tmp.size() < nrOfQueriesPerDepth) {
 				String queryString = iterator.next();
-				System.out.println(queryString);
+
 				Query q = QueryFactory.create(queryString);
 				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
 				if(subjectObjectJoinDepth == (depth - 1)) {
@@ -468,7 +469,7 @@ public class QTLEvaluation {
 		queries = filter(queries, (int) Math.ceil((double) maxNrOfProcessedQueries / maxTreeDepth));
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
-		
+
 		// generate examples for each query
 		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
@@ -476,6 +477,15 @@ public class QTLEvaluation {
 			query2Examples.put(query, generateExamples(query));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
+
+		// check for queries that do not return any result (should not happen, but we never know)
+		Set<String> emptyQueries = query2Examples.entrySet().stream()
+				.filter(e -> e.getValue().correctPosExampleCandidates.isEmpty())
+				.map(e -> e.getKey())
+				.collect(Collectors.toSet());
+		logger.info("got {} empty queries.", emptyQueries.size());
+		queries.removeAll(emptyQueries);
+
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
@@ -601,7 +611,7 @@ public class QTLEvaluation {
 									QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 									la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 									la.setReasoner(dataset.getReasoner());
-									la.setEntailment(Entailment.RDFS);
+									la.setEntailment(Entailment.SIMPLE);
 									la.setTreeFactory(queryTreeFactory);
 									la.setPositiveExampleTrees(examples.posExamplesMapping);
 									la.setNegativeExampleTrees(examples.negExamplesMapping);
@@ -637,7 +647,7 @@ public class QTLEvaluation {
 									bestReturnedSolutionFMeasureStats.addValue(score.fmeasure);
 									bestReturnedSolutionPredAccStats.addValue(score.predAcc);
 									bestReturnedSolutionMathCorrStats.addValue(score.mathCorr);
-									logger.info(score);
+									logger.info(score.toString());
 
 									// find the extensionally best matching tree in the list
 									Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTreeFast(solutions, sparqlQuery, noise, examples);
@@ -654,7 +664,7 @@ public class QTLEvaluation {
 										logger.info("Best covering solution:\n" + render(bestMatchingTree.asEvaluatedDescription()));
 										logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 										bestScore = bestMatchingScore;
-										logger.info(bestMatchingScore);
+										logger.info(bestMatchingScore.toString());
 									} else {
 										logger.info("Best returned solution was also the best covering solution.");
 									}
@@ -794,7 +804,7 @@ public class QTLEvaluation {
 				try {
 					Files.write(content, examplesVsNoise, Charsets.UTF_8);
 				} catch (IOException e) {
-					logger.error(e);
+					logger.error("failed to write stats to file", e);
 				}
 			}
 		}
@@ -1130,7 +1140,7 @@ public class QTLEvaluation {
 		}
 		Collections.sort(posExamples);
 		logger.info("#Pos. examples: " + posExamples.size());
-		
+
 		// get some neg. examples, i.e. resources not returned by the query
 		int maxNrOfNegExamples = 100;
 		List<String> negExamples;
@@ -1446,7 +1456,7 @@ public class QTLEvaluation {
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
 
-		System.out.println(tree.getStringRepresentation());
+//		System.out.println(tree.getStringRepresentation());
 
 		// keep track of tree size
 		int size = QueryTreeUtils.getNrOfNodes(tree);
@@ -1637,9 +1647,9 @@ public class QTLEvaluation {
 			
 			q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
 //			q = rewriteForVirtuosoFloatingPointIssue(q);
-			logger.trace(q);
+			logger.trace(q.toString());
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
-			System.out.println(q);
+//			System.out.println(q);
 			List<String> partialResult = getResult(q.toString());
 			Set<String> resourcesTmp = new HashSet<>(partialResult);
 			
@@ -1972,7 +1982,7 @@ public class QTLEvaluation {
 
 			psInsertDetailEval.setLong(19, returnedRuntime);
 
-			logger.trace(psInsertDetailEval);
+//			logger.trace(psInsertDetailEval);
 			psInsertDetailEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
@@ -2016,7 +2026,7 @@ public class QTLEvaluation {
 			
 			psInsertOverallEval.setDouble(21, bestReturnedSolutionRuntime);
 
-			logger.trace(psInsertOverallEval);
+//			logger.trace(psInsertOverallEval.toString());
 			psInsertOverallEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
