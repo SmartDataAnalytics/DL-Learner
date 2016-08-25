@@ -466,7 +466,7 @@ public class QTLEvaluation {
 			maxNrOfProcessedQueries = queries.size();
 		}
 
-		queries = filter(queries, (int) Math.ceil((double) maxNrOfProcessedQueries / maxTreeDepth));
+//		queries = filter(queries, (int) Math.ceil((double) maxNrOfProcessedQueries / maxTreeDepth));
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
 
@@ -567,7 +567,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("VideoGame")))continue;
+//							if(!(sparqlQuery.contains("ChessPlayer")))continue;
 							
 							tp.submit(() -> {
 
@@ -1504,7 +1504,7 @@ public class QTLEvaluation {
 	 */
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
-		logger.trace("Getting result set for\n" + query);
+		logger.trace("Getting result set splitted for\n{}", query);
 		
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
@@ -1562,7 +1562,7 @@ public class QTLEvaluation {
 		if(!useSplitting){
 			clusters.add(Sets.newHashSet(fixedTriplePatterns));
 		} else {
-			logger.trace("Query too complex. Splitting...");
+			logger.debug("Query too complex. Splitting...");
 			// 2. build clusters for other
 			for (Set<Triple> cluster : clusters) {
 				Triple representative = cluster.iterator().next();
@@ -1647,9 +1647,8 @@ public class QTLEvaluation {
 			
 			q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
 //			q = rewriteForVirtuosoFloatingPointIssue(q);
-			logger.trace(q.toString());
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
-//			System.out.println(q);
+			logger.debug("partial query:\n{}", q.toString());
 			List<String> partialResult = getResult(q.toString());
 			Set<String> resourcesTmp = new HashSet<>(partialResult);
 			
@@ -1804,6 +1803,7 @@ public class QTLEvaluation {
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
 		
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
+		logger.info("learned SPARQL query:{}", learnedSPARQLQuery);
 		
 		if(QueryUtils.getTriplePatterns(QueryFactory.create(learnedSPARQLQuery)).size() < 25) {
 			return computeScoreBySparqlCount(referenceSparqlQuery, tree, noise);
@@ -1829,6 +1829,7 @@ public class QTLEvaluation {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
+		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			return new Score();
@@ -1846,10 +1847,11 @@ public class QTLEvaluation {
 	}
 	
 	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
-		logger.trace("Computing score...");
+		logger.debug("Computing score by COUNT query...");
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-		
-		final ExprVar s = new ExprVar("s");
+
+		Query referenceQuery = QueryFactory.create(referenceSparqlQuery);
+		final ExprVar s = new ExprVar(referenceQuery.getProjectVars().get(0));
 		Var cntVar = Var.alloc("cnt");
 		
 		// Q1
@@ -1858,6 +1860,7 @@ public class QTLEvaluation {
 		q1Count.setQuerySelectType();
 		q1Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q1Count.setQueryPattern(q1.getQueryPattern());
+		logger.debug("Reference COUNT query:\n" + q1Count);
 		QueryExecution qe = qef.createQueryExecution(q1Count);
 		ResultSet rs = qe.execSelect();
 		QuerySolution qs = rs.next();
@@ -1881,7 +1884,7 @@ public class QTLEvaluation {
 		q2Count.setQuerySelectType();
 		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q2Count.setQueryPattern(q2.getQueryPattern());
-		logger.trace("Learned query:\n" + q2Count);
+		logger.debug("Learned COUNT query:\n" + q2Count);
 		q2Count = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q2Count);
 		qe = qef.createQueryExecution(q2Count);
 		rs = qe.execSelect();
@@ -1905,7 +1908,7 @@ public class QTLEvaluation {
 				whereClause.addElement(el);
 			}
 			q12.setQueryPattern(whereClause);
-			logger.trace("Combined query:\n" + q12);
+			logger.debug("Combined COUNT query:\n" + q12);
 			q12 = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q12);
 			qe = qef.createQueryExecution(q12);
 			rs = qe.execSelect();
@@ -1919,7 +1922,7 @@ public class QTLEvaluation {
 		int fn = referenceCnt - overlap;
 		int tn = kbSize - tp - fp - fn;
 
-		logger.trace("finished computing score.");
+		logger.debug("finished computing score.");
 
 		return score(tp, fp, tn, fn);
 	}
