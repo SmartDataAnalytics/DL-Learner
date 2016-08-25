@@ -36,10 +36,12 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.probabilistic.unife.AbstractParameterLearningAlgorithm;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.utils.unife.OWLClassExpressionSimplifierVisitorImpl;
 import org.dllearner.utils.unife.ReflectionHelper;
 import org.dllearner.utils.unife.OWLUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -48,6 +50,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -246,11 +249,13 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         LinkedHashSet<OWLSubClassOfAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
         OWLDataFactory factory = manager.getOWLDataFactory();
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
+            OWLClassExpression ce = (OWLClassExpression) description.getDescription();
+            ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
 //            if (classAxiomType.equalsIgnoreCase("subClassOf") || classAxiomType.equalsIgnoreCase("both")) {
             OWLSubClassOfAxiom axiom = factory.
-                    getOWLSubClassOfAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
+                    getOWLSubClassOfAxiom(ce, dummyClass, Collections.singleton(annotation));
             axioms.add(axiom);
 //            }
 //            if (classAxiomType.equalsIgnoreCase("equivalentClasses") || classAxiomType.equalsIgnoreCase("both")) {
@@ -265,10 +270,12 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         LinkedHashSet<OWLEquivalentClassesAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
         OWLDataFactory factory = manager.getOWLDataFactory();
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
+            OWLClassExpression ce = (OWLClassExpression) description.getDescription();
+            ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
 
-            OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
+            OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom(ce, dummyClass, Collections.singleton(annotation));
             axioms.add(axiom);
 
         }
