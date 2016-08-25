@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
+import unife.math.utilities.MathUtilities;
 import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
@@ -59,12 +61,12 @@ public class LEAP extends AbstractLEAP {
         long celaTimeMills = 0;
         //AbstractEDGEDistributed edge = (AbstractEDGEDistributed) pla;
         // First step: run Distributed EDGE
-        edge.start();
+        //edge.start();
 
-        logger.debug("First EDGE cycle terminated.");
-        logger.debug("Initial Log-likelihood: " + edge.getLL());
+//        logger.debug("First EDGE cycle terminated.");
+        //logger.debug("Initial Log-likelihood: " + edge.getLL());
+
         //OWLOntology originalOntology = edge.getLearnedOntology();
-
         logger.debug("Starting structure learner LEAP");
 //            Set<KnowledgeSource> newSources = Collections.singleton((KnowledgeSource) new OWLAPIOntology(ontology));
 //            AbstractReasonerComponent reasoner = cela.getReasoner();
@@ -153,9 +155,20 @@ public class LEAP extends AbstractLEAP {
      * @return the set of axioms added in the knowledge base.
      */
     private Set<OWLAxiom> greedySearch(Set<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
-        BigDecimal bestLL = edge.getLL();
-        logger.debug("Resetting EDGE");
-        edge.reset();
+        BigDecimal bestLL;
+        if (edge instanceof AbstractEDGE) {
+            bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(
+                    new BigDecimal(edge.getPositiveExampleAxioms().size()));
+            bestLL = bestLL.setScale(accuracy, RoundingMode.HALF_UP);
+        } else {
+            bestLL = BigDecimal.ZERO.multiply(
+                    new BigDecimal(edge.getPositiveExampleAxioms().size()));
+            bestLL = bestLL.setScale(accuracy, RoundingMode.HALF_UP);
+        }
+        logger.debug("Initial Log-likelihood: " + bestLL.toString());
+//        BigDecimal bestLL = edge.getLL();
+//        logger.debug("Resetting EDGE");
+//        edge.reset();
         OWLOntology ontology = edge.getLearnedOntology();
         edge.changeSourcesOntology(ontology); // queste operazioni fanno perdere tempo, sono da ottimizzare
         LinkedHashSet<OWLAxiom> learnedAxioms = new LinkedHashSet<>();

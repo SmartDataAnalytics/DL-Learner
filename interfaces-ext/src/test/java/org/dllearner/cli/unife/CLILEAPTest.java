@@ -44,7 +44,7 @@ public class CLILEAPTest {
      * Test of main method, of class CLILEAP.
      * @throws java.lang.Exception
      */
-//    @Test
+    @Test
     public void testMain1() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/family/run.conf"};
@@ -55,7 +55,7 @@ public class CLILEAPTest {
         }
     }
 
-    @Test
+//    @Test
     public void testMain2() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/carcinogenesis/run.conf"};

@@ -405,4 +405,8 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
         stop = false;
     }
 
+    public BigDecimal getLOGZERO() {
+        return edge.LOGZERO;
+    }
+
 }

@@ -39,8 +39,7 @@ public class LEAPTest {
     static CELOE cela;
 
     private static final Logger logger = LoggerFactory.getLogger(LEAPTest.class);
-    
-    
+
     @BeforeClass
     public static void setUpClass() throws ComponentInitException {
         System.out.println("Current dir: " + System.getProperty("user.dir"));
@@ -60,7 +59,7 @@ public class LEAPTest {
         lpr.setRandomize(true);
         lpr.setRandomizeAll(true);
         lpr.init();
-        
+
         cela = new CELOE(lp, rc);
         cela.setMaxExecutionTimeInSeconds(10);
         cela.setMaxNrOfResults(10);
@@ -79,20 +78,19 @@ public class LEAPTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testCase1() throws Exception {
         System.out.println("Test case 1");
         System.out.println("Debug logger: " + logger.isDebugEnabled());
-        logger.debug("adfd");
         LEAP leap = new LEAP(cela, lpr);
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);
         leap.init();
-        leap.setClassAxiomType("equivalentClasses");
-//        leap.setClassAxiomType("subClassOf");
+//        leap.setClassAxiomType("equivalentClasses");
+        leap.setClassAxiomType("subClassOf");
         leap.start();
-        assertTrue( true );
+        assertTrue(true);
     }
 
 }
