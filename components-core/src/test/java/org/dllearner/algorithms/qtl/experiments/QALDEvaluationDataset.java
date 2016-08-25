@@ -18,8 +18,10 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -39,12 +41,16 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -55,8 +61,15 @@ import java.util.stream.Collectors;
  */
 public class QALDEvaluationDataset extends EvaluationDataset {
 
+	private static final Logger log = LoggerFactory.getLogger(QALDEvaluationDataset.class);
+
 	private static final String TRAIN_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-train-multilingual.json?raw=true";
 	private static final String TEST_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-test-multilingual.json?raw=true";
+
+	private static final String[] DATASET_URLS = {
+			TRAIN_URL,
+			TEST_URL
+	};
 
 	public QALDEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		// set KS
@@ -69,19 +82,20 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 			e.printStackTrace();
 		}
 
-		List<Question> questions = null;
-		try {
-			URL url = new URL(TRAIN_URL);
-			try (InputStream is = url.openStream()) {
-				questions = QALDJsonLoader.loadQuestions(is);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
+		final List<Question> questions = new ArrayList<>();
+		Arrays.stream(DATASET_URLS).forEach(ds -> {
+			try {
+				URL url = new URL(ds);
+				try (InputStream is = url.openStream()) {
+					questions.addAll(QALDJsonLoader.loadQuestions(is));
+				} catch (Exception e) {
+					log.error("Failed to load QALD dataset.", e);
+				}
+			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		});
+
 
 		// prepend missing PREFIXES to SPARQL query
 		questions.stream().forEach(q -> q.getQuery().setSparql(
@@ -92,11 +106,13 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> !q.isAggregation()) // no aggregation
 				.filter(q -> q.getAnswertype().equals("resource")) // only resources
 				.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
+				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
 				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
 				.filter(QALDPredicates.isSubjectTarget())
+				.filter(QALDPredicates.hasFilter().negate())
 //				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
-				.sorted((q1, q2) -> Integer.compare(q1.getId(), q2.getId())) // sort by ID
+				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
 				.collect(Collectors.toList());
 		
 		// map to SPARQL queries
@@ -146,7 +162,9 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new QALDEvaluationDataset(new File("/tmp/test"), SparqlEndpoint.getEndpointDBpedia()).getSparqlQueries().size());
+		List<String> queries = new QALDEvaluationDataset(new File("/tmp/test"), SparqlEndpoint.getEndpointDBpedia()).getSparqlQueries();
+		System.out.println(queries.size());
+		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
 	}
 
 }
