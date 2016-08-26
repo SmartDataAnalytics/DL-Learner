@@ -341,7 +341,18 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		}
 		return triplePatterns;
 	}
-	
+
+	public Set<Triple> extractOutgoingTriplePatternsTrans(Query query, Node node){
+		Set<Triple> triplePatterns = new HashSet<>();
+
+		Set<Triple> tmp = extractOutgoingTriplePatterns(query, node);
+		tmp.stream().filter(tp -> tp.getObject().isVariable()).forEach(tp -> {
+			triplePatterns.addAll(extractOutgoingTriplePatternsTrans(query, tp.getObject()));
+		});
+
+		return triplePatterns;
+	}
+
 	/**
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the incoming
 	 * triple patterns.
@@ -358,6 +369,17 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				iterator.remove();
 			}
 		}
+		return triplePatterns;
+	}
+
+	public Set<Triple> extractIncomingTriplePatternsTrans(Query query, Node node){
+		Set<Triple> triplePatterns = new HashSet<>();
+
+		Set<Triple> tmp = extractIncomingTriplePatterns(query, node);
+		tmp.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
+			triplePatterns.addAll(extractIncomingTriplePatterns(query, tp.getSubject()));
+		});
+
 		return triplePatterns;
 	}
 	
@@ -549,18 +571,43 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	public Query removeUnboundObjectVarTriples(Query query) {
 		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
-		for (Triple tp : triplePatterns) {
-			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
+
+		Var rootVar = query.getProjectVars().get(0);
+
+		// 1. outgoing triple paths pruning
+		Set<Triple> outgoingTriplePatterns = queryUtils.extractOutgoingTriplePatternsTrans(query, rootVar);
+		Multimap<Var, Triple> var2OutgoingTriplePatterns = HashMultimap.create();
+
+		// mapping from variable to triple pattern
+		for (Triple tp : outgoingTriplePatterns) {
+			var2OutgoingTriplePatterns.put(Var.alloc(tp.getSubject()), tp);
 		}
-		
-		Iterator<Triple> iterator = triplePatterns.iterator();
+
+		// remove triple patterns with object is var node and leaf node
+		Iterator<Triple> iterator = outgoingTriplePatterns.iterator();
 		while (iterator.hasNext()) {
 			Triple triple = iterator.next();
 			Node object = triple.getObject();
-			if(object.isVariable() && !var2TriplePatterns.containsKey(Var.alloc(object))) {
+			if(object.isVariable() && !var2OutgoingTriplePatterns.containsKey(Var.alloc(object))) {
+				iterator.remove();
+			}
+		}
+
+		// 2. incoming triple paths pruning
+		Set<Triple> incomingTriplePatterns = queryUtils.extractIncomingTriplePatternsTrans(query, rootVar);
+		Multimap<Var, Triple> var2IncomingTriplePatterns = HashMultimap.create();
+
+		// mapping from variable to triple pattern
+		for (Triple tp : incomingTriplePatterns) {
+			var2IncomingTriplePatterns.put(Var.alloc(tp.getObject()), tp);
+		}
+
+		// remove triple patterns with object is var node and leaf node
+		iterator = incomingTriplePatterns.iterator();
+		while (iterator.hasNext()) {
+			Triple triple = iterator.next();
+			Node s = triple.getSubject();
+			if(s.isVariable() && !var2IncomingTriplePatterns.containsKey(Var.alloc(s))) {
 				iterator.remove();
 			}
 		}
@@ -568,7 +615,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Query newQuery = new Query();
 		newQuery.addProjectVars(query.getProjectVars());
 		ElementTriplesBlock el = new ElementTriplesBlock();
-		for (Triple triple : triplePatterns) {
+		for (Triple triple : Sets.union(outgoingTriplePatterns, incomingTriplePatterns)) {
 			el.addTriple(triple);
 		}
 		newQuery.setQuerySelectType();

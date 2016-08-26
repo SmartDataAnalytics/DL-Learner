@@ -128,6 +128,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		this.cache = cache;
 	}
 
+	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
+		this.qef = qef;
+	}
+
 	@Override
 	public void init() throws ComponentInitException {
 		if(!initialized){

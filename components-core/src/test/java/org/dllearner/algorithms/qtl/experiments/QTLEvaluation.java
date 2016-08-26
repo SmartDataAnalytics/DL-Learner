@@ -570,7 +570,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("Borough_(New_York_City)")))continue;
+							if(!(sparqlQuery.contains("Queen_Victoria")))continue;
 							
 							tp.submit(() -> {
 
@@ -2065,7 +2065,7 @@ public class QTLEvaluation {
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of processed queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
+		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(2);
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
