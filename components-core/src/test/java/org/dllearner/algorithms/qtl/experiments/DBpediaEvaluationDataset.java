@@ -25,7 +25,6 @@ import com.google.common.io.Files;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -40,6 +39,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author Lorenz Buehmann
@@ -48,6 +48,7 @@ import java.util.List;
 public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
 	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint, File queriesFile) {
+		super("DBpedia");
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
@@ -81,13 +82,13 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 	}
 
 	@Override
-	public List<Filter<Statement>> getQueryTreeFilters() {
+	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return queryTreeFilters();
 	}
 	
 
 	@SuppressWarnings("unchecked")
-	public static List<Filter<Statement>> queryTreeFilters() {
+	public static List<Predicate<Statement>> queryTreeFilters() {
 		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),
