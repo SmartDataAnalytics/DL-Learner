@@ -21,9 +21,15 @@ package org.dllearner.algorithms.qtl.experiments;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.WebContent;
 import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.dllearner.algorithms.qtl.qald.QALDJsonLoader;
 import org.dllearner.algorithms.qtl.qald.QALDPredicates;
@@ -50,6 +56,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -73,9 +80,17 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		super("QALD");
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
+		qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false", false, TimeUnit.DAYS.toMillis(7) );
 		try {
 			ks = new SparqlEndpointKS(endpoint);
 			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
+			ks.setQueryExecutionFactory(qef);
 			ks.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
