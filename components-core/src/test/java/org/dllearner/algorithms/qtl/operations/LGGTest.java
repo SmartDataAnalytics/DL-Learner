@@ -18,9 +18,8 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -33,20 +32,14 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.apache.jena.rdf.model.AnonId;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
-import org.apache.jena.util.iterator.Filter;
+import java.io.ByteArrayInputStream;
+import java.util.function.Predicate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Lorenz Buehmann
@@ -189,8 +182,8 @@ private static final String baseIRI = "http://test.org/";
 //	@Test
 	public void correctness() {
 		treeFactory.setMaxDepth(2);
-		java.util.List<Filter<Statement>> var = DBpediaEvaluationDataset.queryTreeFilters();
-		treeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
+		java.util.List<Predicate<Statement>> var = DBpediaEvaluationDataset.queryTreeFilters();
+		treeFactory.addDropFilters((Predicate<Statement>[]) var.toArray(new Predicate[var.size()]));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(
