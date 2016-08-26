@@ -45,14 +45,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -109,7 +107,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
 				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
-				.filter(QALDPredicates.isSubjectTarget())
+				.filter(QALDPredicates.isSubjectTarget().negate())
 				.filter(QALDPredicates.hasFilter().negate())
 //				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
 				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID

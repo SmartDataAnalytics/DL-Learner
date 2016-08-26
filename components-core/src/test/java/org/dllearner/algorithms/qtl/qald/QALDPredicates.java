@@ -26,4 +26,9 @@ public class QALDPredicates {
 
     }
 
+    public static Predicate<Question> isObjectTarget() {
+        return isSubjectTarget().negate();
+
+    }
+
 }
