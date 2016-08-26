@@ -25,7 +25,6 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.qald.QALDJsonLoader;
 import org.dllearner.algorithms.qtl.qald.QALDPredicates;
 import org.dllearner.algorithms.qtl.qald.schema.Question;
@@ -51,6 +50,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -70,6 +70,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 	};
 
 	public QALDEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+		super("QALD");
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
@@ -107,7 +108,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
 				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
-				.filter(QALDPredicates.isSubjectTarget().negate())
+				.filter(QALDPredicates.isObjectTarget())
 				.filter(QALDPredicates.hasFilter().negate())
 //				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
 				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
@@ -135,7 +136,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Filter<Statement>> getQueryTreeFilters() {
+	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),
@@ -163,6 +164,8 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		List<String> queries = new QALDEvaluationDataset(new File("/tmp/test"), SparqlEndpoint.getEndpointDBpedia()).getSparqlQueries();
 		System.out.println(queries.size());
 		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
+
+
 	}
 
 }

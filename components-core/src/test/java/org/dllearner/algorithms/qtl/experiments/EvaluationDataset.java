@@ -20,6 +20,7 @@ package org.dllearner.algorithms.qtl.experiments;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -33,7 +34,11 @@ import org.apache.jena.util.iterator.Filter;
  * @author Lorenz Buehmann
  *
  */
-public class EvaluationDataset {
+public abstract class EvaluationDataset {
+
+
+
+	String name;
 
 	SparqlEndpointKS ks;
 	String baseIRI;
@@ -42,8 +47,16 @@ public class EvaluationDataset {
 	AbstractReasonerComponent reasoner;
 	
 	List<String> sparqlQueries;
-	List<Filter<Statement>> queryTreeFilters = new ArrayList<>();
-	
+	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
+
+	public EvaluationDataset(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public SparqlEndpointKS getKS() {
 		return ks;
 	}
@@ -64,7 +77,7 @@ public class EvaluationDataset {
 		return sparqlQueries;
 	}
 	
-	public List<Filter<Statement>> getQueryTreeFilters() {
+	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return queryTreeFilters;
 	}
 }
