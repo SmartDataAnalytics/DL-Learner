@@ -473,7 +473,7 @@ public class QTLEvaluation {
 		// generate examples for each query
 		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
-		for (String query : queries) {
+		for (String query : queries) {if(!(query.contains("Borough_(New_York_City)")))continue;
 			query2Examples.put(query, generateExamples(query));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
@@ -567,7 +567,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("ChessPlayer")))continue;
+							if(!(sparqlQuery.contains("Borough_(New_York_City)")))continue;
 							
 							tp.submit(() -> {
 
