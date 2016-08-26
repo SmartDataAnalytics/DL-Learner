@@ -32,7 +32,9 @@ import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.*;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,16 +120,21 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 				remainingTriplePatterns.remove(tp);
 
 				List<List<Integer>> positions2Replace = new ArrayList<>();
-				if(tp.getSubject().isURI()) {
-					positions2Replace.add(Lists.newArrayList(0));
-					if(tp.getPredicate().isURI()) {
+				if(tp.getSubject().isURI()) { // s
+					if(tp.getPredicate().isURI()) { // s p ?var
+						positions2Replace.add(Lists.newArrayList(0));
 						positions2Replace.add(Lists.newArrayList(1));
-						positions2Replace.add(Lists.newArrayList(0, 1));
-					} else if(tp.getObject().isURI()) {
+					} else if(tp.getObject().isConcrete()) { // s ?var ?o
+						positions2Replace.add(Lists.newArrayList(0));
 						positions2Replace.add(Lists.newArrayList(2));
 					}
-				} else if(tp.getPredicate().isURI() && !tp.getObject().isVariable()) {
-					positions2Replace.add(Lists.newArrayList(1));
+				} else {
+					if(tp.getPredicate().isURI()) {
+						 if(tp.getObject().isConcrete()) { // ?var p o
+							 positions2Replace.add(Lists.newArrayList(1));
+							 positions2Replace.add(Lists.newArrayList(2));
+						 }
+					}
 				}
 
 				for (List<Integer> positions : positions2Replace) {
@@ -138,25 +145,30 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 					for (Integer pos : positions) {
 						switch (pos) {
 							case 0: {
-								Node var = NodeFactory.createVariable("var0");
+								Node var = NodeFactory.createVariable("s_var");
 								s = var;
 								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getSubject())))));
 								break;
 							}
 							case 1: {
-								Node var = NodeFactory.createVariable("var1");
+								Node var = NodeFactory.createVariable("p_var");
 								p = var;
+								// ?var != <p> && ?var != rdf:type
 								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getPredicate())))));
+								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(RDF.type.asNode())))));
 								break;
 							}
 							case 2: {
-								Node var = NodeFactory.createVariable("var2");
+								Node var = NodeFactory.createVariable("o_var");
 								o = var;
 								filters.add(new ElementFilter(new E_LogicalNot(new E_Equals(new ExprVar(var), NodeValue.makeNode(tp.getObject())))));
 								break;
 							}
 						}
 					}
+					// FILTER(isIRI(?uri))
+					Var projectVar = query.getProjectVars().get(0);
+					filters.add(new ElementFilter(new E_IsIRI(NodeValue.makeNode(projectVar.asNode()))));
 
 					Triple newTp = Triple.create(s, p, o);
 
@@ -166,6 +178,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 					Query newQuery = QueryFactory.create();
 					newQuery.setQuerySelectType();
 					newQuery.addProjectVars(query.getProjectVars());
+					newQuery.setDistinct(true);
 
 					ElementTriplesBlock bgp = new ElementTriplesBlock();
 					newTriplePatterns.forEach(bgp::addTriple);
@@ -174,6 +187,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 					filters.forEach(eg::addElementFilter);
 
 					newQuery.setQueryPattern(eg);
+
 
 					queries.add(newQuery);
 				}
