@@ -74,6 +74,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
@@ -88,6 +89,7 @@ import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -112,6 +114,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -176,7 +179,7 @@ public class QTLEvaluation {
 
 	private int minNrOfPositiveExamples = 9;
 
-	private int maxTreeDepth = 3;
+	private int maxTreeDepth = 2;
 
 	private NoiseMethod noiseMethod = NoiseMethod.RANDOM;
 
@@ -234,16 +237,16 @@ public class QTLEvaluation {
 		this.useEmailNotification = useEmailNotification;
 		this.nrOfThreads = nrOfThreads;
 
-		queryTreeFactory = new QueryTreeFactoryBase();
+		queryTreeFactory = new QueryTreeFactoryBaseInv();
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
 		
 		// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
-		List<Filter<Statement>> var = dataset.getQueryTreeFilters();
-		queryTreeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
+		List<Predicate<Statement>> var = dataset.getQueryTreeFilters();
+		queryTreeFactory.addDropFilters((Predicate<Statement>[]) var.toArray(new Predicate[var.size()]));
 		
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(qef);
 
 		rnd.reSeed(123);
 		
@@ -272,7 +275,7 @@ public class QTLEvaluation {
 			java.sql.Statement stmt = conn.createStatement();
 
 			// create database
-			String databaseName = "QTL_" + timeStamp;
+			String databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
 			logger.info("Creating database '" + databaseName + "'");
 			String sql = "CREATE DATABASE " + databaseName;
 			stmt.executeUpdate(sql);
@@ -473,7 +476,7 @@ public class QTLEvaluation {
 		// generate examples for each query
 		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
-		for (String query : queries) {if(!(query.contains("Borough_(New_York_City)")))continue;
+		for (String query : queries) {//if(!(query.contains("Borough_(New_York_City)")))continue;
 			query2Examples.put(query, generateExamples(query));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
@@ -567,7 +570,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-							if(!(sparqlQuery.contains("Borough_(New_York_City)")))continue;
+//							if(!(sparqlQuery.contains("Borough_(New_York_City)")))continue;
 							
 							tp.submit(() -> {
 
@@ -575,7 +578,9 @@ public class QTLEvaluation {
 								logger.info("Processing query\n" + sparqlQuery);
 
 								try {
-									ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
+									ExamplesWrapper examples = query2Examples
+																.get(sparqlQuery)
+																.get(nrOfExamples, nrOfExamples, noise);
 									logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
 									logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
 
@@ -1435,10 +1440,12 @@ public class QTLEvaluation {
 	
 	private RDFResourceTree getQueryTree(String resource){
 		// get CBD
+		logger.debug("loading data for {} ...", resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
 		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
-		
+		logger.debug("got {} triples in {}ms.", cbd.size(), MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getLastValue());
+
 		// rewrite NAN to NaN to avoid parse exception
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
@@ -1450,11 +1457,14 @@ public class QTLEvaluation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		
 		// generate tree
+		logger.debug("generating query tree for {} ...", resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
+		logger.debug("generating query tree for {} took {}ms.", resource, MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getLastValue());
 
 //		System.out.println(tree.getStringRepresentation());
 
@@ -2166,7 +2176,7 @@ public class QTLEvaluation {
 		public ExamplesWrapper get(int nrOfPosExamples, int nrOfNegExamples, double noise) {
 			Random rnd = new Random(123);
 			
-			// random sublist of the pos. examples
+			// random sublist of the pos. examplessak
 			List<String> correctPosExamples = new ArrayList<>(correctPosExampleCandidates);
 			Collections.sort(correctPosExamples);
 			Collections.shuffle(correctPosExamples, rnd);
