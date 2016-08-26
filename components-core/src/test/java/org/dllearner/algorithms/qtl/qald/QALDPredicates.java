@@ -27,7 +27,10 @@ public class QALDPredicates {
     }
 
     public static Predicate<Question> isObjectTarget() {
-        return isSubjectTarget().negate();
+        return q -> utils.extractOutgoingTriplePatterns(
+                QueryFactory.create(q.getQuery().getSparql()),
+                QueryFactory.create(q.getQuery().getSparql()).getProjectVars().get(0).asNode()
+        ).isEmpty();
 
     }
 
