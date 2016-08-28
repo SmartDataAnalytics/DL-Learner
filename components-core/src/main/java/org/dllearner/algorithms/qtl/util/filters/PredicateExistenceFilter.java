@@ -20,7 +20,10 @@ package org.dllearner.algorithms.qtl.util.filters;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
 
+import com.google.common.collect.Sets;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
@@ -30,6 +33,7 @@ import org.apache.jena.graph.Node;
 /**
  * A query tree filter that removes edges whose existence is supposed to be
  * semantically meaningless from user perspective.
+ *
  * @author Lorenz Buehmann
  *
  */
@@ -54,6 +58,7 @@ public class PredicateExistenceFilter {
 	
 	/**
 	 * Returns a new tree based on the input tree.
+	 *
 	 * @param tree the input tree
 	 * @return a filtered new tree
 	 */
@@ -67,10 +72,18 @@ public class PredicateExistenceFilter {
 		
 		for(Node edge : tree.getEdges()) {
 			if(existentialMeaninglessProperties.contains(edge)) {
+				// if the edge is meaningless
+				// 1. process all children
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					if(child.isResourceNode() || child.isLiteralValueNode() || !child.isLeaf()) {
+					if(child.isResourceNode() || child.isLiteralValueNode()) {
 						RDFResourceTree newChild = filter(child);
 						newTree.addChild(newChild, edge);
+					} else {
+						RDFResourceTree newChild = filter(child);
+						SortedSet<Node> childEdges = newChild.getEdges();
+						if(!childEdges.isEmpty() && !(childEdges.size() == 1 && childEdges.contains(RDF.type.asNode()))) {
+							newTree.addChild(newChild, edge);
+						}
 					}
 				}
 			} else {
