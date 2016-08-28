@@ -961,6 +961,46 @@ public class QueryTreeUtils {
 		}
 		return modified;
 	}
+
+	/**
+	 * Prune the rdf:type nodes such that only the most specific types remain w.r.t. the given reasoner.
+	 *
+	 * @param tree the tree
+	 */
+	public static boolean keepMostSpecificTypes(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		boolean modified = false;
+
+		// process child nodes first
+		for (Node edge : tree.getEdges()) {
+			for (RDFResourceTree child : tree.getChildren(edge)) {
+				modified |= keepMostSpecificTypes(child, reasoner);
+			}
+		}
+
+		// prune the rdf:type nodes
+		List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+		if (typeChildren != null) {
+			List<RDFResourceTree> children2Remove = new ArrayList<>();
+
+			for (int i = 0; i < typeChildren.size(); i++) {
+				RDFResourceTree child1 = typeChildren.get(i);
+				OWLClass cls1 = df.getOWLClass(IRI.create(child1.getData().getURI()));
+				for (int j = i+1; j < typeChildren.size(); j++) {
+					RDFResourceTree child2 = typeChildren.get(j);
+					OWLClass cls2 = df.getOWLClass(IRI.create(child2.getData().getURI()));
+
+					if(reasoner.isSuperClassOf(cls1, cls2)) { // T2 subClassOf T1 -> remove T1
+						children2Remove.add(child1);
+					} else if(reasoner.isSuperClassOf(cls2, cls1)) { // T1 subClassOf T2 -> remove T2
+						children2Remove.add(child2);
+					}
+				}
+			}
+			children2Remove.forEach(c -> tree.removeChild(c, RDF.type.asNode()));
+		}
+
+		return modified;
+	}
 	
 	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {
 		if(tree.isResourceNode() || tree.isLiteralNode()){
