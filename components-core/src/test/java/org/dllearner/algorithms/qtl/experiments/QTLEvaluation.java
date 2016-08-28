@@ -489,6 +489,14 @@ public class QTLEvaluation {
 		logger.info("got {} empty queries.", emptyQueries.size());
 		queries.removeAll(emptyQueries);
 
+		// min. pos examples
+		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
+				.filter(e -> e.getValue().correctPosExampleCandidates.size() < 2)
+				.map(e -> e.getKey())
+				.collect(Collectors.toSet());
+		logger.info("got {} queries with < 2 pos. examples.", emptyQueries.size());
+		queries.removeAll(lowNrOfExamplesQueries);
+
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
@@ -570,7 +578,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-							if(!(sparqlQuery.contains("Queen_Victoria")))continue;
+//							if(!(sparqlQuery.contains("Queen_Victoria")))continue;
 							
 							tp.submit(() -> {
 
@@ -1440,11 +1448,11 @@ public class QTLEvaluation {
 	
 	private RDFResourceTree getQueryTree(String resource){
 		// get CBD
-		logger.debug("loading data for {} ...", resource);
+		logger.info("loading data for {} ...", resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
 		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
-		logger.debug("got {} triples in {}ms.", cbd.size(), MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getLastValue());
+		logger.info("got {} triples in {}ms.", cbd.size(), MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getLastValue());
 
 		// rewrite NAN to NaN to avoid parse exception
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
@@ -1460,11 +1468,11 @@ public class QTLEvaluation {
 
 		
 		// generate tree
-		logger.debug("generating query tree for {} ...", resource);
+		logger.info("generating query tree for {} ...", resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
-		logger.debug("generating query tree for {} took {}ms.", resource, MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getLastValue());
+		logger.info("generating query tree for {} took {}ms.", resource, MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getLastValue());
 
 //		System.out.println(tree.getStringRepresentation());
 
@@ -1811,7 +1819,14 @@ public class QTLEvaluation {
 		// apply some filters
 		QueryTreeUtils.removeVarLeafs(tree);
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
-		
+
+		// remove redundant rdf:type triples
+		QueryTreeUtils.keepMostSpecificTypes(tree, dataset.getReasoner());
+
+		//
+		PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+		tree = filter.filter(tree);
+
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 		logger.info("learned SPARQL query:{}", learnedSPARQLQuery);
 		

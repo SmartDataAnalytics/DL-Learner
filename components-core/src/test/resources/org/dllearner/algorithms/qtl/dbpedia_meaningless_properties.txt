@@ -477,9 +477,9 @@ http://dbpedia.org/ontology/dbnlCodeDutch
 http://dbpedia.org/ontology/dcc
 http://dbpedia.org/ontology/deadInFightDate
 http://dbpedia.org/ontology/deadInFightPlace
-http://dbpedia.org/ontology/deathAge
-http://dbpedia.org/ontology/deathDate
-http://dbpedia.org/ontology/deathYear
+#http://dbpedia.org/ontology/deathAge
+#http://dbpedia.org/ontology/deathDate
+#http://dbpedia.org/ontology/deathYear
 http://dbpedia.org/ontology/debut
 http://dbpedia.org/ontology/dec
 http://dbpedia.org/ontology/decay
@@ -2052,8 +2052,8 @@ http://dbpedia.org/ontology/daylightSavingTimeZone
 http://dbpedia.org/ontology/deFactoLanguage
 http://dbpedia.org/ontology/dean
 http://dbpedia.org/ontology/deanery
-http://dbpedia.org/ontology/deathCause
-http://dbpedia.org/ontology/deathPlace
+#http://dbpedia.org/ontology/deathCause
+#http://dbpedia.org/ontology/deathPlace
 http://dbpedia.org/ontology/debutTeam
 http://dbpedia.org/ontology/debutWork
 http://dbpedia.org/ontology/decoration
@@ -2742,7 +2742,7 @@ http://dbpedia.org/ontology/sportCountry
 http://dbpedia.org/ontology/sportDiscipline
 http://dbpedia.org/ontology/sportGoverningBody
 http://dbpedia.org/ontology/sportSpecialty
-http://dbpedia.org/ontology/spouse
+#http://dbpedia.org/ontology/spouse
 http://dbpedia.org/ontology/spurOf
 http://dbpedia.org/ontology/spurType
 http://dbpedia.org/ontology/stadium
