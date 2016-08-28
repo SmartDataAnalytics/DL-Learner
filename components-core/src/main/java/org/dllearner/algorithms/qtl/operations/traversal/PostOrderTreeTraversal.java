@@ -5,20 +5,19 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import java.util.*;
 
 /**
- * An iterator for pre-order resp. depth-first traversal on the nodes in the query tree.
+ * An iterator for post-order resp. depth-first traversal on the nodes in the query tree.
  *
- * 1. Visit the root.
- * 2. Traverse the left subtree
- * 3. Traverse the right subtree
+ * 1. Traverse the subtrees
+ * 2. Visit the root.
  *
  * @author Lorenz Buehmann
  */
-public class PreOrderTreeTraversal implements TreeTraversal{
+public class PostOrderTreeTraversal implements TreeTraversal{
 
 	private Deque<RDFResourceTree> stack = new ArrayDeque<>();
 
-	public PreOrderTreeTraversal(RDFResourceTree root) {
-		stack.push(root);
+	public PostOrderTreeTraversal(RDFResourceTree root) {
+		findNextLeaf(root);
 	}
 
 	@Override
@@ -32,14 +31,27 @@ public class PreOrderTreeTraversal implements TreeTraversal{
 			throw new NoSuchElementException("All nodes have been visited!");
 		}
 
-		// retrieve and remove the head of queue
 		RDFResourceTree res = stack.pop();
-
-		// add children to stack in reversed order
-		List<RDFResourceTree> children = res.getChildren();
-		Collections.reverse(children);
-		children.forEach(c -> stack.push(c));
+		if (!stack.isEmpty()) {
+			RDFResourceTree top = stack.peek();
+			List<RDFResourceTree> children = top.getChildren();
+			int pos = children.indexOf(res);
+			if (pos < children.size() - 1) {
+				findNextLeaf(children.get(pos + 1)); // find next leaf in right sub-tree
+			}
+		}
 
 		return res;
+	}
+
+	/** find the first leaf in a tree rooted at cur and store intermediate nodes */
+	private void findNextLeaf(RDFResourceTree cur) {
+		while (cur != null) {
+			stack.push(cur);
+			List<RDFResourceTree> children = cur.getChildren();
+			if(!children.isEmpty()) {
+				cur = children.get(0);
+			}
+		}
 	}
 }
