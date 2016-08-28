@@ -28,7 +28,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X
 WHERE
-{?X rdf:type ub:Publication .
+{?X rdf:type/rdfs:subClassOf* ub:Publication .
   ?X ub:publicationAuthor <http://www.Department0.University0.edu/AssistantProfessor0>}
 
 # Query4
@@ -49,12 +49,16 @@ WHERE
 # This query assumes subClassOf relationship between Person and its subclasses
 # and subPropertyOf relationship between memberOf and its subproperties.
 # Moreover, class Person features a deep and wide hierarchy.
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
-SELECT ?X
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  ub:   <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT  *
 WHERE
-{?X rdf:type ub:Person .
-  ?X ub:memberOf <http://www.Department0.University0.edu>}
+  { ?X rdf:type/(((rdfs:subClassOf|owl:equivalentClass)|((owl:intersectionOf/(rdf:rest)*)/rdf:first)))* ub:Person .
+    ?X ?p <http://www.Department0.University0.edu> .
+    ?p rdfs:subPropertyOf ub:memberOf
+  }
 
 
 # Query6
@@ -112,7 +116,7 @@ WHERE
 # Query10
 # This query differs from Query 6, 7, 8 and 9 in that it only requires the
 # (implicit) subClassOf relationship between GraduateStudent and Student, i.e.,
-#subClassOf rela-tionship between UndergraduateStudent and Student does not add
+# subClassOf relationship between UndergraduateStudent and Student does not add
 # to the results.
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
@@ -128,7 +132,7 @@ WHERE
 # capabilities in the system. In this query, property subOrganizationOf is defined
 # as transitive. Since in the benchmark data, instances of ResearchGroup are stated
 # as a sub-organization of a Department individual and the later suborganization of
-# a University individual, inference about the subOrgnizationOf relationship between
+# a University individual, inference about the subOrganizationOf relationship between
 # instances of ResearchGroup and University is required to answer this query.
 # Additionally, its input is small.
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
