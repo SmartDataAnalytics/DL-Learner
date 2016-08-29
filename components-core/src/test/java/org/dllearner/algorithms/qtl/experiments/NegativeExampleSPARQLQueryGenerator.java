@@ -18,17 +18,14 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.collect.Lists;
+import org.aksw.jena_sparql_api.concepts.Concept;
+import org.aksw.jena_sparql_api.concepts.ConceptUtils;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.BasicPattern;
@@ -101,6 +98,17 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 				qe.close();
 			}
 			logger.trace("...finished generating neg. examples.");
+
+			// sanity check: remove all pos. examples
+			QueryExecution qe = qef.createQueryExecution(targetQuery);
+			ResultSet rs = qe.execSelect();
+			Iterable<QuerySolution> iter = () -> rs;
+			final Var targetVar = query.getProjectVars().get(0);
+			List<String> posExamples = StreamSupport.stream(iter.spliterator(), false)
+											.map(qs -> qs.getResource(targetVar.getName()).getURI())
+											.collect(Collectors.toList());
+			negExamples.removeAll(posExamples);
+
 			return new ArrayList<>(negExamples);
 		}
 		
@@ -186,8 +194,16 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 					eg.addElement(bgp);
 					filters.forEach(eg::addElementFilter);
 
-					newQuery.setQueryPattern(eg);
+					Concept attrConcept = new Concept(bgp, query.getProjectVars().get(0));
+					Concept filterConcept = new Concept(query.getQueryPattern(), query.getProjectVars().get(0));
 
+					Map<Var, Var> varMap = ConceptUtils.createVarMap(attrConcept, filterConcept);
+					Concept renamedConcept = ConceptUtils.createRenamedConcept(filterConcept, varMap);
+
+					E_NotExists notExists = new E_NotExists(renamedConcept.getElement());
+					eg.addElementFilter(new ElementFilter(notExists));
+
+					newQuery.setQueryPattern(eg);
 
 					queries.add(newQuery);
 				}
