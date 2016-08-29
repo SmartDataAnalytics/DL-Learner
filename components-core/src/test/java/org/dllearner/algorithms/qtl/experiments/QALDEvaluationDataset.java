@@ -76,6 +76,21 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 			TEST_URL
 	};
 
+	private static SparqlEndpoint endpoint;
+	static {
+		try {
+			endpoint = SparqlEndpoint.create(
+					"http://sake.informatik.uni-leipzig.de:8890/sparql",
+					Lists.newArrayList("http://dbpedia.org", "http://dbpedia.org/categories"));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public QALDEvaluationDataset(File benchmarkDirectory) {
+		this(benchmarkDirectory, endpoint);
+	}
+
 	public QALDEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		super("QALD");
 		// set KS
@@ -163,7 +178,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 			new NamespaceDropStatementFilter(
 			Sets.newHashSet(
 					"http://dbpedia.org/property/", 
-					"http://purl.org/dc/terms/",
+//					"http://purl.org/dc/terms/",
 					"http://dbpedia.org/class/yago/"
 					,FOAF.getURI()
 					)
