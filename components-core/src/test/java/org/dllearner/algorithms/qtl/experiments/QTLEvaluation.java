@@ -35,6 +35,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.*;
@@ -1475,7 +1476,6 @@ public class QTLEvaluation {
 			e.printStackTrace();
 		}
 
-		
 		// generate tree
 		logger.info("generating query tree for {} ...", resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
@@ -2151,7 +2151,7 @@ public class QTLEvaluation {
 		}
 
 //		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
-		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory, endpoint);
+		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory);
 		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
