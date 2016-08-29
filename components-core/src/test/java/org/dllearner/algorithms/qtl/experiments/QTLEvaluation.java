@@ -228,6 +228,8 @@ public class QTLEvaluation {
 
 	private long timeStamp;
 
+	Set<String> tokens = Sets.newHashSet("The_Three_Dancers");
+
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -465,6 +467,16 @@ public class QTLEvaluation {
 		List<String> queries = dataset.getSparqlQueries();
 		logger.info("#loaded queries: " + queries.size());
 
+		// filter for debugging purposes
+		queries = queries.stream().filter(q -> {
+			boolean skip = false;
+			for (String t : tokens) {
+				skip |= q.contains(t);
+			}
+			return skip;
+		}).collect(Collectors.toList());
+
+
 		if(maxNrOfProcessedQueries == -1) {
 			maxNrOfProcessedQueries = queries.size();
 		}
@@ -577,9 +589,7 @@ public class QTLEvaluation {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
-							
-//							if(!(sparqlQuery.contains("Queen_Victoria")))continue;
-							
+
 							tp.submit(() -> {
 
 								logger.info("##############################################################");
@@ -1828,7 +1838,7 @@ public class QTLEvaluation {
 		tree = filter.filter(tree);
 
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-		logger.info("learned SPARQL query:{}", learnedSPARQLQuery);
+		logger.info("learned SPARQL query:\n{}", learnedSPARQLQuery);
 		
 		if(QueryUtils.getTriplePatterns(QueryFactory.create(learnedSPARQLQuery)).size() < 25) {
 			return computeScoreBySparqlCount(referenceSparqlQuery, tree, noise);
@@ -1856,7 +1866,7 @@ public class QTLEvaluation {
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
 		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
-			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
+			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();
 		}
 
