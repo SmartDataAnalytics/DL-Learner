@@ -18,6 +18,8 @@
  */
 package org.dllearner.kb.sparql;
 
+import com.google.common.collect.Lists;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -59,7 +61,15 @@ public class SparqlEndpoint {
 	}
 
 	public static SparqlEndpoint create(String url, String defaultGraphURI) throws MalformedURLException {
-		return new SparqlEndpoint(new URL(url), defaultGraphURI);
+		return create(url, Lists.newArrayList(defaultGraphURI));
+	}
+
+	public static SparqlEndpoint create(String url, List<String> defaultGraphURIs) throws MalformedURLException {
+		return create(url, defaultGraphURIs, Collections.emptyList());
+	}
+
+	public static SparqlEndpoint create(String url, List<String> defaultGraphURIs, List<String> namedGraphURIs) throws MalformedURLException {
+		return new SparqlEndpoint(new URL(url), defaultGraphURIs, namedGraphURIs);
 	}
 
 	public String getHTTPRequest() {
