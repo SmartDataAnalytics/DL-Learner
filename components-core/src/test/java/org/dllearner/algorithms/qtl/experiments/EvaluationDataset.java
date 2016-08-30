@@ -18,16 +18,23 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.kb.SparqlEndpointKS;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.util.iterator.Filter;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Contains a knowledge base and a set of SPARQL queries.
@@ -79,5 +86,50 @@ public abstract class EvaluationDataset {
 	
 	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return queryTreeFilters;
+	}
+
+	public void analyze() {
+		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
+
+		String s = sparqlQueries.stream().map(QueryFactory::create).map(q -> {
+			StringBuilder sb = new StringBuilder();
+			sb.append(q.toString().replace("\n", " ")).append("\t");
+			try {
+				// get query result
+				List<String> result = SPARQLUtils.getResult(ks.getQueryExecutionFactory(), q);
+				sb.append(result.size());
+
+				// check CBD sizes and time
+				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
+				mon.reset();
+				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+				result.stream()
+						.map(r -> {
+							System.out.println(r);
+							mon.start();
+							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
+							mon.stop();
+							return cbd;
+						})
+						.map(Model::size)
+						.forEach(sizeStats::addValue);
+
+				// show min., max. and avg. size
+				sb.append("\t").append(sizeStats.getMin());
+				sb.append("\t").append(sizeStats.getMax());
+				sb.append("\t").append(sizeStats.getMean());
+
+				// show min., max. and avg. CBD time
+				sb.append("\t").append(mon.getTotal());
+				sb.append("\t").append(mon.getMin());
+				sb.append("\t").append(mon.getMax());
+				sb.append("\t").append(mon.getAvg());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return sb;
+		}).collect(Collectors.joining("\n"));
+
+		System.out.println(s);
 	}
 }
