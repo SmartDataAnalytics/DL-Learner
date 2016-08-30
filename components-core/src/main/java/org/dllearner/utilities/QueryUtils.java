@@ -346,7 +346,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Set<Triple> triplePatterns = new HashSet<>();
 
 		Set<Triple> tmp = extractOutgoingTriplePatterns(query, node);
-		tmp.stream().filter(tp -> tp.getObject().isVariable()).forEach(tp -> {
+		triplePatterns.addAll(tmp);
+        tmp.stream().filter(tp -> tp.getObject().isVariable()).forEach(tp -> {
 			triplePatterns.addAll(extractOutgoingTriplePatternsTrans(query, tp.getObject()));
 		});
 
@@ -376,6 +377,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Set<Triple> triplePatterns = new HashSet<>();
 
 		Set<Triple> tmp = extractIncomingTriplePatterns(query, node);
+		triplePatterns.addAll(tmp);
 		tmp.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
 			triplePatterns.addAll(extractIncomingTriplePatterns(query, tp.getSubject()));
 		});

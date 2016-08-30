@@ -25,28 +25,7 @@ import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.sparql.core.BasicPattern;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.*;
-import org.apache.jena.sparql.expr.aggregate.AggCountVarDistinct;
-import org.apache.jena.sparql.syntax.Element;
-import org.apache.jena.sparql.syntax.ElementFilter;
-import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementTriplesBlock;
-import org.apache.jena.sparql.util.TripleComparator;
-import org.apache.jena.util.iterator.Filter;
-import org.apache.jena.vocabulary.RDF;
+import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -63,6 +42,25 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.apache.commons.math3.util.Pair;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.expr.aggregate.AggCountVarDistinct;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementFilter;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementTriplesBlock;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -73,7 +71,6 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
@@ -87,7 +84,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
@@ -228,7 +224,10 @@ public class QTLEvaluation {
 
 	private long timeStamp;
 
-	Set<String> tokens = Sets.newHashSet("The_Three_Dancers");
+	Set<String> tokens = Sets.newHashSet(
+//			"The_Three_Dancers"
+			"Queen_Victoria"
+	);
 
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
@@ -468,13 +467,7 @@ public class QTLEvaluation {
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
-		queries = queries.stream().filter(q -> {
-			boolean skip = false;
-			for (String t : tokens) {
-				skip |= q.contains(t);
-			}
-			return skip;
-		}).collect(Collectors.toList());
+		queries = queries.stream().filter(q -> tokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
 
 
 		if(maxNrOfProcessedQueries == -1) {
@@ -1459,10 +1452,10 @@ public class QTLEvaluation {
 	private RDFResourceTree getQueryTree(String resource){
 		// get CBD
 		logger.info("loading data for {} ...", resource);
-		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
+		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
 		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
-		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
-		logger.info("got {} triples in {}ms.", cbd.size(), MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getLastValue());
+		mon.stop();
+		logger.info("got {} triples in {}ms.", cbd.size(), mon.getLastValue());
 
 		// rewrite NAN to NaN to avoid parse exception
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
@@ -1478,10 +1471,10 @@ public class QTLEvaluation {
 
 		// generate tree
 		logger.info("generating query tree for {} ...", resource);
-		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
+		mon = MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
-		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
-		logger.info("generating query tree for {} took {}ms.", resource, MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getLastValue());
+		mon.stop();
+		logger.info("generating query tree for {} took {}ms.", resource, mon.getLastValue());
 
 //		System.out.println(tree.getStringRepresentation());
 
@@ -1532,167 +1525,13 @@ public class QTLEvaluation {
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
 		logger.trace("Getting result set splitted for\n{}", query);
-		
-		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		// remove triple patterns with unbound object vars
-		if(triplePatterns.size() > 10) {
-			query = queryUtils.removeUnboundObjectVarTriples(query);
-			triplePatterns = queryUtils.extractTriplePattern(query);
-		} 
-		
-	//  Virtuoso bug workaround with literals of type xsd:float and xsd:double
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Node object = iterator.next().getObject();
-			if(object.isLiteral() && object.getLiteralDatatype() != null 
-					&& (object.getLiteralDatatype().equals(XSDDatatype.XSDfloat) || object.getLiteralDatatype().equals(XSDDatatype.XSDdouble))){
-				iterator.remove();
-			}
-		}
-					
-		
-		Var targetVar = query.getProjectVars().get(0); // should be ?x0
-		
-		final Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
-		for (Triple tp : triplePatterns) {
-			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
-		}
-		
-		// we keep only the most specific types for each var
-		filterOutGeneralTypes(var2TriplePatterns);
-		
-		// 1. get the outgoing triple patterns of the target var that do not have
-		// outgoing triple patterns
-		Set<Triple> fixedTriplePatterns = new HashSet<>();
-		Set<Set<Triple>> clusters = new HashSet<>();
-		Collection<Triple> targetVarTriplePatterns = var2TriplePatterns.get(targetVar);
-		boolean useSplitting = false;
-		for (Triple tp : targetVarTriplePatterns) {
-			Node object = tp.getObject();
-			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
-				fixedTriplePatterns.add(tp);
-			} else {
-				Set<Triple> cluster = new TreeSet<>((o1, o2) -> {
-					return ComparisonChain.start().
-					compare(o1.getSubject().toString(), o2.getSubject().toString()).
-					compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-					compare(o1.getObject().toString(), o2.getObject().toString()).
-					result();
-				});
-				cluster.add(tp);
-				clusters.add(cluster);
-				useSplitting = true;
-			}
-		}
-		
-		if(!useSplitting){
-			clusters.add(Sets.newHashSet(fixedTriplePatterns));
-		} else {
-			logger.debug("Query too complex. Splitting...");
-			// 2. build clusters for other
-			for (Set<Triple> cluster : clusters) {
-				Triple representative = cluster.iterator().next();
-				cluster.addAll(var2TriplePatterns.get(Var.alloc(representative.getObject())));
-				cluster.addAll(fixedTriplePatterns);
-			}
-		}
-		
-		// again split clusters to have only a maximum number of triple patterns
-		int maxNrOfTriplePatternsPerQuery = 20;// number of outgoing triple patterns form the target var in each executed query
-		Set<Set<Triple>> newClusters = new HashSet<>();
-		for (Set<Triple> cluster : clusters) {
-			int cnt = 0;
-			for (Triple triple : cluster) {
-				if(triple.getSubject().matches(targetVar)) {
-					cnt++;
-				}
-			}
-			
-			if(cnt > maxNrOfTriplePatternsPerQuery) {
-				Set<Triple> newCluster = new HashSet<>();
-				for (Triple triple : cluster) {
-					if(triple.getSubject().matches(targetVar)) {
-						newCluster.add(triple);
-					}
-					if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
-						newClusters.add(newCluster);
-						newCluster = new HashSet<>();
-					}
-				}
-				if(!newCluster.isEmpty()) {
-					newClusters.add(newCluster);
-				}
-			}
-		}
-		
-		for (Set<Triple> cluster : newClusters) {
-			for(int i = 1; i < maxTreeDepth; i++) {
-				Set<Triple> additionalTriples = new HashSet<>();
-				cluster.stream().filter(triple -> triple.getObject().isVariable()).forEach(triple -> {
-					Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
-					additionalTriples.addAll(triples);
-				});
-				cluster.addAll(additionalTriples);
-			}
-		}
-//		clusters = newClusters;
-		
-		
-		
-		Set<String> resources = null;
-		// 3. run query for each cluster
-		for (Set<Triple> cluster : clusters) {
-			// remove redundant edges
-			SortedSet<Triple> tmp = new TreeSet<>(new Comparator<Triple>() {
 
-				TripleComparator comp = new TripleComparator();
+		List<Query> queries = QueryRewriter.split(query);
 
-				@Override
-				public int compare(Triple o1, Triple o2) {
-					boolean same = o1.subjectMatches(o2.getSubject())
-							&& o2.predicateMatches(o2.getPredicate())
-							&& o1.getObject().isVariable() && o2.getObject().isVariable();
-//							&& !var2TriplePatterns.containsKey(o1.getObject());
-					if (same) return 0;
-					return comp.compare(o1, o2);
-				}
-			});
-			tmp.addAll(cluster);
-			cluster = tmp;
-			
-			// build query
-			Query q = new Query();
-			q.addProjectVars(Collections.singleton(targetVar));
-			ElementTriplesBlock el = new ElementTriplesBlock();
-			for (Triple triple : cluster) {
-				el.addTriple(triple);
-			}
-			q.setQuerySelectType();
-			q.setDistinct(true);
-			q.setQueryPattern(el);
-			
-			q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
-//			q = rewriteForVirtuosoFloatingPointIssue(q);
-//			sparqlQuery = getPrefixedQuery(sparqlQuery);
-			logger.debug("partial query:\n{}", q.toString());
-			List<String> partialResult = getResult(q.toString());
-			Set<String> resourcesTmp = new HashSet<>(partialResult);
-			
-			if(resourcesTmp.isEmpty()) {
-				logger.error("Empty query result\n" + q);
-//				System.exit(0);
-				return Collections.EMPTY_LIST;
-			}
-			
-			if(resources == null){
-				resources = resourcesTmp;
-			} else {
-				resources.retainAll(resourcesTmp);
-			}
-		}
-		
-		return new ArrayList<>(resources);
+		List<String> resources = getResult(queries.remove(0).toString());
+		queries.stream().map(q -> getResult(q.toString())).forEach(l -> resources.retainAll(l));
+
+		return resources;
 	}
 	
 	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples) {
@@ -1914,9 +1753,10 @@ public class QTLEvaluation {
 				
 		// Q2
 		Query q2 = QueryFactory.create(learnedSPARQLQuery);
+		Var targetVar = q2.getProjectVars().get(0);
 		Query q2Count = QueryFactory.create();
 		q2Count.setQuerySelectType();
-		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
+		q2Count.getProject().add(cntVar, new ExprAggregator(targetVar, new AggCountVarDistinct(new ExprVar(targetVar))));
 		q2Count.setQueryPattern(q2.getQueryPattern());
 		logger.debug("Learned COUNT query:\n" + q2Count);
 		q2Count = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q2Count);
