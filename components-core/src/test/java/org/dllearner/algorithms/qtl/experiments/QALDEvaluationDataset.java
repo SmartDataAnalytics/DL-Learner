@@ -101,10 +101,10 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 						.setModelContentType(WebContent.contentTypeRDFXML))
 				.end()
 				.create();
-		qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false", false, TimeUnit.DAYS.toMillis(7) );
+		qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI2017-cache;mv_store=false", false, TimeUnit.DAYS.toMillis(7) );
 		try {
 			ks = new SparqlEndpointKS(endpoint);
-			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
+			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI2017-cache;mv_store=false");
 			ks.setQueryExecutionFactory(qef);
 			ks.init();
 		} catch (ComponentInitException e) {
@@ -138,7 +138,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
 				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
-				.filter(QALDPredicates.isObjectTarget())
+				.filter(QALDPredicates.isObjectTarget().or(QALDPredicates.isSubjectTarget()))
 				.filter(QALDPredicates.hasFilter().negate())
 //				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
 				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
@@ -199,7 +199,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
 		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
 
-
+		ds.analyze();
 	}
 
 }
