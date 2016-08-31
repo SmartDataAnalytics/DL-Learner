@@ -34,6 +34,7 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.sparql.core.Var;
+import org.dllearner.utilities.QueryUtils;
 
 /**
  * @author Lorenz Buehmann
@@ -98,7 +99,10 @@ public class BenchmarkDescriptionGeneratorHTML {
 			+ "table {\n" + 
 			"    border-collapse: separate;\n" + 
 			"    border-spacing: 0 5px;\n" + 
-			"}\n" + 
+			"}\n" +
+					"table th {\n" +
+					"    width: auto !important;\n" +
+					"}" +
 			"\n" + 
 			"thead th {\n" + 
 			"    background-color: #006DCC;\n" + 
@@ -165,6 +169,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 		html += "<thead><tr>"
 				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>"
 				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>"
+				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>"
 				+ "</tr></thead>\n";
@@ -172,6 +177,24 @@ public class BenchmarkDescriptionGeneratorHTML {
 		html += "<tbody>\n";
 		int id = 1;
 		for (Query query : queries) {
+			query.getPrefixMapping().removeNsPrefix("owl");
+			query.getPrefixMapping().removeNsPrefix("rdfs");
+			query.getPrefixMapping().removeNsPrefix("foaf");
+			query.getPrefixMapping().removeNsPrefix("rdf");
+
+			if(query.toString().contains("http://dbpedia.org/ontology/")) {
+				query.getPrefixMapping().setNsPrefix("dbo", "http://dbpedia.org/ontology/");
+			}
+			if(query.toString().contains("http://dbpedia.org/property/")) {
+				query.getPrefixMapping().setNsPrefix("dbp", "http://dbpedia.org/property/");
+			}
+			if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
+				query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
+			}
+			QueryUtils.exportAsGraph(query, new File("/tmp/test.png"));
+
+
+			query.setBaseURI("http://dbpedia.org/resource/");
 			html += "<tr>\n";
 			
 			// 1. column: ID
@@ -179,23 +202,20 @@ public class BenchmarkDescriptionGeneratorHTML {
 			
 			// 2. column: SPARQL query
 			html += "<td><pre>" + query.toString().replace("<", "&lt;").replace(">", "&gt;") + "</pre></td>\n";
+
+			// 3. column: SPARQL query type
+			html += "<td>" + SPARQLUtils.getQueryType(query) + "</td>\n";
 			
-			// 3. column: depth
+			// 4. column: depth
 			int depth = org.dllearner.utilities.QueryUtils.getSubjectObjectJoinDepth(query, var) + 1;
 			html += "<td class='number'>" + depth + "</td>\n";
 			
-			// 4. column: #instances
-			int nrOfInstances = 0;
-			QueryExecution qe = qef.createQueryExecution(query);
-			ResultSet rs = qe.execSelect();
-			while(rs.hasNext()) {
-				rs.next();
-				nrOfInstances++;
-			}
-			qe.close();
+			// 5. column: #instances
+			int nrOfInstances = SPARQLUtils.getResult(qef, query).size();
 			html += "<td class='number'>" + nrOfInstances + "</td>\n";
 			
 			html += "</tr>\n";
+			break;
 		}
 		html += "</tbody>\n";
 		html += "</table>\n";
@@ -210,14 +230,16 @@ public class BenchmarkDescriptionGeneratorHTML {
 	}
 
 	public static void main(String[] args) throws Exception{
-		if(args.length < 4) {
+		if(args.length < 3) {
 			System.out.println("Usage: BenchmarkDescriptionGeneratorHTML <source> <target> <endpointURL> <defaultGraphURI>");
 			System.exit(0);
 		}
 		File source = new File(args[0]);
 		File target = new File(args[1]);
 		String endpointURL = args[2];
-		String defaultGraph = args[3];
+		String defaultGraph = null;
+		if(args.length == 4)
+			defaultGraph = args[3];
 		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpointURL, defaultGraph);
 		qef = new QueryExecutionFactoryPaginated(qef);

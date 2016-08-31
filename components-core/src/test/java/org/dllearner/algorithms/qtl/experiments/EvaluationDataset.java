@@ -18,9 +18,11 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.base.Joiner;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
@@ -29,10 +31,15 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.utilities.QueryUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -88,48 +95,62 @@ public abstract class EvaluationDataset {
 		return queryTreeFilters;
 	}
 
+	/**
+	 * Writes the SPARQL queries line-wise to file.
+	 *
+	 * @param file the file
+	 */
+	public void saveToDisk(File file) throws IOException {
+		Files.write(file.toPath(), sparqlQueries.stream().map(q -> q.replace("\n", " ")).collect(Collectors.toList()));
+	}
+
 	public void analyze() {
 		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 
-		String s = sparqlQueries.stream().map(QueryFactory::create).map(q -> {
+		String tsv = sparqlQueries.stream().map(QueryFactory::create).map(q -> {
 			StringBuilder sb = new StringBuilder();
-			sb.append(q.toString().replace("\n", " ")).append("\t");
+			sb.append(q.toString().replace("\n", " "));
 			try {
 				// get query result
 				List<String> result = SPARQLUtils.getResult(ks.getQueryExecutionFactory(), q);
-				sb.append(result.size());
+				sb.append("\t").append(result.size());
 
-				// check CBD sizes and time
-				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
-				mon.reset();
-				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
-				result.stream()
-						.map(r -> {
-							System.out.println(r);
-							mon.start();
-							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
-							mon.stop();
-							return cbd;
-						})
-						.map(Model::size)
-						.forEach(sizeStats::addValue);
+				// query type
+				SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(q);
+				sb.append("\t").append(queryType.name());
 
-				// show min., max. and avg. size
-				sb.append("\t").append(sizeStats.getMin());
-				sb.append("\t").append(sizeStats.getMax());
-				sb.append("\t").append(sizeStats.getMean());
 
-				// show min., max. and avg. CBD time
-				sb.append("\t").append(mon.getTotal());
-				sb.append("\t").append(mon.getMin());
-				sb.append("\t").append(mon.getMax());
-				sb.append("\t").append(mon.getAvg());
+//				// check CBD sizes and time
+//				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
+//				mon.reset();
+//				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+//				result.stream()
+//						.map(r -> {
+//							System.out.println(r);
+//							mon.start();
+//							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
+//							mon.stop();
+//							return cbd;
+//						})
+//						.map(Model::size)
+//						.forEach(sizeStats::addValue);
+//
+//				// show min., max. and avg. size
+//				sb.append("\t").append(sizeStats.getMin());
+//				sb.append("\t").append(sizeStats.getMax());
+//				sb.append("\t").append(sizeStats.getMean());
+//
+//				// show min., max. and avg. CBD time
+//				sb.append("\t").append(mon.getTotal());
+//				sb.append("\t").append(mon.getMin());
+//				sb.append("\t").append(mon.getMax());
+//				sb.append("\t").append(mon.getAvg());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return sb;
 		}).collect(Collectors.joining("\n"));
 
-		System.out.println(s);
+		System.out.println(tsv);
 	}
 }

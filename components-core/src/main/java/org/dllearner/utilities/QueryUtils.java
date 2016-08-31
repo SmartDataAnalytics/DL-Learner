@@ -21,6 +21,15 @@ package org.dllearner.utilities;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxOrganicLayout;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.png.mxPngEncodeParam;
+import com.mxgraph.util.png.mxPngImageEncoder;
+import com.mxgraph.view.mxStylesheet;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
@@ -31,9 +40,22 @@ import org.apache.jena.sparql.util.VarUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.jgraph.JGraph;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.JGraphModelAdapter;
+import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -667,6 +689,77 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 			triplePatterns.removeAll(triplesPatterns2Remove);
 		}
 	}
+
+	public static DirectedGraph<Node, LabeledEdge> asJGraphT(Query query) {
+		QueryUtils utils = new QueryUtils();
+
+		Set<Triple> tps = utils.extractTriplePattern(query);
+
+		DirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<Node, LabeledEdge>(LabeledEdge.class);
+
+		tps.forEach(tp -> {
+			g.addVertex(tp.getSubject());
+			g.addVertex(tp.getObject());
+			g.addEdge(tp.getSubject(), tp.getObject(), new LabeledEdge(tp.getSubject(), tp.getObject(), tp.getPredicate()));
+		});
+
+		return g;
+	}
+
+	public static void exportAsGraph(Query query, File file) {
+		DirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
+		System.out.println(g.edgeSet().size());
+
+		JGraphXAdapter adapter = new JGraphXAdapter(g);
+
+
+		// positioning via jgraphx layouts
+		mxHierarchicalLayout layout = new mxHierarchicalLayout(adapter);
+		layout.execute(adapter.getDefaultParent());
+
+		Map<String, Object> edgeStyle = new HashMap<String, Object>();
+//edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ORTHOGONAL);
+		edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);
+		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
+		edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
+
+		Map<String, Object> nodeStyle = new HashMap<>();
+		nodeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_ELLIPSE);
+		nodeStyle.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
+
+		mxStylesheet stylesheet = new mxStylesheet();
+		stylesheet.setDefaultEdgeStyle(edgeStyle);
+		stylesheet.setDefaultVertexStyle(nodeStyle);
+
+		adapter.setStylesheet(stylesheet);
+
+//		JFrame frame = new JFrame();
+//		frame.getContentPane().add(new mxGraphComponent(adapter));
+//		frame.pack();
+//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//		frame.setVisible(true);
+
+
+
+		BufferedImage image = mxCellRenderer.createBufferedImage(adapter, null, 1, Color.WHITE, true, null);
+		mxPngEncodeParam param = mxPngEncodeParam.getDefaultEncodeParam(image);
+
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(file);
+			mxPngImageEncoder encoder = new mxPngImageEncoder(outputStream, param);
+			if (image != null) {
+				encoder.encode(image);
+			}
+			outputStream.close();
+//			ImageIO.write(image, "PNG", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 	
 	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
 		Set<Node> superClasses = new HashSet<>();
@@ -777,6 +870,27 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public ElementGroup getElementGroup(Triple triple){
 		return triple2Parent.get(triple);
+	}
+
+	static class LabeledEdge extends DefaultEdge {
+		private final Node s;
+		private final Node t;
+		private final Node edge;
+
+		public LabeledEdge(Node s, Node t, Node edge) {
+			this.s = s;
+			this.t = t;
+			this.edge = edge;
+		}
+
+		public Node getEdge() {
+			return edge;
+		}
+
+		@Override
+		public String toString() {
+			return edge.toString();
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {
