@@ -140,7 +140,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
 				.filter(QALDPredicates.isObjectTarget().or(QALDPredicates.isSubjectTarget()))
 				.filter(QALDPredicates.hasFilter().negate())
-//				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("chessplayer"))
+//				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("three_dancers"))
 				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
 				.collect(Collectors.toList());
 		
@@ -194,12 +194,13 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://dbpedia.org");
 		QALDEvaluationDataset ds = new QALDEvaluationDataset(new File("/tmp/test"), endpoint);
-		List<String> queries = ds.getSparqlQueries();
-		System.out.println(queries.size());
-		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
-		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
-
-		ds.analyze();
+		ds.saveToDisk(new File("/tmp/qald2016-queries.txt"));
+//		List<String> queries = ds.getSparqlQueries();
+//		System.out.println(queries.size());
+//		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
+//		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
+//
+//		ds.analyze();
 	}
 
 }
