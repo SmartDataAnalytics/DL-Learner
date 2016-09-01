@@ -132,14 +132,16 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 
 		// filter the questions
 		List<Question> filteredQuestions = questions.stream()
+				.filter(QALDPredicates.hasNoAnswer().negate()) // no answer SPARQL query
 				.filter(q -> !q.isAggregation()) // no aggregation
 				.filter(q -> q.getAnswertype().equals("resource")) // only resources
 				.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
 				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
-				.filter(q -> !q.getQuery().getSparql().toLowerCase().contains(" union ")) // skip UNION queries
+				.filter(QALDPredicates.isUnion().negate()) // skip UNION queries
+				.filter(QALDPredicates.hasFilter().negate()) // skip FILTER queries
+				.filter(QALDPredicates.isOnlyDBO())
 				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
 				.filter(QALDPredicates.isObjectTarget().or(QALDPredicates.isSubjectTarget()))
-				.filter(QALDPredicates.hasFilter().negate())
 //				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("three_dancers"))
 				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
 				.collect(Collectors.toList());
@@ -193,6 +195,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://dbpedia.org");
+		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		QALDEvaluationDataset ds = new QALDEvaluationDataset(new File("/tmp/test"), endpoint);
 		ds.saveToDisk(new File("/tmp/qald2016-queries.txt"));
 //		List<String> queries = ds.getSparqlQueries();
@@ -200,7 +203,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 //		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
 //		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
 //
-//		ds.analyze();
+		ds.analyze();
 	}
 
 }
