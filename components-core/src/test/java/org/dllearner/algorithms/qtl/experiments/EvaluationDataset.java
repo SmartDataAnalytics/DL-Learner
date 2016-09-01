@@ -23,7 +23,9 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
@@ -118,7 +120,6 @@ public abstract class EvaluationDataset {
 				// query type
 				SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(q);
 				sb.append("\t").append(queryType.name());
-
 
 //				// check CBD sizes and time
 //				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
