@@ -1,14 +1,16 @@
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.base.Joiner;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 import org.apache.jena.sparql.core.Var;
 import org.dllearner.utilities.QueryUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,9 +23,25 @@ public class SPARQLUtils {
 
     private static QueryUtils utils = new QueryUtils();
 
+    public static ParameterizedSparqlString CBD_TEMPLATE_DEPTH3;
+
+    static {
+        try {
+            String query = Joiner.on("\n").join(Files.readAllLines(Paths.get(
+					SPARQLUtils.class.getClassLoader().getResource("org/dllearner/algorithms/qtl/cbd-depth3.query").toURI())));
+            CBD_TEMPLATE_DEPTH3 = new ParameterizedSparqlString(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     enum QueryType {
         IN, OUT, MISC
     }
+
 
     public static List<String> getResult(QueryExecutionFactory qef, Query query) throws Exception{
         return getResult(qef, query, query.getProjectVars().get(0));

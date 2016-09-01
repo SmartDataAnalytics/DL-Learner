@@ -1,0 +1,33 @@
+SELECT  ?cnt_1 ?cnt_2 ?cnt_3 (( ( ?cnt_1 + ?cnt_2 ) + ?cnt_3 ) AS ?cnt)
+WHERE
+  { { SELECT  (count(*) AS ?cnt_1)
+      WHERE
+        { ?uri ?p0 ?o0}
+    }
+    { SELECT  (count(*) AS ?cnt_2)
+      WHERE
+        { { SELECT DISTINCT  ?o0 ?p1 ?o1
+            WHERE
+              { ?uri ?p0 ?o0 .
+                ?o0 ?p1 ?o1
+                FILTER ( ?o0 != ?uri )
+              }
+          }
+        }
+    }
+    { SELECT  (count(*) AS ?cnt_3)
+      WHERE
+        { { SELECT DISTINCT  ?o1 ?p1 ?o2
+            WHERE
+              { ?uri ?p0 ?o0 .
+                ?o0 ?p1 ?o1 .
+                ?o1 ?p2 ?o2
+                FILTER ( ( ?o1 != ?uri ) && ( ?o0 != ?uri ) )
+                FILTER NOT EXISTS {?uri ?p0x ?o1 .
+                  ?o1 ?p1x ?ox
+                }
+              }
+          }
+        }
+    }
+  }

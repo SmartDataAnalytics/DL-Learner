@@ -29,10 +29,7 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 import org.apache.jena.sparql.core.Var;
 import org.dllearner.utilities.QueryUtils;
 
@@ -209,10 +206,14 @@ public class BenchmarkDescriptionGeneratorHTML {
 			// 4. column: depth
 			int depth = org.dllearner.utilities.QueryUtils.getSubjectObjectJoinDepth(query, var) + 1;
 			html += "<td class='number'>" + depth + "</td>\n";
-			
+
+			List<String> result = SPARQLUtils.getResult(qef, query);
+
 			// 5. column: #instances
-			int nrOfInstances = SPARQLUtils.getResult(qef, query).size();
+			int nrOfInstances = result.size();
 			html += "<td class='number'>" + nrOfInstances + "</td>\n";
+
+			analyzeResult(result);
 			
 			html += "</tr>\n";
 			break;
@@ -229,6 +230,16 @@ public class BenchmarkDescriptionGeneratorHTML {
 		}
 	}
 
+	private void analyzeResult(List<String> resources) {
+		resources.forEach(r -> {
+			ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
+			template.setIri("uri", r);
+			ResultSet rs = qef.createQueryExecution(template.toString()).execSelect();
+			System.out.println(rs.next().getLiteral("cnt").getInt());
+
+		});
+	}
+
 	public static void main(String[] args) throws Exception{
 		if(args.length < 3) {
 			System.out.println("Usage: BenchmarkDescriptionGeneratorHTML <source> <target> <endpointURL> <defaultGraphURI>");
@@ -240,6 +251,8 @@ public class BenchmarkDescriptionGeneratorHTML {
 		String defaultGraph = null;
 		if(args.length == 4)
 			defaultGraph = args[3];
+		endpointURL = "http://dbpedia.org/sparql";
+		defaultGraph = "http://dbpedia.org";
 		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpointURL, defaultGraph);
 		qef = new QueryExecutionFactoryPaginated(qef);

@@ -35,9 +35,9 @@ public class Question {
     @JsonProperty("aggregation")
     private boolean aggregation;
     @JsonProperty("onlydbo")
-    private String onlydbo;
+    private boolean onlydbo;
     @JsonProperty("hybrid")
-    private String hybrid;
+    private boolean hybrid;
     @JsonProperty("question")
     private List<Question_> question = new ArrayList<Question_>();
     @JsonProperty("query")
@@ -113,7 +113,7 @@ public class Question {
      *     The onlydbo
      */
     @JsonProperty("onlydbo")
-    public String getOnlydbo() {
+    public boolean isOnlyDBO() {
         return onlydbo;
     }
 
@@ -123,7 +123,7 @@ public class Question {
      *     The onlydbo
      */
     @JsonProperty("onlydbo")
-    public void setOnlydbo(String onlydbo) {
+    public void setOnlydbo(boolean onlydbo) {
         this.onlydbo = onlydbo;
     }
 
@@ -133,7 +133,7 @@ public class Question {
      *     The hybrid
      */
     @JsonProperty("hybrid")
-    public String getHybrid() {
+    public boolean isHybrid() {
         return hybrid;
     }
 
@@ -143,7 +143,7 @@ public class Question {
      *     The hybrid
      */
     @JsonProperty("hybrid")
-    public void setHybrid(String hybrid) {
+    public void setHybrid(boolean hybrid) {
         this.hybrid = hybrid;
     }
 
