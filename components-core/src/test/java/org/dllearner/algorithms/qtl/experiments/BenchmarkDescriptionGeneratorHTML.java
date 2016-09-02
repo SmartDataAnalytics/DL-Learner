@@ -20,17 +20,28 @@ package org.dllearner.algorithms.qtl.experiments;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.collect.Lists;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.QueryUtils;
 
 /**
@@ -90,8 +101,8 @@ public class BenchmarkDescriptionGeneratorHTML {
 			"<style type=\"text/css\">\n" + 
 			"   pre {\n" + 
 			"	border: 0; \n" + 
-			"	background-color: transparent\n"
-			+ "font-family: monospace;" + 
+			"	background-color: transparent\n" +
+//			"   font-family: monospace;" +
 			"	}\n"
 			+ "table {\n" + 
 			"    border-collapse: separate;\n" + 
@@ -163,17 +174,21 @@ public class BenchmarkDescriptionGeneratorHTML {
 		html += "<body>\n";
 		html += "<table data-toggle=\"table\" data-striped='true'>\n";
 		// table header
-		html += "<thead><tr>"
-				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>"
-				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>"
-				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>"
+		html += "<thead><tr>\n"
+				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>\n"
+				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>\n"
+				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
 				+ "</tr></thead>\n";
 		
 		html += "<tbody>\n";
 		int id = 1;
 		for (Query query : queries) {
+			System.out.println(query);
 			query.getPrefixMapping().removeNsPrefix("owl");
 			query.getPrefixMapping().removeNsPrefix("rdfs");
 			query.getPrefixMapping().removeNsPrefix("foaf");
@@ -188,7 +203,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 			if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
 				query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
 			}
-			QueryUtils.exportAsGraph(query, new File("/tmp/test.png"));
+//			QueryUtils.exportAsGraph(query, new File("/tmp/test.png"));
 
 
 			query.setBaseURI("http://dbpedia.org/resource/");
@@ -213,10 +228,16 @@ public class BenchmarkDescriptionGeneratorHTML {
 			int nrOfInstances = result.size();
 			html += "<td class='number'>" + nrOfInstances + "</td>\n";
 
-			analyzeResult(result);
-			
+			// check CBD sizes
+			DescriptiveStatistics sizeStats = analyzeResult(result);
+
+			// show min., max. and avg. size
+			html += "<td class='number'>" + (int)sizeStats.getMin() + "</td>\n";
+			html += "<td class='number'>" + (int)sizeStats.getMax() + "</td>\n";
+			html += "<td class='number'>" + (int)sizeStats.getMean() + "</td>\n";
+
 			html += "</tr>\n";
-			break;
+//			break;
 		}
 		html += "</tbody>\n";
 		html += "</table>\n";
@@ -230,14 +251,18 @@ public class BenchmarkDescriptionGeneratorHTML {
 		}
 	}
 
-	private void analyzeResult(List<String> resources) {
+	private DescriptiveStatistics analyzeResult(List<String> resources) {
+		DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+		NumberFormat df = DecimalFormat.getPercentInstance();
+		AtomicInteger cnt = new AtomicInteger(1);
 		resources.forEach(r -> {
 			ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
 			template.setIri("uri", r);
+			System.out.println(df.format(cnt.getAndAdd(1)/(double)resources.size()));
 			ResultSet rs = qef.createQueryExecution(template.toString()).execSelect();
-			System.out.println(rs.next().getLiteral("cnt").getInt());
-
+			sizeStats.addValue(rs.next().getLiteral("cnt").getInt());
 		});
+		return sizeStats;
 	}
 
 	public static void main(String[] args) throws Exception{
@@ -251,12 +276,11 @@ public class BenchmarkDescriptionGeneratorHTML {
 		String defaultGraph = null;
 		if(args.length == 4)
 			defaultGraph = args[3];
-		endpointURL = "http://dbpedia.org/sparql";
-		defaultGraph = "http://dbpedia.org";
-		
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpointURL, defaultGraph);
-		qef = new QueryExecutionFactoryPaginated(qef);
-		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(qef);
+
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.create(endpointURL, defaultGraph == null ? Collections.EMPTY_LIST : Lists.newArrayList(defaultGraph)));
+		ks.setCacheDir("/tmp/qtl-eval");
+		ks.init();
+		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(ks.getQueryExecutionFactory());
 		generator.generateBenchmarkDescription(source, target);
 	}
 
