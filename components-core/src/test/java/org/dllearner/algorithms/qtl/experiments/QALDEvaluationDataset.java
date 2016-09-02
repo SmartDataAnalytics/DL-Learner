@@ -70,11 +70,19 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 
 	private static final String TRAIN_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-train-multilingual.json?raw=true";
 	private static final String TEST_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-test-multilingual.json?raw=true";
-
 	private static final String[] DATASET_URLS = {
 			TRAIN_URL,
 			TEST_URL
 	};
+
+	private static final String RESOURCES_DIR = "org/dllearner/algorithms/qtl/";
+	private static final String TRAIN_FILE = RESOURCES_DIR + "qald-6-train-multilingual.json";
+	private static final String TEST_FILE = RESOURCES_DIR + "qald-6-test-multilingual.json";
+	private static final String[] DATASET_FILES = {
+			TRAIN_FILE,
+			TEST_FILE
+	};
+
 
 	private static SparqlEndpoint endpoint;
 	static {
@@ -112,16 +120,23 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		}
 
 		final List<Question> questions = new ArrayList<>();
-		Arrays.stream(DATASET_URLS).forEach(ds -> {
-			try {
-				URL url = new URL(ds);
-				try (InputStream is = url.openStream()) {
-					questions.addAll(QALDJsonLoader.loadQuestions(is));
-				} catch (Exception e) {
-					log.error("Failed to load QALD dataset.", e);
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+//		Arrays.stream(DATASET_URLS).forEach(ds -> {
+//			try {
+//				URL url = new URL(ds);
+//				try (InputStream is = url.openStream()) {
+//					questions.addAll(QALDJsonLoader.loadQuestions(is));
+//				} catch (Exception e) {
+//					log.error("Failed to load QALD dataset.", e);
+//				}
+//			} catch (MalformedURLException e) {
+//				e.printStackTrace();
+//			}
+//		});
+		Arrays.stream(DATASET_FILES).forEach(file -> {
+			try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
+				questions.addAll(QALDJsonLoader.loadQuestions(is));
+			} catch (Exception e) {
+				log.error("Failed to load QALD dataset.", e);
 			}
 		});
 
@@ -203,7 +218,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 //		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
 //		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
 //
-		ds.analyze();
+//		ds.analyze();
 	}
 
 }

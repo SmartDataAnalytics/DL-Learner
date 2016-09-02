@@ -121,31 +121,31 @@ public abstract class EvaluationDataset {
 				SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(q);
 				sb.append("\t").append(queryType.name());
 
-//				// check CBD sizes and time
-//				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
-//				mon.reset();
-//				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
-//				result.stream()
-//						.map(r -> {
-//							System.out.println(r);
-//							mon.start();
-//							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
-//							mon.stop();
-//							return cbd;
-//						})
-//						.map(Model::size)
-//						.forEach(sizeStats::addValue);
-//
-//				// show min., max. and avg. size
-//				sb.append("\t").append(sizeStats.getMin());
-//				sb.append("\t").append(sizeStats.getMax());
-//				sb.append("\t").append(sizeStats.getMean());
-//
-//				// show min., max. and avg. CBD time
-//				sb.append("\t").append(mon.getTotal());
-//				sb.append("\t").append(mon.getMin());
-//				sb.append("\t").append(mon.getMax());
-//				sb.append("\t").append(mon.getAvg());
+				// check CBD sizes and time
+				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
+				mon.reset();
+				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+				result.stream()
+						.map(r -> {
+							System.out.println(r);
+							mon.start();
+							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
+							mon.stop();
+							return cbd;
+						})
+						.map(Model::size)
+						.forEach(sizeStats::addValue);
+
+				// show min., max. and avg. size
+				sb.append("\t").append(sizeStats.getMin());
+				sb.append("\t").append(sizeStats.getMax());
+				sb.append("\t").append(sizeStats.getMean());
+
+				// show min., max. and avg. CBD time
+				sb.append("\t").append(mon.getTotal());
+				sb.append("\t").append(mon.getMin());
+				sb.append("\t").append(mon.getMax());
+				sb.append("\t").append(mon.getAvg());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
