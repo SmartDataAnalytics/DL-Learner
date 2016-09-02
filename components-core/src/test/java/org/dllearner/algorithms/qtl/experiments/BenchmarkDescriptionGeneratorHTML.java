@@ -18,27 +18,36 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import com.mxgraph.layout.mxGraphLayout;
+import com.mxgraph.layout.orthogonal.mxOrthogonalLayout;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.png.mxPngEncodeParam;
+import com.mxgraph.util.png.mxPngImageEncoder;
+import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxStylesheet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -150,6 +159,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 			
 	
 	private QueryExecutionFactory qef;
+	private QueryUtils utils = new QueryUtils();
 
 	public BenchmarkDescriptionGeneratorHTML(QueryExecutionFactory qef) {
 		this.qef = qef;
@@ -187,8 +197,11 @@ public class BenchmarkDescriptionGeneratorHTML {
 		
 		html += "<tbody>\n";
 		int id = 1;
+		new File("/tmp/graphs/").mkdirs();
 		for (Query query : queries) {
 			System.out.println(query);
+//			if(!query.toString().contains("North_Sea"))continue;
+
 			query.getPrefixMapping().removeNsPrefix("owl");
 			query.getPrefixMapping().removeNsPrefix("rdfs");
 			query.getPrefixMapping().removeNsPrefix("foaf");
@@ -203,10 +216,16 @@ public class BenchmarkDescriptionGeneratorHTML {
 			if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
 				query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
 			}
-//			QueryUtils.exportAsGraph(query, new File("/tmp/test.png"));
+			if(query.toString().contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#") || query.toString().contains(" a ")) {
+				query.getPrefixMapping().setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+			}
+			if(query.toString().contains("http://dbpedia.org/resource/")) {
+				query.getPrefixMapping().setNsPrefix("", "http://dbpedia.org/resource/");
+			}
+			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
 
 
-			query.setBaseURI("http://dbpedia.org/resource/");
+//			query.setBaseURI("http://dbpedia.org/resource/");
 			html += "<tr>\n";
 			
 			// 1. column: ID
@@ -219,8 +238,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 			html += "<td>" + SPARQLUtils.getQueryType(query) + "</td>\n";
 			
 			// 4. column: depth
-			int depth = org.dllearner.utilities.QueryUtils.getSubjectObjectJoinDepth(query, var) + 1;
-			html += "<td class='number'>" + depth + "</td>\n";
+			html += "<td class='number'>" + getLongestPath(query) + "</td>\n";
 
 			List<String> result = SPARQLUtils.getResult(qef, query);
 
@@ -238,6 +256,8 @@ public class BenchmarkDescriptionGeneratorHTML {
 
 			html += "</tr>\n";
 //			break;
+
+
 		}
 		html += "</tbody>\n";
 		html += "</table>\n";
@@ -249,6 +269,38 @@ public class BenchmarkDescriptionGeneratorHTML {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private int getLongestPath(Query query) {
+		SPARQLUtils.QueryType type = SPARQLUtils.getQueryType(query);
+
+		int length = 0;
+		if(type == SPARQLUtils.QueryType.IN) {
+			Set<Triple> tmp = utils.extractIncomingTriplePatterns(query, query.getProjectVars().get(0));
+			while(!tmp.isEmpty()) {
+				length++;
+				tmp = tmp.stream()
+						.filter(tp -> tp.getSubject().isVariable())
+						.map(tp -> tp.getSubject())
+						.map(s -> utils.extractIncomingTriplePatterns(query, s))
+						.flatMap(tps -> tps.stream())
+						.collect(Collectors.toSet());
+			}
+		} else if(type == SPARQLUtils.QueryType.OUT) {
+			Set<Triple> tmp = utils.extractIncomingTriplePatterns(query, query.getProjectVars().get(0));
+			while(!tmp.isEmpty()) {
+				length++;
+				tmp = tmp.stream()
+						.filter(tp -> tp.getObject().isVariable())
+						.map(tp -> tp.getObject())
+						.map(o -> utils.extractOutgoingTriplePatterns(query, o))
+						.flatMap(tps -> tps.stream())
+						.collect(Collectors.toSet());
+			}
+		} else {
+			length = -1;
+		}
+		return length;
 	}
 
 	private DescriptiveStatistics analyzeResult(List<String> resources) {
@@ -263,6 +315,83 @@ public class BenchmarkDescriptionGeneratorHTML {
 			sizeStats.addValue(rs.next().getLiteral("cnt").getInt());
 		});
 		return sizeStats;
+	}
+
+	private void exportGraph(Query query, File file) {
+		mxGraph graph = new mxGraph();
+		Object parent = graph.getDefaultParent();
+		// Adds cells to the model in a single step
+		graph.getModel().beginUpdate();
+		try
+		{
+			Set<Triple> tps = utils.extractTriplePattern(query);
+
+			Map<Node, Object> mapping = new HashMap<>();
+			tps.forEach(tp -> {
+				System.out.println(tp);
+				Object val1 = mapping.putIfAbsent(tp.getSubject(), graph.insertVertex(parent, null, tp.getSubject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
+				Object val2 = mapping.putIfAbsent(tp.getObject(), graph.insertVertex(parent, null, tp.getObject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
+			});
+			tps.forEach(tp -> {
+				graph.insertEdge(parent, null, tp.getPredicate().toString(query.getPrefixMapping()), mapping.get(tp.getSubject()), mapping.get(tp.getObject()));
+			});
+
+		}
+		finally
+		{
+			// Updates the display
+			graph.getModel().endUpdate();
+		}
+		mxGraphComponent graphComponent = new mxGraphComponent(graph);
+
+		// positioning via jgraphx layouts
+//		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
+//		layout.setParallelEdgeSpacing(20d);
+//		layout.setIntraCellSpacing(40d);
+		mxGraphLayout layout = new mxOrthogonalLayout(graph);
+		layout.execute(graph.getDefaultParent());
+
+		Map<String, Object> edgeStyle = new HashMap<String, Object>();
+//edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ORTHOGONAL);
+		edgeStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CONNECTOR);
+		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
+		edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
+
+		Map<String, Object> nodeStyle = new HashMap<>();
+		nodeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_ELLIPSE);
+		nodeStyle.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_BOTTOM);
+
+		mxStylesheet stylesheet = new mxStylesheet();
+		stylesheet.setDefaultEdgeStyle(edgeStyle);
+		stylesheet.setDefaultVertexStyle(nodeStyle);
+
+		graph.setStylesheet(stylesheet);
+
+//		JFrame frame = new JFrame();
+//		frame.getContentPane().add(new mxGraphComponent(adapter));
+//		frame.pack();
+//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//		frame.setVisible(true);
+
+
+
+		BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+		mxPngEncodeParam param = mxPngEncodeParam.getDefaultEncodeParam(image);
+
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(file);
+			mxPngImageEncoder encoder = new mxPngImageEncoder(outputStream, param);
+			if (image != null) {
+				encoder.encode(image);
+			}
+			outputStream.close();
+//			ImageIO.write(image, "PNG", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws Exception{
