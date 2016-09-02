@@ -287,7 +287,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 						.collect(Collectors.toSet());
 			}
 		} else if(type == SPARQLUtils.QueryType.OUT) {
-			Set<Triple> tmp = utils.extractIncomingTriplePatterns(query, query.getProjectVars().get(0));
+			Set<Triple> tmp = utils.extractOutgoingTriplePatterns(query, query.getProjectVars().get(0));
 			while(!tmp.isEmpty()) {
 				length++;
 				tmp = tmp.stream()
