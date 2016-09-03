@@ -22,14 +22,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.layout.mxCircleLayout;
-import com.mxgraph.layout.mxOrganicLayout;
-import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.png.mxPngEncodeParam;
 import com.mxgraph.util.png.mxPngImageEncoder;
 import com.mxgraph.view.mxStylesheet;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.collections15.ListUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
@@ -38,19 +37,14 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.syntax.*;
 import org.apache.jena.sparql.util.VarUtils;
 import org.apache.jena.vocabulary.RDF;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.commons.collections15.ListUtils;
-import org.jgraph.JGraph;
+import org.dllearner.kb.sparql.CBDStructureTree;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -58,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class QueryUtils extends ElementVisitorBase {
 	
@@ -289,6 +284,47 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		}
 		
 		return maxDepth;
+	}
+
+	public static CBDStructureTree getOptimalCBDStructure(Query query) {
+		CBDStructureTree tree = new CBDStructureTree("root");
+
+		Var var = query.getProjectVars().get(0);
+
+		getOptimalCBDStructure(query, tree, var.asNode(), null, "");
+
+		return tree;
+	}
+
+	private static void getOptimalCBDStructure(Query query, CBDStructureTree structureTree, Node current, Node parent, String direction) {
+		QueryUtils utils = new QueryUtils();
+
+		// traverse the outgoing paths
+		Set<Triple> tmp = utils.extractOutgoingTriplePatterns(query, current)
+				.stream()
+				.filter(tp -> !direction.equals("in") || !tp.getObject().matches(parent))
+				.collect(Collectors.toSet());
+		if(!tmp.isEmpty()) {
+			CBDStructureTree outChild = structureTree.addOutNode();
+
+			tmp.stream()
+					.filter(tp -> tp.getObject().isVariable())
+					.map(tp -> tp.getObject())
+					.forEach(node -> getOptimalCBDStructure(query, outChild, node, current, "out"));
+		}
+		// traverse the incoming paths
+		tmp = utils.extractIncomingTriplePatterns(query, current)
+				.stream()
+				.filter(tp -> !direction.equals("out") || !tp.getSubject().matches(parent))
+				.collect(Collectors.toSet());
+		if(!tmp.isEmpty()) {
+			CBDStructureTree inChild = structureTree.addInNode();
+
+			tmp.stream()
+					.filter(tp -> tp.getSubject().isVariable())
+					.map(tp -> tp.getSubject())
+					.forEach(node -> getOptimalCBDStructure(query, inChild, node, current, "in"));
+		}
 	}
 	
 	/**
