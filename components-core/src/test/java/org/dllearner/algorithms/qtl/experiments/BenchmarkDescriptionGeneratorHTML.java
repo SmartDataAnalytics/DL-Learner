@@ -48,16 +48,24 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.TreeBasedConciseBoundedDescriptionGenerator;
+import org.dllearner.utilities.ProgressBar;
 import org.dllearner.utilities.QueryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Lorenz Buehmann
  *
  */
 public class BenchmarkDescriptionGeneratorHTML {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BenchmarkDescriptionGeneratorHTML.class);
 	
 	String style = 
 			"<head>\n" + 
@@ -159,10 +167,15 @@ public class BenchmarkDescriptionGeneratorHTML {
 			
 	
 	private QueryExecutionFactory qef;
+	private TreeBasedConciseBoundedDescriptionGenerator cbdGen;
 	private QueryUtils utils = new QueryUtils();
+
+	private boolean useConstruct = true;
+
 
 	public BenchmarkDescriptionGeneratorHTML(QueryExecutionFactory qef) {
 		this.qef = qef;
+		 cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
 	}
 
 	private List<Query> loadQueries(File queriesFile) throws IOException {
@@ -170,6 +183,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 		
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 			Query q = QueryFactory.create(queryString);
+			adjustPrefixes(q);
 			queries.add(q);
 		}
 		return queries;
@@ -199,33 +213,11 @@ public class BenchmarkDescriptionGeneratorHTML {
 		int id = 1;
 		new File("/tmp/graphs/").mkdirs();
 		for (Query query : queries) {
+//			if(!query.toString().contains("Kennedy"))continue;
 			System.out.println(query);
-//			if(!query.toString().contains("North_Sea"))continue;
 
-			query.getPrefixMapping().removeNsPrefix("owl");
-			query.getPrefixMapping().removeNsPrefix("rdfs");
-			query.getPrefixMapping().removeNsPrefix("foaf");
-			query.getPrefixMapping().removeNsPrefix("rdf");
+//			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
 
-			if(query.toString().contains("http://dbpedia.org/ontology/")) {
-				query.getPrefixMapping().setNsPrefix("dbo", "http://dbpedia.org/ontology/");
-			}
-			if(query.toString().contains("http://dbpedia.org/property/")) {
-				query.getPrefixMapping().setNsPrefix("dbp", "http://dbpedia.org/property/");
-			}
-			if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
-				query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
-			}
-			if(query.toString().contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#") || query.toString().contains(" a ")) {
-				query.getPrefixMapping().setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-			}
-			if(query.toString().contains("http://dbpedia.org/resource/")) {
-				query.getPrefixMapping().setNsPrefix("", "http://dbpedia.org/resource/");
-			}
-			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
-
-
-//			query.setBaseURI("http://dbpedia.org/resource/");
 			html += "<tr>\n";
 			
 			// 1. column: ID
@@ -246,18 +238,15 @@ public class BenchmarkDescriptionGeneratorHTML {
 			int nrOfInstances = result.size();
 			html += "<td class='number'>" + nrOfInstances + "</td>\n";
 
-			// check CBD sizes
-			DescriptiveStatistics sizeStats = analyzeResult(result);
+			// 6. - 8. column: CBD sizes (min, max, avg)
+			DescriptiveStatistics cbdSizeStats = determineCBDSizes(query, result);
+			html += "<td class='number'>" + (int)cbdSizeStats.getMin() + "</td>\n";
+			html += "<td class='number'>" + (int)cbdSizeStats.getMax() + "</td>\n";
+			html += "<td class='number'>" + (int)cbdSizeStats.getMean() + "</td>\n";
 
-			// show min., max. and avg. size
-			html += "<td class='number'>" + (int)sizeStats.getMin() + "</td>\n";
-			html += "<td class='number'>" + (int)sizeStats.getMax() + "</td>\n";
-			html += "<td class='number'>" + (int)sizeStats.getMean() + "</td>\n";
 
 			html += "</tr>\n";
 //			break;
-
-
 		}
 		html += "</tbody>\n";
 		html += "</table>\n";
@@ -268,6 +257,29 @@ public class BenchmarkDescriptionGeneratorHTML {
 			Files.write(html, htmlOutputFile, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void adjustPrefixes(Query query) {
+		query.getPrefixMapping().removeNsPrefix("owl");
+		query.getPrefixMapping().removeNsPrefix("rdfs");
+		query.getPrefixMapping().removeNsPrefix("foaf");
+		query.getPrefixMapping().removeNsPrefix("rdf");
+
+		if(query.toString().contains("http://dbpedia.org/ontology/")) {
+			query.getPrefixMapping().setNsPrefix("dbo", "http://dbpedia.org/ontology/");
+		}
+		if(query.toString().contains("http://dbpedia.org/property/")) {
+			query.getPrefixMapping().setNsPrefix("dbp", "http://dbpedia.org/property/");
+		}
+		if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
+			query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
+		}
+		if(query.toString().contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#") || query.toString().contains(" a ")) {
+			query.getPrefixMapping().setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		}
+		if(query.toString().contains("http://dbpedia.org/resource/")) {
+			query.getPrefixMapping().setNsPrefix("", "http://dbpedia.org/resource/");
 		}
 	}
 
@@ -303,18 +315,42 @@ public class BenchmarkDescriptionGeneratorHTML {
 		return length;
 	}
 
-	private DescriptiveStatistics analyzeResult(List<String> resources) {
-		DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+	private DescriptiveStatistics determineCBDSizes(Query query, List<String> resources) {
+		DescriptiveStatistics stats = new DescriptiveStatistics();
 		NumberFormat df = DecimalFormat.getPercentInstance();
-		AtomicInteger cnt = new AtomicInteger(1);
+		AtomicInteger idx = new AtomicInteger(1);
+
+		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
+
+		ProgressBar progressBar = new ProgressBar();
+
 		resources.forEach(r -> {
-			ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
-			template.setIri("uri", r);
-			System.out.println(df.format(cnt.getAndAdd(1)/(double)resources.size()));
-			ResultSet rs = qef.createQueryExecution(template.toString()).execSelect();
-			sizeStats.addValue(rs.next().getLiteral("cnt").getInt());
+			long cnt = -1;
+			if(useConstruct) {
+				Model cbd = null;
+				try {
+					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+					cnt = cbd.size();
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e.getCause());
+				}
+
+			} else {
+				ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
+				template.setIri("uri", r);
+				try(QueryExecution qe = qef.createQueryExecution(template.toString())) {
+					ResultSet rs = qe.execSelect();
+					cnt = rs.next().getLiteral("cnt").getInt();
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e.getCause());
+				}
+			}
+			stats.addValue(cnt);
+			progressBar.update(idx.getAndAdd(1), resources.size());
+
 		});
-		return sizeStats;
+
+		return stats;
 	}
 
 	private void exportGraph(Query query, File file) {
@@ -328,7 +364,6 @@ public class BenchmarkDescriptionGeneratorHTML {
 
 			Map<Node, Object> mapping = new HashMap<>();
 			tps.forEach(tp -> {
-				System.out.println(tp);
 				Object val1 = mapping.putIfAbsent(tp.getSubject(), graph.insertVertex(parent, null, tp.getSubject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
 				Object val2 = mapping.putIfAbsent(tp.getObject(), graph.insertVertex(parent, null, tp.getObject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
 			});

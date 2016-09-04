@@ -1003,7 +1003,7 @@ public class QALDExperiment {
 	                	
 	            		singleProjectionVariable = q.getProjectVars().size() == 1;
 	                	List<Var> projectVars = q.getProjectVars();
-	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIngoingTriplePatterns(q, projectVars.get(0).asNode());
+	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIncomingTriplePatterns(q, projectVars.get(0).asNode());
 	                	hasIngoingLinks = !ingoingTriplePatterns.isEmpty();
 	            	}
 //	            	if(!hasIngoingLinks){

@@ -118,15 +118,15 @@ import java.util.stream.Collectors;
  *
  */
 @SuppressWarnings("unchecked")
-public class QTLEvaluation {
-	
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(QTLEvaluation.class.getName());
-	
+public class PRConvergenceExperiment {
+
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(PRConvergenceExperiment.class.getName());
+
 	private static final ParameterizedSparqlString superClassesQueryTemplate2 = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 			+ "SELECT ?sup WHERE {"
 			+ "?sub ((rdfs:subClassOf|owl:equivalentClass)|^owl:equivalentClass)+ ?sup .}");
-	
+
 	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 			+ "SELECT ?sup WHERE {"
@@ -137,34 +137,34 @@ public class QTLEvaluation {
 	enum NoiseMethod {
 		RANDOM, SIMILAR, SIMILARITY_PARAMETERIZED
 	}
-	
+
 	enum Baseline {
 		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
 	}
 
 	private QueryExecutionFactory qef;
-	
+
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
 
 	private RandomDataGenerator rnd = new RandomDataGenerator();
 
 	private EvaluationDataset dataset;
-	
+
 	private Map<String, List<String>> cache = new HashMap<>();
-	
+
 	private int kbSize;
 
 	private boolean splitComplexQueries = true;
 
 	private PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
-	
+
 	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
 
 	// whether to write eval results to a database
 	private boolean write2DB;
-	
+
 	// DB related objects
 	private Connection conn;
 	private PreparedStatement psInsertOverallEval;
@@ -181,7 +181,7 @@ public class QTLEvaluation {
 
 	// whether to override existing results
 	private boolean override = false;
-	
+
 	// parameters
 	private int[] nrOfExamplesIntervals = {
 //					5,
@@ -194,7 +194,7 @@ public class QTLEvaluation {
 
 	private double[] noiseIntervals = {
 					0.0,
-					0.1,
+//					0.1,
 //					0.2,
 //					0.3,
 //					0.4,
@@ -207,7 +207,7 @@ public class QTLEvaluation {
 			};
 
 	private HeuristicType[] measures = {
-					HeuristicType.PRED_ACC, 
+					HeuristicType.PRED_ACC,
 //					HeuristicType.FMEASURE,
 //					HeuristicType.MATTHEWS_CORRELATION
 					};
@@ -226,10 +226,10 @@ public class QTLEvaluation {
 
 	Set<String> tokens = Sets.newHashSet(
 //			"The_Three_Dancers"
-			"Queen_Victoria"
+			"Vienna"
 	);
 
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
+	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
@@ -460,6 +460,10 @@ public class QTLEvaluation {
 			this.measures = measures;
 		}
 
+		nrOfExamplesIntervals = new int[]{2, 5, 10, 15};
+		boolean posOnly = true;
+		boolean noiseEnabled = false;
+
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
@@ -482,7 +486,7 @@ public class QTLEvaluation {
 		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
 		for (String query : queries) {//if(!(query.contains("Borough_(New_York_City)")))continue;
-			query2Examples.put(query, generateExamples(query));
+			query2Examples.put(query, generateExamples(query, posOnly, noiseEnabled));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
 
@@ -606,9 +610,7 @@ public class QTLEvaluation {
 												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".fp"), Charsets.UTF_8);
 
 									// compute baseline
-									logger.info("Computing baseline...");
 									RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
-									logger.info("Baseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
 									logger.info("Evaluating baseline...");
 									Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
 									logger.info("Baseline score:\n" + baselineScore);
@@ -870,9 +872,12 @@ public class QTLEvaluation {
 	 * 
 	 */
 	private RDFResourceTree applyBaseLine(ExamplesWrapper examples, Baseline baselineApproach) {
+		logger.info("Computing baseline...");
 		Collection<RDFResourceTree> posExamples = examples.posExamplesMapping.values();
 		Collection<RDFResourceTree> negExamples = examples.negExamplesMapping.values();
-		
+
+		RDFResourceTree solution = null;
+
 		switch (baselineApproach) {
 		case RANDOM:// 1.
 			String query = "SELECT ?cls WHERE {?cls a owl:Class .} ORDER BY RAND() LIMIT 1";
@@ -881,10 +886,10 @@ public class QTLEvaluation {
 			if(rs.hasNext()) {
 				QuerySolution qs = rs.next();
 				Resource cls = qs.getResource("cls");
-				RDFResourceTree solution = new RDFResourceTree();
+				solution = new RDFResourceTree();
 				solution.addChild(new RDFResourceTree(cls.asNode()), RDF.type.asNode());
-				return solution;
 			}
+			break;
 		case MOST_POPULAR_TYPE_IN_KB:// 2.
 			query = "SELECT ?cls WHERE {?cls a owl:Class . ?s a ?cls .} ORDER BY DESC(COUNT(?s)) LIMIT 1";
 			qe = qef.createQueryExecution(query);
@@ -892,10 +897,10 @@ public class QTLEvaluation {
 			if(rs.hasNext()) {
 				QuerySolution qs = rs.next();
 				Resource cls = qs.getResource("cls");
-				RDFResourceTree solution = new RDFResourceTree();
+				solution = new RDFResourceTree();
 				solution.addChild(new RDFResourceTree(cls.asNode()), RDF.type.asNode());
-				return solution;
 			}
+			break;
 		case MOST_FREQUENT_TYPE_IN_EXAMPLES:// 3.
 			Multiset<Node> types = HashMultiset.create();
 			for (RDFResourceTree ex : posExamples) {
@@ -910,11 +915,11 @@ public class QTLEvaluation {
 				    return entry.getCount();
 				  }
 				}).max(types.entrySet()).getElement();
-			RDFResourceTree solution = new RDFResourceTree();
+			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
-			return solution;
+			break;
 		case MOST_FREQUENT_EDGE_IN_EXAMPLES:// 4.
-			{Multiset<Pair<Node, Node>> pairs = HashMultiset.create();
+			Multiset<Pair<Node, Node>> pairs = HashMultiset.create();
 			for (RDFResourceTree ex : posExamples) {
 				SortedSet<Node> edges = ex.getEdges();
 				for (Node edge : edges) {
@@ -932,7 +937,7 @@ public class QTLEvaluation {
 				}).max(pairs.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
-			return solution;}
+			break;
 		case MOST_INFORMATIVE_EDGE_IN_EXAMPLES:
 			// get all p-o in pos examples
 			Multiset<Pair<Node, Node>> edgeObjectPairs = HashMultiset.create();
@@ -983,17 +988,17 @@ public class QTLEvaluation {
 					bestAccuracy = accuracy;
 				}
 			}
-			return solution;
+			break;
 		case LGG:
 			LGGGenerator lggGenerator = new LGGGeneratorSimple();
-			RDFResourceTree lgg = lggGenerator.getLGG(Lists.newArrayList(posExamples));
-			return lgg;
-		
+			solution = lggGenerator.getLGG(Lists.newArrayList(posExamples));
+			break;
 		default:
 			break;
-		
 		}
-		return null;
+		logger.info("Baseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(solution)));
+
+		return solution;
 	}
 	
 	private List<EvaluatedRDFResourceTree> generateSolutions(ExamplesWrapper examples, double noise, QueryTreeHeuristic heuristic) throws ComponentInitException {
@@ -1131,7 +1136,7 @@ public class QTLEvaluation {
 		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
 	
-	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception {
+	private ExampleCandidates generateExamples(String sparqlQuery, boolean posOnly, boolean noiseEnabled) throws Exception {
 		logger.info("Generating examples for query ..." + sparqlQuery);
 
 		// generate hash for the query
@@ -1157,30 +1162,35 @@ public class QTLEvaluation {
 		Collections.sort(posExamples);
 		logger.info("#Pos. examples: " + posExamples.size());
 
-		// get some neg. examples, i.e. resources not returned by the query
-		int maxNrOfNegExamples = 100;
-		List<String> negExamples;
-		file = new File(examplesDirectory, "examples-" + maxNrOfNegExamples + ".tn");
-		if(file.exists()) {
-			negExamples = Files.readLines(file, Charsets.UTF_8);
-		} else {
-			negExamples = new NegativeExampleSPARQLQueryGenerator(qef).getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
-			Files.write(Joiner.on("\n").join(negExamples), file, Charsets.UTF_8);
-		}
-		Collections.sort(negExamples);
-		logger.info("#Neg. examples: " + negExamples.size());
+		List<String> negExamples = new ArrayList<>();
+		List<String> noiseCandidates = new ArrayList<>();
+		if(!posOnly) {
+			// get some neg. examples, i.e. resources not returned by the query
+			int maxNrOfNegExamples = 100;
+			file = new File(examplesDirectory, "examples-" + maxNrOfNegExamples + ".tn");
+			if(file.exists()) {
+				negExamples = Files.readLines(file, Charsets.UTF_8);
+			} else {
+				negExamples = new NegativeExampleSPARQLQueryGenerator(qef).getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
+				Files.write(Joiner.on("\n").join(negExamples), file, Charsets.UTF_8);
+			}
+			Collections.sort(negExamples);
+			logger.info("#Neg. examples: " + negExamples.size());
 
-		// get some noise candidates, i.e. resources used as false pos. examples
-		int maxNrOfNoiseCandidates = 100;
-		List<String> noiseCandidates;
-		file = new File(examplesDirectory, "examples-" + maxNrOfNoiseCandidates + ".fp");
-		if(file.exists()) {
-			noiseCandidates = Files.readLines(file, Charsets.UTF_8);
-		} else {
-			noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
-			Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
+			if(noiseEnabled) {
+				// get some noise candidates, i.e. resources used as false pos. examples
+				int maxNrOfNoiseCandidates = 100;
+				file = new File(examplesDirectory, "examples-" + maxNrOfNoiseCandidates + ".fp");
+				if(file.exists()) {
+					noiseCandidates = Files.readLines(file, Charsets.UTF_8);
+				} else {
+					noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
+					Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
+				}
+				logger.info("#False pos. example candidates: " + noiseCandidates.size());
+			}
+
 		}
-		logger.info("#False pos. example candidates: " + noiseCandidates.size());
 
 		return new ExampleCandidates(posExamples, negExamples, noiseCandidates);
 	}
@@ -1913,11 +1923,11 @@ public class QTLEvaluation {
 	
 	public static void main(String[] args) throws Exception {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
-		Logger.getLogger(QTLEvaluation.class).addAppender(
+		Logger.getLogger(PRConvergenceExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(QTL2Disjunctive.class).setLevel(Level.INFO);
-		Logger.getLogger(QTLEvaluation.class).setLevel(Level.INFO);
+		Logger.getLogger(PRConvergenceExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
 		OptionParser parser = new OptionParser();
@@ -1992,7 +2002,7 @@ public class QTLEvaluation {
 
 //		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
 		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory);
-		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
+		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
