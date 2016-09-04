@@ -53,7 +53,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/**
+ * Utilities for SPARQL queries.
+ */
 public class QueryUtils extends ElementVisitorBase {
 	
 private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);	
@@ -333,33 +337,10 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public static Set<Var> getObjectVars(Query query){
-		final Set<Var> vars = new HashSet<>();
-		
-		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
-			@Override
-			public void visit(ElementTriplesBlock el) {
-				Iterator<Triple> triples = el.patternElts();
-	            while (triples.hasNext()) {
-	            	Triple triple = triples.next();
-	            	if(triple.getObject().isVariable()) {
-	            		vars.add(Var.alloc(triples.next().getObject()));
-	            	}
-	            }
-			}
-			
-			@Override
-			public void visit(ElementPathBlock el) {
-				Iterator<TriplePath> triples = el.patternElts();
-	            while (triples.hasNext()) {
-	            	TriplePath triple = triples.next();
-	            	if(triple.getObject().isVariable()) {
-	            		vars.add(Var.alloc(triples.next().getObject()));
-	            	}
-	            }
-			}
-		});
-		
-		return vars;
+		return getTriplePatterns(query).stream()
+				.filter(tp -> tp.getObject().isVariable())
+				.map(tp -> Var.alloc(tp.getObject()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -368,17 +349,10 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getObjectVariables(Query query){
-		Set<Var> vars = new HashSet<>();
-
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		
-		for (Triple tp : triplePatterns) {
-			if(tp.getObject().isVariable()){
-				vars.add(Var.alloc(tp.getObject()));
-			}
-		}
-
-		return vars;
+		return extractTriplePattern(query, false).stream()
+				.filter(tp -> tp.getObject().isVariable())
+				.map(tp -> Var.alloc(tp.getObject()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -389,27 +363,17 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractOutgoingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in subject position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.subjectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
+		return extractTriplePattern(query, false).stream()
+				.filter(t -> t.subjectMatches(node))
+				.collect(Collectors.toSet());
 	}
 
-	public Set<Triple> extractOutgoingTriplePatternsTrans(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<>();
-
-		Set<Triple> tmp = extractOutgoingTriplePatterns(query, node);
-		triplePatterns.addAll(tmp);
-        tmp.stream().filter(tp -> tp.getObject().isVariable()).forEach(tp -> {
-			triplePatterns.addAll(extractOutgoingTriplePatternsTrans(query, tp.getObject()));
-		});
-
-		return triplePatterns;
+	public Set<Triple> extractOutgoingTriplePatternsTrans(Query query, Node node) {
+		return Stream.concat(extractOutgoingTriplePatterns(query, node).stream(),
+							 extractOutgoingTriplePatterns(query, node).stream()
+									 .map(tp -> extractOutgoingTriplePatternsTrans(query, tp.getObject()))
+									 .flatMap(set -> set.stream()))
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -420,48 +384,19 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractIncomingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in subject position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.objectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
+		return extractTriplePattern(query, false).stream()
+				.filter(tp -> tp.objectMatches(node))
+				.collect(Collectors.toSet());
 	}
 
-	public Set<Triple> extractIncomingTriplePatternsTrans(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<>();
-
-		Set<Triple> tmp = extractIncomingTriplePatterns(query, node);
-		triplePatterns.addAll(tmp);
-		tmp.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
-			triplePatterns.addAll(extractIncomingTriplePatterns(query, tp.getSubject()));
-		});
-
-		return triplePatterns;
+	public Set<Triple> extractIncomingTriplePatternsTrans(Query query, Node node) {
+		return Stream.concat(extractIncomingTriplePatterns(query, node).stream(),
+							 extractIncomingTriplePatterns(query, node).stream()
+									 .map(tp -> extractIncomingTriplePatternsTrans(query, tp.getSubject()))
+									 .flatMap(set -> set.stream()))
+				.collect(Collectors.toSet());
 	}
-	
-	/**
-	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the ingoing
-	 * triple patterns.
-	 * @param query The SPARQL query.
-	 * @param node the node
-	 * @return
-	 */
-	public Set<Triple> extractIngoingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in object position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.objectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
-	}
-	
+
 	/**
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the ingoing and outgoing triple patterns.
@@ -471,7 +406,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public Set<Triple> extractTriplePatterns(Query query, Node node){
 		Set<Triple> triplePatterns = new HashSet<>();
-		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
+		triplePatterns.addAll(extractIncomingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		return triplePatterns;
 	}
@@ -508,7 +443,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public Set<Triple> extractNonOptionalTriplePatterns(Query query, Node node){
 		Set<Triple> triplePatterns = new HashSet<>();
-		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
+		triplePatterns.addAll(extractIncomingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		triplePatterns.removeAll(optionalTriplePattern);
 		return triplePatterns;
@@ -523,7 +458,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
 			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
+			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -576,7 +511,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
 			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
+			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
 		return var2TriplePatterns;
@@ -935,9 +870,10 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				"PREFIX  dbo: <http://dbpedia.org/ontology/>\n" + 
 				"SELECT  ?thumbnail\n" + 
 				"WHERE\n" + 
-				"  { dbp:total !dbo:thumbnail ?thumbnail }");
+				"  { dbp:total dbo:thumbnail ?thumbnail }");
 		QueryUtils queryUtils = new QueryUtils();
-		queryUtils.extractIngoingTriplePatterns(q, q.getProjectVars().get(0));
+		System.out.println(queryUtils.extractOutgoingTriplePatterns(q, q.getProjectVars().get(0)));
+		System.out.println(queryUtils.extractIncomingTriplePatterns(q, q.getProjectVars().get(0)));
 		
 		q = QueryFactory.create("SELECT DISTINCT  ?x0\n" + 
 				"WHERE\n" + 
@@ -972,5 +908,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				+ "?o1 <http://dbpedia.org/ontology/timeZone> <http://dbpedia.org/resource/Eastern_Time_Zone> .}";
 		
 		System.out.println(QueryUtils.getSubjectObjectJoinDepth(QueryFactory.create(query), Var.alloc("s")));
+
+		System.out.println(queryUtils.extractOutgoingTriplePatternsTrans(QueryFactory.create(query), Var.alloc("s")));
 	}
+
+
 }
