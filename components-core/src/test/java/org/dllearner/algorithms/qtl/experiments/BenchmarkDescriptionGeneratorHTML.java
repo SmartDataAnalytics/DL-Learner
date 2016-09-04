@@ -202,6 +202,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>\n"
 				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>\n"
 				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>\n"
+				+ "<th data-valign='middle'>Query Graph</th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
@@ -211,12 +212,15 @@ public class BenchmarkDescriptionGeneratorHTML {
 		
 		html += "<tbody>\n";
 		int id = 1;
-		new File("/tmp/graphs/").mkdirs();
+		File graphDir = new File("/tmp/graphs/");
+		graphDir.mkdirs();
 		for (Query query : queries) {
 //			if(!query.toString().contains("Kennedy"))continue;
 			System.out.println(query);
 
 //			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
+			File graphFile = new File(graphDir, "graph" + id + ".png");
+//			QueryToGraphExporter.exportYedGraph(query, graphFile);
 
 			html += "<tr>\n";
 			
@@ -228,6 +232,10 @@ public class BenchmarkDescriptionGeneratorHTML {
 
 			// 3. column: SPARQL query type
 			html += "<td>" + SPARQLUtils.getQueryType(query) + "</td>\n";
+
+			// query graph
+
+			html += "<td><img src=\"" + graphFile.getPath() + "\" alt=\"query graph\"></td>\n";
 			
 			// 4. column: depth
 			html += "<td class='number'>" + getLongestPath(query) + "</td>\n";
