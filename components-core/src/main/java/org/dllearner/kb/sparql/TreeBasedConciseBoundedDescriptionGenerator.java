@@ -75,17 +75,18 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
 	 */
-	public Model getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) {
+	public Model getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) throws Exception {
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
-		System.out.println(query);
-		QueryExecution qe = qef.createQueryExecution(query);
-		Model model = qe.execConstruct();
-		qe.close(); 
-		long end = System.currentTimeMillis();
-		logger.trace("Got {} triples in {} ms.", model.size(), (end - start));
-		return model;
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			Model model = qe.execConstruct();
+			long end = System.currentTimeMillis();
+			logger.trace("Got {} triples in {} ms.", model.size(), (end - start));
+			return model;
+		} catch(Exception e) {
+			throw new Exception("CBD retrieval failed when using query\n" + query, e);
+		}
 	}
 
 	@Override
@@ -109,8 +110,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	 * @return the SPARQL query
 	 */
 	private String generateQuery(String resource, CBDStructureTree structureTree){
-
-		
+		reset();
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
 		append(sb, structureTree, "<" + resource + ">");
@@ -118,7 +118,6 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		reset();
 		append(sb, structureTree, "<" + resource + ">");
 		sb.append("}");
-
 
 		return sb.toString();
 	}
