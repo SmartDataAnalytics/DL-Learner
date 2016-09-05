@@ -48,6 +48,11 @@ public class QueryRewriter {
 
         // mapping from var to outgoing triple patterns
         Set<Triple> outgoingTPs = queryUtils.extractOutgoingTriplePatternsTrans(query, targetVar.asNode());
+
+        if(outgoingTPs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         final Multimap<Var, Triple> var2OutgoingTPs = HashMultimap.create();
         for (Triple tp : outgoingTPs) {
             var2OutgoingTPs.put(Var.alloc(tp.getSubject()), tp);
@@ -121,8 +126,6 @@ public class QueryRewriter {
         }
 //		clusters = newClusters;
 
-
-
         List<Query> queries = new ArrayList<>();
 
         // 3. run query for each cluster
@@ -169,15 +172,20 @@ public class QueryRewriter {
         // the target variable
         Var targetVar = query.getProjectVars().get(0);
 
-        // mapping from var to outgoing triple patterns
+        // mapping from var to incoming triple patterns
         Set<Triple> incomingTPs = queryUtils.extractIncomingTriplePatternsTrans(query, targetVar.asNode());
+
+        if(incomingTPs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         final Multimap<Var, Triple> var2IncomingTPs = HashMultimap.create();
         for (Triple tp : incomingTPs) {
             var2IncomingTPs.put(Var.alloc(tp.getObject()), tp);
         }
 
         // 1. get the outgoing triple patterns of the target var that do not have
-        // outgoing triple patterns
+        // incoming triple patterns
         Set<Triple> fixedTriplePatterns = new HashSet<>();
         Set<Set<Triple>> clusters = new HashSet<>();
         var2IncomingTPs.get(targetVar).forEach(tp -> {
@@ -362,6 +370,61 @@ public class QueryRewriter {
                 "    ?x8       dbo:movement          ?s .\n" +
                 "    <Thomas_Furlong_(artist)>\n" +
                 "              dbo:influenced        ?x8\n" +
+                "  }";
+        query = "BASE    <http://dbpedia.org/resource/>\n" +
+                "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n" +
+                "PREFIX  schema: <http://schema.org/>\n" +
+                "PREFIX  odp-dul: <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#>\n" +
+                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n" +
+                "PREFIX  wiki: <http://wikidata.dbpedia.org/resource/>\n" +
+                "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n" +
+                "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                "PREFIX  dc:   <http://purl.org/dc/elements/1.1/>\n" +
+                "\n" +
+                "SELECT DISTINCT  ?s\n" +
+                "WHERE\n" +
+                "  { ?s   dbo:director          ?x0 .\n" +
+                "    ?x0  <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         rdf:type              dbo:Person .\n" +
+                "    ?s   dbo:distributor       ?x1 .\n" +
+                "    ?x1  dbo:type              <Division_(business)> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_film_studios> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Cinema_of_Southern_California> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Entertainment_companies_based_in_California> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Film_distributors_of_the_United_States> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Film_production_companies_of_the_United_States> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Hollywood_history_and_culture> ;\n" +
+                "         rdf:type              dbo:Company .\n" +
+                "    ?s   dbo:musicComposer     ?x2 .\n" +
+                "    ?x2  <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Male_film_score_composers> .\n" +
+                "    ?s   dbo:starring          ?x3 .\n" +
+                "    ?x3  <http://purl.org/dc/terms/subject>  <./Category:American_people_of_English_descent> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         rdf:type              dbo:Person .\n" +
+                "    ?s   dbo:starring          <Jesse_Eisenberg> ;\n" +
+                "         dbo:starring          ?x4 .\n" +
+                "    ?x4  dbo:occupation        <Actor> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:21st-century_American_male_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_male_film_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_male_television_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         rdf:type              dbo:Person .\n" +
+                "    ?s   dbo:starring          ?x5 .\n" +
+                "    ?x5  <http://purl.org/dc/terms/subject>  <./Category:20th-century_American_male_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:21st-century_American_male_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_male_film_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_male_television_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:American_male_voice_actors> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         <http://purl.org/dc/terms/subject>  <./Category:Primetime_Emmy_Award_winners> ;\n" +
+                "         rdf:type              dbo:Person .\n" +
+                "    ?s   dbo:writer            ?x6 .\n" +
+                "    ?x6  <http://purl.org/dc/terms/subject>  <./Category:Living_people> ;\n" +
+                "         rdf:type              dbo:Person .\n" +
+                "    ?s   <http://purl.org/dc/terms/subject>  <./Category:American_films> ;\n" +
+                "         rdf:type              dbo:Film\n" +
                 "  }";
         List<Query> queries = split(QueryFactory.create(query));
         queries.forEach(System.out::println);

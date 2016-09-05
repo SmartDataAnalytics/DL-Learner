@@ -225,7 +225,7 @@ public class PRConvergenceExperiment {
 	private long timeStamp;
 
 	Set<String> tokens = Sets.newHashSet(
-//			"The_Three_Dancers"
+			"DBpedia"
 //			"Vienna"
 	);
 
@@ -506,14 +506,9 @@ public class PRConvergenceExperiment {
 				.collect(Collectors.toSet());
 		logger.info("got {} queries with < {} pos. examples.", emptyQueries.size(), min);
 		queries.removeAll(lowNrOfExamplesQueries);
-		queries = queries.subList(0, 10);
+		queries = queries.subList(0, Math.min(40, queries.size()));
 
-		CBDStructureTree defaultCbdStructure = new CBDStructureTree();
-		defaultCbdStructure.addOutNode().addOutNode();
-		CBDStructureTree inNode = defaultCbdStructure.addInNode();
-		inNode.addOutNode();
-		inNode.addInNode();
-		System.out.println(defaultCbdStructure);
+		CBDStructureTree defaultCbdStructure = CBDStructureTree.fromTreeString("root:[out:[out:[]],in:[in:[],out:[]]]");
 
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
@@ -595,7 +590,7 @@ public class PRConvergenceExperiment {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
-							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
+							CBDStructureTree cbdStructure = defaultCbdStructure;//QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 							tp.submit(() -> {
 
@@ -1514,6 +1509,7 @@ public class PRConvergenceExperiment {
 			Query query = QueryFactory.create(sparqlQuery);
 			String projectVar = query.getProjectVars().get(0).getName();
 			ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
+			System.out.println(query);
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
