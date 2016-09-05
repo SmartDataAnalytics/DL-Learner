@@ -1194,4 +1194,31 @@ public class QueryTreeUtils {
 		}
 		return relatedEdges;
 	}
+
+	/**
+	 * Returns all paths to leaf nodes.
+	 *
+	 * @param tree the tree
+	 * @param <T>
+	 * @param <V>
+	 * @return all paths to leaf nodes
+	 */
+	public static <T, V extends GenericTree<T, V>> List<List<V>> getPathsToLeafs(GenericTree<T, V> tree) {
+		List<List<V>> paths = new ArrayList<>();
+		getPathsToLeafs(paths, new ArrayList<V>(), tree);
+		return paths;
+	}
+
+	private static <T, V extends GenericTree<T, V>> void getPathsToLeafs(List<List<V>> paths, List<V> path, GenericTree<T, V> tree) {
+		List<V> children = tree.getChildren();
+		for (V child : children) {
+			List<V> newPath = new ArrayList<V>(path);
+			newPath.add(child);
+			if(child.isLeaf()) {
+				paths.add(newPath);
+			} else {
+				getPathsToLeafs(paths, newPath, child);
+			}
+		}
+	}
 }
