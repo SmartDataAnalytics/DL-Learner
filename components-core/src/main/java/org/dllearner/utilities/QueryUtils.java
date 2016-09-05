@@ -330,7 +330,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 					.forEach(node -> getOptimalCBDStructure(query, inChild, node, current, "in"));
 		}
 	}
-	
+
 	/**
 	 * Returns all variables that occur as object in a triple pattern of the SPARQL query.
 	 * @param query the query

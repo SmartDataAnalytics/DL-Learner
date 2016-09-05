@@ -83,9 +83,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -212,6 +210,8 @@ public class PRConvergenceExperiment {
 //					HeuristicType.MATTHEWS_CORRELATION
 					};
 
+	private final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
+
 	private File cacheDirectory;
 
 	private boolean useEmailNotification = false;
@@ -226,7 +226,7 @@ public class PRConvergenceExperiment {
 
 	Set<String> tokens = Sets.newHashSet(
 //			"The_Three_Dancers"
-			"Vienna"
+//			"Vienna"
 	);
 
 	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
@@ -248,6 +248,7 @@ public class PRConvergenceExperiment {
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
 		cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(qef);
+		cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
 
 		rnd.reSeed(123);
 		
@@ -460,7 +461,7 @@ public class PRConvergenceExperiment {
 			this.measures = measures;
 		}
 
-		nrOfExamplesIntervals = new int[]{2, 5, 10, 15};
+		nrOfExamplesIntervals = new int[]{3, 5, 10, 15};
 		boolean posOnly = true;
 		boolean noiseEnabled = false;
 
@@ -484,7 +485,6 @@ public class PRConvergenceExperiment {
 
 		// generate examples for each query
 		logger.info("precomputing pos. and neg. examples...");
-		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
 		for (String query : queries) {//if(!(query.contains("Borough_(New_York_City)")))continue;
 			query2Examples.put(query, generateExamples(query, posOnly, noiseEnabled));
 		}
@@ -499,12 +499,21 @@ public class PRConvergenceExperiment {
 		queries.removeAll(emptyQueries);
 
 		// min. pos examples
+		int min = 3;
 		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
-				.filter(e -> e.getValue().correctPosExampleCandidates.size() < 2)
+				.filter(e -> e.getValue().correctPosExampleCandidates.size() < min)
 				.map(e -> e.getKey())
 				.collect(Collectors.toSet());
-		logger.info("got {} queries with < 2 pos. examples.", emptyQueries.size());
+		logger.info("got {} queries with < {} pos. examples.", emptyQueries.size(), min);
 		queries.removeAll(lowNrOfExamplesQueries);
+		queries = queries.subList(0, 10);
+
+		CBDStructureTree defaultCbdStructure = new CBDStructureTree();
+		defaultCbdStructure.addOutNode().addOutNode();
+		CBDStructureTree inNode = defaultCbdStructure.addInNode();
+		inNode.addOutNode();
+		inNode.addInNode();
+		System.out.println(defaultCbdStructure);
 
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
@@ -586,6 +595,7 @@ public class PRConvergenceExperiment {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
+							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 							tp.submit(() -> {
 
@@ -593,9 +603,7 @@ public class PRConvergenceExperiment {
 								logger.info("Processing query\n" + sparqlQuery);
 
 								try {
-									ExamplesWrapper examples = query2Examples
-																.get(sparqlQuery)
-																.get(nrOfExamples, nrOfExamples, noise);
+									ExamplesWrapper examples = getExamples(sparqlQuery, nrOfExamples, nrOfExamples, noise, cbdStructure);
 									logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
 									logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
 
@@ -837,6 +845,12 @@ public class PRConvergenceExperiment {
 		long t2 = System.currentTimeMillis();
 		long duration = t2 - t1;
 		logger.info("QTL evaluation finished in " + DurationFormatUtils.formatDurationHMS(duration) + "ms.");
+	}
+
+	private ExamplesWrapper getExamples(String query, int maxNrOfPosExamples, int maxNrOfNegExamples, double noise, CBDStructureTree cbdStructure) {
+		return query2Examples
+				.get(query)
+				.get(maxNrOfPosExamples, maxNrOfNegExamples, noise, cbdStructure);
 	}
 
 	private String render(EvaluatedDescription ed) {
@@ -1448,22 +1462,12 @@ public class PRConvergenceExperiment {
 		negExamples.addAll(negExamplesSet);
 		return new ArrayList<>(negExamples).subList(0, Math.min(negExamples.size(), limit));
 	}
-	
-	private List<RDFResourceTree> getQueryTrees(List<String> resources){
-		List<RDFResourceTree> trees = new ArrayList<>();
-		
-		for (String resource : resources) {
-			trees.add(getQueryTree(resource));
-		}
-		
-		return trees;
-	}
-	
-	private RDFResourceTree getQueryTree(String resource){
+
+	private RDFResourceTree getQueryTree(String resource, CBDStructureTree cbdStructure) throws Exception {
 		// get CBD
 		logger.info("loading data for {} ...", resource);
 		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
+		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
 		mon.stop();
 		logger.info("got {} triples in {}ms.", cbd.size(), mon.getLastValue());
 
@@ -2035,19 +2039,21 @@ public class PRConvergenceExperiment {
 
 	class ExampleCandidates {
 
+		String query;
 		List<String> correctPosExampleCandidates;
 		List<String> falsePosExampleCandidates;
 		List<String> correctNegExampleCandidates;
 
-		public ExampleCandidates(List<String> correctPosExampleCandidates,
-				List<String> correctNegExampleCandidates,
-				List<String> falsePosExampleCandidates) {
+		public ExampleCandidates(
+								 List<String> correctPosExampleCandidates,
+								 List<String> correctNegExampleCandidates,
+								 List<String> falsePosExampleCandidates) {
 			this.correctPosExampleCandidates = correctPosExampleCandidates;
 			this.falsePosExampleCandidates = falsePosExampleCandidates;
 			this.correctNegExampleCandidates = correctNegExampleCandidates;
 		}
 		
-		public ExamplesWrapper get(int nrOfPosExamples, int nrOfNegExamples, double noise) {
+		public ExamplesWrapper get(int nrOfPosExamples, int nrOfNegExamples, double noise, CBDStructureTree cbdStructure) {
 			Random rnd = new Random(123);
 			
 			// random sublist of the pos. examplessak
@@ -2113,11 +2119,19 @@ public class PRConvergenceExperiment {
 			// generate trees
 			SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping = new TreeMap<>();
 			for (String ex : ListUtils.union(correctPosExamples, falsePosExamples)) {
-				posExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
+				try {
+					posExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex, cbdStructure));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping = new TreeMap<>();
 			for (String ex : negExamples) {
-				negExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
+				try {
+					negExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex, cbdStructure));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			return new ExamplesWrapper(correctPosExamples, falsePosExamples, negExamples, posExamplesMapping, negExamplesMapping);
