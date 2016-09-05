@@ -118,9 +118,9 @@ import java.util.stream.Collectors;
  *
  */
 @SuppressWarnings("unchecked")
-public class PRConvergenceExperiment {
+public class QTLExperiment {
 
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(PRConvergenceExperiment.class.getName());
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(QTLExperiment.class.getName());
 
 	private static final ParameterizedSparqlString superClassesQueryTemplate2 = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
@@ -229,7 +229,7 @@ public class PRConvergenceExperiment {
 			"Queen_Victoria"
 	);
 
-	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
+	public QTLExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
