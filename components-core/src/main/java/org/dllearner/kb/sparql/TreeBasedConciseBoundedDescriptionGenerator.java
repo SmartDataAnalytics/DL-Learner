@@ -20,18 +20,23 @@ package org.dllearner.kb.sparql;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -47,9 +52,11 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 
 	private QueryExecutionFactory qef;
 
-	AtomicInteger inIndex = new AtomicInteger(0);
-	AtomicInteger outIndex = new AtomicInteger(0);
-	AtomicInteger predIndex = new AtomicInteger(0);
+	private AtomicInteger inIndex = new AtomicInteger(0);
+	private AtomicInteger outIndex = new AtomicInteger(0);
+	private AtomicInteger predIndex = new AtomicInteger(0);
+
+	private boolean useUnionOptimization = true;
 
 	public TreeBasedConciseBoundedDescriptionGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
@@ -63,6 +70,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
+//		System.out.println(query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
 			long end = System.currentTimeMillis();
@@ -94,21 +102,39 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	 * @return the SPARQL query
 	 */
 	private String generateQuery(String resource, CBDStructureTree structureTree){
+		List<List<CBDStructureTree>> pathsToLeafs = QueryTreeUtils.getPathsToLeafs(structureTree);
+		pathsToLeafs.forEach(System.out::println);
 		reset();
 		StringBuilder sb = new StringBuilder();
+		String rootToken = "<" + resource + ">";
+
 		sb.append("CONSTRUCT {\n");
-		append(sb, structureTree, "<" + resource + ">");
+		append(sb, structureTree, rootToken, true);
 		sb.append("} WHERE {\n");
 		reset();
-		append(sb, structureTree, "<" + resource + ">");
+		append(sb, structureTree, rootToken, false);
 		sb.append("}");
 
 		return sb.toString();
 	}
 
-	private void append(StringBuilder query, CBDStructureTree tree, String rootVar) {
-		List<CBDStructureTree> children = tree.getChildren();
-		for (CBDStructureTree child : children) {
+	private void append(StringBuilder query, CBDStructureTree tree, String rootVar, boolean isConstructTemplate) {
+		// use optimization if enabled
+		if(useUnionOptimization) {
+			appendUnionOptimized(query, tree, rootVar, isConstructTemplate);
+			return;
+		}
+
+		tree.getChildren().forEach(child -> {
+			// check if we have to put it into an OPTIONAL clause
+			boolean optionalNeeded = !isConstructTemplate && child.isOutNode() && !tree.isRoot() && !tree.isInNode();
+
+			// open OPTIONAL if necessary
+			if(optionalNeeded) {
+				query.append("OPTIONAL {");
+			}
+
+			// append triple pattern
 			String var;
 			if(child.isInNode()) {
 				var = "?x_in" + inIndex.getAndIncrement();
@@ -119,10 +145,65 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 				String predVar = "?p" + predIndex.getAndIncrement();
 				query.append(String.format("%s %s %s .\n", rootVar, predVar, var));
 			}
-			append(query, child, var);
-		}
+
+			// recursively process the child node
+			append(query, child, var, isConstructTemplate);
+
+			// close OPTIONAL if necessary
+			if(optionalNeeded) {
+				query.append("}");
+			}
+		});
 	}
 
+	private void appendUnionOptimized(StringBuilder query, CBDStructureTree tree, String rootVar, boolean isConstructTemplate) {
+		List<List<CBDStructureTree>> paths = QueryTreeUtils.getPathsToLeafs(tree);
+
+		List<String> tpClusters = paths.stream().map(path -> {
+			StringBuilder currentVar = new StringBuilder(rootVar);
+			StringBuilder tps = new StringBuilder();
+			AtomicBoolean lastOut = new AtomicBoolean(false);
+			StringBuilder appendix = new StringBuilder();
+			path.forEach(node -> {
+				boolean optionalNeeded = !isConstructTemplate && lastOut.get() && node.isOutNode();
+
+				// open OPTIONAL if necessary
+				if(optionalNeeded) {
+					tps.append("OPTIONAL {");
+					appendix.append("}");
+				}
+
+				// append triple pattern
+				String var;
+				if (node.isInNode()) {
+					var = "?x_in" + inIndex.getAndIncrement();
+					String predVar = "?p" + predIndex.getAndIncrement();
+					tps.append(String.format("%s %s %s .\n", var, predVar, currentVar.toString()));
+				} else {
+					var = "?x_out" + outIndex.getAndIncrement();
+					String predVar = "?p" + predIndex.getAndIncrement();
+					tps.append(String.format("%s %s %s .\n", currentVar.toString(), predVar, var));
+					lastOut.set(true);
+				}
+				currentVar.setLength(0);
+				currentVar.append(var);
+			});
+
+			// add closing braces for OPTIONAL if used
+			tps.append(appendix);
+
+			return tps.toString();
+		}).collect(Collectors.toList());
+
+		String queryPart = tpClusters.stream()
+				.map(s -> isConstructTemplate ? s : "{" + s + "}")
+				.collect(Collectors.joining(isConstructTemplate ? "" : " UNION "));
+		query.append(queryPart);
+	}
+
+	/**
+	 * Reset variables indices
+	 */
 	private void reset() {
 		inIndex = new AtomicInteger(0);
 		outIndex = new AtomicInteger(0);
@@ -133,7 +214,11 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	public void addPropertiesToIgnore(Set<String> properties) {
 
 	}
-	
+
+	public void setUseUnionOptimization(boolean useUnionOptimization) {
+		this.useUnionOptimization = useUnionOptimization;
+	}
+
 	public static void main(String[] args) throws Exception {
 		String query = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 				"PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n" +
@@ -155,6 +240,15 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 				"              dbo:author    ?person .\n" +
 				"    ?person   dbo:movement  ?uri\n" +
 				"  }";
+		query = "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n" +
+				"PREFIX  :     <http://dbpedia.org/resource/>\n" +
+				"\n" +
+				"SELECT DISTINCT  ?uri\n" +
+				"WHERE\n" +
+				"  { ?uri dbo:author    ?person . \n" +
+				"    ?person   dbo:movement  :Test\n ." +
+				"?in_0 dbo:starring    ?uri . ?in_1 dbo:starring    ?in_0 . ?in_0 dbo:book    ?o_0 ." +
+				"  }";
 		CBDStructureTree cbdTree = QueryUtils.getOptimalCBDStructure(QueryFactory.create(query));
 		System.out.println(cbdTree.toStringVerbose());
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
@@ -162,6 +256,10 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		ks.init();
 		TreeBasedConciseBoundedDescriptionGenerator cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(ks.getQueryExecutionFactory());
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Dan_Gauthier", cbdTree);
+		System.out.println(cbd.size());
+
+		cbdGen.setUseUnionOptimization(false);
+		cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Dan_Gauthier", cbdTree);
 		System.out.println(cbd.size());
 //		cbd.write(System.out, "NTRIPLES");
 	}
