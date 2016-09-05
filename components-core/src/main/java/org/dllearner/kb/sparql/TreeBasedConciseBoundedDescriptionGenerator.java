@@ -102,20 +102,24 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	 * @return the SPARQL query
 	 */
 	private String generateQuery(String resource, CBDStructureTree structureTree){
-		List<List<CBDStructureTree>> pathsToLeafs = QueryTreeUtils.getPathsToLeafs(structureTree);
-		pathsToLeafs.forEach(System.out::println);
 		reset();
-		StringBuilder sb = new StringBuilder();
+
+		// get paths to leaf nodes
+		List<List<CBDStructureTree>> pathsToLeafs = QueryTreeUtils.getPathsToLeafs(structureTree);
+
+		StringBuilder query = new StringBuilder();
 		String rootToken = "<" + resource + ">";
 
-		sb.append("CONSTRUCT {\n");
-		append(sb, structureTree, rootToken, true);
-		sb.append("} WHERE {\n");
+		query.append("CONSTRUCT {\n");
+		// the CONSTRUCT template
+		append(query, structureTree, rootToken, true);
+		query.append("} WHERE {\n");
 		reset();
-		append(sb, structureTree, rootToken, false);
-		sb.append("}");
+		// the query pattern
+		append(query, structureTree, rootToken, false);
+		query.append("}");
 
-		return sb.toString();
+		return query.toString();
 	}
 
 	private void append(StringBuilder query, CBDStructureTree tree, String rootVar, boolean isConstructTemplate) {

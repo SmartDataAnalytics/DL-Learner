@@ -586,15 +586,19 @@ public class QueryTreeUtils {
 						}
 						
 					} else {
+						OWLObjectPropertyExpression pe = df.getOWLObjectProperty(IRI.create(edge.getURI()));
+						if(edge instanceof NodeInv) {
+							pe = pe.getInverseProperty();
+						}
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
 							filler = buildOWLClassExpression(child, literalConversion);
 							classExpressions.add(df.getOWLObjectSomeValuesFrom(
-									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									pe,
 									filler));
 						} else if (child.isResourceNode()) {
 							classExpressions.add(df.getOWLObjectHasValue(
-									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									pe,
 									df.getOWLNamedIndividual(IRI.create(child.getData().getURI()))));
 						}
 					}
@@ -979,6 +983,20 @@ public class QueryTreeUtils {
 		// prune the rdf:type nodes
 		List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
 		if (typeChildren != null) {
+			// collapse rdfs:subClassOf paths
+			new ArrayList<>(typeChildren).forEach(child -> {
+				if(child.isVarNode()) {
+					new ArrayList<>(child.getChildren(RDFS.subClassOf.asNode())).forEach(childChild -> {
+						if(childChild.isResourceNode()) {
+							tree.addChild(childChild, RDF.type.asNode());
+							child.removeChild(childChild, RDFS.subClassOf.asNode());
+						}
+					});
+					tree.removeChild(child, RDF.type.asNode());
+				}
+			});
+			typeChildren = tree.getChildren(RDF.type.asNode());
+
 			List<RDFResourceTree> children2Remove = new ArrayList<>();
 
 			for (int i = 0; i < typeChildren.size(); i++) {
