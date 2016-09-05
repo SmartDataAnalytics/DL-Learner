@@ -40,16 +40,20 @@ import com.mxgraph.util.png.mxPngEncodeParam;
 import com.mxgraph.util.png.mxPngImageEncoder;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -198,7 +202,13 @@ public class BenchmarkDescriptionGeneratorHTML {
 		html += "<body>\n";
 		html += "<table data-toggle=\"table\" data-striped='true'>\n";
 		// table header
-		html += "<thead><tr>\n"
+		html += "<thead>\n"
+//				"<tr>\n"
+//				+ "<th colspan=\"6\">test</th>\n"
+//				+ "<th colspan=\"3\">|CBD|<sub>opt</sub></th>\n"
+//				+ "<th colspan=\"3\">|CBD|<sub>gen</sub></th>\n"
+//				+ "</tr>\n"
+				+ "<tr>\n"
 				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>\n"
 				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>\n"
 				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>\n"
@@ -208,49 +218,59 @@ public class BenchmarkDescriptionGeneratorHTML {
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
-				+ "</tr></thead>\n";
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
+				+ "</tr>\n" +
+				"</thead>\n";
 		
 		html += "<tbody>\n";
 		int id = 1;
 		File graphDir = new File("/tmp/graphs/");
 		graphDir.mkdirs();
 		for (Query query : queries) {
-//			if(!query.toString().contains("Kennedy"))continue;
+//			if(!query.toString().contains("Sopranos"))continue;
+//			if(id == 3) break;
 			System.out.println(query);
 
 //			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
 			File graphFile = new File(graphDir, "graph" + id + ".png");
-//			QueryToGraphExporter.exportYedGraph(query, graphFile);
+//			QueryToGraphExporter.exportYedGraph(query, graphFile, true);
 
 			html += "<tr>\n";
 			
-			// 1. column: ID
+			// column: ID
 			html += "<td>" + id++ + "</td>\n";
 			
-			// 2. column: SPARQL query
+			// column: SPARQL query
 			html += "<td><pre>" + query.toString().replace("<", "&lt;").replace(">", "&gt;") + "</pre></td>\n";
 
-			// 3. column: SPARQL query type
+			// column: SPARQL query type
 			html += "<td>" + SPARQLUtils.getQueryType(query) + "</td>\n";
 
 			// query graph
-
 			html += "<td><img src=\"" + graphFile.getPath() + "\" alt=\"query graph\"></td>\n";
 			
-			// 4. column: depth
+			// column: depth
 			html += "<td class='number'>" + getLongestPath(query) + "</td>\n";
 
 			List<String> result = SPARQLUtils.getResult(qef, query);
 
-			// 5. column: #instances
+			// column: #instances
 			int nrOfInstances = result.size();
 			html += "<td class='number'>" + nrOfInstances + "</td>\n";
 
-			// 6. - 8. column: CBD sizes (min, max, avg)
-			DescriptiveStatistics cbdSizeStats = determineCBDSizes(query, result);
-			html += "<td class='number'>" + (int)cbdSizeStats.getMin() + "</td>\n";
-			html += "<td class='number'>" + (int)cbdSizeStats.getMax() + "</td>\n";
-			html += "<td class='number'>" + (int)cbdSizeStats.getMean() + "</td>\n";
+			// columns: optimal CBD sizes (min, max, avg)
+			DescriptiveStatistics optimalCBDSizeStats = determineOptimalCBDSizes(query, result);
+			html += "<td class='number'>" + (int)optimalCBDSizeStats.getMin() + "</td>\n";
+			html += "<td class='number'>" + (int)optimalCBDSizeStats.getMax() + "</td>\n";
+			html += "<td class='number'>" + (int)optimalCBDSizeStats.getMean() + "</td>\n";
+
+			// columns: generic CBD sizes (min, max, avg)
+			DescriptiveStatistics genericCBDSizeStats = determineDefaultCBDSizes(query, result);
+			html += "<td class='number'>" + (int)genericCBDSizeStats.getMin() + "</td>\n";
+			html += "<td class='number'>" + (int)genericCBDSizeStats.getMax() + "</td>\n";
+			html += "<td class='number'>" + (int)genericCBDSizeStats.getMean() + "</td>\n";
 
 
 			html += "</tr>\n";
@@ -323,12 +343,62 @@ public class BenchmarkDescriptionGeneratorHTML {
 		return length;
 	}
 
-	private DescriptiveStatistics determineCBDSizes(Query query, List<String> resources) {
+	private CBDStructureTree getDefaultCBDStructureTree() {
+		CBDStructureTree defaultCbdStructure = new CBDStructureTree();
+		defaultCbdStructure.addOutNode().addOutNode();
+		CBDStructureTree inNode = defaultCbdStructure.addInNode();
+		inNode.addOutNode();
+		inNode.addInNode();
+		return defaultCbdStructure;
+	}
+
+	private DescriptiveStatistics determineDefaultCBDSizes(Query query, List<String> resources) {
+		DescriptiveStatistics stats = new DescriptiveStatistics();
+		NumberFormat df = DecimalFormat.getPercentInstance();
+		AtomicInteger idx = new AtomicInteger(1);
+
+		CBDStructureTree cbdStructure = getDefaultCBDStructureTree();
+		System.out.println(cbdStructure.toStringVerbose());
+
+		ProgressBar progressBar = new ProgressBar();
+
+		resources.forEach(r -> {
+			long cnt = -1;
+			if(useConstruct) {
+				Model cbd = null;
+				try {
+					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+					cnt = cbd.size();
+					System.out.println(r + ":" + cnt);
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e.getCause());
+				}
+
+			} else {
+				ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
+				template.setIri("uri", r);
+				try(QueryExecution qe = qef.createQueryExecution(template.toString())) {
+					ResultSet rs = qe.execSelect();
+					cnt = rs.next().getLiteral("cnt").getInt();
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e.getCause());
+				}
+			}
+			stats.addValue(cnt);
+			progressBar.update(idx.getAndAdd(1), resources.size());
+
+		});
+
+		return stats;
+	}
+
+	private DescriptiveStatistics determineOptimalCBDSizes(Query query, List<String> resources) {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		NumberFormat df = DecimalFormat.getPercentInstance();
 		AtomicInteger idx = new AtomicInteger(1);
 
 		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
+		System.out.println(cbdStructure.toStringVerbose());
 
 		ProgressBar progressBar = new ProgressBar();
 
@@ -449,7 +519,8 @@ public class BenchmarkDescriptionGeneratorHTML {
 		if(args.length == 4)
 			defaultGraph = args[3];
 
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.create(endpointURL, defaultGraph == null ? Collections.EMPTY_LIST : Lists.newArrayList(defaultGraph)));
+		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL, defaultGraph == null ? Collections.EMPTY_LIST : Lists.newArrayList(defaultGraph));
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.setCacheDir("/tmp/qtl-eval");
 		ks.init();
 		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(ks.getQueryExecutionFactory());
