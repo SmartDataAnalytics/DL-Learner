@@ -54,7 +54,6 @@ public class CBDStructureTree extends GenericTree<String, CBDStructureTree> {
 	}
 
 	private static int parseString(String input, CBDStructureTree parent) {
-		System.out.println(input);
 		StringBuilder currentString = new StringBuilder();
 		int index = 0;
 		CBDStructureTree child = null;

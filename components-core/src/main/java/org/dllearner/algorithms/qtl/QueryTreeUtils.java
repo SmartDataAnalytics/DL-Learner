@@ -712,11 +712,7 @@ public class QueryTreeUtils {
 	    		
 	    		Edge edge = new Edge(Long.valueOf(parentId + "0" + childId), edgeLabel);
 				graph.addEdge(parent, childVertex, edge);
-				System.err.println(edgeLabel);
-				System.err.println(graph.getEdgeSource(edge).getId());
-				System.err.println(graph.getEdgeTarget(edge).getId());
-				System.err.println(childId + "::" + childLabel);
-				
+
 				childId = buildGraph(childId, graph, child, context);
 			}
     	}
