@@ -640,11 +640,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		double specifityScore = 0d;
 		if(useSpecifity){
 			specifityScore = Math.log(nrOfSpecificNodes);
+		} else {
+			specifityScore = 1 / (double) nrOfSpecificNodes;
 		}
-		
+
 		//3.compute the total score
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
-		
+
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
 				new TreeSet<>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
 				coveredNegExamples, new TreeSet<>(Sets.difference(currentNegExamples, coveredNegExamples)),
