@@ -18,12 +18,10 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.Filter;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 import java.util.function.Predicate;
 
@@ -40,7 +38,7 @@ public interface QueryTreeFactory {
 	 * @param model the data
 	 * @return the query tree
 	 */
-	default public RDFResourceTree getQueryTree(String resource, Model model) {
+	default RDFResourceTree getQueryTree(String resource, Model model) {
 		return getQueryTree(model.getResource(resource), model);
 	}
 
@@ -51,7 +49,7 @@ public interface QueryTreeFactory {
 	 * @param model the data
 	 * @return the query tree
 	 */
-	default public RDFResourceTree getQueryTree(Resource resource, Model model) {
+	default RDFResourceTree getQueryTree(Resource resource, Model model) {
 		return getQueryTree(resource, model, maxDepth());
 	}
 
@@ -63,7 +61,7 @@ public interface QueryTreeFactory {
 	 * @param maxDepth the maximum depth of the query tree
 	 * @return the query tree
 	 */
-	default public RDFResourceTree getQueryTree(String resource, Model model, int maxDepth) {
+	default RDFResourceTree getQueryTree(String resource, Model model, int maxDepth) {
 		return getQueryTree(model.getResource(resource), model, maxDepth);
 	}
 
@@ -80,7 +78,7 @@ public interface QueryTreeFactory {
 	/**
 	 * @return the maximum depth of the generated query trees (Default: 3)
 	 */
-	default public int maxDepth() {
+	default int maxDepth() {
 		return 3;
 	}
 
@@ -94,6 +92,7 @@ public interface QueryTreeFactory {
 	 *
 	 * @param dropFilters the filters
 	 */
+	@SuppressWarnings("unchecked")
 	void addDropFilters(Predicate<Statement>... dropFilters);
 
 }

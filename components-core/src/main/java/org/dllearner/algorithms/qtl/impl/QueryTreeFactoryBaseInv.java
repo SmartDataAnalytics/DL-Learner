@@ -83,85 +83,101 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void addDropFilters(Predicate<Statement>... dropFilters) {
 		this.dropFilters.addAll(Arrays.asList(dropFilters));
 	}
 
 	private RDFResourceTree createTree(Resource resource, Model model, int maxDepth) {
 		nodeId = 0;
-		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<>();
 
+		// create mapping from resources to statements, both in subject an object position
+		Map<Resource, SortedSet<Statement>> resource2InStatements = new HashMap<>();
+		Map<Resource, SortedSet<Statement>> resource2OutStatements = new HashMap<>();
+		fillMaps(resource, model, resource2InStatements, resource2OutStatements, 0, maxDepth);
+
+		// start with an empty tree whose root is the resource
 		RDFResourceTree tree = new RDFResourceTree(resource.asNode());
 
-		boolean inverse = false;
-
-		fillMap(resource, model, resource2Statements, inverse);
-		fillTree(resource, tree, resource2Statements, 0, maxDepth, inverse);
-
-		inverse = true;
-		resource2Statements = new HashMap<>();
-		fillMap(resource, model, resource2Statements, inverse);
-		fillTree(resource, tree, resource2Statements, 0, maxDepth, inverse);
+		// fill the tree
+		fillTree(resource, null, tree, resource2InStatements, resource2OutStatements, 0, maxDepth);
 
 		return tree;
 	}
 
-	private void fillMap(Resource s, Model model, Map<Resource, SortedSet<Statement>> resource2Statements, boolean inverse) {
+	@SuppressWarnings("unchecked")
+	private void fillMaps(Resource s, Model model,
+						  Map<Resource, SortedSet<Statement>> resource2InStatements,
+						  Map<Resource, SortedSet<Statement>> resource2OutStatements,
+						  int currentDepth, int maxDepth) {
 
-		// get all statements
-		ExtendedIterator<Statement> it = inverse ?
-				model.listStatements(null, null, s) : // with object s
-				model.listStatements(s, null, (RDFNode) null);// with subject s
-
-		// filter statement if necessary
-		if (!dropFilters.isEmpty()) {
-			Iterator<Predicate<Statement>> iter = dropFilters.iterator();
-			Predicate<Statement> keepFilter = iter.next();
-			it = it.filterKeep(keepFilter);
-			while (iter.hasNext()) {it = it.filterKeep(iter.next());
-//				keepFilter = keepFilter.and(iter.next());
+		if(currentDepth < maxDepth) {
+			SortedSet<Statement> statements = resource2InStatements.get(s);
+			if (statements == null) {
+				statements = new TreeSet<>(comparator);
+				ExtendedIterator stmtIterator = model.listStatements(null, null, s);
+				for (Predicate<Statement> filter : dropFilters) {
+					stmtIterator = stmtIterator.filterKeep(filter);
+				}
+				statements.addAll(stmtIterator.toSet());
+				resource2InStatements.put(s, statements);
+				statements.forEach(st -> fillMaps(st.getSubject(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth));
 			}
-//			it = it.filterKeep(keepFilter);
-		}
 
-		SortedSet<Statement> statements = resource2Statements.get(s);
-		if (statements == null) {
-			statements = new TreeSet<>(comparator);
-			resource2Statements.put(s, statements);
-		}
-
-		while (it.hasNext()) {
-			Statement st = it.next();
-			statements.add(st);
-			RDFNode nextNode = inverse ? st.getSubject() : st.getObject();
-			if (nextNode.isResource() && !resource2Statements.containsKey(nextNode)) {
-				fillMap(nextNode.asResource(), model, resource2Statements, inverse);
+			statements = resource2OutStatements.get(s);
+			if (statements == null) {
+				statements = new TreeSet<>(comparator);
+				ExtendedIterator stmtIterator = model.listStatements(s, null, (RDFNode) null);
+				for (Predicate<Statement> filter : dropFilters) {
+					stmtIterator = stmtIterator.filterKeep(filter);
+				}
+				statements.addAll(stmtIterator.toSet());
+				resource2OutStatements.put(s, statements);
+				statements.forEach(st -> {
+					if (st.getObject().isResource()) {
+						fillMaps(st.getObject().asResource(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth);
+					}
+				});
 			}
 		}
 	}
 
-	private void fillTree(Resource root, RDFResourceTree tree, Map<Resource, SortedSet<Statement>> resource2Statements,
-			int currentDepth, int maxDepth, boolean inverse) {
-		currentDepth++;
-		if (resource2Statements.containsKey(root)) {
-			RDFResourceTree subTree;
+	private void fillTree(Resource root, Statement statementFromParent, RDFResourceTree tree,
+						  Map<Resource, SortedSet<Statement>> resource2InStatements,
+						  Map<Resource, SortedSet<Statement>> resource2OutStatements,
+						  int currentDepth, int maxDepth) {
+		if(resource2InStatements.containsKey(root)) {
+			resource2InStatements.get(root).stream().filter(st -> !st.equals(statementFromParent)).forEach(st -> {
+				Node predicate = new NodeInv(st.getPredicate().asNode());
 
-			for (Statement st : resource2Statements.get(root)) {
-				Node predicate = inverse ? new NodeInv(st.getPredicate().asNode()): st.getPredicate().asNode();
-
-				RDFNode object = inverse ? st.getSubject() : st.getObject();
+				RDFNode data = st.getSubject();
 
 				// create the subtree
-				subTree = new RDFResourceTree(nodeId++, object.asNode());
+				RDFResourceTree subTree = new RDFResourceTree(nodeId++, data.asNode());
+				tree.addChild(subTree, predicate);
+
+				// if current depth is < max depth recursive call
+				if (currentDepth + 1 < maxDepth) {
+					fillTree(data.asResource(), st, subTree, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth);
+				}
+			});
+		}
+		if(resource2OutStatements.containsKey(root)) {
+			resource2OutStatements.get(root).stream().filter(st -> !st.equals(statementFromParent)).forEach(st -> {
+				Node predicate = st.getPredicate().asNode();
+
+				RDFNode data = st.getObject();
+
+				// create the subtree
+				RDFResourceTree subTree = new RDFResourceTree(nodeId++, data.asNode());
 				tree.addChild(subTree, predicate);
 
 				// if root of subtree is not a literal and current depth is < max depth recursive call
-				if (!object.isLiteral() && currentDepth < maxDepth) {
-					fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth, inverse);
+				if (!data.isLiteral() && (currentDepth + 1  < maxDepth)) {
+					fillTree(data.asResource(), st, subTree, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth);
 				}
-			}
+			});
 		}
-		currentDepth--;
 	}
 
 	public static void main(String[] args) throws Exception {
