@@ -42,24 +42,18 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.apache.commons.math3.util.Pair;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.expr.ExprAggregator;
+import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.sparql.expr.aggregate.AggCountVarDistinct;
 import org.apache.jena.sparql.syntax.Element;
-import org.apache.jena.sparql.syntax.ElementFilter;
 import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementTriplesBlock;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -132,9 +126,7 @@ public class PRConvergenceExperiment {
 
 	private static final DecimalFormat dfPercent = new DecimalFormat("0.00%");
 
-	enum NoiseMethod {
-		RANDOM, SIMILAR, SIMILARITY_PARAMETERIZED
-	}
+
 
 	enum Baseline {
 		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
@@ -169,13 +161,14 @@ public class PRConvergenceExperiment {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 600;
 
 	private int minNrOfPositiveExamples = 9;
 
 	private int maxTreeDepth = 2;
 
-	private NoiseMethod noiseMethod = NoiseMethod.RANDOM;
+	private NoiseGenerator.NoiseMethod noiseMethod = NoiseGenerator.NoiseMethod.RANDOM;
+	private NoiseGenerator noiseGenerator;
 
 	// whether to override existing results
 	private boolean override = false;
@@ -225,12 +218,13 @@ public class PRConvergenceExperiment {
 	private long timeStamp;
 
 	Set<String> tokens = Sets.newHashSet(
-//			"Lou_Reed"
+//			"Natalie_Portman"
 //			"Pakistan"
+			"Lou_Reed"
 	);
 
 	Set<String> queriesToOmitTokens = Sets.newHashSet(
-			"Lou_Reed"
+//			"Lou_Reed"
 //			"Pakistan"
 	);
 
@@ -256,6 +250,7 @@ public class PRConvergenceExperiment {
 		cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
 
 		rnd.reSeed(123);
+		noiseGenerator = new NoiseGenerator(qef, rnd);
 		
 		kbSize = getKBSize();
 
@@ -419,38 +414,6 @@ public class PRConvergenceExperiment {
 		
 		return size;
 	}
-	
-	private List<String> getSparqlQueries(File queriesFile) throws IOException {
-		List<String> sparqlQueries = new ArrayList<>();
-		
-		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
-//			Query q = QueryFactory.create(queryString);
-//			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-//			if(subjectObjectJoinDepth < maxTreeDepth) {
-				sparqlQueries.add(queryString);
-//			}
-		}
-		return sparqlQueries;
-	}
-	
-	private List<String> filter(List<String> queries, int nrOfQueriesPerDepth) {
-		List<String> subset = new ArrayList<>();
-		for(int depth = 1; depth <= maxTreeDepth; depth++) {
-			List<String> tmp = new ArrayList<>();
-			Iterator<String> iterator = queries.iterator();
-			while(iterator.hasNext() && tmp.size() < nrOfQueriesPerDepth) {
-				String queryString = iterator.next();
-
-				Query q = QueryFactory.create(queryString);
-				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-				if(subjectObjectJoinDepth == (depth - 1)) {
-					tmp.add(queryString);
-				}
-			}
-			subset.addAll(tmp);
-		}
-		return subset;
-	}
 
 	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
@@ -466,7 +429,7 @@ public class PRConvergenceExperiment {
 			this.measures = measures;
 		}
 
-		nrOfExamplesIntervals = new int[]{3, 5, 10, 15, 20, 25, 30};
+		nrOfExamplesIntervals = new int[]{3, 5};//, 10, 20, 30, 40};
 		boolean posOnly = true;
 		boolean noiseEnabled = false;
 
@@ -607,13 +570,14 @@ public class PRConvergenceExperiment {
 							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 								tp.submit(() -> {
+									logger.info("CBD tree:" + cbdStructure.toStringVerbose());
 
 									logger.info("##############################################################");
 									logger.info("Processing query\n" + sparqlQuery);
 
 									// we repeat it n times with different permutations of examples
-									int nrOfPermutations = 5;
-									for(int perm = 0; perm < nrOfPermutations; perm++) {
+									int nrOfPermutations = 1;
+									for(int perm = 1; perm <= nrOfPermutations; perm++) {
 										logger.info("Run {}/{}", perm, nrOfPermutations);
 										try {
 											ExamplesWrapper examples = getExamples(sparqlQuery, nrOfExamples, nrOfExamples, noise, cbdStructure);
@@ -1211,7 +1175,8 @@ public class PRConvergenceExperiment {
 				if(file.exists()) {
 					noiseCandidates = Files.readLines(file, Charsets.UTF_8);
 				} else {
-					noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
+					noiseCandidates = noiseGenerator.generateNoiseCandidates(sparqlQuery, noiseMethod,
+							ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
 					Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
 				}
 				logger.info("#False pos. example candidates: " + noiseCandidates.size());
@@ -1236,245 +1201,7 @@ public class PRConvergenceExperiment {
 		return null;
 	}
 	
-	/**
-	 * Generates a list of candidates that are not contained in the given set of examples.
-	 * @param sparqlQuery
-	 * @param noiseMethod
-	 * @param examples
-	 * @param limit
-	 * @return list of candidate resource
-	 */
-	private List<String> generateNoiseCandidates(String sparqlQuery, NoiseMethod noiseMethod, List<String> examples, int limit) {
-		List<String> noiseCandidates = new ArrayList<>();
-		
-		switch(noiseMethod) {
-		case RANDOM: noiseCandidates = generateNoiseCandidatesRandom(examples, limit);
-			break;
-		case SIMILAR:noiseCandidates = generateNoiseCandidatesSimilar(examples, sparqlQuery, limit);
-			break;
-		case SIMILARITY_PARAMETERIZED://TODO implement configurable noise method
-			break;
-		default:noiseCandidates = generateNoiseCandidatesRandom(examples, limit);
-			break;
-		}
-		Collections.sort(noiseCandidates);
-		return noiseCandidates;
-	}
-	
-	private Pair<List<String>, List<String>> generateNoise(List<String> examples, String sparqlQuery, double noise, Random randomGen) {
-		// generate noise example candidates
-		List<String> noiseCandidateExamples = null;
-		switch(noiseMethod) {
-		case RANDOM: noiseCandidateExamples = generateNoiseCandidatesRandom(examples, 20);
-			break;
-		case SIMILAR:noiseCandidateExamples = generateNoiseCandidatesSimilar(examples, sparqlQuery, 20);
-			break;
-		case SIMILARITY_PARAMETERIZED://TODO implement configurable noise method
-			break;
-		default:noiseCandidateExamples = generateNoiseCandidatesRandom(examples, 20);
-			break;
-		}
-		Collections.shuffle(noiseCandidateExamples, randomGen);
 
-		// add some noise by using instances close to the positive examples
-		// we have two ways of adding noise t_n
-		// 1: iterate over pos. examples and if random number is below t_n, replace the example
-		// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
-		boolean probabilityBased = false;
-
-		if (probabilityBased) {
-			// 1. way
-			List<String> newExamples = new ArrayList<>();
-			for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
-				String posExample = iterator.next();
-				double rnd = randomGen.nextDouble();
-				if (rnd <= noise) {
-					// remove the positive example
-					iterator.remove();
-					// add one of the negative examples
-					String negExample = noiseCandidateExamples.remove(0);
-					newExamples.add(negExample);
-					logger.info("Replacing " + posExample + " by " + negExample);
-				}
-			}
-			examples.addAll(newExamples);
-			
-			return null;
-		} else {
-			// 2. way
-			// replace at least 1 but not more than half of the examples
-			int upperBound = examples.size() / 2;
-			int nrOfPosExamples2Replace = (int) Math.ceil(noise * examples.size());
-			nrOfPosExamples2Replace = Math.min(nrOfPosExamples2Replace, upperBound);
-			logger.info("replacing " + nrOfPosExamples2Replace + "/" + examples.size() + " examples to introduce noise");
-			List<String> posExamples2Replace = new ArrayList<>(examples.subList(0, nrOfPosExamples2Replace));
-			examples.removeAll(posExamples2Replace);
-			List<String> negExamples4Replacement = noiseCandidateExamples.subList(0, nrOfPosExamples2Replace);
-			List<String> noiseExamples = new ArrayList<>(negExamples4Replacement);
-			List<String> correctExamples = new ArrayList<>(examples);
-			examples.addAll(negExamples4Replacement);
-			logger.info("replaced " + posExamples2Replace + " by " + negExamples4Replacement);
-			
-			return new Pair<>(correctExamples, noiseExamples);
-		}
-	}
-	
-	/**
-	 * Randomly pick {@code n} instances from KB that do not belong to given set of instances {@code examples}.
-	 * @param examples the instances that must not be contained in the returned list
-	 * @param n the number of random instances
-	 * @return
-	 */
-	private List<String> generateNoiseCandidatesRandom(List<String> examples, int n) {
-		List<String> noiseExampleCandidates = new ArrayList<>();
-		
-		rnd.reSeed(123);
-		// get max number of instances in KB
-		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
-		QueryExecution qe = qef.createQueryExecution(query);
-		ResultSet rs = qe.execSelect();
-		int max = rs.next().get("cnt").asLiteral().getInt();
-		
-		// generate random instances
-		while(noiseExampleCandidates.size() < n) {
-			int offset = rnd.nextInt(0, max);
-			query = "SELECT ?s WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .} LIMIT 1 OFFSET " + offset;
-			
-			qe = qef.createQueryExecution(query);
-			rs = qe.execSelect();
-			
-			String resource = rs.next().getResource("s").getURI();
-			
-			if(!examples.contains(resource) && !resource.contains("__")) {
-				noiseExampleCandidates.add(resource);
-			}
-			qe.close();
-		}
-		
-		return noiseExampleCandidates;
-	}
-	
-	private List<String> generateNoiseCandidatesSimilar(List<String> examples, String queryString, int limit){
-		List<String> negExamples = new ArrayList<>();
-		
-		Query query = QueryFactory.create(queryString);
-		
-		QueryUtils queryUtils = new QueryUtils();
-		
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		Set<String> negExamplesSet = new TreeSet<>();
-		
-		if(triplePatterns.size() == 1){
-			Triple tp = triplePatterns.iterator().next();
-			Node var = NodeFactory.createVariable("var");
-			Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
-			
-			ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
-			triplesBlock.addTriple(newTp);
-			
-			ElementFilter filter = new ElementFilter(new E_NotEquals(new ExprVar(var), NodeValue.makeNode(tp.getObject())));
-			
-			ElementGroup eg = new ElementGroup();
-			eg.addElement(triplesBlock);
-			eg.addElementFilter(filter);
-			
-			Query q = new Query();
-			q.setQuerySelectType();
-			q.setDistinct(true);
-			q.addProjectVars(query.getProjectVars());
-			
-			q.setQueryPattern(eg);
-//			System.out.println(q);
-			
-			List<String> result = getResult(q.toString());
-			negExamplesSet.addAll(result);
-		} else {
-			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-			Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> {
-				return ComparisonChain.start()
-						.compare(o1.size(), o2.size())
-						.compare(o1.hashCode(), o2.hashCode())
-						.result();
-			});
-			powerSet.addAll(Sets.powerSet(triplePatterns));
-			
-			for (Set<Triple> set : powerSet) {
-				if(!set.isEmpty() && set.size() != triplePatterns.size()){
-					List<Triple> existingTriplePatterns = new ArrayList<>(triplePatterns);
-					List<Triple> newTriplePatterns = new ArrayList<>();
-					List<ElementFilter> filters = new ArrayList<>();
-					int cnt = 0;
-					for (Triple tp : set) {
-						if(tp.getObject().isURI() || tp.getObject().isLiteral()){
-							Node var = NodeFactory.createVariable("var" + cnt++);
-							Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
-							
-							existingTriplePatterns.remove(tp);
-							newTriplePatterns.add(newTp);
-							
-							ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
-							triplesBlock.addTriple(tp);
-							
-							ElementGroup eg = new ElementGroup();
-							eg.addElement(triplesBlock);
-							
-							ElementFilter filter = new ElementFilter(new E_NotExists(eg));
-							filters.add(filter);
-						}
-					}
-					Query q = new Query();
-					q.setQuerySelectType();
-					q.setDistinct(true);
-					q.addProjectVars(query.getProjectVars());
-					List<Triple> allTriplePatterns = new ArrayList<>(existingTriplePatterns);
-					allTriplePatterns.addAll(newTriplePatterns);
-					ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(allTriplePatterns));
-					ElementGroup eg = new ElementGroup();
-					eg.addElement(tripleBlock);
-					
-					for (ElementFilter filter : filters) {
-						eg.addElementFilter(filter);
-					}
-					
-					q.setQueryPattern(eg);
-//					System.out.println(q);
-					
-					List<String> result = getResult(q.toString());
-					result.removeAll(examples);
-					
-					if(result.isEmpty()){
-						q = new Query();
-						q.setQuerySelectType();
-						q.setDistinct(true);
-						q.addProjectVars(query.getProjectVars());
-						tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(existingTriplePatterns));
-						eg = new ElementGroup();
-						eg.addElement(tripleBlock);
-						
-						for (ElementFilter filter : filters) {
-							eg.addElementFilter(filter);
-						}
-						
-						q.setQueryPattern(eg);
-//						System.out.println(q);
-						
-						result = getResult(q.toString());
-						result.removeAll(examples);
-					}
-					negExamplesSet.addAll(result);
-				}
-			}
-		}
-		
-		negExamplesSet.removeAll(examples);
-		if(negExamples.isEmpty()){
-			logger.error("Found no negative example.");
-			System.exit(0);
-		}
-		negExamples.addAll(negExamplesSet);
-		return new ArrayList<>(negExamples).subList(0, Math.min(negExamples.size(), limit));
-	}
 
 	private RDFResourceTree getQueryTree(String resource, CBDStructureTree cbdStructure) throws Exception {
 		// get CBD
@@ -1561,110 +1288,6 @@ public class PRConvergenceExperiment {
 
 		return resources;
 	}
-	
-	private Set<Node> getSuperClasses(Node cls){
-		Set<Node> superClasses = new HashSet<>();
-		
-		superClassesQueryTemplate.setIri("sub", cls.getURI());
-		
-		String query = superClassesQueryTemplate.toString();
-		
-		try {
-			QueryExecution qe = qef.createQueryExecution(query);
-			ResultSet rs = qe.execSelect();
-			while(rs.hasNext()){
-				QuerySolution qs = rs.next();
-				superClasses.add(qs.getResource("sup").asNode());
-			}
-			qe.close();
-		} catch (Exception e) {
-			System.out.println(query);
-			throw e;
-		}
-		
-		return superClasses;
-	}
-	
-	private int getResultCount(String sparqlQuery){
-		sparqlQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " + sparqlQuery;
-		int cnt = 0;
-		QueryExecution qe = qef.createQueryExecution(sparqlQuery);
-		ResultSet rs = qe.execSelect();
-		while(rs.hasNext()){
-			rs.next();
-			cnt++;
-		}
-		qe.close();
-		return cnt;
-	}
-	
-	
-	private Query rewriteForVirtuosoFloatingPointIssue(Query query){
-		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> {
-			return ComparisonChain.start().
-			compare(o1.getSubject().toString(), o2.getSubject().toString()).
-			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-			compare(o1.getObject().toString(), o2.getObject().toString()).
-			result();
-		});
-		List<ElementFilter> filters = new ArrayList<>();
-		int cnt = 0;
-		// <s p o>
-		for (Iterator<Triple> iter = triplePatterns.iterator(); iter.hasNext();) {
-			Triple tp = iter.next();
-			if(tp.getObject().isLiteral()){
-				RDFDatatype dt = tp.getObject().getLiteralDatatype();
-				if(dt != null && (dt.equals(XSDDatatype.XSDfloat) || dt.equals(XSDDatatype.XSDdouble))){
-					iter.remove();
-					// new triple pattern <s p ?var> 
-					Node objectVar = NodeFactory.createVariable("floatVal" + cnt++);
-					newTriplePatterns.add(Triple.create(
-							tp.getSubject(), 
-							tp.getPredicate(),
-							objectVar)
-							);
-					// add FILTER(STR(?var) = lexicalform(o))
-					System.out.println(tp.getObject());
-					double epsilon = 0.00001;
-					Expr filterExpr = new E_LessThanOrEqual(
-							new E_NumAbs(
-									new E_Subtract(
-											new ExprVar(objectVar), 
-											NodeValue.makeNode(tp.getObject())
-											)
-									),
-									NodeValue.makeDouble(epsilon)
-							);
-					ElementFilter filter = new ElementFilter(filterExpr);
-					filters.add(filter);
-				}
-			}
-		}
-		
-		newTriplePatterns.addAll(triplePatterns);
-		
-		Query q = new Query();
-		q.addProjectVars(query.getProjectVars());
-		ElementTriplesBlock tripleBlock = new ElementTriplesBlock();
-		for (Triple triple : newTriplePatterns) {
-			tripleBlock.addTriple(triple);
-		}
-		ElementGroup eg = new ElementGroup();
-		eg.addElement(tripleBlock);
-		for (ElementFilter filter : filters) {
-			eg.addElementFilter(filter);
-		}
-		q.setQuerySelectType();
-		q.setDistinct(true);
-		q.setQueryPattern(eg);
-		
-		return q;
-	}
-	
-
 	
 	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
 		// apply some filters
@@ -1933,7 +1556,7 @@ public class PRConvergenceExperiment {
 		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of processed queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(2);
-		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
+		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(60);
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
 		OptionSpec<String> exampleIntervalsSpec = parser.accepts("examples", "comma-separated list of number of examples used in evaluation").withRequiredArg().ofType(String.class);
