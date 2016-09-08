@@ -27,6 +27,8 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -41,6 +43,9 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 	
 	protected Entailment entailment = Entailment.SIMPLE;
 	protected AbstractReasonerComponent reasoner;
+
+	private long timeoutMillis = -1;
+	private long startTime;
 	
 
 	private void reset() {
@@ -52,8 +57,10 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 	 */
 	@Override
 	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters) {
+		startTime = System.currentTimeMillis();
+
 		reset();
-		
+
 		// apply some pre-processing
 		preProcess(tree1);
 		preProcess(tree2);
@@ -62,7 +69,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 		mon.start();
 		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
-		
+
 		// apply some post-processing
 		postProcess(lgg);
 
@@ -71,11 +78,21 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 		return lgg;
 	}
 
+	public void setTimeout(long timeout, TimeUnit timeoutUnits) {
+		this.timeoutMillis = timeoutUnits.toMillis(timeout);
+	}
+
+	public long getTimeout() {
+		return timeoutMillis;
+	}
+
+	protected boolean isTimeout() {
+		return System.currentTimeMillis() - startTime >= timeoutMillis;
+	}
+
 	protected void postProcess(RDFResourceTree tree) {
 		// prune the tree according to the given entailment
 		QueryTreeUtils.prune(tree, reasoner, entailment);
-		
-		addNumbering(0, tree);
 	}
 	
 	protected void preProcess(RDFResourceTree tree) {

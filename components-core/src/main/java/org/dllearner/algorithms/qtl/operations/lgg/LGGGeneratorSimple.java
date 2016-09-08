@@ -60,6 +60,8 @@ import org.apache.jena.sparql.vocabulary.FOAF;
  *
  */
 public class LGGGeneratorSimple extends AbstractLGGGenerator {
+
+	private boolean complete = true;
 	
 	@Override
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
@@ -84,7 +86,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 		
 		// else create new empty tree
 		RDFResourceTree lgg = new RDFResourceTree();
-		
+
 		// 2. compare the edges
 		// we only have to compare edges contained in both trees
 		// outgoing edges
@@ -99,11 +101,23 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
 		for (Set<Node> edges : commonEdges) {
 			for (Node edge : edges) {
+				if(isTimeout()) {
+					complete = false;
+					break;
+				}
 				Set<RDFResourceTree> addedChildren = new HashSet<>();
 				// loop over children of first tree
 				for (RDFResourceTree child1 : tree1.getChildren(edge)) {
+					if(isTimeout()) {
+						complete = false;
+						break;
+					}
 					// loop over children of second tree
 					for (RDFResourceTree child2 : tree2.getChildren(edge)) {
+						if(isTimeout()) {
+							complete = false;
+							break;
+						}
 						// compute the LGG
 						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 
@@ -138,8 +152,11 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
 		return lgg;
 	}
-	
-	
+
+	public boolean isComplete() {
+		return complete;
+	}
+
 	public static void main(String[] args) throws Exception {
 		// knowledge base
 //		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
