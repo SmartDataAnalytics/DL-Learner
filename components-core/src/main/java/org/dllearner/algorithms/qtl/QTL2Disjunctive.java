@@ -457,8 +457,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				
 				// compute the LGG
 				MonitorFactory.getTimeMonitor("lgg").start();
+				((LGGGeneratorSimple)lggGenerator).setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
 				RDFResourceTree lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				MonitorFactory.getTimeMonitor("lgg").stop();
+				System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
 //				logger.info("LGG: "  + lgg.getStringRepresentation());
 				
 				// redundancy check
@@ -1035,7 +1037,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){
-		return maxTreeComputationTimeInSeconds > 0 && (System.currentTimeMillis() - partialSolutionStartTime) / 1000d >= maxTreeComputationTimeInSeconds;
+		return maxTreeComputationTimeInSeconds > 0 && getRemainingPartialSolutionTime() > 0;
+	}
+
+	private long getRemainingPartialSolutionTime() {
+		return (long) (maxTreeComputationTimeInSeconds  - (System.currentTimeMillis() - partialSolutionStartTime) / 1000);
 	}
 	
 	/**
