@@ -479,7 +479,7 @@ public class QTLEvaluation {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = dataset.getSparqlQueries();
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
@@ -714,7 +714,7 @@ public class QTLEvaluation {
 									}
 
 									String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
-											filter.filter(bestMatchingTree.getTree()),
+											filter.apply(bestMatchingTree.getTree()),
 											dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 
 									if(write2DB) {
@@ -1689,7 +1689,7 @@ public class QTLEvaluation {
 
 		//
 		PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
-		tree = filter.filter(tree);
+		tree = filter.apply(tree);
 
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 		logger.info("learned SPARQL query:\n{}", learnedSPARQLQuery);
@@ -2007,7 +2007,7 @@ public class QTLEvaluation {
 		}
 
 //		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
-		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory);
+		EvaluationDataset dataset = new QALD6DBpediaEvaluationDataset(benchmarkDirectory);
 		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 

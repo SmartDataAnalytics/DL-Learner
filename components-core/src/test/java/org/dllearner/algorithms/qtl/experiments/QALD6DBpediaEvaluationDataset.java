@@ -25,6 +25,7 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.WebContent;
@@ -38,9 +39,7 @@ import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
 import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.*;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
@@ -52,10 +51,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -64,9 +62,9 @@ import java.util.stream.Collectors;
  * @author Lorenz Buehmann
  *
  */
-public class QALDEvaluationDataset extends EvaluationDataset {
+public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 
-	private static final Logger log = LoggerFactory.getLogger(QALDEvaluationDataset.class);
+	private static final Logger log = LoggerFactory.getLogger(QALD6DBpediaEvaluationDataset.class);
 
 	private static final String TRAIN_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-train-multilingual.json?raw=true";
 	private static final String TEST_URL = "https://github.com/ag-sc/QALD/blob/master/6/data/qald-6-test-multilingual.json?raw=true";
@@ -78,10 +76,11 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 	private static final String RESOURCES_DIR = "org/dllearner/algorithms/qtl/";
 	private static final String TRAIN_FILE = RESOURCES_DIR + "qald-6-train-multilingual.json";
 	private static final String TEST_FILE = RESOURCES_DIR + "qald-6-test-multilingual.json";
-	private static final String[] DATASET_FILES = {
-			TRAIN_FILE,
-			TEST_FILE
-	};
+	private static final Map<String, String> DATASET_FILES = new LinkedHashMap<>();
+	static {
+		DATASET_FILES.put(TRAIN_FILE, "qald-6-train");
+		DATASET_FILES.put(TEST_FILE, "qald-6-test");
+	}
 
 
 	private static SparqlEndpoint endpoint;
@@ -95,11 +94,11 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		}
 	}
 
-	public QALDEvaluationDataset(File benchmarkDirectory) {
+	public QALD6DBpediaEvaluationDataset(File benchmarkDirectory) {
 		this(benchmarkDirectory, endpoint);
 	}
 
-	public QALDEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+	public QALD6DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		super("QALD");
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
@@ -119,66 +118,66 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 			e.printStackTrace();
 		}
 
-		final List<Question> questions = new ArrayList<>();
-//		Arrays.stream(DATASET_URLS).forEach(ds -> {
-//			try {
-//				URL url = new URL(ds);
-//				try (InputStream is = url.openStream()) {
-//					questions.addAll(QALDJsonLoader.loadQuestions(is));
-//				} catch (Exception e) {
-//					log.error("Failed to load QALD dataset.", e);
-//				}
-//			} catch (MalformedURLException e) {
-//				e.printStackTrace();
-//			}
-//		});
-		Arrays.stream(DATASET_FILES).forEach(file -> {
-			try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
-				questions.addAll(QALDJsonLoader.loadQuestions(is));
-			} catch (Exception e) {
-				log.error("Failed to load QALD dataset.", e);
-			}
+		sparqlQueries = new LinkedHashMap<>();
+
+		DATASET_FILES.entrySet().forEach(entry -> {
+			process(entry.getKey(), entry.getValue());
 		});
 
-
-		// prepend missing PREFIXES to SPARQL query
-		questions.stream().forEach(q -> q.getQuery().setSparql(
-				SPARQLQueryUtils.PREFIXES + " " + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + q.getQuery().getSparql()));
-
-		// filter the questions
-		List<Question> filteredQuestions = questions.stream()
-				.filter(QALDPredicates.hasNoAnswer().negate()) // no answer SPARQL query
-				.filter(q -> !q.isAggregation()) // no aggregation
-				.filter(q -> q.getAnswertype().equals("resource")) // only resources
-				.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
-				.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
-				.filter(QALDPredicates.isUnion().negate()) // skip UNION queries
-				.filter(QALDPredicates.hasFilter().negate()) // skip FILTER queries
-				.filter(QALDPredicates.isOnlyDBO())
-				.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
-				.filter(QALDPredicates.isObjectTarget().or(QALDPredicates.isSubjectTarget()))
-//				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("three_dancers"))
-				.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
-				.collect(Collectors.toList());
-		
-		// map to SPARQL queries
-		sparqlQueries = filteredQuestions.stream()
-				.map(q -> q.getQuery().getSparql())
-				.collect(Collectors.toList());
-		
 		reasoner = new SPARQLReasoner(ks);
 		try {
 			reasoner.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
-		
+
 		baseIRI = "http://dbpedia.org/resource/";
 		prefixMapping = PrefixMapping.Factory.create().withDefaultMappings(PrefixMapping.Standard);
 		prefixMapping.setNsPrefix("dbo", "http://dbpedia.org/ontology/");
 		prefixMapping.setNsPrefix("wiki", "http://wikidata.dbpedia.org/resource/");
 		prefixMapping.setNsPrefix("odp-dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#");
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
+
+		PredicateExistenceFilter predicateFilter = new PredicateExistenceFilterDBpedia(null);
+		setPredicateFilter(predicateFilter);
+
+	}
+
+	private void process(String datasetFile, String datasetPrefix) {
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream(datasetFile)) {
+			final List<Question> questions = QALDJsonLoader.loadQuestions(is);
+
+			// prepend missing PREFIXES to SPARQL query
+			questions.stream().forEach(q -> q.getQuery().setSparql(
+					SPARQLQueryUtils.PREFIXES + " " + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + q.getQuery().getSparql()));
+
+			// filter the questions
+			List<Question> filteredQuestions = questions.stream()
+					.filter(QALDPredicates.hasNoAnswer().negate()) // no answer SPARQL query
+					.filter(q -> !q.isAggregation()) // no aggregation
+					.filter(q -> q.getAnswertype().equals("resource")) // only resources
+					.filter(q -> !q.getAnswers().isEmpty()) // skip no answers
+					.filter(q -> !q.getAnswers().get(0).getAdditionalProperties().containsKey("boolean")) // only resources due to bug in QALD
+					.filter(QALDPredicates.isUnion().negate()) // skip UNION queries
+					.filter(QALDPredicates.hasFilter().negate()) // skip FILTER queries
+					.filter(QALDPredicates.isOnlyDBO())
+					.filter(q -> q.getAnswers().get(0).getResults().getBindings().size() >= 2) // result size >= 2
+					.filter(QALDPredicates.isObjectTarget().or(QALDPredicates.isSubjectTarget()))
+//				.filter(q -> q.getQuery().getSparql().toLowerCase().contains("three_dancers"))
+					.sorted((q1, q2) -> ComparisonChain.start().compare(q1.getId(), q2.getId()).compare(q1.getQuery().getSparql(), q2.getQuery().getSparql()).result()) // sort by ID
+					.collect(Collectors.toList());
+
+			// map to SPARQL queries
+			sparqlQueries.putAll(filteredQuestions.stream()
+					.collect(LinkedHashMap<String, Query>::new,
+							(m, q) -> m.put(datasetPrefix + "_" + String.valueOf(q.getId()), QueryFactory.create(q.getQuery().getSparql())),
+							(m, u) -> {}));
+
+		} catch (Exception e) {
+			log.error("Failed to load QALD dataset.", e);
+		}
+
+
 	}
 
 	@Override
@@ -211,7 +210,7 @@ public class QALDEvaluationDataset extends EvaluationDataset {
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://dbpedia.org");
 		endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QALDEvaluationDataset ds = new QALDEvaluationDataset(new File("/tmp/test"), endpoint);
+		QALD6DBpediaEvaluationDataset ds = new QALD6DBpediaEvaluationDataset(new File("/tmp/test"), endpoint);
 		ds.saveToDisk(new File("/tmp/qald2016-queries.txt"));
 //		List<String> queries = ds.getSparqlQueries();
 //		System.out.println(queries.size());

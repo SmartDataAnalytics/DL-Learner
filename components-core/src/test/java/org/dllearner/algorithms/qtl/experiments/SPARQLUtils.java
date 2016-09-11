@@ -51,10 +51,10 @@ public class SPARQLUtils {
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();
             return StreamSupport.stream(((Iterable<QuerySolution>)() -> rs).spliterator(), false)
-                    .map(qs -> qs.getResource(targetVar.getName()).getURI())
+                    .map(qs -> qs.get(targetVar.getName()).toString())
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new Exception("Failed to get result", e);
+            throw new Exception("Failed to get result for query\n" + query, e);
         }
     }
 

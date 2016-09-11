@@ -43,6 +43,14 @@ public class CBDStructureTree extends GenericTree<String, CBDStructureTree> {
 		return child;
 	}
 
+	public boolean hasOutChild() {
+		return children.stream().anyMatch(c -> c.isOutNode());
+	}
+
+	public boolean hasInChild() {
+		return children.stream().anyMatch(c -> c.isInNode());
+	}
+
 	public static CBDStructureTree fromTreeString(String treeString) {
 		treeString = treeString.replace(":", "");
 

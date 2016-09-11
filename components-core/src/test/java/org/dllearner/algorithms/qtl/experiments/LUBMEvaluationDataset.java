@@ -24,6 +24,7 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.WebContent;
@@ -44,8 +45,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -80,17 +82,22 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		}
 
 		// read SPARQL queries
-		sparqlQueries = new ArrayList<>();
+		sparqlQueries = new HashMap<>();
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(QUERIES_FILE));
 
 			String query = "";
+			String id = null;
 			for (String line : lines) {
 				if(line.startsWith("#")) {
 					query = "";
+					if(id == null) {
+						id = line.replace("#", "").trim();
+					}
 				} else if(line.isEmpty()) {
 					 if(!query.isEmpty()) {
-						 sparqlQueries.add(query);
+						 sparqlQueries.put(id, QueryFactory.create(query));
+						 id = null;
 						 query = "";
 					 }
 				} else {
@@ -131,10 +138,10 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://lubm.org");
 		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
-		List<String> queries = ds.getSparqlQueries();
+		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());
-		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
-		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
+		queries.entrySet().forEach(entry -> System.out.println(entry.getValue()));
+		queries.entrySet().forEach(entry -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(entry.getValue()).execSelect().hasNext()));
 
 
 	}

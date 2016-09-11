@@ -265,7 +265,7 @@ public class QALDExperiment {
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
-						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
+						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.apply(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
 
 						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
 
@@ -296,7 +296,7 @@ public class QALDExperiment {
 							logger.info("Position of best covering tree in list: " + position);
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
+							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.apply(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
 							precision = bestMatchingScore.getPrecision();
 							recall = bestMatchingScore.getRecall();
 							fmeasure = bestMatchingScore.getFmeasure();
@@ -373,7 +373,7 @@ public class QALDExperiment {
 			RDFResourceTree tree = evalutedTree.getTree();
 			
 			// apply predicate existence filter
-			tree = filter.filter(tree);
+			tree = filter.apply(tree);
 			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, kb.baseIRI, kb.prefixMapping);
 			System.out.println(learnedSPARQLQuery);
 			// compute score
