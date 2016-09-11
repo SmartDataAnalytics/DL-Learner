@@ -114,6 +114,10 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		generateBenchmarkDescription(dataset.sparqlQueries, htmlOutputFile);
 	}
 
+	public void setEndpoint(SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
 	@Override
 	protected void beginDocument(StringBuilder sb) {
 		sb.append("<html>\n");
