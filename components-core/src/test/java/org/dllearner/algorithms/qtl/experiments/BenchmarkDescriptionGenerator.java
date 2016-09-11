@@ -69,6 +69,7 @@ public abstract class BenchmarkDescriptionGenerator {
 	private boolean useConstruct = true;
 
 	protected Set<String> skipQueryTokens = new HashSet<>();
+	private CBDStructureTree defaultCbdStructure;
 
 	protected StringBuilder sb;
 
@@ -156,6 +157,10 @@ public abstract class BenchmarkDescriptionGenerator {
 		}
 	}
 
+	public void setSkipQueryTokens(Collection<String> skipQueryTokens) {
+		this.skipQueryTokens.addAll(skipQueryTokens);
+	}
+
 	private int getLongestPath(Query query) {
 		SPARQLUtils.QueryType type = SPARQLUtils.getQueryType(query);
 
@@ -188,12 +193,11 @@ public abstract class BenchmarkDescriptionGenerator {
 		return length;
 	}
 
+	public void setDefaultCbdStructure(CBDStructureTree defaultCbdStructure) {
+		this.defaultCbdStructure = defaultCbdStructure;
+	}
+
 	private CBDStructureTree getDefaultCBDStructureTree() {
-		CBDStructureTree defaultCbdStructure = new CBDStructureTree();
-		defaultCbdStructure.addOutNode().addOutNode();
-		CBDStructureTree inNode = defaultCbdStructure.addInNode();
-		inNode.addOutNode();
-		inNode.addInNode();
 		return defaultCbdStructure;
 	}
 
@@ -212,9 +216,9 @@ public abstract class BenchmarkDescriptionGenerator {
 			if(useConstruct) {
 				Model cbd = null;
 				try {
-//					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-//					cnt = cbd.size();
-//					System.out.println(r + ":" + cnt);
+					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+					cnt = cbd.size();
+					System.out.println(r + ":" + cnt);
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
