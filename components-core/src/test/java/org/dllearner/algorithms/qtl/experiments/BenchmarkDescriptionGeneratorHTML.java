@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.collect.Lists;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -30,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Lorenz Buehmann
@@ -204,8 +207,8 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		File outputFile = options.valueOf(outputFileSpec);
 
 		URL endpointURL = options.valueOf(endpointURLSpec);
-		String defaultGraph = options.has(defaultGraphSpec) ? options.valueOf(defaultGraphSpec) : null;
-		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraph);
+		List<String> defaultGraphs = options.has(defaultGraphSpec) ? Lists.newArrayList(options.valueOf(defaultGraphSpec)) : Collections.emptyList();
+		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraphs);
 
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.setUseCache(options.valueOf(useCacheSpec));
