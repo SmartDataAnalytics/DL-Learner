@@ -23,8 +23,15 @@ import com.google.common.collect.Lists;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
+import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -35,6 +42,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -212,12 +220,17 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		List<String> defaultGraphs = options.has(defaultGraphSpec) ? Lists.newArrayList(options.valueOf(defaultGraphSpec)) : Collections.emptyList();
 		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraphs);
 
-		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
-		ks.setUseCache(options.valueOf(useCacheSpec));
-		ks.setCacheDir(benchmarkDirectory.getPath());
-		ks.setQueryDelay(1000);
-		ks.setRetryCount(0);
-		ks.init();
+//		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+//		ks.setUseCache(options.valueOf(useCacheSpec));
+//		ks.setCacheDir(benchmarkDirectory.getPath());
+//		ks.setQueryDelay(1000);
+//		ks.setRetryCount(0);
+//		ks.init();
+
+		QueryExecutionFactory qef = buildQueryExecutionFactory(endpoint,
+				options.valueOf(useCacheSpec), benchmarkDirectory.getPath(), TimeUnit.DAYS.toMillis(30),
+				0, 500);
+
 
 		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
 
@@ -227,10 +240,42 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 				.trimResults()
 				.splitToList(options.valueOf(queriesToOmitTokensSpec));
 
-		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(ks.getQueryExecutionFactory());
+		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(qef);
 		generator.setDefaultCbdStructure(cbdStructureTree);
 		generator.setSkipQueryTokens(omitTokens);
 		generator.generateBenchmarkDescription(inputFile, outputFile, options.valueOf(queriesHaveIdSpec));
+	}
+
+	private static QueryExecutionFactory buildQueryExecutionFactory(SparqlEndpoint endpoint, boolean useCache,
+																	String cacheDir, long cacheTTL, int retryCount, long queryDelay) {
+		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
+				endpoint.getURL().toString(),
+				endpoint.getDefaultGraphURIs());
+		qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
+
+		if(useCache) {
+			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL);
+		} else {
+			// use in-memory cache
+			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+		}
+
+		// add some delay
+		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
+
+		if(retryCount > 0) {
+			qef = new QueryExecutionFactoryRetry(qef, retryCount, 1, TimeUnit.SECONDS);
+		}
+
+		// add pagination to avoid incomplete result sets due to limitations of the endpoint
+//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
+
+		return qef;
 	}
 
 }
