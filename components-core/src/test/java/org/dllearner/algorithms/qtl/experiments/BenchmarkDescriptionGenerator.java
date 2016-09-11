@@ -36,6 +36,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.dllearner.kb.sparql.CBDStructureTree;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.TreeBasedConciseBoundedDescriptionGenerator;
 import org.dllearner.utilities.ProgressBar;
 import org.dllearner.utilities.QueryUtils;
@@ -76,6 +77,14 @@ public abstract class BenchmarkDescriptionGenerator {
 	public BenchmarkDescriptionGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
 		 cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
+	}
+
+	public void setWorkaroundEnabled(boolean enabled) {
+		cbdGen.setWorkaround(enabled);
+	}
+
+	public void setEndpoint(SparqlEndpoint endpoint) {
+		cbdGen.setEndpoint(endpoint);
 	}
 
 	protected abstract void beginDocument(StringBuilder sb);

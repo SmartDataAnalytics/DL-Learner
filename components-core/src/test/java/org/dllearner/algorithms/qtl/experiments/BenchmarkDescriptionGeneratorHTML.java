@@ -102,7 +102,9 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 			"<script src=\"http://code.jquery.com/jquery-1.11.3.min.js\"></script>\n" + 
 			"<script src=\"https://rawgit.com/twbs/bootstrap/master/dist/js/bootstrap.min.js\"></script>\n" + 
 			"<script src=\"https://rawgit.com/wenzhixin/bootstrap-table/1.8.0/dist/bootstrap-table-all.min.js\"></script>\n" +
-			"</head>\n";  
+			"</head>\n";
+
+	SparqlEndpoint endpoint;
 			
 	public BenchmarkDescriptionGeneratorHTML(QueryExecutionFactory qef) {
 		super(qef);
@@ -208,6 +210,7 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		OptionSpec<Boolean> queriesHaveIdSpec = parser.accepts("id", "input file contains ID, SPARQL query").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
 		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withOptionalArg().ofType(String.class).required();
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
+		OptionSpec<Boolean> workaroundSpec = parser.accepts("workaround", "Virtuoso parse error workaround enabled").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 
 
 		OptionSet options = parser.parse(args);
@@ -229,7 +232,7 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 
 		QueryExecutionFactory qef = buildQueryExecutionFactory(endpoint,
 				options.valueOf(useCacheSpec), benchmarkDirectory.getPath(), TimeUnit.DAYS.toMillis(30),
-				0, 500);
+				0, 60);
 
 
 		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
@@ -243,6 +246,8 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(qef);
 		generator.setDefaultCbdStructure(cbdStructureTree);
 		generator.setSkipQueryTokens(omitTokens);
+		generator.setEndpoint(endpoint);
+		generator.setWorkaroundEnabled(options.valueOf(workaroundSpec));
 		generator.generateBenchmarkDescription(inputFile, outputFile, options.valueOf(queriesHaveIdSpec));
 	}
 
