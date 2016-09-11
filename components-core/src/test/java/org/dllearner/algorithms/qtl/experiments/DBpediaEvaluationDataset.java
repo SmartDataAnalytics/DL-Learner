@@ -22,6 +22,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -29,15 +30,14 @@ import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
 import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.*;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -61,7 +61,12 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		
 		// load SPARQL queries
 		try {
-			sparqlQueries = Files.readLines(queriesFile, Charsets.UTF_8);
+			sparqlQueries = new HashMap<>();
+			int i = 1;
+			List<String> lines = Files.readLines(queriesFile, Charsets.UTF_8);
+			for (String line : lines) {
+				sparqlQueries.put(String.valueOf(i++), QueryFactory.create(line));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,6 +84,9 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("wiki", "http://wikidata.dbpedia.org/resource/");
 		prefixMapping.setNsPrefix("odp-dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#");
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
+
+		PredicateExistenceFilter predicateFilter = new PredicateExistenceFilterDBpedia(null);
+		setPredicateFilter(predicateFilter);
 	}
 
 	@Override

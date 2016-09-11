@@ -46,9 +46,12 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 
 	private long timeoutMillis = -1;
 	private long startTime;
+
+	protected volatile boolean stop = false;
 	
 
 	private void reset() {
+		stop = false;
 		subCalls = 0;
 	}
 
@@ -71,34 +74,41 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 		mon.stop();
 
 		// apply some post-processing
-		postProcess(lgg);
+		lgg = postProcess(lgg);
 
 		addNumbering(0, lgg);
 		
 		return lgg;
 	}
 
+	@Override
 	public void setTimeout(long timeout, TimeUnit timeoutUnits) {
 		this.timeoutMillis = timeoutUnits.toMillis(timeout);
 	}
 
+	@Override
 	public long getTimeout() {
 		return timeoutMillis;
+	}
+
+	@Override
+	public void abort() {
+		stop = true;
 	}
 
 	protected boolean isTimeout() {
 		return System.currentTimeMillis() - startTime >= timeoutMillis;
 	}
 
-	protected void postProcess(RDFResourceTree tree) {
+	protected RDFResourceTree postProcess(RDFResourceTree tree) {
 		// prune the tree according to the given entailment
 		QueryTreeUtils.prune(tree, reasoner, entailment);
+		return tree;
 	}
 	
 	protected void preProcess(RDFResourceTree tree) {
 		
 	}
-	
 
 	private void addNumbering(int nodeId, RDFResourceTree tree){
 //		tree.setId(nodeId);

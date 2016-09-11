@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl.experiments;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -60,6 +61,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.qtl.QTL2Disjunctive;
+import org.dllearner.algorithms.qtl.QTL2DisjunctiveMultiThreaded;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -70,7 +72,6 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -147,7 +148,7 @@ public class PRConvergenceExperiment {
 
 	private boolean splitComplexQueries = true;
 
-	private PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+	private PredicateExistenceFilter filter;
 
 	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
@@ -217,10 +218,10 @@ public class PRConvergenceExperiment {
 
 	private long timeStamp;
 
-	Set<String> tokens = Sets.newHashSet(
+	Set<String> queriesToProcessTokens = Sets.newHashSet(
 //			"Natalie_Portman"
 //			"Pakistan"
-			"Lou_Reed"
+//			"Lou_Reed"
 	);
 
 	Set<String> queriesToOmitTokens = Sets.newHashSet(
@@ -261,6 +262,8 @@ public class PRConvergenceExperiment {
 		}
 
 		cacheDirectory = new File(benchmarkDirectory, "cache");
+
+		filter = dataset.getPredicateFilter();
 	}
 	
 	private void setupDatabase() {
@@ -321,11 +324,11 @@ public class PRConvergenceExperiment {
 			stmt.execute(sql);
 			
 			sql = "CREATE TABLE IF NOT EXISTS eval_detailed (" +
-					   "target_query VARCHAR(500)," +
+					   "target_query VARCHAR(700)," +
 					   "nrOfExamples TINYINT, " +
 	                   "noise DOUBLE, " + 
-	                   "heuristic VARCHAR(100), " +
-	                   "heuristic_measure VARCHAR(100), " +
+	                   "heuristic VARCHAR(50), " +
+	                   "heuristic_measure VARCHAR(50), " +
 	                   "query_top LONGTEXT, " +
 	                   "fscore_top DOUBLE, " + 
 	                   "precision_top DOUBLE, " + 
@@ -399,7 +402,7 @@ public class PRConvergenceExperiment {
 			}
 			psInsertDetailEval = conn.prepareStatement(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("Database setup failed", e);
 		}
 	}
 	
@@ -413,6 +416,14 @@ public class PRConvergenceExperiment {
 		qe.close();
 		
 		return size;
+	}
+
+	public void setQueriesToOmitTokens(Collection<String> queriesToOmitTokens) {
+		this.queriesToOmitTokens.addAll(queriesToOmitTokens);
+	}
+
+	public void setQueriesToOmitTokens(Set<String> queriesToOmitTokens) {
+		this.queriesToOmitTokens = queriesToOmitTokens;
 	}
 
 	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
@@ -429,18 +440,17 @@ public class PRConvergenceExperiment {
 			this.measures = measures;
 		}
 
-		nrOfExamplesIntervals = new int[]{3, 5};//, 10, 20, 30, 40};
 		boolean posOnly = true;
 		boolean noiseEnabled = false;
 
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = dataset.getSparqlQueries();
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
-		queries = queries.stream().filter(q -> tokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
+		queries = queries.stream().filter(q -> queriesToProcessTokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
 		queries = queries.stream().filter(q -> queriesToOmitTokens.stream().noneMatch(t -> q.contains(t))).collect(Collectors.toList());
 
 
@@ -567,6 +577,7 @@ public class PRConvergenceExperiment {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queriesToProcess) {
+//							CBDStructureTree cbdStructure = defaultCbdStructure;//QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 								tp.submit(() -> {
@@ -577,6 +588,9 @@ public class PRConvergenceExperiment {
 
 									// we repeat it n times with different permutations of examples
 									int nrOfPermutations = 1;
+									if(nrOfExamples >= query2Examples.get(sparqlQuery).correctPosExampleCandidates.size()){
+										nrOfPermutations = 1;
+									}
 									for(int perm = 1; perm <= nrOfPermutations; perm++) {
 										logger.info("Run {}/{}", perm, nrOfPermutations);
 										try {
@@ -611,7 +625,8 @@ public class PRConvergenceExperiment {
 											PosNegLPStandard lp = new PosNegLPStandard();
 											lp.setPositiveExamples(examples.posExamplesMapping.keySet());
 											lp.setNegativeExamples(examples.negExamplesMapping.keySet());
-											QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+//											QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+											QTL2DisjunctiveMultiThreaded la = new QTL2DisjunctiveMultiThreaded(lp, qef);
 											la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 											la.setReasoner(dataset.getReasoner());
 											la.setEntailment(Entailment.SIMPLE);
@@ -632,14 +647,14 @@ public class PRConvergenceExperiment {
 											// the best returned solution by QTL
 											EvaluatedRDFResourceTree bestSolution = solutions.get(0);
 											logger.info("Got " + solutions.size() + " query trees.");
-											logger.info("Best computed solution:\n" + render(bestSolution.asEvaluatedDescription()));
+//											logger.info("Best computed solution:\n" + render(bestSolution.asEvaluatedDescription()));
 											logger.info("QTL Score:\n" + bestSolution.getTreeScore());
 											long runtimeBestSolution = la.getTimeBestSolutionFound();
 											bestReturnedSolutionRuntimeStats.addValue(runtimeBestSolution);
 
 											// convert to SPARQL query
 											RDFResourceTree tree = bestSolution.getTree();
-											//						filter.filter(tree);
+											tree = filter.apply(tree);
 											String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
 													tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 
@@ -685,7 +700,7 @@ public class PRConvergenceExperiment {
 											}
 
 											String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
-													filter.filter(bestMatchingTree.getTree()),
+													filter.apply(bestMatchingTree.getTree()),
 													dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 
 											if (write2DB) {
@@ -1290,6 +1305,7 @@ public class PRConvergenceExperiment {
 	}
 	
 	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
+		logger.info("computing score...");
 		// apply some filters
 		QueryTreeUtils.removeVarLeafs(tree);
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
@@ -1297,9 +1313,8 @@ public class PRConvergenceExperiment {
 		// remove redundant rdf:type triples
 		QueryTreeUtils.keepMostSpecificTypes(tree, dataset.getReasoner());
 
-		//
-		PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
-		tree = filter.filter(tree);
+		// predicates removed which do not contribute if the simply exists without a concrete value
+		tree = filter.apply(tree);
 
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 		logger.info("learned SPARQL query:\n{}", learnedSPARQLQuery);
@@ -1547,6 +1562,7 @@ public class PRConvergenceExperiment {
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
 		OptionParser parser = new OptionParser();
+		OptionSpec<String> datasetSpec = parser.accepts("dataset", "possible datasets: QALD4-Bio or QALD6-DBpedia").withRequiredArg().ofType(String.class).required();
 		OptionSpec<File> benchmarkDirectorySpec = parser.accepts("d", "base directory").withRequiredArg().ofType(File.class).required();
 		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class);
 		OptionSpec<URL> endpointURLSpec = parser.accepts("e", "endpoint URL").withRequiredArg().ofType(URL.class).required();
@@ -1559,11 +1575,13 @@ public class PRConvergenceExperiment {
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(60);
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
-		OptionSpec<String> exampleIntervalsSpec = parser.accepts("examples", "comma-separated list of number of examples used in evaluation").withRequiredArg().ofType(String.class);
-		OptionSpec<String> noiseIntervalsSpec = parser.accepts("noise", "comma-separated list of noise values used in evaluation").withRequiredArg().ofType(String.class);
+		OptionSpec<String> exampleIntervalsSpec = parser.accepts("examples", "comma-separated list of number of examples used in evaluation").withRequiredArg().ofType(String.class).defaultsTo("");
+		OptionSpec<String> noiseIntervalsSpec = parser.accepts("noise", "comma-separated list of noise values used in evaluation").withRequiredArg().ofType(String.class).defaultsTo("");
 		OptionSpec<String> measuresSpec = parser.accepts("measures", "comma-separated list of measures used in evaluation").withRequiredArg().ofType(String.class);
 
-        OptionSet options = parser.parse(args);
+		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
+
+		OptionSet options = parser.parse(args);
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
 		boolean write2DB = options.valueOf(write2DBSpec);
@@ -1616,9 +1634,25 @@ public class PRConvergenceExperiment {
 			}
 		}
 
+		List<String> omitTokens = Splitter
+				.on(",")
+				.omitEmptyStrings()
+				.trimResults()
+				.splitToList(options.valueOf(queriesToOmitTokensSpec));
+
 //		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
-		EvaluationDataset dataset = new QALDEvaluationDataset(benchmarkDirectory);
+		String datasetName = options.valueOf(datasetSpec);
+		EvaluationDataset dataset;
+		if(datasetName.equals("QALD4-Bio")){
+			dataset = new QALD4BiomedicalChallengeEvaluationDataset(benchmarkDirectory);
+		} else if(datasetName.equals("QALD6-DBpedia")){
+			dataset = new QALD6DBpediaEvaluationDataset(benchmarkDirectory);
+		} else {
+			throw new RuntimeException("Unsupported dataset:" + datasetName);
+		}
+
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
+		eval.setQueriesToOmitTokens(omitTokens);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();

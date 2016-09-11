@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -309,8 +310,13 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				.filter(tp -> !direction.equals("in") || !tp.getObject().matches(parent))
 				.collect(Collectors.toSet());
 		if(!tmp.isEmpty()) {
-			CBDStructureTree outChild = structureTree.addOutNode();
-
+			List<CBDStructureTree> outChildren = structureTree.getChildren().stream().filter(t -> t.isOutNode()).collect(Collectors.toList());
+			CBDStructureTree outChild;
+			if(outChildren.isEmpty()) {
+				outChild = structureTree.addOutNode();
+			} else {
+				outChild = outChildren.get(0);
+			}
 			tmp.stream()
 					.filter(tp -> tp.getObject().isVariable())
 					.map(tp -> tp.getObject())
