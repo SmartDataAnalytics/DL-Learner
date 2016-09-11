@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -25,6 +26,7 @@ import joptsimple.OptionSpec;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,9 +98,6 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 			
 	public BenchmarkDescriptionGeneratorHTML(QueryExecutionFactory qef) {
 		super(qef);
-		System.out.println(style);
-		skipQueryTokens.add("1154");
-
 	}
 
 	public void generateBenchmarkDescription(EvaluationDataset dataset, File htmlOutputFile) throws Exception{
@@ -199,6 +198,9 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> useCacheSpec = parser.accepts("cache", "use cache").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
 		OptionSpec<Boolean> queriesHaveIdSpec = parser.accepts("id", "input file contains ID, SPARQL query").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
+		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withOptionalArg().ofType(String.class).required();
+		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
+
 
 		OptionSet options = parser.parse(args);
 
@@ -213,9 +215,21 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.setUseCache(options.valueOf(useCacheSpec));
 		ks.setCacheDir(benchmarkDirectory.getPath());
+		ks.setQueryDelay(1000);
+		ks.setRetryCount(0);
 		ks.init();
 
+		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
+
+		List<String> omitTokens = Splitter
+				.on(",")
+				.omitEmptyStrings()
+				.trimResults()
+				.splitToList(options.valueOf(queriesToOmitTokensSpec));
+
 		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(ks.getQueryExecutionFactory());
+		generator.setDefaultCbdStructure(cbdStructureTree);
+		generator.setSkipQueryTokens(omitTokens);
 		generator.generateBenchmarkDescription(inputFile, outputFile, options.valueOf(queriesHaveIdSpec));
 	}
 
