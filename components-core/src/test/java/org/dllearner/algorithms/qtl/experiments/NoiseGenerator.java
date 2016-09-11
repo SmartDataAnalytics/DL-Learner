@@ -83,15 +83,17 @@ public class NoiseGenerator {
         rnd.reSeed(123);
         // get max number of instances in KB
         String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
+
         QueryExecution qe = qef.createQueryExecution(query);
         ResultSet rs = qe.execSelect();
         int max = rs.next().get("cnt").asLiteral().getInt();
+        qe.close();
 
         // generate random instances
         while(noiseExampleCandidates.size() < n) {
             int offset = rnd.nextInt(0, max);
             query = "SELECT ?s WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .} LIMIT 1 OFFSET " + offset;
-
+            System.out.println(query);
             qe = qef.createQueryExecution(query);
             rs = qe.execSelect();
 
