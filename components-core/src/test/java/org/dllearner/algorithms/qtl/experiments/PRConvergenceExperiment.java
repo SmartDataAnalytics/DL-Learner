@@ -440,8 +440,8 @@ public class PRConvergenceExperiment {
 			this.measures = measures;
 		}
 
-		boolean posOnly = true;
-		boolean noiseEnabled = false;
+		boolean noiseEnabled = noiseIntervals.length > 1 || noiseInterval[0] > 0;
+		boolean posOnly = noiseEnabled ? false : true;
 
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
@@ -1580,6 +1580,8 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> measuresSpec = parser.accepts("measures", "comma-separated list of measures used in evaluation").withRequiredArg().ofType(String.class);
 
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
+		OptionSpec<String> queriesToProcessTokensSpec = parser.accepts("processTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
+
 
 		OptionSet options = parser.parse(args);
 
@@ -1639,6 +1641,11 @@ public class PRConvergenceExperiment {
 				.omitEmptyStrings()
 				.trimResults()
 				.splitToList(options.valueOf(queriesToOmitTokensSpec));
+		List<String> processTokens = Splitter
+				.on(",")
+				.omitEmptyStrings()
+				.trimResults()
+				.splitToList(options.valueOf(queriesToProcessTokensSpec));
 
 //		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
 		String datasetName = options.valueOf(datasetSpec);
@@ -1653,11 +1660,16 @@ public class PRConvergenceExperiment {
 
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.setQueriesToOmitTokens(omitTokens);
+		eval.setQueriesToProcessTokens(processTokens);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
-	
+
+	public void setQueriesToProcessTokens(Collection<String> queriesToProcessTokens) {
+		this.queriesToProcessTokens.addAll(queriesToProcessTokens);
+	}
+
 	class Score {
 		int tp, fp, tn, fn = 0;
 		double precision, recall, fmeasure, predAcc, mathCorr = 0;

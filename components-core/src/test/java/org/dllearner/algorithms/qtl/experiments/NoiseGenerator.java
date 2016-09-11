@@ -53,6 +53,7 @@ public class NoiseGenerator {
      * @return list of candidate resource
      */
     public List<String> generateNoiseCandidates(String sparqlQuery, NoiseMethod noiseMethod, List<String> examples, int limit) {
+        logger.info("generating noise...");
         List<String> noiseCandidates = new ArrayList<>();
 
         switch(noiseMethod) {
@@ -66,6 +67,7 @@ public class NoiseGenerator {
                 break;
         }
         Collections.sort(noiseCandidates);
+        logger.info("#noise candidates={}", noiseCandidates.size());
         return noiseCandidates;
     }
 
