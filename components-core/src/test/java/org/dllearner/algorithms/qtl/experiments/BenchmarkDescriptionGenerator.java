@@ -108,8 +108,8 @@ public abstract class BenchmarkDescriptionGenerator {
 		beginDocument(sb);
 		beginTable(sb);
 
-		File graphDir = new File("/tmp/graphs/");
-		graphDir.mkdirs();
+//		File graphDir = new File("/tmp/graphs/");
+//		graphDir.mkdirs();
 		for (Map.Entry<String, Query> entry : id2Query.entrySet()) {
 			String id = entry.getKey();
 			Query query = entry.getValue();
@@ -120,8 +120,8 @@ public abstract class BenchmarkDescriptionGenerator {
 			System.out.println(query);
 
 //			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
-			File graphFile = new File(graphDir, "graph" + id + ".png");
-			QueryToGraphExporter.exportYedGraph(query, graphFile, true);
+//			File graphFile = new File(graphDir, "graph" + id + ".png");
+//			QueryToGraphExporter.exportYedGraph(query, graphFile, true);
 
 			// column: SPARQL query type
 			SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(query);
