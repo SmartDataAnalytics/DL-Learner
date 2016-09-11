@@ -97,7 +97,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	private boolean useMinimizer = true;
 	
 	@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
-	protected int maxExecutionTimeInSeconds = 10;
+	protected long maxExecutionTimeInSeconds = 10;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -460,9 +460,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected boolean isTimeExpired() {
 		return getCurrentRuntimeInMilliSeconds() >= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds);
 	}
-	
+
 	protected long getCurrentRuntimeInMilliSeconds() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
+	}
+
+	protected long getRemainingRuntimeInMilliseconds() {
+		return Math.max(0, TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds) - getCurrentRuntimeInMilliSeconds());
 	}
 	
 	protected String getDurationAsString(long durationInMillis) {
@@ -616,12 +620,29 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		this.useMinimizer = useMinimizer;
 	}
 	
-	public int getMaxExecutionTimeInSeconds() {
+	public long getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
 
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+	/**
+	 * Set the max. execution time in seconds of the algorithm.  It's expected that the
+	 * algorithm will terminate gracefully.
+	 *
+	 * @param maxExecutionTimeInSeconds max. execution time in seconds
+	 */
+	public void setMaxExecutionTimeInSeconds(long maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	/**
+	 * Set the max. execution time of the algorithm. It's expected that the
+	 * algorithm will terminate gracefully.
+	 *
+	 * @param maxExecutionTime max. execution time
+	 * @param timeUnit the time unit
+	 */
+	public void setMaxExecutionTime(long maxExecutionTime, TimeUnit timeUnit) {
+		this.maxExecutionTimeInSeconds = timeUnit.toSeconds(maxExecutionTime);
 	}
 	
 	/**
