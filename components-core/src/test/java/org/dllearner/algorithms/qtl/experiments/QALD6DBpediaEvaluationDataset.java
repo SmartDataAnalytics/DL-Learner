@@ -207,11 +207,14 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 	}
 
 	public static void main(String[] args) throws Exception{
+		if(args.length == 0){
+			System.out.println("Usage: QALD6DBpediaEvaluationDataset <queriesTargetFile");
+			System.exit(0);
+		}
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://dbpedia.org");
-		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		QALD6DBpediaEvaluationDataset ds = new QALD6DBpediaEvaluationDataset(new File("/tmp/test"), endpoint);
-		ds.saveToDisk(new File("/tmp/qald2016-queries.txt"));
+		ds.saveToDisk(new File(args[0]));
 //		List<String> queries = ds.getSparqlQueries();
 //		System.out.println(queries.size());
 //		queries.forEach(q -> System.out.println(QueryFactory.create(q)));

@@ -226,8 +226,12 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 	}
 
 	public static void main(String[] args) throws Exception{
+		if(args.length == 0){
+			System.out.println("Usage: QALD4BiomedicalChallengeEvaluationDataset <queriesTargetFile");
+			System.exit(0);
+		}
 		QALD4BiomedicalChallengeEvaluationDataset ds = new QALD4BiomedicalChallengeEvaluationDataset(new File("/tmp/test"), endpoint);
-		ds.saveToDisk(new File("/tmp/qald4_bio_queries.txt"));
+		ds.saveToDisk(new File(args[0]));
 //		List<String> queries = ds.getSparqlQueries();
 //		System.out.println(queries.size());
 //		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
