@@ -75,23 +75,23 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		this.qef = qef;
 	}
 
-	public TreeBasedConciseBoundedDescriptionGenerator(SparqlEndpoint endpoint) {
-		this.endpoint = endpoint;
-	}
-
 	public void setWorkaround(boolean workaround) {
 		this.workaround = workaround;
 	}
 
+	public void setEndpoint(SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
 	/* (non-Javadoc)
-         * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
-         */
+             * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+             */
 	public Model getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) throws Exception {
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
 //		System.out.println(query);
-		
+
 		if(workaround) {
 			return constructWithReplacement(endpoint, query);
 		}
