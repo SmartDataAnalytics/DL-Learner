@@ -18,17 +18,15 @@
  */
 package org.dllearner.algorithms.qtl.util.filters;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-
-import com.google.common.collect.Sets;
+import org.apache.jena.graph.Node;
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
 
-import org.apache.jena.graph.Node;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * A query tree filter that removes edges whose existence is supposed to be
@@ -37,7 +35,7 @@ import org.apache.jena.graph.Node;
  * @author Lorenz Buehmann
  *
  */
-public class PredicateExistenceFilter {
+public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
 	
 
 	private Set<Node> existentialMeaninglessProperties = new HashSet<>();
@@ -56,30 +54,25 @@ public class PredicateExistenceFilter {
 		this.existentialMeaninglessProperties = existentialMeaninglessProperties;
 	}
 	
-	/**
-	 * Returns a new tree based on the input tree.
-	 *
-	 * @param tree the input tree
-	 * @return a filtered new tree
-	 */
-	public RDFResourceTree filter(RDFResourceTree tree) {
+	@Override
+	public RDFResourceTree apply(RDFResourceTree tree) {
 		RDFResourceTree newTree;
 		if(tree.isLiteralNode() && !tree.isLiteralValueNode()) {
 			newTree = new RDFResourceTree(tree.getDatatype());
 		} else {
 			newTree = new RDFResourceTree(0, tree.getData());
 		}
-		
+
 		for(Node edge : tree.getEdges()) {
 			if(existentialMeaninglessProperties.contains(edge)) {
 				// if the edge is meaningless
 				// 1. process all children
 				for (RDFResourceTree child : tree.getChildren(edge)) {
 					if(child.isResourceNode() || child.isLiteralValueNode()) {
-						RDFResourceTree newChild = filter(child);
+						RDFResourceTree newChild = apply(child);
 						newTree.addChild(newChild, edge);
 					} else {
-						RDFResourceTree newChild = filter(child);
+						RDFResourceTree newChild = apply(child);
 						SortedSet<Node> childEdges = newChild.getEdges();
 						if(!childEdges.isEmpty() && !(childEdges.size() == 1 && childEdges.contains(RDF.type.asNode()))) {
 							newTree.addChild(newChild, edge);
@@ -88,15 +81,14 @@ public class PredicateExistenceFilter {
 				}
 			} else {
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					RDFResourceTree newChild = filter(child);
+					RDFResourceTree newChild = apply(child);
 					newTree.addChild(newChild, edge);
 				}
 			}
 		}
-		
+
 		// we have to run the subsumption check one more time to prune the tree
 		QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
 		return newTree;
 	}
-
 }
