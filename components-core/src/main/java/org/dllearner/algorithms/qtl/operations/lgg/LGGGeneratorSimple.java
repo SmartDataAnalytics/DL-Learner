@@ -101,20 +101,20 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
 		for (Set<Node> edges : commonEdges) {
 			for (Node edge : edges) {
-				if(isTimeout()) {
+				if(stop || isTimeout()) {
 					complete = false;
 					break;
 				}
 				Set<RDFResourceTree> addedChildren = new HashSet<>();
 				// loop over children of first tree
 				for (RDFResourceTree child1 : tree1.getChildren(edge)) {
-					if(isTimeout()) {
+					if(stop || isTimeout()) {
 						complete = false;
 						break;
 					}
 					// loop over children of second tree
 					for (RDFResourceTree child2 : tree2.getChildren(edge)) {
-						if(isTimeout()) {
+						if(stop || isTimeout()) {
 							complete = false;
 							break;
 						}
@@ -124,7 +124,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
 						boolean add = true;
-						for (Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext(); ) {
+						for (Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext() && !stop && !isTimeout(); ) {
 							RDFResourceTree addedChild = it.next();
 							if (QueryTreeUtils.isSubsumedBy(addedChild, lggChild)) {
 								//							logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
