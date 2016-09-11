@@ -78,6 +78,10 @@ public abstract class BenchmarkDescriptionGenerator {
 		 cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
 	}
 
+	public void setWorkaroundEnabled(boolean enabled) {
+		cbdGen.setWorkaround(enabled);
+	}
+
 	protected abstract void beginDocument(StringBuilder sb);
 	protected abstract void endDocument(StringBuilder sb);
 	protected abstract void beginTable(StringBuilder sb);

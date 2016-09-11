@@ -18,19 +18,30 @@
  */
 package org.dllearner.kb.sparql;
 
+import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.riot.system.ErrorHandler;
+import org.apache.jena.riot.system.ErrorHandlerFactory;
+import org.apache.jena.riot.web.HttpNames;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -46,6 +57,7 @@ import java.util.stream.Collectors;
 public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBoundedDescriptionGenerator{
 
 	private static final Logger logger = LoggerFactory.getLogger(TreeBasedConciseBoundedDescriptionGenerator.class);
+	private SparqlEndpoint endpoint;
 
 	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
 	private Set<String> allowedObjectNamespaces = new TreeSet<>();
@@ -57,20 +69,33 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	private AtomicInteger predIndex = new AtomicInteger(0);
 
 	private boolean useUnionOptimization = true;
+	private boolean workaround = false;
 
 	public TreeBasedConciseBoundedDescriptionGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
 	}
 
+	public TreeBasedConciseBoundedDescriptionGenerator(SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
+	public void setWorkaround(boolean workaround) {
+		this.workaround = workaround;
+	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
-	 */
+         * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+         */
 	public Model getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) throws Exception {
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
 //		System.out.println(query);
+		
+		if(workaround) {
+			return constructWithReplacement(endpoint, query);
+		}
+		
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
 			Model model = qe.execConstruct();
 			long end = System.currentTimeMillis();
@@ -256,8 +281,29 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		CBDStructureTree cbdTree = QueryUtils.getOptimalCBDStructure(QueryFactory.create(query));
 		System.out.println(cbdTree.toStringVerbose());
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://biomedical.org");
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+		ks.setQueryDelay(0);
+		ks.setUseCache(false);
+		ks.setRetryCount(0);
 		ks.init();
+
+		QueryExecutionFactory qef = ks.getQueryExecutionFactory();
+
+		String q = "CONSTRUCT {\n" +
+				"<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
+				"} WHERE {\n" +
+				"{<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
+				"}}";
+		Model model = ModelFactory.createDefaultModel();
+		// Parser to first error or warning.
+		ErrorHandler errHandler = ErrorHandlerFactory.errorHandlerWarn;
+		model.getReader().setProperty("error-mode","lax");
+
+		System.out.println(model.size());
+
+
+		System.exit(0);
 		TreeBasedConciseBoundedDescriptionGenerator cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(ks.getQueryExecutionFactory());
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Dan_Gauthier", cbdTree);
 		System.out.println(cbd.size());
@@ -268,6 +314,32 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 //		cbd.write(System.out, "NTRIPLES");
 	}
 
-	
+	private Model constructWithReplacement(SparqlEndpoint endpoint, String query) throws Exception{
+		QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+		qe.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+		String request = qe.toString().replace("GET ", "");
+
+		URL url = new URL(request);
+		java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.addRequestProperty(HttpNames.hAccept, WebContent.contentTypeRDFXML);
+		try(BufferedReader rdr = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+			Model model = ModelFactory.createDefaultModel();
+			String buf = null;
+			StringBuilder doc = new StringBuilder();
+			while ((buf = rdr.readLine()) != null) {
+				// Apply regex on buf
+				if(buf.contains("&#")) {
+					buf = buf.replace("&#", "");
+				}
+				// build output
+				doc.append(buf);
+			}
+			try(InputStream is = new ByteArrayInputStream(doc.toString().getBytes(StandardCharsets.UTF_8))) {
+				model.read(is, null);
+			}
+			return model;
+		}
+	}
 
 }
