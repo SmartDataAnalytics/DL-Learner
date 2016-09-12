@@ -126,7 +126,7 @@ public class PRConvergenceExperiment {
 			+ "?sub (rdfs:subClassOf|owl:equivalentClass)+ ?sup .}");
 
 	private static final DecimalFormat dfPercent = new DecimalFormat("0.00%");
-
+	private CBDStructureTree cbdStructureTree;
 
 
 	enum Baseline {
@@ -495,9 +495,6 @@ public class PRConvergenceExperiment {
 		queries.removeAll(lowNrOfExamplesQueries);
 		queries = queries.subList(0, Math.min(80, queries.size()));
 
-		CBDStructureTree defaultCbdStructure = CBDStructureTree.fromTreeString("root:[out:[out:[]],in:[in:[],out:[]]]");
-
-
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
 
@@ -584,8 +581,7 @@ public class PRConvergenceExperiment {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queriesToProcess) {
-//							CBDStructureTree cbdStructure = defaultCbdStructure;//QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
-							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
+							CBDStructureTree cbdStructure = cbdStructureTree != null ? cbdStructureTree : QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 								tp.submit(() -> {
 									logger.info("CBD tree:" + cbdStructure.toStringVerbose());
@@ -1591,6 +1587,8 @@ public class PRConvergenceExperiment {
 
 		OptionSpec<String> databaseNameSpec = parser.accepts("dbname", "database name").withRequiredArg().ofType(String.class);
 
+		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
+
 
 		OptionSet options = parser.parse(args);
 
@@ -1669,14 +1667,21 @@ public class PRConvergenceExperiment {
 
 		String databaseName = options.valueOf(databaseNameSpec);
 
+		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
+
 
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.setQueriesToOmitTokens(omitTokens);
 		eval.setQueriesToProcessTokens(processTokens);
 		eval.setDatabaseName(databaseName);
+		eval.setDefaultCbdStructure(cbdStructureTree);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
+	}
+
+	public void setDefaultCbdStructure(CBDStructureTree cbdStructureTree) {
+		this.cbdStructureTree = cbdStructureTree;
 	}
 
 	public void setQueriesToProcessTokens(Collection<String> queriesToProcessTokens) {
