@@ -18,10 +18,8 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -31,188 +29,134 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
+import java.sql.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGenerator{
-	
-	String style =
-			"<head>\n" + 
-			"<link rel=\"stylesheet\" href=\"https://rawgit.com/twbs/bootstrap/master/dist/css/bootstrap.min.css\">\n" + 
-			"<link rel=\"stylesheet\" href=\"https://rawgit.com/wenzhixin/bootstrap-table/1.8.0/dist/bootstrap-table.css\">\n" +
-			"<style type=\"text/css\">\n" + 
-			"   pre {\n" + 
-			"	border: 0; \n" + 
-			"	background-color: transparent\n" +
-//			"   font-family: monospace;" +
-			"	}\n"
-			+ "table {\n" + 
-			"    border-collapse: separate;\n" + 
-			"    border-spacing: 0 5px;\n" + 
-			"}\n" +
-					"table th {\n" +
-					"    width: auto !important;\n" +
-					"}" +
-			"\n" + 
-			"thead th {\n" + 
-			"    background-color: #006DCC;\n" + 
-			"    color: white;\n" + 
-			"}\n" + 
-			"\n" + 
-			"tbody td {\n" + 
-			"    background-color: #EEEEEE;\n" + 
-			"}\n" + 
-			"\n" + 
-			"tr td:first-child,\n" + 
-			"tr th:first-child {\n" + 
-			"    border-top-left-radius: 6px;\n" + 
-			"    border-bottom-left-radius: 6px;\n" + 
-			"}\n" + 
-			"\n" + 
-			"tr td:last-child,\n" + 
-			"tr th:last-child {\n" + 
-			"    border-top-right-radius: 6px;\n" + 
-			"    border-bottom-right-radius: 6px;\n" + 
-			"}\n" + 
-			".fixed-table-container tbody td {\n" + 
-			"    border: none;\n" + 
-			"}\n" + 
-			".fixed-table-container thead th {\n" + 
-			"    border: none;\n" + 
-			"}\n" + 
-			"\n" + 
-			".bootstrap-table .table {\n" + 
-			"	border-collapse: inherit !important;\n" + 
-			"}" + 
-			"</style>\n" +
-			"<script src=\"http://code.jquery.com/jquery-1.11.3.min.js\"></script>\n" + 
-			"<script src=\"https://rawgit.com/twbs/bootstrap/master/dist/js/bootstrap.min.js\"></script>\n" + 
-			"<script src=\"https://rawgit.com/wenzhixin/bootstrap-table/1.8.0/dist/bootstrap-table-all.min.js\"></script>\n" +
-			"</head>\n";
+public class BenchmarkDescriptionGeneratorDatabase extends BenchmarkDescriptionGenerator{
 
 	SparqlEndpoint endpoint;
-	StringBuilder sb;
-			
-	public BenchmarkDescriptionGeneratorHTML(QueryExecutionFactory qef) {
+	Connection conn;
+	PreparedStatement ps_insert;
+	private String databaseName = "";
+
+	public BenchmarkDescriptionGeneratorDatabase(QueryExecutionFactory qef) {
 		super(qef);
 	}
 
-	public void generateBenchmarkDescription(File inputFile, File htmlOutputFile, boolean withQueryIdGivenInFile) throws Exception{
-		sb = new StringBuilder();
 
-		generateBenchmarkDescription(inputFile, withQueryIdGivenInFile);
+	public void generateBenchmarkDescription(File inputFile, String databaseName, boolean queriesWithIDs) throws Exception {
+		this.databaseName = databaseName;
+		generateBenchmarkDescription(inputFile, queriesWithIDs);
+	}
+
+	@Override
+	protected void beginDocument() {
 
 		try {
-			Files.write(sb, htmlOutputFile, Charsets.UTF_8);
-		} catch (IOException e) {
+			Properties properties = new Properties();
+			properties.load(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream("org/dllearner/algorithms/qtl/qtl-eval-config.properties"));
+
+			conn = DriverManager.getConnection(
+					properties.getProperty("url"),
+					properties.getProperty("username"),
+					properties.getProperty("password"));
+
+			// create database
+			String sql = "CREATE DATABASE IF NOT EXISTS " + databaseName;
+			conn.createStatement().executeUpdate(sql);
+
+			// switch to database
+			conn.setCatalog(databaseName);
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	protected void beginDocument() {
-		sb.append("<html>\n");
-		sb.append(style);
-		sb.append("<body>\n");
-	}
-
-	@Override
 	protected void endDocument() {
-		sb.append("</body>\n</html>\n");
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void beginTable() {
-		sb.append("<table data-toggle=\"table\" data-striped='true'>\n");
-		// table header
-		sb.append("<thead>\n"
-//				"<tr>\n"
-//				+ "<th colspan=\"6\">test</th>\n"
-//				+ "<th colspan=\"3\">|CBD|<sub>opt</sub></th>\n"
-//				+ "<th colspan=\"3\">|CBD|<sub>gen</sub></th>\n"
-//				+ "</tr>\n"
-				+ "<tr>\n"
-				+ "<th data-sortable=\"true\" data-valign='middle'>ID</th>\n"
-				+ "<th data-sortable=\"true\" data-valign='middle'>Query</th>\n"
-				+ "<th data-sortable=\"true\" data-valign='middle'>Query Type</th>\n"
-//				+ "<th data-valign='middle'>Query Graph</th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
-				+ "</tr>\n" +
-				"</thead>\n");
+		try {
+			String tableName = "benchmark_data";
+			Statement stmt = conn.createStatement();
+			stmt.execute("CREATE Table " + tableName + " (" +
+					"id VARCHAR(20) NOT NULL," +
+					"query VARCHAR(500) NOT NULL," +
+					"query_type VARCHAR(50) NOT NULL," +
+					"query_depth SMALLINT NOT NULL," +
+					"instance_count INT NOT NULL," +
+					"cbd_size_opt_min INT NOT NULL," +
+					"cbd_size_opt_max INT NOT NULL," +
+					"cbd_size_opt_avg INT NOT NULL," +
+					"cbd_size_def_min INT NOT NULL," +
+					"cbd_size_def_max INT NOT NULL," +
+					"cbd_size_def_avg INT NOT NULL," +
+					"PRIMARY KEY (id)" +
+					")");
 
-		sb.append("<tbody>\n");
+			ps_insert = conn.prepareStatement("INSERT INTO " + tableName + "" +
+					"(id, query, query_type, query_depth, instance_count," +
+					"cbd_size_opt_min, cbd_size_opt_max, cbd_size_opt_avg," +
+					"cbd_size_def_min, cbd_size_def_max, cbd_size_def_avg)" +
+					" VALUES " +
+					"(?,?,?,?,?,?,?,?,?,?,?)");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void addRow(QueryData queryData) {
-		sb.append("<tr>\n");
+		try {
+			ps_insert.setString(1, queryData.id);
+			ps_insert.setString(2, queryData.query.toString());
+			ps_insert.setString(3, queryData.queryType.toString());
+			ps_insert.setInt(4, queryData.maxTreeDepth);
+			ps_insert.setInt(5, queryData.nrOfInstances);
+			ps_insert.setInt(6, (int) queryData.optimalCBDSizeStats.getMin());
+			ps_insert.setInt(7, (int) queryData.optimalCBDSizeStats.getMax());
+			ps_insert.setInt(8, (int) queryData.optimalCBDSizeStats.getMean());
+			ps_insert.setInt(9, (int) queryData.defaultCBDSizesStats.getMin());
+			ps_insert.setInt(10, (int) queryData.defaultCBDSizesStats.getMax());
+			ps_insert.setInt(11, (int) queryData.defaultCBDSizesStats.getMean());
 
-		// column: ID
-		sb.append("<td>" + queryData.id + "</td>\n");
-
-		// column: SPARQL query
-		sb.append("<td><pre>" + queryData.query.toString().replace("<", "&lt;").replace(">", "&gt;") + "</pre></td>\n");
-
-		// column: SPARQL query type
-		sb.append("<td>" + queryData.queryType + "</td>\n");
-
-		// query graph
-//		QueryToGraphExporter.exportYedGraph(queryData.query, new File(""));
-//		sb.append("<td><img src=\"" + graphFile.getPath() + "\" alt=\"query graph\"></td>\n");
-
-		// column: depth
-		sb.append("<td class='number'>" + queryData.maxTreeDepth + "</td>\n");
-
-		// column: #instances
-		sb.append("<td class='number'>" + queryData.nrOfInstances + "</td>\n");
-
-		// columns: optimal CBD sizes (min, max, avg)
-		DescriptiveStatistics optimalCBDSizeStats = queryData.optimalCBDSizeStats;
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMin() + "</td>\n");
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMax() + "</td>\n");
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMean() + "</td>\n");
-
-		// columns: generic CBD sizes (min, max, avg)
-		DescriptiveStatistics genericCBDSizeStats = queryData.defaultCBDSizesStats;
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMin() + "</td>\n");
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMax() + "</td>\n");
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMean() + "</td>\n");
-
-
-		sb.append("</tr>\n");
+			ps_insert.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	protected void endTable() {
-		sb.append("</tbody>\n</table>\n");
-	}
+	protected void endTable(){}
 
 	public static void main(String[] args) throws Exception{
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> benchmarkDirectorySpec = parser.accepts("d", "base directory").withRequiredArg().ofType(File.class).required();
 		OptionSpec<File> queriesFileSpec = parser.accepts("i", "input queries file").withRequiredArg().ofType(File.class).required();
-		OptionSpec<File> outputFileSpec = parser.accepts("o", "target output file").withRequiredArg().ofType(File.class).required();
+		OptionSpec<String> tableNameSpec = parser.accepts("db", "database name").withRequiredArg().ofType(String.class).required();
 		OptionSpec<URL> endpointURLSpec = parser.accepts("e", "endpoint URL").withRequiredArg().ofType(URL.class).required();
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> useCacheSpec = parser.accepts("cache", "use cache").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
@@ -226,7 +170,7 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
 		File inputFile = options.valueOf(queriesFileSpec);
-		File outputFile = options.valueOf(outputFileSpec);
+		String tableName = options.valueOf(tableNameSpec);
 
 		URL endpointURL = options.valueOf(endpointURLSpec);
 		List<String> defaultGraphs = options.has(defaultGraphSpec) ? Lists.newArrayList(options.valueOf(defaultGraphSpec)) : Collections.emptyList();
@@ -252,12 +196,12 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 				.trimResults()
 				.splitToList(options.valueOf(queriesToOmitTokensSpec));
 
-		BenchmarkDescriptionGeneratorHTML generator = new BenchmarkDescriptionGeneratorHTML(qef);
+		BenchmarkDescriptionGeneratorDatabase generator = new BenchmarkDescriptionGeneratorDatabase(qef);
 		generator.setDefaultCbdStructure(cbdStructureTree);
 		generator.setSkipQueryTokens(omitTokens);
 		generator.setEndpoint(endpoint);
 		generator.setWorkaroundEnabled(options.valueOf(workaroundSpec));
-		generator.generateBenchmarkDescription(inputFile, outputFile, options.valueOf(queriesHaveIdSpec));
+		generator.generateBenchmarkDescription(inputFile, tableName, options.valueOf(queriesHaveIdSpec));
 	}
 
 	private static QueryExecutionFactory buildQueryExecutionFactory(SparqlEndpoint endpoint, boolean useCache,

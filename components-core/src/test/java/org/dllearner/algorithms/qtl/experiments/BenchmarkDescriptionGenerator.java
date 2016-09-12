@@ -72,8 +72,6 @@ public abstract class BenchmarkDescriptionGenerator {
 	protected Set<String> skipQueryTokens = new HashSet<>();
 	private CBDStructureTree defaultCbdStructure;
 
-	protected StringBuilder sb;
-
 	public BenchmarkDescriptionGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
 		 cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
@@ -87,13 +85,13 @@ public abstract class BenchmarkDescriptionGenerator {
 		cbdGen.setEndpoint(endpoint);
 	}
 
-	protected abstract void beginDocument(StringBuilder sb);
-	protected abstract void endDocument(StringBuilder sb);
-	protected abstract void beginTable(StringBuilder sb);
-	protected abstract void addRow(StringBuilder sb, QueryData queryData);
-	protected abstract void endTable(StringBuilder sb);
+	protected abstract void beginDocument();
+	protected abstract void endDocument();
+	protected abstract void beginTable();
+	protected abstract void addRow(QueryData queryData);
+	protected abstract void endTable();
 
-	public void generateBenchmarkDescription(File benchmarkQueriesFile, File htmlOutputFile, boolean withQueryIdGivenInFile) throws Exception{
+	public void generateBenchmarkDescription(File benchmarkQueriesFile, boolean withQueryIdGivenInFile) throws Exception{
 		Map<String, Query> id2Query = new HashMap<>();
 		int id = 1;
 		for (String line : Files.readLines(benchmarkQueriesFile, Charsets.UTF_8)) {
@@ -106,17 +104,12 @@ public abstract class BenchmarkDescriptionGenerator {
 			Query query = QueryFactory.create(queryString);
 			id2Query.put(idString, query);
 		}
-		generateBenchmarkDescription(id2Query, htmlOutputFile);
+		generateBenchmarkDescription(id2Query);
 	}
 
-	public void generateBenchmarkDescription(EvaluationDataset dataset, File htmlOutputFile) throws Exception{
-		generateBenchmarkDescription(dataset.sparqlQueries, htmlOutputFile);
-	}
-
-	public void generateBenchmarkDescription(Map<String, Query> id2Query, File htmlOutputFile) throws Exception{
-		StringBuilder sb = new StringBuilder();
-		beginDocument(sb);
-		beginTable(sb);
+	public void generateBenchmarkDescription(Map<String, Query> id2Query) throws Exception{
+		beginDocument();
+		beginTable();
 
 //		File graphDir = new File("/tmp/graphs/");
 //		graphDir.mkdirs();
@@ -136,9 +129,6 @@ public abstract class BenchmarkDescriptionGenerator {
 			// column: SPARQL query type
 			SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(query);
 
-			// query graph
-//			row += "<td><img src=\"" + graphFile.getPath() + "\" alt=\"query graph\"></td>\n";
-
 			// column: depth
 			int maxDepth = getLongestPath(query);
 
@@ -153,17 +143,11 @@ public abstract class BenchmarkDescriptionGenerator {
 			// columns: generic CBD sizes (min, max, avg)
 			DescriptiveStatistics genericCBDSizeStats = determineDefaultCBDSizes(query, result);
 
-			addRow(sb, new QueryData(id, query, queryType, maxDepth, nrOfInstances, optimalCBDSizeStats, genericCBDSizeStats));
+			addRow(new QueryData(id, query, queryType, maxDepth, nrOfInstances, optimalCBDSizeStats, genericCBDSizeStats));
 		}
 
-		endTable(sb);
-		endDocument(sb);
-
-		try {
-			Files.write(sb, htmlOutputFile, Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		endTable();
+		endDocument();
 	}
 
 	public void setSkipQueryTokens(Collection<String> skipQueryTokens) {
@@ -372,7 +356,7 @@ public abstract class BenchmarkDescriptionGenerator {
 		final int maxTreeDepth;
 		final int nrOfInstances;
 		final DescriptiveStatistics optimalCBDSizeStats;
-		final DescriptiveStatistics determineDefaultCBDSizes;
+		final DescriptiveStatistics defaultCBDSizesStats;
 
 		public QueryData(String id, Query query, SPARQLUtils.QueryType queryType, int maxTreeDepth, int nrOfInstances,
 						 DescriptiveStatistics optimalCBDSizeStats, DescriptiveStatistics determineDefaultCBDSizes) {
@@ -382,7 +366,7 @@ public abstract class BenchmarkDescriptionGenerator {
 			this.maxTreeDepth = maxTreeDepth;
 			this.nrOfInstances = nrOfInstances;
 			this.optimalCBDSizeStats = optimalCBDSizeStats;
-			this.determineDefaultCBDSizes = determineDefaultCBDSizes;
+			this.defaultCBDSizesStats = determineDefaultCBDSizes;
 		}
 
 
