@@ -126,7 +126,7 @@ public class PRConvergenceExperiment {
 			+ "?sub (rdfs:subClassOf|owl:equivalentClass)+ ?sup .}");
 
 	private static final DecimalFormat dfPercent = new DecimalFormat("0.00%");
-
+	private CBDStructureTree cbdStructureTree;
 
 
 	enum Baseline {
@@ -229,6 +229,8 @@ public class PRConvergenceExperiment {
 //			"Pakistan"
 	);
 
+	String databaseName;
+
 	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -264,6 +266,8 @@ public class PRConvergenceExperiment {
 		cacheDirectory = new File(benchmarkDirectory, "cache");
 
 		filter = dataset.getPredicateFilter();
+
+		databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
 	}
 	
 	private void setupDatabase() {
@@ -280,9 +284,8 @@ public class PRConvergenceExperiment {
 			java.sql.Statement stmt = conn.createStatement();
 
 			// create database
-			String databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
-			logger.info("Creating database '" + databaseName + "'");
-			String sql = "CREATE DATABASE " + databaseName;
+			logger.info("Creating database " + databaseName + "'");
+			String sql = "CREATE DATABASE IF NOT EXISTS" + databaseName;
 			stmt.executeUpdate(sql);
 			logger.info("Database created successfully.");
 
@@ -426,6 +429,10 @@ public class PRConvergenceExperiment {
 		this.queriesToOmitTokens = queriesToOmitTokens;
 	}
 
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+
 	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
@@ -487,9 +494,6 @@ public class PRConvergenceExperiment {
 		logger.info("got {} queries with < {} pos. examples.", emptyQueries.size(), min);
 		queries.removeAll(lowNrOfExamplesQueries);
 		queries = queries.subList(0, Math.min(80, queries.size()));
-
-		CBDStructureTree defaultCbdStructure = CBDStructureTree.fromTreeString("root:[out:[out:[]],in:[in:[],out:[]]]");
-
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
@@ -577,8 +581,7 @@ public class PRConvergenceExperiment {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queriesToProcess) {
-//							CBDStructureTree cbdStructure = defaultCbdStructure;//QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
-							CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
+							CBDStructureTree cbdStructure = cbdStructureTree != null ? cbdStructureTree : QueryUtils.getOptimalCBDStructure(QueryFactory.create(sparqlQuery));
 
 								tp.submit(() -> {
 									logger.info("CBD tree:" + cbdStructure.toStringVerbose());
@@ -1582,6 +1585,10 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 		OptionSpec<String> queriesToProcessTokensSpec = parser.accepts("processTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 
+		OptionSpec<String> databaseNameSpec = parser.accepts("dbname", "database name").withRequiredArg().ofType(String.class);
+
+		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
+
 
 		OptionSet options = parser.parse(args);
 
@@ -1658,12 +1665,23 @@ public class PRConvergenceExperiment {
 			throw new RuntimeException("Unsupported dataset:" + datasetName);
 		}
 
+		String databaseName = options.valueOf(databaseNameSpec);
+
+		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
+
+
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.setQueriesToOmitTokens(omitTokens);
 		eval.setQueriesToProcessTokens(processTokens);
+		eval.setDatabaseName(databaseName);
+		eval.setDefaultCbdStructure(cbdStructureTree);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
+	}
+
+	public void setDefaultCbdStructure(CBDStructureTree cbdStructureTree) {
+		this.cbdStructureTree = cbdStructureTree;
 	}
 
 	public void setQueriesToProcessTokens(Collection<String> queriesToProcessTokens) {

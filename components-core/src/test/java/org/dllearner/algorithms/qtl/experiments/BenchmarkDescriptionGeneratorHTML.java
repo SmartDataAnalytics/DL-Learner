@@ -217,7 +217,7 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> useCacheSpec = parser.accepts("cache", "use cache").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
 		OptionSpec<Boolean> queriesHaveIdSpec = parser.accepts("id", "input file contains ID, SPARQL query").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE);
-		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withOptionalArg().ofType(String.class).required();
+		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class).required();
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 		OptionSpec<Boolean> workaroundSpec = parser.accepts("workaround", "Virtuoso parse error workaround enabled").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 
