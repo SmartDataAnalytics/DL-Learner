@@ -231,10 +231,13 @@ public class PRConvergenceExperiment {
 
 	String databaseName;
 
-	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
+	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory,
+								   boolean write2DB, String databaseName, boolean override, int maxQTLRuntime,
+								   boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
+		this.databaseName = databaseName;
 		this.override = override;
 		this.maxExecutionTimeInSeconds = maxQTLRuntime;
 		this.useEmailNotification = useEmailNotification;
@@ -259,15 +262,17 @@ public class PRConvergenceExperiment {
 
 		timeStamp = System.currentTimeMillis();
 		
-		if(write2DB) {
-			setupDatabase();
-		}
-
 		cacheDirectory = new File(benchmarkDirectory, "cache");
 
 		filter = dataset.getPredicateFilter();
 
-		databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
+		if(databaseName == null) {
+			this.databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
+		}
+
+		if(write2DB) {
+			setupDatabase();
+		}
 	}
 	
 	private void setupDatabase() {
@@ -1670,7 +1675,8 @@ public class PRConvergenceExperiment {
 		CBDStructureTree cbdStructureTree = options.has(options.valueOf(cbdSpec)) ? CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim()) : null;
 
 
-		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
+		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory,
+				write2DB, databaseName, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.setQueriesToOmitTokens(omitTokens);
 		eval.setQueriesToProcessTokens(processTokens);
 		eval.setDatabaseName(databaseName);
