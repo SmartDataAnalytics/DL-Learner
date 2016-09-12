@@ -229,6 +229,8 @@ public class PRConvergenceExperiment {
 //			"Pakistan"
 	);
 
+	String databaseName;
+
 	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -264,6 +266,8 @@ public class PRConvergenceExperiment {
 		cacheDirectory = new File(benchmarkDirectory, "cache");
 
 		filter = dataset.getPredicateFilter();
+
+		databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
 	}
 	
 	private void setupDatabase() {
@@ -280,9 +284,8 @@ public class PRConvergenceExperiment {
 			java.sql.Statement stmt = conn.createStatement();
 
 			// create database
-			String databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
-			logger.info("Creating database '" + databaseName + "'");
-			String sql = "CREATE DATABASE " + databaseName;
+			logger.info("Creating database " + databaseName + "'");
+			String sql = "CREATE DATABASE IF NOT EXISTS" + databaseName;
 			stmt.executeUpdate(sql);
 			logger.info("Database created successfully.");
 
@@ -424,6 +427,10 @@ public class PRConvergenceExperiment {
 
 	public void setQueriesToOmitTokens(Set<String> queriesToOmitTokens) {
 		this.queriesToOmitTokens = queriesToOmitTokens;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
 	}
 
 	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
@@ -1582,6 +1589,8 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 		OptionSpec<String> queriesToProcessTokensSpec = parser.accepts("processTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 
+		OptionSpec<String> databaseNameSpec = parser.accepts("dbname", "database name").withRequiredArg().ofType(String.class);
+
 
 		OptionSet options = parser.parse(args);
 
@@ -1658,9 +1667,13 @@ public class PRConvergenceExperiment {
 			throw new RuntimeException("Unsupported dataset:" + datasetName);
 		}
 
+		String databaseName = options.valueOf(databaseNameSpec);
+
+
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
 		eval.setQueriesToOmitTokens(omitTokens);
 		eval.setQueriesToProcessTokens(processTokens);
+		eval.setDatabaseName(databaseName);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
