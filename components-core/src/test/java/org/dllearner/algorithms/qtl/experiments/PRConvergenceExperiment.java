@@ -1585,7 +1585,7 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> queriesToOmitTokensSpec = parser.accepts("omitTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 		OptionSpec<String> queriesToProcessTokensSpec = parser.accepts("processTokens", "comma-separated list of tokens such that queries containing any of them will be omitted").withRequiredArg().ofType(String.class).defaultsTo("");
 
-		OptionSpec<String> databaseNameSpec = parser.accepts("dbname", "database name").withRequiredArg().ofType(String.class);
+		OptionSpec<String> databaseNameSpec = parser.accepts("dbName", "database name").withRequiredArg().ofType(String.class);
 
 		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
 
@@ -1667,7 +1667,7 @@ public class PRConvergenceExperiment {
 
 		String databaseName = options.valueOf(databaseNameSpec);
 
-		CBDStructureTree cbdStructureTree = CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim());
+		CBDStructureTree cbdStructureTree = options.has(options.valueOf(cbdSpec)) ? CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim()) : null;
 
 
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
