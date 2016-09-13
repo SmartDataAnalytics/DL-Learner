@@ -274,10 +274,12 @@ public class PRConvergenceExperiment {
 		}
 	}
 
-	public void setWorkaroundEnabled(boolean enabled) {
+	public void setWorkaroundEnabled(boolean enabled, SparqlEndpoint endpoint) {
 		cbdGen.setWorkaround(enabled);
+		cbdGen.setEndpoint(endpoint);
 	}
-	
+
+
 	private void setupDatabase() {
 		try {
 			Properties config = new Properties();
@@ -1685,7 +1687,7 @@ public class PRConvergenceExperiment {
 		eval.setQueriesToProcessTokens(processTokens);
 		eval.setDatabaseName(databaseName);
 		eval.setDefaultCbdStructure(cbdStructureTree);
-		eval.setWorkaroundEnabled(options.valueOf(workaroundSpec));
+		eval.setWorkaroundEnabled(options.valueOf(workaroundSpec), endpoint);
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
