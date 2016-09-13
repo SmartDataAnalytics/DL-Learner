@@ -82,7 +82,14 @@ public class NoiseGenerator {
 
         rnd.reSeed(123);
         // get max number of instances in KB
-        String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
+        boolean strictOWL = false;
+        String query;
+        if(strictOWL) {
+            query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
+        } else {
+            query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type }";
+        }
+
 
         QueryExecution qe = qef.createQueryExecution(query);
         ResultSet rs = qe.execSelect();
@@ -92,16 +99,23 @@ public class NoiseGenerator {
         // generate random instances
         while(noiseExampleCandidates.size() < n) {
             int offset = rnd.nextInt(0, max);
-            query = "SELECT ?s WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .} LIMIT 1 OFFSET " + offset;
+            if(strictOWL) {
+                query = "SELECT DISTINCT ?s WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .} LIMIT 10 OFFSET " + offset;
+            } else {
+                query = "SELECT DISTINCT ?s WHERE {?s a ?type } LIMIT 10 OFFSET " + offset;
+            }
             System.out.println(query);
             qe = qef.createQueryExecution(query);
             rs = qe.execSelect();
 
-            String resource = rs.next().getResource("s").getURI();
+            while(rs.hasNext()) {
+                String resource = rs.next().getResource("s").getURI();
 
-            if(!examples.contains(resource) && !resource.contains("__")) {
-                noiseExampleCandidates.add(resource);
+                if(!examples.contains(resource) && !resource.contains("__")) {
+                    noiseExampleCandidates.add(resource);
+                }
             }
+
             qe.close();
         }
 

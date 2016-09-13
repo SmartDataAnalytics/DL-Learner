@@ -136,7 +136,7 @@ public class PRConvergenceExperiment {
 	private QueryExecutionFactory qef;
 
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
-	private ConciseBoundedDescriptionGenerator cbdGen;
+	private TreeBasedConciseBoundedDescriptionGenerator cbdGen;
 
 	private RandomDataGenerator rnd = new RandomDataGenerator();
 
@@ -252,7 +252,6 @@ public class PRConvergenceExperiment {
 		
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
-		cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
 
 		rnd.reSeed(123);
@@ -274,6 +273,10 @@ public class PRConvergenceExperiment {
 			setupDatabase();
 		}
 	}
+
+	public void setWorkaroundEnabled(boolean enabled) {
+		cbdGen.setWorkaround(enabled);
+	}
 	
 	private void setupDatabase() {
 		try {
@@ -290,7 +293,7 @@ public class PRConvergenceExperiment {
 
 			// create database
 			logger.info("Creating database " + databaseName + "'");
-			String sql = "CREATE DATABASE IF NOT EXISTS" + databaseName;
+			String sql = "CREATE DATABASE IF NOT EXISTS " + databaseName;
 			stmt.executeUpdate(sql);
 			logger.info("Database created successfully.");
 
@@ -1593,6 +1596,7 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> databaseNameSpec = parser.accepts("dbName", "database name").withRequiredArg().ofType(String.class);
 
 		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
+		OptionSpec<Boolean> workaroundSpec = parser.accepts("workaround", "Virtuoso parse error workaround enabled").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 
 
 		OptionSet options = parser.parse(args);
@@ -1681,6 +1685,7 @@ public class PRConvergenceExperiment {
 		eval.setQueriesToProcessTokens(processTokens);
 		eval.setDatabaseName(databaseName);
 		eval.setDefaultCbdStructure(cbdStructureTree);
+		eval.setWorkaroundEnabled(options.valueOf(workaroundSpec));
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
