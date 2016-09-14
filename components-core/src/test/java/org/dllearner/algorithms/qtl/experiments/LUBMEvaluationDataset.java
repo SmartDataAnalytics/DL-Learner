@@ -134,6 +134,11 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 			);
 	}
 
+	@Override
+	public boolean usesStrictOWLTypes() {
+		return false;
+	}
+
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://lubm.org");

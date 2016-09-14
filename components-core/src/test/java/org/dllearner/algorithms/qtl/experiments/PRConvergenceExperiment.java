@@ -78,7 +78,9 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
-import org.dllearner.kb.sparql.*;
+import org.dllearner.kb.sparql.CBDStructureTree;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.TreeBasedConciseBoundedDescriptionGenerator;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -105,6 +107,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Lorenz Buehmann
@@ -420,7 +423,9 @@ public class PRConvergenceExperiment {
 	}
 	
 	private int getKBSize() {
-		String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
+		String query = dataset.usesStrictOWLTypes() ?
+				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> }" :
+				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type }";
 		
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
@@ -596,11 +601,14 @@ public class PRConvergenceExperiment {
 								tp.submit(() -> {
 									logger.info("CBD tree:" + cbdStructure.toStringVerbose());
 
+									// update max tree depth
+									this.maxTreeDepth = QueryTreeUtils.getDepth(cbdStructure);
 									logger.info("##############################################################");
 									logger.info("Processing query\n" + sparqlQuery);
 
 									// we repeat it n times with different permutations of examples
 									int nrOfPermutations = 1;
+
 									if(nrOfExamples >= query2Examples.get(sparqlQuery).correctPosExampleCandidates.size()){
 										nrOfPermutations = 1;
 									}
@@ -1456,11 +1464,14 @@ public class PRConvergenceExperiment {
 	}
 	
 	private Score score(int tp, int fp, int tn, int fn) throws Exception {
+		System.err.println(String.format("tp:%d fp:%d tn:%s fn:%s", tp, fp, tn, fn));
 		// P
 		double precision = (tp == 0 && fp == 0) ? 1.0 : (double) tp / (tp + fp);
+		System.err.println(precision);
 		
 		// R
 		double recall = (tp == 0 && fn == 0) ? 1.0 : (double) tp / (tp + fn);
+		System.err.println(recall);
 		
 		//F_1
 		double fMeasure = Heuristics.getFScore(recall, precision);
@@ -1600,8 +1611,15 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> workaroundSpec = parser.accepts("workaround", "Virtuoso parse error workaround enabled").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 
+		OptionSet options = null;
+		try {
+			options = parser.parse(args);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			parser.printHelpOn(System.out);
+			System.exit(0);
+		}
 
-		OptionSet options = parser.parse(args);
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
 		boolean write2DB = options.valueOf(write2DBSpec);
@@ -1622,22 +1640,16 @@ public class PRConvergenceExperiment {
 
 		int[] exampleInterval = null;
 		if(options.has(exampleIntervalsSpec)) {
-			String s = options.valueOf(exampleIntervalsSpec);
-			String[] split = s.split(",");
-			exampleInterval = new int[split.length];
-			for(int i = 0; i < split.length; i++) {
-				exampleInterval[i] = Integer.valueOf(split[i]);
-			}
+			exampleInterval = StreamSupport.stream(
+					Splitter.on(',').omitEmptyStrings().trimResults().split(options.valueOf(exampleIntervalsSpec)).spliterator(), false)
+					.map(Integer::valueOf).mapToInt(Integer::intValue).toArray();
 		}
 
 		double[] noiseInterval = null;
 		if(options.has(noiseIntervalsSpec)) {
-			String s = options.valueOf(noiseIntervalsSpec);
-			String[] split = s.split(",");
-			noiseInterval = new double[split.length];
-			for(int i = 0; i < split.length; i++) {
-				noiseInterval[i] = Double.valueOf(split[i]);
-			}
+			noiseInterval = StreamSupport.stream(
+					Splitter.on(',').omitEmptyStrings().trimResults().split(options.valueOf(noiseIntervalsSpec)).spliterator(), false)
+					.map(Double::valueOf).mapToDouble(Double::doubleValue).toArray();
 		}
 
 		HeuristicType[] measures = null;

@@ -54,7 +54,7 @@ public abstract class EvaluationDataset {
 	PrefixMapping prefixMapping;
 	
 	AbstractReasonerComponent reasoner;
-	
+
 	Map<String, Query> sparqlQueries;
 	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
 
@@ -100,6 +100,8 @@ public abstract class EvaluationDataset {
 		this.predicateFilter = predicateFilter;
 	}
 
+	public abstract boolean usesStrictOWLTypes();
+
 	/**
 	 * Writes the ID and SPARQL queries line-wise to file.
 	 *
@@ -107,6 +109,8 @@ public abstract class EvaluationDataset {
 	 */
 	public void saveToDisk(File file) throws IOException {
 		sparqlQueries.entrySet().stream().forEach(entry -> adjustPrefixes(entry.getValue()));
+		System.out.println(file);
+
 		Files.write(file.toPath(),
 				sparqlQueries.entrySet().stream()
 						.map(entry -> entry.getKey() + ", " + entry.getValue().toString().replace("\n", " "))

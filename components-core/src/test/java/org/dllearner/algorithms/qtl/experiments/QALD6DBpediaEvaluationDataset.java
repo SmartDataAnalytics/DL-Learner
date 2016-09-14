@@ -206,6 +206,11 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 			);
 	}
 
+	@Override
+	public boolean usesStrictOWLTypes() {
+		return true;
+	}
+
 	public static void main(String[] args) throws Exception{
 		if(args.length == 0){
 			System.out.println("Usage: QALD6DBpediaEvaluationDataset <queriesTargetFile");
@@ -215,12 +220,15 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 														"http://dbpedia.org");
 		QALD6DBpediaEvaluationDataset ds = new QALD6DBpediaEvaluationDataset(new File("/tmp/test"), endpoint);
 		ds.saveToDisk(new File(args[0]));
-//		List<String> queries = ds.getSparqlQueries();
-//		System.out.println(queries.size());
-//		queries.forEach(q -> System.out.println(QueryFactory.create(q)));
-//		queries.forEach(q -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(q).execSelect().hasNext()));
-//
-//		ds.analyze();
+		Map<String, Query> queries = ds.getSparqlQueries();
+		System.out.println("#queries:" + queries.size());
+
+		File graphsDir = new File("/home/user/work/experiments/qtl/QALD6/graphs/");
+		graphsDir.mkdirs();
+
+		queries.forEach((id, query) -> QueryToGraphExporter.exportYedGraph(query, new File(graphsDir, id + ".png")));
+
+
 	}
 
 }
