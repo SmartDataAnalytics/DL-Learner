@@ -276,10 +276,10 @@ public class QueryTreeUtils {
      * @param tree the query tree
      * @return the depth
      */
-    public static int getDepth(RDFResourceTree tree) {
+    public static <T, V extends GenericTree<T, V>> int getDepth(GenericTree<T, V> tree) {
 		int maxDepth = 0;
 		
-		for(RDFResourceTree child : tree.getChildren()) {
+		for(GenericTree<T, V> child : tree.getChildren()) {
 			int depth;
 			if(child.isLeaf()) {
 				depth = 1;

@@ -93,7 +93,11 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return queryTreeFilters();
 	}
-	
+
+	@Override
+	public boolean usesStrictOWLTypes() {
+		return true;
+	}
 
 	@SuppressWarnings("unchecked")
 	public static List<Predicate<Statement>> queryTreeFilters() {

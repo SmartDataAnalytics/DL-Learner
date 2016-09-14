@@ -225,6 +225,11 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 			new PredicateDropStatementFilter(StopURIsRDFS.get()));
 	}
 
+	@Override
+	public boolean usesStrictOWLTypes() {
+		return false;
+	}
+
 	public static void main(String[] args) throws Exception{
 		if(args.length == 0){
 			System.out.println("Usage: QALD4BiomedicalChallengeEvaluationDataset <queriesTargetFile");
