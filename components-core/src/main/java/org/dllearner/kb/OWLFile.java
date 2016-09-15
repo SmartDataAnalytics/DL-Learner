@@ -118,12 +118,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
 
         } else if (url == null) {
         	try {
-        		Path path;
-        		if(fileName.startsWith("/")) {// file name starts with /
-        			path = Paths.get(fileName);
-        		} else {// else relative to base directory
-        			path = Paths.get(baseDir, fileName);
-        		}
+		        Path path = Paths.get(fileName);
+
+		        if(!path.isAbsolute() && baseDir != null) {// else relative to base directory
+			        path = Paths.get(baseDir, fileName);
+		        }
 
         		url = path.normalize().toUri().toURL();
         	} catch (MalformedURLException e) {

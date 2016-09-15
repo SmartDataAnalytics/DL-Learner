@@ -47,6 +47,7 @@ import com.hp.hpl.jena.sparql.util.TripleComparator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.MonitorFactory;
+import javassist.runtime.Desc;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -183,31 +184,31 @@ public class QTLEvaluation {
 	// parameters
 	int[] nrOfExamplesIntervals = {
 //					5,
-					10,
+//					10,
 //					15,
 					20,
 //					25,
-					30
+//					30
 					}; 
 			
 	double[] noiseIntervals = {
 					0.0,
 					0.1,
-					0.2,
-					0.3,
+//					0.2,
+//					0.3,
 //					0.4,
 //					0.6
 					};
-			
-	QueryTreeHeuristic[] heuristics = {
+
+	private QueryTreeHeuristic[] heuristics = {
 					new QueryTreeHeuristicSimple(),
 //					new QueryTreeHeuristicComplex(qef)
 			};
-			
-	HeuristicType[] measures = {
+
+	private HeuristicType[] measures = {
 					HeuristicType.PRED_ACC, 
-					HeuristicType.FMEASURE,
-					HeuristicType.MATTHEWS_CORRELATION
+//					HeuristicType.FMEASURE,
+//					HeuristicType.MATTHEWS_CORRELATION
 					};
 
 	private File cacheDirectory;
@@ -217,6 +218,10 @@ public class QTLEvaluation {
 	private int nrOfThreads;
 
 	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
+
+	DescriptiveStatistics treeSizeStats = new DescriptiveStatistics();
+
+	private long timeStamp;
 
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
@@ -242,6 +247,8 @@ public class QTLEvaluation {
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
+
+		timeStamp = System.currentTimeMillis();
 		
 		if(write2DB) {
 			setupDatabase();
@@ -260,9 +267,19 @@ public class QTLEvaluation {
 			String password = config.getProperty("password");
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(url, username, password);
-			
-			String sql;
+
 			java.sql.Statement stmt = conn.createStatement();
+
+			// create database
+			String databaseName = "QTL_" + timeStamp;
+			logger.info("Creating database '" + databaseName + "'");
+			String sql = "CREATE DATABASE " + databaseName;
+			stmt.executeUpdate(sql);
+			logger.info("Database created successfully.");
+
+			// switch to database
+			conn.setCatalog(databaseName);
+			stmt = conn.createStatement();
 
 //			// empty tables if override
 //			if(override) {
@@ -459,7 +476,7 @@ public class QTLEvaluation {
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
 
-		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
+		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
 
 		final AtomicInteger currentNrOfFinishedRuns = new AtomicInteger(0);
@@ -469,7 +486,7 @@ public class QTLEvaluation {
 			final String heuristicName = heuristic.getClass().getAnnotation(ComponentAnn.class).shortName();
 			
 			// loop over heuristics measures
-			for (HeuristicType measure : measures) {
+			for (HeuristicType measure : this.measures) {
 				final String measureName = measure.toString();
 				heuristic.setHeuristicType(measure);
 			
@@ -541,143 +558,149 @@ public class QTLEvaluation {
 							
 //							if(!(sparqlQuery.contains("VideoGame")))continue;
 							
-							tp.submit(new Runnable(){
-	
-								@Override
-								public void run() {
-							
-									logger.info("##############################################################");
-									logger.info("Processing query\n" + sparqlQuery);
-									
-									try {
-										ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
-										logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
-										logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
+							tp.submit(() -> {
 
-										// compute baseline
-										logger.info("Computing baseline...");
-										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
-										logger.info("done. \nBaseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
-										logger.info("Evaluating baseline...");
-										Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
-										logger.info("Baseline score:\n" + baselineScore);
-										String baseLineQuery = QueryTreeUtils.toSPARQLQueryString(
-												baselineSolution, dataset.getBaseIRI(), dataset.getPrefixMapping());
-										baselinePrecisionStats.addValue(baselineScore.precision);
-										baselineRecallStats.addValue(baselineScore.recall);
-										baselineFMeasureStats.addValue(baselineScore.fmeasure);
-										baselinePredAccStats.addValue(baselineScore.predAcc);
-										baselineMathCorrStats.addValue(baselineScore.mathCorr);
-										
-										// run QTL
-										PosNegLPStandard lp = new PosNegLPStandard();
-										lp.setPositiveExamples(examples.posExamplesMapping.keySet());
-										lp.setNegativeExamples(examples.negExamplesMapping.keySet());
-										QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-										la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
-										la.setReasoner(dataset.getReasoner());
-										la.setEntailment(Entailment.RDFS);
-										la.setTreeFactory(queryTreeFactory);
-										la.setPositiveExampleTrees(examples.posExamplesMapping);
-										la.setNegativeExampleTrees(examples.negExamplesMapping);
-										la.setNoise(noise);
-										la.setHeuristic(heuristic);
-										la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-										la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
-										la.init();
-										la.start();
-										List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
+								logger.info("##############################################################");
+								logger.info("Processing query\n" + sparqlQuery);
+
+								try {
+									ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
+									logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
+									logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
+
+									// write examples to disk
+									File dir = new File(benchmarkDirectory, "data/" + hash(sparqlQuery));
+									dir.mkdirs();
+									Files.write(Joiner.on("\n").join(examples.correctPosExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tp"), Charsets.UTF_8);
+									Files.write(Joiner.on("\n").join(examples.correctNegExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tn"), Charsets.UTF_8);
+									Files.write(Joiner.on("\n").join(examples.falsePosExamples),
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".fp"), Charsets.UTF_8);
+
+									// compute baseline
+									logger.info("Computing baseline...");
+									RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
+									logger.info("Baseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
+									logger.info("Evaluating baseline...");
+									Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
+									logger.info("Baseline score:\n" + baselineScore);
+									String baseLineQuery = QueryTreeUtils.toSPARQLQueryString(
+											baselineSolution, dataset.getBaseIRI(), dataset.getPrefixMapping());
+									baselinePrecisionStats.addValue(baselineScore.precision);
+									baselineRecallStats.addValue(baselineScore.recall);
+									baselineFMeasureStats.addValue(baselineScore.fmeasure);
+									baselinePredAccStats.addValue(baselineScore.predAcc);
+									baselineMathCorrStats.addValue(baselineScore.mathCorr);
+
+									// run QTL
+									PosNegLPStandard lp = new PosNegLPStandard();
+									lp.setPositiveExamples(examples.posExamplesMapping.keySet());
+									lp.setNegativeExamples(examples.negExamplesMapping.keySet());
+									QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+									la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+									la.setReasoner(dataset.getReasoner());
+									la.setEntailment(Entailment.RDFS);
+									la.setTreeFactory(queryTreeFactory);
+									la.setPositiveExampleTrees(examples.posExamplesMapping);
+									la.setNegativeExampleTrees(examples.negExamplesMapping);
+									la.setNoise(noise);
+									la.setHeuristic(heuristic);
+									la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+									la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
+									la.init();
+									la.start();
+									List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
 
 //										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
-										nrOfReturnedSolutionsStats.addValue(solutions.size());
-										
-										// the best returned solution by QTL
-										EvaluatedRDFResourceTree bestSolution = solutions.get(0);
-										logger.info("Got " + solutions.size() + " query trees.");
-										logger.info("Best computed solution:\n" + render(bestSolution.asEvaluatedDescription()));
-										logger.info("QTL Score:\n" + bestSolution.getTreeScore());
-										long runtimeBestSolution = la.getTimeBestSolutionFound();
-										bestReturnedSolutionRuntimeStats.addValue(runtimeBestSolution);
+									nrOfReturnedSolutionsStats.addValue(solutions.size());
 
-										// convert to SPARQL query
-										RDFResourceTree tree = bestSolution.getTree();
-				//						filter.filter(tree);
-										String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
-												tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-				
-										// compute score
-										Score score = computeScore(sparqlQuery, tree, noise);
-										bestReturnedSolutionPrecisionStats.addValue(score.precision);
-										bestReturnedSolutionRecallStats.addValue(score.recall);
-										bestReturnedSolutionFMeasureStats.addValue(score.fmeasure);
-										bestReturnedSolutionPredAccStats.addValue(score.predAcc);
-										bestReturnedSolutionMathCorrStats.addValue(score.mathCorr);
-										logger.info(score);
-				
-										// find the extensionally best matching tree in the list
-										Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTreeFast(solutions, sparqlQuery, noise, examples);
-										EvaluatedRDFResourceTree bestMatchingTree = bestMatchingTreeWithScore.getFirst();
-										Score bestMatchingScore = bestMatchingTreeWithScore.getSecond();
-										
-										// position of best tree in list of solutions
-										int positionBestScore = solutions.indexOf(bestMatchingTree);
-										bestSolutionPositionStats.addValue(positionBestScore);
-				
-										Score bestScore = score;
-										if (positionBestScore > 0) {
-											logger.info("Position of best covering tree in list: " + positionBestScore);
-											logger.info("Best covering solution:\n" + render(bestMatchingTree.asEvaluatedDescription()));
-											logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-											bestScore = bestMatchingScore;
-											logger.info(bestMatchingScore);
-										} else {
-											logger.info("Best returned solution was also the best covering solution.");
-										}
-										bestSolutionRecallStats.addValue(bestScore.recall);
-										bestSolutionPrecisionStats.addValue(bestScore.precision);
-										bestSolutionFMeasureStats.addValue(bestScore.fmeasure);
-										bestSolutionPredAccStats.addValue(bestScore.predAcc);
-										bestSolutionMathCorrStats.addValue(bestScore.mathCorr);
-										
-										for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
-											if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-												Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
-												break;
-											}
-										}
+									// the best returned solution by QTL
+									EvaluatedRDFResourceTree bestSolution = solutions.get(0);
+									logger.info("Got " + solutions.size() + " query trees.");
+									logger.info("Best computed solution:\n" + render(bestSolution.asEvaluatedDescription()));
+									logger.info("QTL Score:\n" + bestSolution.getTreeScore());
+									long runtimeBestSolution = la.getTimeBestSolutionFound();
+									bestReturnedSolutionRuntimeStats.addValue(runtimeBestSolution);
 
-										String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
-												filter.filter(bestMatchingTree.getTree()), 
-												dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
-										
-										if(write2DB) {
-											write2DB(sparqlQuery, nrOfExamples, examples, noise, 
-													baseLineQuery, baselineScore, 
-													heuristicName, measureName,
-													QueryFactory.create(learnedSPARQLQuery).toString(), score, runtimeBestSolution,
-													bestQuery, positionBestScore, bestScore);
-										}
-				
-									} catch (Exception e) {
-										failed.set(true);
-										logger.error("Error occured for query\n" + sparqlQuery, e);
-										try {
-											StringWriter sw = new StringWriter();
-											PrintWriter pw = new PrintWriter(sw);
-											e.printStackTrace(pw);
-											Files.append(sparqlQuery + "\n" + sw.toString(), new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
-										} catch (IOException e1) {
-											e1.printStackTrace();
-										}
-									} finally {
-										int cnt = currentNrOfFinishedRuns.incrementAndGet();
-										logger.info("***********Evaluation Progress:"
-												+ NumberFormat.getPercentInstance().format((double)cnt / totalNrOfQTLRuns)
-												+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
-												+ "***********");
+									// convert to SPARQL query
+									RDFResourceTree tree = bestSolution.getTree();
+			//						filter.filter(tree);
+									String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
+											tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
+
+									// compute score
+									Score score = computeScore(sparqlQuery, tree, noise);
+									bestReturnedSolutionPrecisionStats.addValue(score.precision);
+									bestReturnedSolutionRecallStats.addValue(score.recall);
+									bestReturnedSolutionFMeasureStats.addValue(score.fmeasure);
+									bestReturnedSolutionPredAccStats.addValue(score.predAcc);
+									bestReturnedSolutionMathCorrStats.addValue(score.mathCorr);
+									logger.info(score);
+
+									// find the extensionally best matching tree in the list
+									Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTreeFast(solutions, sparqlQuery, noise, examples);
+									EvaluatedRDFResourceTree bestMatchingTree = bestMatchingTreeWithScore.getFirst();
+									Score bestMatchingScore = bestMatchingTreeWithScore.getSecond();
+
+									// position of best tree in list of solutions
+									int positionBestScore = solutions.indexOf(bestMatchingTree);
+									bestSolutionPositionStats.addValue(positionBestScore);
+
+									Score bestScore = score;
+									if (positionBestScore > 0) {
+										logger.info("Position of best covering tree in list: " + positionBestScore);
+										logger.info("Best covering solution:\n" + render(bestMatchingTree.asEvaluatedDescription()));
+										logger.info("Tree score: " + bestMatchingTree.getTreeScore());
+										bestScore = bestMatchingScore;
+										logger.info(bestMatchingScore);
+									} else {
+										logger.info("Best returned solution was also the best covering solution.");
 									}
+									bestSolutionRecallStats.addValue(bestScore.recall);
+									bestSolutionPrecisionStats.addValue(bestScore.precision);
+									bestSolutionFMeasureStats.addValue(bestScore.fmeasure);
+									bestSolutionPredAccStats.addValue(bestScore.predAcc);
+									bestSolutionMathCorrStats.addValue(bestScore.mathCorr);
+
+									for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
+										if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
+											Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
+											break;
+										}
+									}
+
+									String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
+											filter.filter(bestMatchingTree.getTree()),
+											dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
+
+									if(write2DB) {
+										write2DB(sparqlQuery, nrOfExamples, examples, noise,
+												baseLineQuery, baselineScore,
+												heuristicName, measureName,
+												QueryFactory.create(learnedSPARQLQuery).toString(), score, runtimeBestSolution,
+												bestQuery, positionBestScore, bestScore);
+									}
+
+								} catch (Exception e) {
+									failed.set(true);
+									logger.error("Error occured for query\n" + sparqlQuery, e);
+									try {
+										StringWriter sw = new StringWriter();
+										PrintWriter pw = new PrintWriter(sw);
+										e.printStackTrace(pw);
+										Files.append(sparqlQuery + "\n" + sw.toString(), new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+									} catch (IOException e1) {
+										e1.printStackTrace();
+									}
+								} finally {
+									int cnt = currentNrOfFinishedRuns.incrementAndGet();
+									logger.info("***********Evaluation Progress:"
+											+ NumberFormat.getPercentInstance().format((double)cnt / totalNrOfQTLRuns)
+											+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
+											+ "***********");
 								}
-						});
+							});
 						
 						}
 						
@@ -714,6 +737,7 @@ public class QTLEvaluation {
 							result += "CBD generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getAvg() + "\n";
 							result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
 							result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
+							result += "Tree size(avg):\t" + treeSizeStats.getMean() + "\n";
 									
 							logger.info(result);
 							
@@ -774,7 +798,9 @@ public class QTLEvaluation {
 			}
 		}
 
-		conn.close();
+		if(write2DB) {
+			conn.close();
+		}
 
 		if(useEmailNotification) {
 			sendFinishedMail();
@@ -1069,23 +1095,32 @@ public class QTLEvaluation {
 		
 		// compute score
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestTree.getTree(), dataset.getBaseIRI(), dataset.getPrefixMapping());
-		System.out.println(learnedSPARQLQuery);
-		
+
 		Score score = computeScore(targetSPARQLQuery, bestTree.getTree(), noise);
 		return new Pair<>(bestTree, score);
+	}
+
+	private String hash(String query) {
+		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
 	
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
 		logger.info("Generating examples for query ..." + sparqlQuery);
-		HashFunction hf = Hashing.md5();
 
+		// generate hash for the query
+		String queryHash = hash(sparqlQuery);
+
+		// create examples folder
 		File examplesDirectory = new File(cacheDirectory, "examples");
 		examplesDirectory.mkdirs();
-		
+
+		// create sub-folder for the query
+		examplesDirectory = new File(examplesDirectory, queryHash);
+		examplesDirectory.mkdirs();
+
 		// get all pos. examples, i.e. resources returned by the query 
 		List<String> posExamples;
-		String hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).hash().toString();
-		File file = new File(examplesDirectory, hash + ".tp");
+		File file = new File(examplesDirectory, "examples.tp");
 		if(file.exists()) {
 			posExamples = Files.readLines(file, Charsets.UTF_8);
 		} else {
@@ -1098,8 +1133,7 @@ public class QTLEvaluation {
 		// get some neg. examples, i.e. resources not returned by the query
 		int maxNrOfNegExamples = 100;
 		List<String> negExamples;
-		hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).putInt(maxNrOfNegExamples).toString();
-		file = new File(examplesDirectory,  hash + ".tn");
+		file = new File(examplesDirectory, "examples-" + maxNrOfNegExamples + ".tn");
 		if(file.exists()) {
 			negExamples = Files.readLines(file, Charsets.UTF_8);
 		} else {
@@ -1112,8 +1146,7 @@ public class QTLEvaluation {
 		// get some noise candidates, i.e. resources used as false pos. examples
 		int maxNrOfNoiseCandidates = 100;
 		List<String> noiseCandidates;
-		hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).putInt(maxNrOfNoiseCandidates).toString();
-		file = new File(examplesDirectory, hash + ".fp");
+		file = new File(examplesDirectory, "examples-" + maxNrOfNoiseCandidates + ".fp");
 		if(file.exists()) {
 			noiseCandidates = Files.readLines(file, Charsets.UTF_8);
 		} else {
@@ -1294,7 +1327,7 @@ public class QTLEvaluation {
 			negExamplesSet.addAll(result);
 		} else {
 			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-			Set<Set<Triple>> powerSet = new TreeSet<>((Comparator<Set<Triple>>) (o1, o2) -> {
+			Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> {
 				return ComparisonChain.start()
 						.compare(o1.size(), o2.size())
 						.compare(o1.hashCode(), o2.hashCode())
@@ -1412,6 +1445,10 @@ public class QTLEvaluation {
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
 
+		// keep track of tree size
+		int size = QueryTreeUtils.getNrOfNodes(tree);
+		treeSizeStats.addValue(size);
+
 		return tree;
 	}
 	
@@ -1496,7 +1533,7 @@ public class QTLEvaluation {
 			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
 				fixedTriplePatterns.add(tp);
 			} else {
-				Set<Triple> cluster = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+				Set<Triple> cluster = new TreeSet<>((o1, o2) -> {
 					return ComparisonChain.start().
 					compare(o1.getSubject().toString(), o2.getSubject().toString()).
 					compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
@@ -1552,12 +1589,10 @@ public class QTLEvaluation {
 		for (Set<Triple> cluster : newClusters) {
 			for(int i = 1; i < maxTreeDepth; i++) {
 				Set<Triple> additionalTriples = new HashSet<>();
-				for (Triple triple : cluster) {
-					if(triple.getObject().isVariable()){
-						Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
-						additionalTriples.addAll(triples);
-					}
-				}
+				cluster.stream().filter(triple -> triple.getObject().isVariable()).forEach(triple -> {
+					Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
+					additionalTriples.addAll(triples);
+				});
 				cluster.addAll(additionalTriples);
 			}
 		}
@@ -1688,7 +1723,7 @@ public class QTLEvaluation {
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> {
 			return ComparisonChain.start().
 			compare(o1.getSubject().toString(), o2.getSubject().toString()).
 			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
@@ -1799,7 +1834,7 @@ public class QTLEvaluation {
 	}
 	
 	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
-		
+		logger.trace("Computing score...");
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 		
 		final ExprVar s = new ExprVar("s");
@@ -1834,7 +1869,7 @@ public class QTLEvaluation {
 		q2Count.setQuerySelectType();
 		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q2Count.setQueryPattern(q2.getQueryPattern());
-		logger.info("Learned query:\n" + q2Count);
+		logger.trace("Learned query:\n" + q2Count);
 		q2Count = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q2Count);
 		qe = qef.createQueryExecution(q2Count);
 		rs = qe.execSelect();
@@ -1858,7 +1893,7 @@ public class QTLEvaluation {
 				whereClause.addElement(el);
 			}
 			q12.setQueryPattern(whereClause);
-			logger.info("Combined query:\n" + q12);
+			logger.trace("Combined query:\n" + q12);
 			q12 = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q12);
 			qe = qef.createQueryExecution(q12);
 			rs = qe.execSelect();
@@ -1866,12 +1901,14 @@ public class QTLEvaluation {
 			overlap = qs.getLiteral(cntVar.getName()).getInt();
 			qe.close();
 		}
-		
+
 		int tp = overlap;
 		int fp = learnedCnt - overlap;
 		int fn = referenceCnt - overlap;
 		int tn = kbSize - tp - fp - fn;
-		
+
+		logger.trace("finished computing score.");
+
 		return score(tp, fp, tn, fn);
 	}
 	
@@ -2004,7 +2041,7 @@ public class QTLEvaluation {
 		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of processed queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
-		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
+		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
 		OptionSpec<String> exampleIntervalsSpec = parser.accepts("examples", "comma-separated list of number of examples used in evaluation").withRequiredArg().ofType(String.class);

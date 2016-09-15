@@ -167,7 +167,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		}
 
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
+//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 
 		return qef;
 	}

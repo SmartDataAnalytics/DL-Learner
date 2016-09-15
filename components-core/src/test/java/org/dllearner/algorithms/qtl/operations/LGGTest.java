@@ -100,7 +100,7 @@ private static final String baseIRI = "http://test.org/";
 		lggGenSimple = new LGGGeneratorSimple();
 		lggGenRDFS = new LGGGeneratorRDFS(reasoner);
 	}
-	
+
 	@Test
 	public void testPropertyEntailment() {
 		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/a1", model);

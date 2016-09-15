@@ -98,7 +98,7 @@ public class Helper {
 	}
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
+	public static SortedSet<OWLIndividual> getIndividualSet(Collection<String> individuals) {
 		return individuals.stream()
 				.map(s -> df.getOWLNamedIndividual(IRI.create(s)))
 				.collect(Collectors.toCollection(TreeSet::new));
@@ -115,7 +115,7 @@ public class Helper {
 	}
 
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<String> getStringSet(Set<OWLIndividual> individuals) {
+	public static SortedSet<String> getStringSet(Collection<OWLIndividual> individuals) {
 		return individuals.stream().
 				map(OWLIndividual::toStringID).
 				collect(Collectors.toCollection(TreeSet::new));

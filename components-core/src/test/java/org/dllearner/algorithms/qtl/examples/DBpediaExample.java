@@ -134,7 +134,7 @@ public class DBpediaExample {
 		Resource sp = model.createResource("SP");
 		Resource france = model.createResource("France");
 		Resource person = model.createResource("Person");
-		Resource architekt = model.createResource("Architekt");
+		Resource architekt = model.createResource("Architect");
 		
 		Property birthPlace = model.createProperty("birthPlace");
 		Property leaderParty = model.createProperty("leaderParty");
