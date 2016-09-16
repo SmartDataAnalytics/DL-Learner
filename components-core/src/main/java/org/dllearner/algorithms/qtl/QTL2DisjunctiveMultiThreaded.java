@@ -322,6 +322,8 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 		logger.info("Running...");
 		nanoStartTime = System.nanoTime();
 
+//		currentPosExampleTrees.stream().map(RDFResourceTree::getStringRepresentation).forEach(System.out::println);
+
 		// if noise=0 and there are no neg. examples, we can simply compute the LGG for all pos. examples
 		if(noise == 0 && currentNegExampleTrees.isEmpty()) {
 			lggGenerator.setTimeout(getRemainingRuntimeInMilliseconds(), TimeUnit.MILLISECONDS);
@@ -1224,7 +1226,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 	private Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
 		try {
-//			System.out.println(baseQueryTrees);
+//			System.err.println(baseQueryTrees);
 
 			LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
 			// compute the LGG
