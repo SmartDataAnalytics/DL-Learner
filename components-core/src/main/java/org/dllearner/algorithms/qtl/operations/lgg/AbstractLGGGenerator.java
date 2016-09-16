@@ -18,22 +18,33 @@
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
+import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.jena.graph.Node;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.operations.StoppableOperation;
+import org.dllearner.algorithms.qtl.operations.TimeoutableOperation;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
+ * An LGG generator that can be stopped and given a timeout.
+ *
  * @author Lorenz Buehmann
  *
  */
-public abstract class AbstractLGGGenerator implements LGGGenerator {
+public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOperation, TimeoutableOperation {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -87,12 +98,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 	}
 
 	@Override
-	public long getTimeout() {
-		return timeoutMillis;
-	}
-
-	@Override
-	public void abort() {
+	public void stop() {
 		stop = true;
 	}
 
@@ -118,5 +124,21 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 	}
 	
 	protected abstract RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters);
+
+	protected List<Set<Node>> getRelatedPredicates(RDFResourceTree tree1, RDFResourceTree tree2) {
+		List<Set<Node>> commonEdges = new ArrayList<>();
+
+		// outgoing edges
+		commonEdges.add(Sets.intersection(
+				tree1.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet()),
+				tree2.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet())));
+
+		// incoming edges
+		commonEdges.add(Sets.intersection(
+				tree1.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet()),
+				tree2.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet())));
+
+		return commonEdges;
+	}
 
 }

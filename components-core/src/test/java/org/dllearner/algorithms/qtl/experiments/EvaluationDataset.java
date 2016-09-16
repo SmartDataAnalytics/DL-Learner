@@ -33,7 +33,7 @@ import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -108,10 +108,16 @@ public abstract class EvaluationDataset {
 	 * @param file the file
 	 */
 	public void saveToDisk(File file) throws IOException {
+		// adjust the PREFIX declarations
 		sparqlQueries.entrySet().stream().forEach(entry -> adjustPrefixes(entry.getValue()));
-		System.out.println(file);
 
-		Files.write(file.toPath(),
+		// create directory and file if not exist
+		java.nio.file.Path pathToFile = file.toPath();
+		Files.createDirectories(pathToFile.getParent());
+		Files.createFile(pathToFile);
+
+		// write ID + queries to disk
+		Files.write(pathToFile,
 				sparqlQueries.entrySet().stream()
 						.map(entry -> entry.getKey() + ", " + entry.getValue().toString().replace("\n", " "))
 						.collect(Collectors.toList()));
