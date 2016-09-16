@@ -35,10 +35,7 @@ import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorExt;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
+import org.dllearner.algorithms.qtl.operations.lgg.*;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.core.*;
@@ -79,7 +76,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	private SparqlEndpointKS ks;
 
 //	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
-	private LGGGenerator lggGenerator;
+	private AbstractLGGGenerator lggGenerator;
 
 	private QueryTreeFactory treeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -389,7 +386,6 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 		postProcess();
 
-		long nanoEndTime = System.nanoTime();
 		logger.info("Finished in {}ms.", getCurrentRuntimeInMilliSeconds());
 		logger.info("{} descriptions tested", expressionTests);
 		if(currentBestSolution != null) {

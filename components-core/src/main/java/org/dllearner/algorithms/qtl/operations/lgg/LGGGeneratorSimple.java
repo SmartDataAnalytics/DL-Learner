@@ -90,14 +90,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 		// 2. compare the edges
 		// we only have to compare edges contained in both trees
 		// outgoing edges
-		List<Set<Node>> commonEdges = new ArrayList<>();
-		commonEdges.add(Sets.intersection(
-				tree1.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet()),
-				tree2.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet())));
-		// incoming edges
-		commonEdges.add(Sets.intersection(
-				tree1.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet()),
-				tree2.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet())));
+		List<Set<Node>> commonEdges = getRelatedPredicates(tree1, tree2);
 
 		for (Set<Node> edges : commonEdges) {
 			for (Node edge : edges) {
