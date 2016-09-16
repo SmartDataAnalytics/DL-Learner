@@ -21,7 +21,6 @@ package org.dllearner.algorithms.qtl.operations.lgg;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A generator of the Least General Generalization (LGG) for RDF query trees.
@@ -85,22 +84,4 @@ public interface LGGGenerator {
 		}
 		return lgg;
 	}
-
-	/**
-	 * Set a timeout on the query execution.
-	 *
-	 * @param timeout the timeout value
-	 * @param timeoutUnits the timeout time unit
-	 */
-	void setTimeout(long timeout, TimeUnit timeoutUnits);
-
-	/**
-	 * @return the timeout in milliseconds
-	 */
-	long getTimeout();
-
-	/**
-	 * Stop in mid execution.
-	 */
-	void abort();
 }
