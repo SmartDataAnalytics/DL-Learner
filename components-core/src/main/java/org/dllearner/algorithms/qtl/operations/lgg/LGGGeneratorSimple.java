@@ -99,14 +99,22 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 					break;
 				}
 				Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+				List<RDFResourceTree> children1 = tree1.getChildren(edge);
+				List<RDFResourceTree> children2 = tree2.getChildren(edge);
+
+				System.out.println(edge);
+				System.out.println(children1.size());
+				System.out.println(children2.size());
+
 				// loop over children of first tree
-				for (RDFResourceTree child1 : tree1.getChildren(edge)) {
+				for (RDFResourceTree child1 : children1) {
 					if(stop || isTimeout()) {
 						complete = false;
 						break;
 					}
 					// loop over children of second tree
-					for (RDFResourceTree child2 : tree2.getChildren(edge)) {
+					for (RDFResourceTree child2 : children2) {
 						if(stop || isTimeout()) {
 							complete = false;
 							break;

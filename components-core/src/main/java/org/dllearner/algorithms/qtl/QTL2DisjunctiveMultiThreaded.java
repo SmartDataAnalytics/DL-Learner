@@ -1231,7 +1231,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 			LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
 			// compute the LGG
 			MonitorFactory.getTimeMonitor("lgg").start();
-			((LGGGeneratorSimple) lggGenerator).setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
+			lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
 			RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
 			MonitorFactory.getTimeMonitor("lgg").stop();
 //			System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
