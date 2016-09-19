@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -90,7 +91,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
-//		System.out.println(query);
+		System.out.println(QueryFactory.create(query));
 
 		if(workaround) {
 			return constructWithReplacement(endpoint, query);
@@ -150,7 +151,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	private void append(StringBuilder query, CBDStructureTree tree, String rootVar, boolean isConstructTemplate) {
 		// use optimization if enabled
 		if(useUnionOptimization) {
-			appendUnionOptimized(query, tree, rootVar, isConstructTemplate);
+			appendUnionOptimized2(query, tree, rootVar, isConstructTemplate);
 			return;
 		}
 
@@ -230,6 +231,57 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		query.append(queryPart);
 	}
 
+	private void appendUnionOptimized2(StringBuilder query, CBDStructureTree tree, String rootVar, boolean isConstructTemplate) {
+		List<List<CBDStructureTree>> paths = QueryTreeUtils.getPathsToLeafs(tree);
+
+		// get all sub-paths
+		paths = paths.stream().flatMap(path -> {
+							   List<List<CBDStructureTree>> subPaths = new ArrayList<>();
+							   for (int length = 1; length <= path.size(); length++) {
+								   subPaths.add(path.subList(0, length));
+							   }
+							   return subPaths.stream();
+						   }).collect(Collectors.toList());
+
+		String rdfTypeFilter = "FILTER(%s != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n";
+
+
+		List<String> tpClusters = paths.stream().map(path -> {
+			StringBuilder currentVar = new StringBuilder(rootVar);
+			StringBuilder tps = new StringBuilder();
+			AtomicBoolean lastOut = new AtomicBoolean(false);
+
+				path.forEach(node -> {
+					// append triple pattern
+					String var;
+					if (node.isInNode()) {
+						if(lastOut.get() && !isConstructTemplate) {
+							tps.append(String.format(rdfTypeFilter, "?p_" + (predIndex.get() - 1)));
+						}
+						var = "?x_in" + inIndex.getAndIncrement();
+						String predVar = "?p" + predIndex.getAndIncrement();
+						tps.append(String.format("%s %s %s .\n", var, predVar, currentVar.toString()));
+
+					} else {
+						var = "?x_out" + outIndex.getAndIncrement();
+						String predVar = "?p" + predIndex.getAndIncrement();
+						tps.append(String.format("%s %s %s .\n", currentVar.toString(), predVar, var));
+						lastOut.set(true);
+					}
+					currentVar.setLength(0);
+					currentVar.append(var);
+				});
+
+				return tps.toString();
+			}).collect(Collectors.toList());
+
+
+		String queryPart = tpClusters.stream()
+				.map(s -> isConstructTemplate ? s : "{" + s + "}")
+				.collect(Collectors.joining(isConstructTemplate ? "" : " UNION "));
+		query.append(queryPart);
+	}
+
 	/**
 	 * Reset variables indices
 	 */
@@ -279,31 +331,33 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 				"?in_0 dbo:starring    ?uri . ?in_1 dbo:starring    ?in_0 . ?in_0 dbo:book    ?o_0 ." +
 				"  }";
 		CBDStructureTree cbdTree = QueryUtils.getOptimalCBDStructure(QueryFactory.create(query));
+		cbdTree = CBDStructureTree.fromTreeString("root:[in:[out:[]],out:[in:[],out:[out:[]]]]");
+
 		System.out.println(cbdTree.toStringVerbose());
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://biomedical.org");
+		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.setQueryDelay(0);
 		ks.setUseCache(false);
 		ks.setRetryCount(0);
 		ks.init();
 
-		QueryExecutionFactory qef = ks.getQueryExecutionFactory();
-
-		String q = "CONSTRUCT {\n" +
-				"<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
-				"} WHERE {\n" +
-				"{<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
-				"}}";
-		Model model = ModelFactory.createDefaultModel();
-		// Parser to first error or warning.
-		ErrorHandler errHandler = ErrorHandlerFactory.errorHandlerWarn;
-		model.getReader().setProperty("error-mode","lax");
-
-		System.out.println(model.size());
-
-
-		System.exit(0);
+//		QueryExecutionFactory qef = ks.getQueryExecutionFactory();
+//
+//		String q = "CONSTRUCT {\n" +
+//				"<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
+//				"} WHERE {\n" +
+//				"{<http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/2232> ?p0 ?x_out0 .\n" +
+//				"}}";
+//		Model model = ModelFactory.createDefaultModel();
+//		// Parser to first error or warning.
+//		ErrorHandler errHandler = ErrorHandlerFactory.errorHandlerWarn;
+//		model.getReader().setProperty("error-mode","lax");
+//
+//		System.out.println(model.size());
+//
+//
+//		System.exit(0);
 		TreeBasedConciseBoundedDescriptionGenerator cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(ks.getQueryExecutionFactory());
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Dan_Gauthier", cbdTree);
 		System.out.println(cbd.size());

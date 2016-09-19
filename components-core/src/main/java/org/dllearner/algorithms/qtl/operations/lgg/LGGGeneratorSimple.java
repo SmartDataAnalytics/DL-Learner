@@ -18,39 +18,17 @@
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
-import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import com.google.common.collect.Sets;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
-import org.dllearner.algorithms.qtl.util.StopURIsOWL;
-import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.graph.Node;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.sparql.vocabulary.FOAF;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An LGG generator based on syntax and structure only, i.e. without taking into account any type of
@@ -61,101 +39,26 @@ import org.apache.jena.sparql.vocabulary.FOAF;
  */
 public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
-	private boolean complete = true;
-	
 	@Override
-	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
-		subCalls++;
-		
-		// 1. compare the root node
-		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
-		if ((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())) {
-			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
-			return tree1;
-		}
-		
-		// handle literal nodes with same datatype
-		if (tree1.isLiteralNode() && tree2.isLiteralNode()) {
-			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
-			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
+	protected List<Set<Node>> getRelatedPredicates(RDFResourceTree tree1, RDFResourceTree tree2) {
+		List<Set<Node>> commonEdges = new ArrayList<>();
 
-			if (d1 != null && d1.equals(d2)) {
-				return new RDFResourceTree(d1);
-			}
-		}
-		
-		// else create new empty tree
-		RDFResourceTree lgg = new RDFResourceTree();
-
-		// 2. compare the edges
-		// we only have to compare edges contained in both trees
 		// outgoing edges
-		List<Set<Node>> commonEdges = getRelatedPredicates(tree1, tree2);
+		commonEdges.add(Sets.intersection(
+				tree1.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet()),
+				tree2.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet())));
 
-		for (Set<Node> edges : commonEdges) {
-			for (Node edge : edges) {
-				if(stop || isTimeout()) {
-					complete = false;
-					break;
-				}
-				Set<RDFResourceTree> addedChildren = new HashSet<>();
+		// incoming edges
+		commonEdges.add(Sets.intersection(
+				tree1.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet()),
+				tree2.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet())));
 
-				List<RDFResourceTree> children1 = tree1.getChildren(edge);
-				List<RDFResourceTree> children2 = tree2.getChildren(edge);
-
-				System.out.println(edge);
-				System.out.println(children1.size());
-				System.out.println(children2.size());
-
-				// loop over children of first tree
-				for (RDFResourceTree child1 : children1) {
-					if(stop || isTimeout()) {
-						complete = false;
-						break;
-					}
-					// loop over children of second tree
-					for (RDFResourceTree child2 : children2) {
-						if(stop || isTimeout()) {
-							complete = false;
-							break;
-						}
-						// compute the LGG
-						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
-
-						// check if there was already a more specific child computed before
-						// and if so don't add the current one
-						boolean add = true;
-						for (Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext() && !stop && !isTimeout(); ) {
-							RDFResourceTree addedChild = it.next();
-							if (QueryTreeUtils.isSubsumedBy(addedChild, lggChild)) {
-								//							logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
-								//									addedChild.getStringRepresentation(),
-								//									lggChild.getStringRepresentation());
-								add = false;
-								break;
-							} else if (QueryTreeUtils.isSubsumedBy(lggChild, addedChild)) {
-								//							logger.trace("Removing child node: {} is subsumed by previously added child {}.",
-								//									lggChild.getStringRepresentation(),
-								//									addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, edge);
-								it.remove();
-							}
-						}
-						if (add) {
-							lgg.addChild(lggChild, edge);
-							addedChildren.add(lggChild);
-							//						logger.trace("Adding child {}", lggChild.getStringRepresentation());
-						}
-					}
-				}
-			}
-		}
-
-		return lgg;
+		return commonEdges;
 	}
 
-	public boolean isComplete() {
-		return complete;
+	@Override
+	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
+		return QueryTreeUtils.isSubsumedBy(tree1, tree2);
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -448,9 +448,8 @@ public class QueryTreeUtils {
       	 * @return
       	 */
           public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, AbstractReasonerComponent reasoner, boolean typeNode) {
-          	// 1.compare the root nodes
-          	
-          	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+          		// 1.compare the root nodes
+			  // (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
           	if(!tree1.isVarNode() && !tree2.isVarNode()) {
           		if(tree1.getData().equals(tree2.getData())) {
           			return true;

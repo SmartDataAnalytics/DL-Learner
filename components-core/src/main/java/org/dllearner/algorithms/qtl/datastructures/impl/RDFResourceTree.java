@@ -36,6 +36,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
+import org.dllearner.algorithms.qtl.util.NodeComparatorInv;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
 import com.google.common.collect.ComparisonChain;
@@ -70,18 +71,8 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
-    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator() {
-		@Override
-		public int compare(Node o1, Node o2) {
-			int val1 = o1 instanceof NodeInv ? 1 : 0;
-			int val2 = o2 instanceof NodeInv ? 1 : 0;
+    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparatorInv());
 
-			if(val1 == val2) {
-				return super.compare(o1, o2);
-			}
-			return val1 - val2;
-		}
-	});
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
     
