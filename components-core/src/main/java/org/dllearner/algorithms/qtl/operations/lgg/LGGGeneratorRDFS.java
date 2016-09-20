@@ -24,7 +24,6 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -48,9 +47,7 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.NonStandardReasoningServices;
-import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLProperty;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -75,107 +72,9 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		this.entailment = Entailment.RDFS;
 	}
 
-
-	
-	@Override
-	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
-		subCalls++;
-		
-		// 1. compare the root node
-		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
-		if((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())){
-			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
-			return tree1;
-		}
-		
-		// handle literal nodes with same datatype
-		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
-			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
-			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
-
-			if(d1 != null && d1.equals(d2)){
-				return new RDFResourceTree(d1);
-				// TODO collect literal values
-			}
-		}
-		
-		// else create new empty tree
-		RDFResourceTree lgg = new RDFResourceTree();
-		
-		// 2. compare the edges
-		// we only have to compare edges which are 
-		// a) contained in both trees
-		// b) related via subsumption, i.e. p1 ⊑ p2
-		
-		// get edges of tree 2 connected via subsumption
-		Set<Triple<Node, Node, Node>> relatedEdges = getRelatedEdges(tree1, tree2);
-		for (Triple<Node, Node, Node> entry : relatedEdges){
-			Node edge1 = entry.getLeft();//System.out.println("e1:" + edge1);
-			Node edge2 = entry.getMiddle();
-			Node lcs = entry.getRight();
-
-			Set<RDFResourceTree> addedChildren = new HashSet<>();
-
-			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
-					// loop over children of second tree
-					for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
-						RDFResourceTree lggChild;
-
-						// special case: rdf:type relation
-						if(edge1.equals(RDF.type.asNode())) {
-							if(QueryTreeUtils.isSubsumedBy(child1, child2, Entailment.RDFS)) {
-								lggChild = child2;
-							} else if(QueryTreeUtils.isSubsumedBy(child2, child1, Entailment.RDFS)) {
-								lggChild = child1;
-							} else {
-								lggChild = computeLGG(child1, child2, learnFilters);
-							}
-						} else {
-							// compute the LGG
-							lggChild = computeLGG(child1, child2, learnFilters);
-						}
-
-						// check if there was already a more specific child computed before
-						// and if so don't add the current one
-						boolean add = true;
-						for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
-							RDFResourceTree addedChild = it.next();
-							
-							if(QueryTreeUtils.isSubsumedBy(addedChild, lggChild, reasoner, edge1.equals(RDF.type.asNode()))){
-//								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
-//										addedChild.getStringRepresentation(),
-//										lggChild.getStringRepresentation());
-								add = false;
-								break;
-							} else if(QueryTreeUtils.isSubsumedBy(lggChild, addedChild, reasoner, edge1.equals(RDF.type.asNode()))){
-//								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
-//										lggChild.getStringRepresentation(),
-//										addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
-								it.remove();
-							} 
-						}
-						if(add){
-							lgg.addChild(lggChild, lcs);
-							addedChildren.add(lggChild);
-//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
-						} 
-					}
-			}
-		}
-		
-		return lgg;
-	}
-
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return false;
-	}
-
-	@Override
-	protected List<Set<Node>> getRelatedPredicates(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return null;
+		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.getEdgeToParent().equals(RDF.type));
 	}
 
 	@Override
@@ -191,10 +90,8 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		return tree;
 	}
 
-	/*
-		 * For each edge in tree 1 we compute the related edges in tree 2.
-		 */
-	private Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
+	@Override
+	protected Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
 		Set<Triple<Node, Node, Node>> result = new HashSet<>();
 		System.out.println(tree1 + "::::::" + tree2);
 
@@ -238,57 +135,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		result.addAll(builtInEntitiesCommon);
 
 		return result;
-	}
-
-	private Node getLeastCommonSubsumerClass(Node cls1, Node cls2) {
-		return null;
-	}
-
-	private Node getLeastCommonSubsumerProperty(Node p1, Node p2) {
-		OWLProperty lcs = getLeastCommonSubsumerProperty(reasoner,
-				OwlApiJenaUtils.asOWLEntity(p1, EntityType.OBJECT_PROPERTY),
-				OwlApiJenaUtils.asOWLEntity(p2, EntityType.OBJECT_PROPERTY));
-
-		if(lcs != null) {
-			return OwlApiJenaUtils.asNode(lcs);
-		}
-
-		return null;
-	}
-
-	public static OWLProperty getLeastCommonSubsumerProperty(AbstractReasonerComponent reasoner, OWLProperty p1, OWLProperty p2) {
-
-		if(p1.equals(p2)) {
-			return p1;
-		}
-
-		SortedSet<OWLProperty> superProperties1 = reasoner.getSuperProperties(p1);
-		if(superProperties1.contains(p2)) {
-			return p2;
-		}
-
-		SortedSet<OWLProperty> superProperties2 = reasoner.getSuperProperties(p2);
-		if(superProperties2.contains(p1)) {
-			return p1;
-		}
-
-		Sets.SetView<OWLProperty> intersection = Sets.intersection(superProperties1, superProperties2);
-
-		if(!intersection.isEmpty()) {
-			return intersection.iterator().next();
-		}
-
-		for (OWLProperty sup1 : superProperties1) {
-			for (OWLProperty sup2 : superProperties2) {
-				OWLProperty lcs = getLeastCommonSubsumerProperty(reasoner, sup1, sup2);
-
-				if(lcs != null) {
-					return lcs;
-				}
-			}
-		}
-
-		return null;
 	}
 
 	private boolean isBuiltInEntity(Node n) {
