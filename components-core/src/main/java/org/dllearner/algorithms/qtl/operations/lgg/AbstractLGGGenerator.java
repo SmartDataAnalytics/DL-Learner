@@ -18,24 +18,21 @@
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
-import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
-import org.dllearner.algorithms.qtl.QueryTreeUtils;
-import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.StoppableOperation;
 import org.dllearner.algorithms.qtl.operations.TimeoutableOperation;
-import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * An LGG generator that can be stopped and given a timeout.
@@ -95,18 +92,19 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 		// 1. compare the root node
 		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
-		if (!tree1.isVarNode() && tree1.getData().equals(tree2.getData())) {
+		if((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())){
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
 			return tree1;
 		}
 
 		// handle literal nodes with same datatype
-		if (tree1.isLiteralNode() && tree2.isLiteralNode()) {
+		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
 			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
-			if (d1 != null && d1.equals(d2)) {
+			if(d1 != null && d1.equals(d2)){
 				return new RDFResourceTree(d1);
+				// TODO collect literal values
 			}
 		}
 
@@ -114,65 +112,63 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		RDFResourceTree lgg = new RDFResourceTree();
 
 		// 2. compare the edges
-		// we only have to compare edges contained in both trees
-		// outgoing edges
-		List<Set<Node>> commonEdges = getRelatedPredicates(tree1, tree2);
+		// we only have to compare edges which are
+		// a) contained in both trees
+		// b) related via subsumption, i.e. p1 ⊑ p2
 
-		for (Set<Node> edges : commonEdges) {
-			for (Node edge : edges) {
+		// get edges of tree 2 connected via subsumption
+		Set<Triple<Node, Node, Node>> relatedEdges = getRelatedEdges(tree1, tree2);
+		for (Triple<Node, Node, Node> entry : relatedEdges){
+			if(stop || isTimeout()) {
+				complete = false;
+				break;
+			}
+
+			Node edge1 = entry.getLeft();
+			Node edge2 = entry.getMiddle();
+			Node lcs = entry.getRight();
+
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+			// loop over children of first tree
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
 				if(stop || isTimeout()) {
 					complete = false;
 					break;
 				}
-				Set<RDFResourceTree> addedChildren = new HashSet<>();
-
-				List<RDFResourceTree> children1 = tree1.getChildren(edge);
-				List<RDFResourceTree> children2 = tree2.getChildren(edge);
-
-				System.out.println(edge);
-				System.out.println(children1.size());
-				System.out.println(children2.size());
-
-				// loop over children of first tree
-				for (RDFResourceTree child1 : children1) {
+				// loop over children of second tree
+				for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
 					if(stop || isTimeout()) {
 						complete = false;
 						break;
 					}
-					// loop over children of second tree
-					for (RDFResourceTree child2 : children2) {
-						if(stop || isTimeout()) {
-							complete = false;
+
+					RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
+
+					// check if there was already a more specific child computed before
+					// and if so don't add the current one
+					boolean add = true;
+					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
+						RDFResourceTree addedChild = it.next();
+
+						if(isSubTreeOf(addedChild, lggChild)){
+//								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
+//										addedChild.getStringRepresentation(),
+//										lggChild.getStringRepresentation());
+							add = false;
 							break;
+						} else if(isSubTreeOf(lggChild, addedChild)){
+//								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
+//										lggChild.getStringRepresentation(),
+//										addedChild.getStringRepresentation());
+							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
+							it.remove();
 						}
-						// compute the LGG
-						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
-
-						// check if there was already a more specific child computed before
-						// and if so don't add the current one
-						boolean add = true;
-						for (Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext() && !stop && !isTimeout(); ) {
-							RDFResourceTree addedChild = it.next();
-
-							if (isSubTreeOf(addedChild, lggChild)) {
-								//							logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
-								//									addedChild.getStringRepresentation(),
-								//									lggChild.getStringRepresentation());
-								add = false;
-								break;
-							} else if (isSubTreeOf(lggChild, addedChild)) {
-								//							logger.trace("Removing child node: {} is subsumed by previously added child {}.",
-								//									lggChild.getStringRepresentation(),
-								//									addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, edge);
-								it.remove();
-							}
-						}
-						if (add) {
-							lgg.addChild(lggChild, edge);
-							addedChildren.add(lggChild);
-							//						logger.trace("Adding child {}", lggChild.getStringRepresentation());
-						}
+					}
+					if(add){
+						lgg.addChild(lggChild, lcs);
+						addedChildren.add(lggChild);
+//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 					}
 				}
 			}
@@ -192,7 +188,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 	}
 
 	protected boolean isTimeout() {
-		return System.currentTimeMillis() - startTime >= timeoutMillis;
+		return timeoutMillis > 0 && System.currentTimeMillis() - startTime >= timeoutMillis;
 	}
 
 	public boolean isComplete() {
@@ -216,6 +212,6 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 	protected abstract boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2);
 	
-	protected abstract List<Set<Node>> getRelatedPredicates(RDFResourceTree tree1, RDFResourceTree tree2);
+	protected abstract Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2);
 
 }

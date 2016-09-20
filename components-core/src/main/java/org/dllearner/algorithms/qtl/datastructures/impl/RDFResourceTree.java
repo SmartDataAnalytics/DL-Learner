@@ -210,9 +210,30 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public List<RDFResourceTree> getChildren(Node edge) {
 		return edge2Children.get(edge);
 	}
-	
+
+
+	/**
+	 * Returns the edge from the current node to the given child node.
+	 *
+	 * @param child the child node
+	 * @return the edge
+	 */
 	public Node getEdgeToChild(RDFResourceTree child) { 
 		return child2Edge.get(child);
+	}
+
+	/**
+	 * Returns the edge from the parent node to the current node. If the current node is the root node, i.e.
+	 * there is no parent, it will return <code>null</code> instead.
+	 *
+	 * @return the edge from the parent
+	 */
+	public Node getEdgeToParent() {
+		RDFResourceTree parent = getParent();
+		if(parent != null) {
+			return parent.getEdgeToChild(this);
+		}
+		return null;
 	}
 	
 	/**

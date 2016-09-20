@@ -19,12 +19,21 @@
 package org.dllearner.algorithms.qtl.operations.lgg;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -40,20 +49,11 @@ import java.util.stream.Collectors;
 public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
 	@Override
-	protected List<Set<Node>> getRelatedPredicates(RDFResourceTree tree1, RDFResourceTree tree2) {
-		List<Set<Node>> commonEdges = new ArrayList<>();
-
-		// outgoing edges
-		commonEdges.add(Sets.intersection(
-				tree1.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet()),
-				tree2.getEdges().stream().filter(e -> !(e instanceof NodeInv)).collect(Collectors.toSet())));
-
-		// incoming edges
-		commonEdges.add(Sets.intersection(
-				tree1.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet()),
-				tree2.getEdges().stream().filter(e -> e instanceof NodeInv).collect(Collectors.toSet())));
-
-		return commonEdges;
+	protected Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
+		return Sets.intersection(tree1.getEdges(), tree2.getEdges())
+				.stream()
+				.map(e -> Triple.of(e, e, e))
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -62,6 +62,25 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+		String data = "@base <http://foo.bar/> ." +
+				"<a> <p1> <b> .\n" +
+				"<c> <p2> <b> .\n" +
+				"<c> <p3> <d> .";
+		Model model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(model, new StringReader(data), "NULL", Lang.TURTLE);
+
+		model.write(System.out);
+
+		String q = "" +
+				"BASE <http://foo.bar/> ASK   \n" +
+				"WHERE {\n" +
+				"  <a>  ((<>|!<>)|^(<>|!<>))* <d> .\n" +
+				"}";
+
+		System.out.println(QueryExecutionFactory.create(q, model).execAsk());
+//		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(q, model).execSelect()));
+
 		// knowledge base
 //		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		QueryExecutionFactory qef = FluentQueryExecutionFactory
@@ -114,8 +133,8 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 //		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
 //		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
 
-		Node edge = NodeFactory.createURI("p");
-		Node edgeInv = new NodeInv(NodeFactory.createURI("p"));
+		Node edge = NodeFactory.createURI("urn:p");
+		Node edgeInv = new NodeInv(edge);
 
 		RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("urn:a"));
 		tree1.addChild(new RDFResourceTree(NodeFactory.createURI("urn:c")), edge);
