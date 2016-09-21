@@ -3,13 +3,8 @@ package org.dllearner.utilities;
 import com.google.common.collect.Sets;
 import org.apache.jena.graph.Node;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import java.io.File;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -74,7 +69,7 @@ public class NonStandardReasoningServices {
 
 		// depending on the entity type define the method to get the direct parents
 		EntityType<?> entityType = e1.getEntityType();
-		Function<E, SortedSet<E>> f = null;
+		Function<E, SortedSet<E>> f;
 		if(entityType == EntityType.CLASS) {
 			f = e -> (SortedSet<E>) reasoner.getSuperClasses((OWLClass) e).stream()
 						.filter(ce -> !ce.isAnonymous())

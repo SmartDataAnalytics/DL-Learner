@@ -65,7 +65,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private final int id;
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
-	private static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
+	public static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
 	
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
@@ -75,7 +75,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
-    
+
+
+	public static RDFResourceTree newVarNode() {
+		return new RDFResourceTree();
+	}
+
+	public static RDFResourceTree newLiteralNode() {
+		return new RDFResourceTree(DEFAULT_LITERAL_NODE);
+	}
+
     
     /**
      * Creates an empty resource tree with a default variable as label.
