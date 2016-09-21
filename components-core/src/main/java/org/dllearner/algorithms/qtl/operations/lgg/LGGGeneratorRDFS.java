@@ -74,7 +74,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.getEdgeToParent().equals(RDF.type));
+		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, !tree1.isRoot() && tree1.getEdgeToParent().equals(RDF.type));
 	}
 
 	@Override
@@ -93,7 +93,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	@Override
 	protected Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
 		Set<Triple<Node, Node, Node>> result = new HashSet<>();
-		System.out.println(tree1 + "::::::" + tree2);
 
 		Predicate<Node> isBuiltIn = n -> isBuiltInEntity(n);
 
@@ -108,6 +107,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 		for (Node e1 : split1.get(false)) {
 			boolean dataproperty = tree1.getChildren(e1).iterator().next().isLiteralNode();
+			EntityType entityType = dataproperty ? EntityType.DATA_PROPERTY : EntityType.OBJECT_PROPERTY;
 
 			split2.get(false).stream()
 					.filter(e2 -> {
@@ -115,9 +115,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 						return dataproperty && child.isLiteralNode() || !dataproperty && !child.isLiteralNode();
 					} )
 					.forEach(e2 -> {
-						System.out.println(e1 + "---" + e2);
-						Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner, e1, e2,
-																					   EntityType.OBJECT_PROPERTY);
+						Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner, e1, e2, entityType);
 
 						if(lcs != null) {
 							result.add(Triple.of(e1, e2, lcs));
@@ -196,6 +194,8 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
 		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
+
+		System.out.println(trees.get(0).getStringRepresentation());
 	}
 
 }

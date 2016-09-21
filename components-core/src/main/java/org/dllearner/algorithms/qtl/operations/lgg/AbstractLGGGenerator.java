@@ -23,6 +23,7 @@ import com.jamonapi.MonitorFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.StoppableOperation;
 import org.dllearner.algorithms.qtl.operations.TimeoutableOperation;
@@ -90,25 +91,24 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 
-		// 1. compare the root node
-		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
+		// 1. compare the root nodes
+		// a) if both root nodes have same URI or literal value, just return one of the two trees as LGG
 		if((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())){
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
 			return tree1;
 		}
 
-		// handle literal nodes with same datatype
+		// b) handle literal nodes
 		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
-			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
-			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
-
-			if(d1 != null && d1.equals(d2)){
-				return new RDFResourceTree(d1);
-				// TODO collect literal values
-			}
+			return processLiteralNodes(tree1, tree2);
 		}
 
-		// else create new empty tree
+		// c) handle class nodes
+		if(!tree1.isRoot() && tree1.getEdgeToParent().equals(RDF.type)) {
+			return processClassNodes(tree1, tree2);
+		}
+
+		// d) else create new empty tree
 		RDFResourceTree lgg = new RDFResourceTree();
 
 		// 2. compare the edges
@@ -175,6 +175,78 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		}
 
 		return lgg;
+	}
+
+	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
+		RDFResourceTree lgg = new RDFResourceTree();
+
+		Set<Triple<Node, Node, Node>> relatedEdges = getRelatedEdges(tree1, tree2);
+		for (Triple<Node, Node, Node> entry : relatedEdges) {
+			if (stop || isTimeout()) {
+				complete = false;
+				break;
+			}
+			Node edge1 = entry.getLeft();
+			Node edge2 = entry.getMiddle();
+			Node lcs = entry.getRight();
+
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+			// loop over children of first tree
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
+				if(stop || isTimeout()) {
+					complete = false;
+					break;
+				}
+				// loop over children of second tree
+				for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
+					if(stop || isTimeout()) {
+						complete = false;
+						break;
+					}
+
+					RDFResourceTree lggChild = computeLGG(child1, child2, false);
+
+					// check if there was already a more specific child computed before
+					// and if so don't add the current one
+					boolean add = true;
+					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
+						RDFResourceTree addedChild = it.next();
+
+						if(isSubTreeOf(addedChild, lggChild)){
+//								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
+//										addedChild.getStringRepresentation(),
+//										lggChild.getStringRepresentation());
+							add = false;
+							break;
+						} else if(isSubTreeOf(lggChild, addedChild)){
+//								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
+//										lggChild.getStringRepresentation(),
+//										addedChild.getStringRepresentation());
+							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
+							it.remove();
+						}
+					}
+					if(add){
+						lgg.addChild(lggChild, lcs);
+						addedChildren.add(lggChild);
+//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
+					}
+				}
+			}
+		}
+		return lgg;
+	}
+
+	protected RDFResourceTree processLiteralNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
+		RDFDatatype d1 = tree1.getData().getLiteralDatatype();
+		RDFDatatype d2 = tree2.getData().getLiteralDatatype();
+
+		if(d1 != null && d1.equals(d2)){
+			return new RDFResourceTree(d1);
+			// TODO collect literal values
+		}
+		return RDFResourceTree.newLiteralNode();
 	}
 
 	@Override
