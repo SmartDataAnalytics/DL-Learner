@@ -251,6 +251,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		reasoner.setPrecomputeObjectPropertyHierarchy(true);
 		reasoner.setPrecomputeDataPropertyHierarchy(true);
 		reasoner.init();
+		reasoner.precomputePropertyDomains();
 		LGGGenerator lggGen = new LGGGeneratorRDFS(reasoner);
 		RDFResourceTree lgg = lggGen.getLGG(trees);
 

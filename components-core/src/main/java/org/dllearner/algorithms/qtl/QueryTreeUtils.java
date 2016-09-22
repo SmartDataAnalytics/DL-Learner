@@ -45,6 +45,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
+import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -795,6 +796,26 @@ public class QueryTreeUtils {
 			}
 		}
     }
+
+    public static RDFResourceTree materializePropertyDomains(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		RDFResourceTree newTree = new RDFResourceTree(tree.getData());
+
+		tree.getEdges().forEach(edge -> {
+			List<RDFResourceTree> children = tree.getChildren(edge);
+
+			children.forEach(child -> {
+				RDFResourceTree newChild = materializePropertyDomains(child, reasoner);
+				newTree.addChild(newChild, edge);
+			});
+
+			// add the rdf:type statements for the property domain(s)
+			reasoner.getDomain()
+			newTree.addChild();
+
+		});
+
+		return newTree;
+	}
 	
 	/**
 	 * Remove trivial statements according to the given entailment semantics:
