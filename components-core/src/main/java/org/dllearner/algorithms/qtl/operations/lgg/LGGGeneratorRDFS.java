@@ -80,7 +80,8 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	@Override
 	protected RDFResourceTree preProcess(RDFResourceTree tree) {
 		QueryTreeUtils.keepMostSpecificTypes(tree, reasoner);
-		return tree;
+
+		return QueryTreeUtils.materializePropertyDomains(tree, reasoner);
 	}
 
 	@Override
@@ -145,12 +146,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
 
 		if(tree1.isResourceNode() && tree2.isResourceNode()) {
-			System.out.println(tree1 + "--" + tree2);
+			System.out.print("LCS(" + tree1 + ", " + tree2 + ")");
 			Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner,
 																			tree1.getData(), tree2.getData(),
 																			EntityType.CLASS);
+			System.out.println(" = " + lcs);
 			if(lcs != null) {
-//				return new RDFResourceTree(lcs);
+				return new RDFResourceTree(lcs);
 			}
 		}
 

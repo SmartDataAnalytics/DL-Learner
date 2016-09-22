@@ -68,6 +68,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -799,18 +801,29 @@ public class QueryTreeUtils {
     public static RDFResourceTree materializePropertyDomains(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
 		RDFResourceTree newTree = new RDFResourceTree(tree.getData());
 
+		Consumer<OWLClass> addTypeChild = (cls) -> newTree.addChild(new RDFResourceTree(OwlApiJenaUtils.asNode(cls)), RDF.type.asNode());
+
 		tree.getEdges().forEach(edge -> {
 			List<RDFResourceTree> children = tree.getChildren(edge);
 
+			// add existing children
 			children.forEach(child -> {
 				RDFResourceTree newChild = materializePropertyDomains(child, reasoner);
 				newTree.addChild(newChild, edge);
 			});
 
 			// add the rdf:type statements for the property domain(s)
-			reasoner.getDomain()
-			newTree.addChild();
-
+			OWLClassExpression dom = reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY));
+			if(!dom.isAnonymous()) {
+				addTypeChild.accept(dom.asOWLClass());
+			} else {
+				if(dom.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF) {
+					dom.getNestedClassExpressions().stream()
+							.filter(ce -> !ce.isAnonymous())
+							.map(OWLClassExpression::asOWLClass)
+							.forEach(addTypeChild);
+				}
+			}
 		});
 
 		return newTree;
