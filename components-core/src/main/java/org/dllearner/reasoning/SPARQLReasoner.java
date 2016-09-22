@@ -512,7 +512,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		);
 
 		String query = "SELECT * WHERE {"
-				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
+//				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
 //				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
 				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
 				+ "FILTER(?sub != ?sup)"
