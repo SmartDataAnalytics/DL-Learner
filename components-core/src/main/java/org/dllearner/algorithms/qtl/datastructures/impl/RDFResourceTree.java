@@ -33,6 +33,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
@@ -285,6 +286,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public boolean isResourceNode() {
     	return data.isURI();
     }
+
+    public boolean isClassNode() {
+    	return !isRoot() && getEdgeToParent().equals(RDF.type.asNode());
+	}
 	
 	public boolean isLiteralNode() {
 		return data.isLiteral();

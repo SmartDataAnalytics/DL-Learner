@@ -209,6 +209,21 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 	}
 
+	public void precomputePropertyDomains() {
+		String query = "select * where {?p a owl:ObjectProperty; rdfs:domain ?dom }";
+
+		try(QueryExecution qe = qef.createQueryExecution(query)){
+			ResultSet rs = qe.execSelect();
+
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				OWLObjectProperty p = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+				OWLClass dom = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+
+			}
+		}
+	}
+
 	public void precomputePopularity(){
 		precomputeClassPopularity();
 		precomputeDataPropertyPopularity();
