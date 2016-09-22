@@ -230,6 +230,27 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		logger.info("finished precomputing property domains.");
 	}
 
+	public void precomputeObjectPropertyRanges() {
+		logger.info("precomputing object property ranges...");
+		String query = SPARQLQueryUtils.PREFIXES +
+				" select * where {?p rdfs:range ?ran; a owl:ObjectProperty }";
+
+		try(QueryExecution qe = qef.createQueryExecution(query)){
+			ResultSet rs = qe.execSelect();
+
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				OWLObjectProperty p = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+				OWLClass dom = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+
+				objectPropertyRanges.put(p, dom);
+			}
+		} catch (Exception e) {
+			logger.error("Failed to compute property domains.", e);
+		}
+		logger.info("finished precomputing property domains.");
+	}
+
 	public void precomputePopularity(){
 		precomputeClassPopularity();
 		precomputeDataPropertyPopularity();
@@ -1754,26 +1775,32 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	@Override
-	public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
-		String query = String.format("SELECT ?range WHERE {" +
-				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
-				"}",
-				objectProperty.toStringID(), RDFS.range.getURI());
+	public OWLClassExpression getRangeImpl(OWLObjectProperty property) {
+		return objectPropertyRanges.computeIfAbsent(property, k -> {
+			String query = String.format("SELECT ?range WHERE {" +
+							"<%s> <%s> ?range. FILTER(isIRI(?range))" +
+							"}",
+					property.toStringID(), RDFS.range.getURI());
 
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		SortedSet<OWLClassExpression> domains = new TreeSet<>();
-		while(rs.hasNext()){
-			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI())));
-
-		}
-		if(domains.size() == 1){
-			return domains.first();
-		} else if(domains.size() > 1){
-			return df.getOWLObjectIntersectionOf(domains);
-		}
-		return df.getOWLThing();
+			try(QueryExecution qe = qef.createQueryExecution(query)) {
+				ResultSet rs = qe.execSelect();
+				SortedSet<OWLClassExpression> ranges = new TreeSet<>();
+				while (rs.hasNext()) {
+					QuerySolution qs = rs.next();
+					ranges.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI())));
+				}
+				ranges.remove(df.getOWLThing());
+				if (ranges.size() == 1) {
+					return ranges.first();
+				} else if (ranges.size() > 1) {
+					return df.getOWLObjectIntersectionOf(ranges);
+				}
+				return df.getOWLThing();
+			} catch (Exception e) {
+				logger.error("Failed to compute range for " + property, e);
+			}
+			return null;
+		});
 	}
 	
 	public SortedSet<OWLClass> getRanges(OWLObjectProperty objectProperty) {
