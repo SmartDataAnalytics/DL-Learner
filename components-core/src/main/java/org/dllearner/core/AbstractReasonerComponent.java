@@ -130,7 +130,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	@ConfigOption(description = "if property domains should be precomputed", defaultValue = "true")
 	protected boolean precomputePropertyDomains = true;
-	protected Map<OWLProperty, OWLClass> propertyDomains = new HashMap<>();
+	protected Map<OWLProperty, OWLClassExpression> propertyDomains = new HashMap<>();
 
 	/**
 	 * The underlying knowledge sources.

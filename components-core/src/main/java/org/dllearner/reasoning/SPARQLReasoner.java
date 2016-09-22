@@ -210,7 +210,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public void precomputePropertyDomains() {
-		String query = "select * where {?p a owl:ObjectProperty; rdfs:domain ?dom }";
+		logger.info("precomputing property domains...");
+		String query = SPARQLQueryUtils.PREFIXES +
+				" select * where {?p rdfs:domain ?dom {?p a owl:ObjectProperty} UNION {?p a owl:DatatypeProperty}}";
 
 		try(QueryExecution qe = qef.createQueryExecution(query)){
 			ResultSet rs = qe.execSelect();
@@ -220,8 +222,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				OWLObjectProperty p = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
 				OWLClass dom = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
 
+				propertyDomains.put(p, dom);
 			}
+		} catch (Exception e) {
+			logger.error("Failed to compute property domains.", e);
 		}
+		logger.info("finished precomputing property domains.");
 	}
 
 	public void precomputePopularity(){
@@ -1666,29 +1672,35 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+	private OWLClassExpression computeDomain(OWLProperty property) {
 		String query = String.format("SELECT ?domain WHERE {" +
-				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
-				"}",
-				objectProperty.toStringID(), RDFS.domain.getURI());
+											 "<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
+											 "}",
+									 property.toStringID(), RDFS.domain.getURI());
 
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		SortedSet<OWLClassExpression> domains = new TreeSet<>();
-		while(rs.hasNext()){
-			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
-
-		}
-		if(domains.size() == 1){
-			return domains.first();
-		} else if(domains.size() > 1){
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			ResultSet rs = qe.execSelect();
+			SortedSet<OWLClassExpression> domains = new TreeSet<>();
+			while(rs.hasNext()){
+				QuerySolution qs = rs.next();
+				domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
+			}
 			domains.remove(df.getOWLThing());
-			return df.getOWLObjectIntersectionOf(domains);
+			if(domains.size() == 1){
+				return domains.first();
+			} else if(domains.size() > 1){
+				return df.getOWLObjectIntersectionOf(domains);
+			}
+			return df.getOWLThing();
+		} catch (Exception e) {
+			logger.error("Failed to compute the domain for " + property + ".", e);
 		}
-		
-		return df.getOWLThing();
+		return null;
+	}
+
+	@Override
+	public OWLClassExpression getDomainImpl(OWLObjectProperty property) {
+		return propertyDomains.computeIfAbsent(property, k -> computeDomain(property));
 	}
 	
 	public Set<OWLObjectProperty> getObjectPropertiesWithDomain(OWLClass domain) {
@@ -1737,26 +1749,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	@Override
-	public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
-		String query = String.format("SELECT ?domain WHERE {" +
-				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
-				"}",
-				datatypeProperty.toStringID(), RDFS.domain.getURI());
-
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		SortedSet<OWLClassExpression> domains = new TreeSet<>();
-		while(rs.hasNext()){
-			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
-
-		}
-		if(domains.size() == 1){
-			return domains.first();
-		} else if(domains.size() > 1){
-			return df.getOWLObjectIntersectionOf(domains);
-		}
-		return df.getOWLThing();
+	public OWLClassExpression getDomainImpl(OWLDataProperty property) {
+		return propertyDomains.computeIfAbsent(property, k -> computeDomain(property));
 	}
 
 	@Override
