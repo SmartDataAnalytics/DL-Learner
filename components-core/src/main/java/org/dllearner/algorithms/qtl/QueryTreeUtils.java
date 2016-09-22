@@ -568,7 +568,7 @@ public class QueryTreeUtils {
 		Set<OWLClassExpression> classExpressions = new HashSet<>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode())) {
+				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode()) || edge.equals(OWL.equivalentClass.asNode())) {
 					if(child.isVarNode()) {
 						classExpressions.add(buildOWLClassExpression(child, literalConversion));
 					} else {
@@ -605,6 +605,7 @@ public class QueryTreeUtils {
 				}
 			}
 		}
+		classExpressions.remove(df.getOWLThing());
 		if(classExpressions.isEmpty()) {
 			return df.getOWLThing();
 		} else if(classExpressions.size() == 1){

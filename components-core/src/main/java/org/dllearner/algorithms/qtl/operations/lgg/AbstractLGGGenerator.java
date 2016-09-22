@@ -104,7 +104,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		}
 
 		// c) handle class nodes
-		if(!tree1.isRoot() && tree1.getEdgeToParent().equals(RDF.type)) {
+		if(tree1.isClassNode()) {
 			return processClassNodes(tree1, tree2);
 		}
 

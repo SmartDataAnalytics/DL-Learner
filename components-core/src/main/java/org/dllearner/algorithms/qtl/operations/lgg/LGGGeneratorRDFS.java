@@ -74,7 +74,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, !tree1.isRoot() && tree1.getEdgeToParent().equals(RDF.type));
+		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode());
 	}
 
 	@Override
@@ -140,6 +140,70 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 				n.getNameSpace().equals(RDFS.getURI()) ||
 				n.getNameSpace().equals(OWL.getURI());
 	}
+
+	@Override
+	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
+
+		if(tree1.isResourceNode() && tree2.isResourceNode()) {
+			System.out.println(tree1 + "--" + tree2);
+			Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner,
+																			tree1.getData(), tree2.getData(),
+																			EntityType.CLASS);
+			if(lcs != null) {
+//				return new RDFResourceTree(lcs);
+			}
+		}
+
+		RDFResourceTree lgg = new RDFResourceTree();
+
+		Set<Triple<Node, Node, Node>> relatedEdges = getRelatedEdges(tree1, tree2);
+		for (Triple<Node, Node, Node> entry : relatedEdges) {
+
+			Node edge1 = entry.getLeft();
+			Node edge2 = entry.getMiddle();
+			Node lcs = entry.getRight();
+
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+			// loop over children of first tree
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
+
+				// loop over children of second tree
+				for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
+
+
+					RDFResourceTree lggChild = computeLGG(child1, child2, false);
+
+					// check if there was already a more specific child computed before
+					// and if so don't add the current one
+					boolean add = true;
+					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
+						RDFResourceTree addedChild = it.next();
+
+						if(isSubTreeOf(addedChild, lggChild)){
+//								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
+//										addedChild.getStringRepresentation(),
+//										lggChild.getStringRepresentation());
+							add = false;
+							break;
+						} else if(isSubTreeOf(lggChild, addedChild)){
+//								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
+//										lggChild.getStringRepresentation(),
+//										addedChild.getStringRepresentation());
+							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
+							it.remove();
+						}
+					}
+					if(add){
+						lgg.addChild(lggChild, lcs);
+						addedChildren.add(lggChild);
+//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
+					}
+				}
+			}
+		}
+		return lgg;
+	}
 	
 	public static void main(String[] args) throws Exception {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
@@ -194,8 +258,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
 		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
-
-		System.out.println(trees.get(0).getStringRepresentation());
 	}
 
 }
