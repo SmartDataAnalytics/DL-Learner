@@ -132,6 +132,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected boolean precomputePropertyDomains = true;
 	protected Map<OWLProperty, OWLClassExpression> propertyDomains = new HashMap<>();
 
+	@ConfigOption(description = "if object property ranges should be precomputed", defaultValue = "true")
+	protected boolean precomputeObjectPropertyRanges = true;
+	protected Map<OWLObjectProperty, OWLClassExpression> objectPropertyRanges = new HashMap<>();
+
 	/**
 	 * The underlying knowledge sources.
 	 */
