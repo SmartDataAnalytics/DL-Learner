@@ -535,7 +535,7 @@ public class QueryTreeUtils {
 	
 	public static Model toModel(RDFResourceTree tree) {
 		Model model = ModelFactory.createDefaultModel();
-		buildModel(model, tree, model.asRDFNode(NodeFactory.createAnon()).asResource());
+		buildModel(model, tree, model.asRDFNode(NodeFactory.createBlankNode()).asResource());
 		return model;
 	}
 	
@@ -550,7 +550,7 @@ public class QueryTreeUtils {
 		for (Node edge : tree.getEdges()) {
 			Property p = model.getProperty(edge.getURI());
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createAnon()) : model.asRDFNode(child.getData());
+				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createBlankNode()) : model.asRDFNode(child.getData());
 				model.add(subject, p, object);
 //				if (child.isVarNode()) {
 					buildModel(model, child, object.asResource());
@@ -829,6 +829,69 @@ public class QueryTreeUtils {
 
 		return newTree;
 	}
+
+	/**
+	 * Adds all rdf:type statements to each node based on the domain and range of the edges as well as the subClassOf
+	 * relations between all existing types.
+	 *
+	 * @param tree the query tree
+	 * @param reasoner the reasoner
+	 * @return a new rdf:type materialized tree
+	 */
+	public static RDFResourceTree materializeTypes(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		RDFResourceTree newTree = new RDFResourceTree(tree.getData());
+
+		Consumer<OWLClass> addTypeChild = (cls) -> newTree.addChild(new RDFResourceTree(OwlApiJenaUtils.asNode(cls)), RDF.type.asNode());
+
+		Set<OWLClassExpression> types = new HashSet<>();
+
+		// process the outgoing non-rdf:type edges
+		tree.getEdges().stream().filter(edge -> !edge.equals(RDF.type.asNode())).forEach(edge -> {
+			List<RDFResourceTree> children = tree.getChildren(edge);
+
+			// add existing children
+			children.forEach(child -> {
+				RDFResourceTree newChild = materializeTypes(child, reasoner);
+				newTree.addChild(newChild, edge);
+			});
+
+			// collect the rdfs:domain information if exist
+			OWLClassExpression dom = reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY));
+			types.add(dom);
+		});
+
+		// process the incoming edge(s), i.e. collect the rdfs:range information if exist
+		if(!tree.isRoot()) {
+			Node inEdge = tree.getEdgeToParent();
+			OWLClassExpression range = reasoner.getRange(
+					OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY));
+			types.add(range);
+		}
+
+		// collect the existing rdf:type nodes
+		List<RDFResourceTree> children = tree.getChildren(RDF.type.asNode());
+		if(children != null) {
+			children.forEach(child -> {
+				types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS));
+			});
+		}
+
+		// process the collected (complex) types, i.e. add an rdf:type edge for each named class
+		types.forEach(type -> {
+			if(!type.isAnonymous()) {
+				addTypeChild.accept(type.asOWLClass());
+			} else {
+				if(type.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF) {
+					type.getNestedClassExpressions().stream()
+							.filter(ce -> !ce.isAnonymous())
+							.map(OWLClassExpression::asOWLClass)
+							.forEach(addTypeChild);
+				}
+			}
+		});
+
+		return newTree;
+	}
 	
 	/**
 	 * Remove trivial statements according to the given entailment semantics:
@@ -954,7 +1017,7 @@ public class QueryTreeUtils {
 //					}
 //				}
 //				if(typeChildren != null) {
-//					// remove type children which are already covered implicitely
+//					// remove type children which are already covered implicitly
 //					for (RDFResourceTree child : new ArrayList<RDFResourceTree>(tree.getChildren(RDF.type.asNode()))) {
 //						if(child.isResourceNode() && implicitTypes.contains(new OWLClassImpl(IRI.create(child.getData().getURI())))) {
 //							tree.removeChild(child, RDF.type.asNode());
@@ -1253,14 +1316,14 @@ public class QueryTreeUtils {
 	 */
 	public static <T, V extends GenericTree<T, V>> List<List<V>> getPathsToLeafs(GenericTree<T, V> tree) {
 		List<List<V>> paths = new ArrayList<>();
-		getPathsToLeafs(paths, new ArrayList<V>(), tree);
+		getPathsToLeafs(paths, new ArrayList<>(), tree);
 		return paths;
 	}
 
 	private static <T, V extends GenericTree<T, V>> void getPathsToLeafs(List<List<V>> paths, List<V> path, GenericTree<T, V> tree) {
 		List<V> children = tree.getChildren();
 		for (V child : children) {
-			List<V> newPath = new ArrayList<V>(path);
+			List<V> newPath = new ArrayList<>(path);
 			newPath.add(child);
 			if(child.isLeaf()) {
 				paths.add(newPath);

@@ -30,6 +30,7 @@ public class LGGGeneratorRDFSTest {
 	LGGGeneratorRDFS lggGen;
 
 	String NS = "http://dl-learner.org/test/";
+	private int maxDepth = 2;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,6 +45,12 @@ public class LGGGeneratorRDFSTest {
 				":x3 :s :y2 ." +
 				":x4 rdf:type :B ." +
 				":s rdfs:domain :C ." +
+				":B rdfs:subClassOf :C ." +
+
+				":x5 :t :y3 ." +
+				":y3 rdf:type :B ." +
+				":x6 :t :y4 ." +
+				":t rdfs:range :C ." +
 				":B rdfs:subClassOf :C .";
 
 		Model model = ModelFactory.createDefaultModel();
@@ -65,13 +72,14 @@ public class LGGGeneratorRDFSTest {
 	}
 
 	private RDFResourceTree getTree(String uri) {
-		return treeFactory.getQueryTree(uri, cbdGenerator.getConciseBoundedDescription(uri));
+		return treeFactory.getQueryTree(uri, cbdGenerator.getConciseBoundedDescription(uri, maxDepth), maxDepth);
 	}
 
 	@Test
 	public void getLGG() throws Exception {
 		compute(NS + "x1", NS + "x2");
 		compute(NS + "x3", NS + "x4");
+		compute(NS + "x5", NS + "x6");
 	}
 
 	private void compute(String tree1URI, String tree2URI) {

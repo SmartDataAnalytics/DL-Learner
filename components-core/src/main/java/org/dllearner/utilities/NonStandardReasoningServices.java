@@ -56,6 +56,7 @@ public class NonStandardReasoningServices {
 	 * @param <E> the entity type
 	 * @return the LCS if exists
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E extends OWLEntity> E getLeastCommonSubsumer(AbstractReasonerComponent reasoner, E e1, E e2) {
 		// check if both entities are of the same type
 		if(e1.getEntityType() != e2.getEntityType()) {
@@ -73,7 +74,7 @@ public class NonStandardReasoningServices {
 		if(entityType == EntityType.CLASS) {
 			f = e -> (SortedSet<E>) reasoner.getSuperClasses((OWLClass) e).stream()
 						.filter(ce -> !ce.isAnonymous())
-						.map(ce -> ce.asOWLClass())
+						.map(OWLClassExpression::asOWLClass)
 						.collect(Collectors.toCollection(TreeSet::new));
 		} else if(entityType == EntityType.OBJECT_PROPERTY) {
 			f = e -> (SortedSet<E>) reasoner.getSuperProperties((OWLObjectProperty) e);
@@ -84,9 +85,7 @@ public class NonStandardReasoningServices {
 		}
 
 		// compute the LCS
-		E lcs = getLeastCommonSubsumer(e1, e2, f);
-
-		return lcs;
+		return getLeastCommonSubsumer(e1, e2, f);
 	}
 
 	private static <E extends OWLEntity> E getLeastCommonSubsumer(E e1, E e2, Function<E, SortedSet<E>> f) {

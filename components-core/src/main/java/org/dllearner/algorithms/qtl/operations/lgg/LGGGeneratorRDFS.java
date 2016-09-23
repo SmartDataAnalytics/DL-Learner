@@ -81,7 +81,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	protected RDFResourceTree preProcess(RDFResourceTree tree) {
 		QueryTreeUtils.keepMostSpecificTypes(tree, reasoner);
 
-		return QueryTreeUtils.materializePropertyDomains(tree, reasoner);
+		return QueryTreeUtils.materializeTypes(tree, reasoner);
 	}
 
 	@Override
@@ -211,6 +211,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
@@ -254,6 +255,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		reasoner.setPrecomputeDataPropertyHierarchy(true);
 		reasoner.init();
 		reasoner.precomputePropertyDomains();
+		reasoner.precomputeObjectPropertyRanges();
 		LGGGenerator lggGen = new LGGGeneratorRDFS(reasoner);
 		RDFResourceTree lgg = lggGen.getLGG(trees);
 
