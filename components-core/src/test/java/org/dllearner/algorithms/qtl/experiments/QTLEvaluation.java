@@ -249,7 +249,7 @@ public class QTLEvaluation {
 		kbSize = getKBSize();
 
 		timeStamp = System.currentTimeMillis();
-		
+
 		if(write2DB) {
 			setupDatabase();
 		}
@@ -611,6 +611,39 @@ public class QTLEvaluation {
 									la.init();
 									la.start();
 									List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
+									// compute baseline
+									logger.info("Computing baseline...");
+									RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
+									logger.info("done. \nBaseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
+									logger.info("Evaluating baseline...");
+									Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
+									logger.info("Baseline score:\n" + baselineScore);
+									String baseLineQuery = QueryTreeUtils.toSPARQLQueryString(
+											baselineSolution, dataset.getBaseIRI(), dataset.getPrefixMapping());
+									baselinePrecisionStats.addValue(baselineScore.precision);
+									baselineRecallStats.addValue(baselineScore.recall);
+									baselineFMeasureStats.addValue(baselineScore.fmeasure);
+									baselinePredAccStats.addValue(baselineScore.predAcc);
+									baselineMathCorrStats.addValue(baselineScore.mathCorr);
+
+									// run QTL
+									PosNegLPStandard lp = new PosNegLPStandard();
+									lp.setPositiveExamples(examples.posExamplesMapping.keySet());
+									lp.setNegativeExamples(examples.negExamplesMapping.keySet());
+									QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+									la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+									la.setReasoner(dataset.getReasoner());
+									la.setEntailment(Entailment.RDFS);
+									la.setTreeFactory(queryTreeFactory);
+									la.setPositiveExampleTrees(examples.posExamplesMapping);
+									la.setNegativeExampleTrees(examples.negExamplesMapping);
+									la.setNoise(noise);
+									la.setHeuristic(heuristic);
+									la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+									la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
+									la.init();
+									la.start();
+									List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
 
 //										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
 									nrOfReturnedSolutionsStats.addValue(solutions.size());
@@ -738,7 +771,7 @@ public class QTLEvaluation {
 							result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
 							result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
 							result += "Tree size(avg):\t" + treeSizeStats.getMean() + "\n";
-									
+
 							logger.info(result);
 							
 							try {
@@ -1103,7 +1136,7 @@ public class QTLEvaluation {
 	private String hash(String query) {
 		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
-	
+
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
 		logger.info("Generating examples for query ..." + sparqlQuery);
 
