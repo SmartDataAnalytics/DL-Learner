@@ -209,9 +209,9 @@ public abstract class BenchmarkDescriptionGenerator {
 			if(useConstruct) {
 				Model cbd = null;
 				try {
-					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-					cnt = cbd.size();
-					System.out.println(r + ":" + cnt);
+//					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+//					cnt = cbd.size();
+//					System.out.println(r + ":" + cnt);
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
@@ -249,8 +249,8 @@ public abstract class BenchmarkDescriptionGenerator {
 			if(useConstruct) {
 				Model cbd = null;
 				try {
-					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-					cnt = cbd.size();
+//					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+//					cnt = cbd.size();
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
