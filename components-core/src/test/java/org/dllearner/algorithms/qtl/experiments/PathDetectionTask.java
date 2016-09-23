@@ -46,6 +46,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 
+
 public class PathDetectionTask implements Callable<List<Path>> {
 
 	private final OWLClass cls;
