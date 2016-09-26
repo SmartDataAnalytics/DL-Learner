@@ -320,7 +320,12 @@ public class QueryTreeUtils {
     				return false;
     			} else {
     				RDFDatatype d1 = tree1.getDatatype();
-    				return tree2.getDatatype().equals(d1);
+					RDFDatatype d2 = tree1.getDatatype();
+					// if there is a datatype, it must match for both trees
+					if(d1 != null) {
+						return d1.equals(d2);
+					}
+    				return d2 == null;
     			}
     		}
     		
@@ -815,7 +820,7 @@ public class QueryTreeUtils {
 
 			// add the rdf:type statements for the property domain(s)
 			OWLClassExpression dom = reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY));
-			if(!dom.isAnonymous()) {
+			if(!dom.isAnonymous() && !dom.isOWLThing()) {
 				addTypeChild.accept(dom.asOWLClass());
 			} else {
 				if(dom.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF) {
