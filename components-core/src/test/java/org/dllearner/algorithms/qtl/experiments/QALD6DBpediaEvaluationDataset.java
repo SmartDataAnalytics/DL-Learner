@@ -226,7 +226,7 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 		File graphsDir = new File("/home/user/work/experiments/qtl/QALD6/graphs/");
 		graphsDir.mkdirs();
 
-		queries.forEach((id, query) -> QueryToGraphExporter.exportYedGraph(query, new File(graphsDir, id + ".png")));
+//		queries.forEach((id, query) -> QueryToGraphExporter.exportYedGraph(query, new File(graphsDir, id + ".png")));
 
 
 	}
