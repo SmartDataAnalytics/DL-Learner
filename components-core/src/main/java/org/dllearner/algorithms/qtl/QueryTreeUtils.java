@@ -854,17 +854,26 @@ public class QueryTreeUtils {
 				newTree.addChild(newChild, edge);
 			});
 
-			// collect the rdfs:domain information if exist
-			OWLClassExpression dom = reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY));
-			types.add(dom);
+			// collect rdf:type information, based on the edge
+			// a) normal edge: the rdfs:domain information if exist
+			// b) inverse edge: the rdfs:range information if exist
+			if(edge instanceof NodeInv) {
+				types.add(reasoner.getRange(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY)));
+			} else {
+				types.add(reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY)));
+			}
 		});
 
-		// process the incoming edge(s), i.e. collect the rdfs:range information if exist
+		// collect rdf:type information, based on the incoming edge(s)
+		// a) normal edge: the rdfs:range information if exist
+		// b) inverse edge: the rdfs:domain information if exist
 		if(!tree.isRoot()) {
 			Node inEdge = tree.getEdgeToParent();
-			OWLClassExpression range = reasoner.getRange(
-					OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY));
-			types.add(range);
+			if(inEdge instanceof NodeInv) {
+				types.add(reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY)));
+			} else {
+				types.add(reasoner.getRange(OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY)));
+			}
 		}
 
 		// collect the existing rdf:type nodes
