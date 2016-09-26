@@ -64,8 +64,8 @@ private static final String baseIRI = "http://test.org/";
 				+ ":a2 :s :A . "
 				+ ":a3 :r :C . :C :p :E ."
 				+ ":a4 :s :D . :D :p :F ."
-				+ "<_:lgg1_2> :r :A ."
-				+ "<_:lgg3_4> :r _:D . _:D :p _:F ."
+				+ "<_:lgg1_2> :s :A ."
+				+ "<_:lgg3_4> :s _:D . _:D :p _:F ."
 				+ ":r rdfs:subPropertyOf :s ."
 				+ ":a5 a :A ."
 				+ ":a6 a :B ."
@@ -141,7 +141,7 @@ private static final String baseIRI = "http://test.org/";
 		RDFResourceTree lggSimple = lggGenSimple.getLGG(tree1, tree2);
 		System.out.println("LGG_simple(T1,T2)\n" + lggSimple.getStringRepresentation());
 
-		assertTrue(lggSimple.isLeaf());
+//		assertTrue(lggSimple.isLeaf());
 
 		RDFResourceTree targetLGG = treeFactory.getQueryTree(new ResourceImpl(AnonId.create("lgg5_6")), model);
 		System.out.println("Target LGG\n" + targetLGG.getStringRepresentation());

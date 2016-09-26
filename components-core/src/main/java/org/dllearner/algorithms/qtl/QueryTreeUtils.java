@@ -319,9 +319,13 @@ public class QueryTreeUtils {
     			if(tree2.isLiteralValueNode()) {
     				return false;
     			} else {
-    				RDFDatatype d1 = tree1.getDatatype();
-					
-    				return tree2.getDatatype().equals(d1);
+					RDFDatatype d1 = tree1.getDatatype();
+					RDFDatatype d2 = tree1.getDatatype();
+					// if there is a datatype, it must match for both trees
+					if(d1 != null) {
+						return d1.equals(d2);
+					}
+					return d2 == null;
     			}
     		}
     		
