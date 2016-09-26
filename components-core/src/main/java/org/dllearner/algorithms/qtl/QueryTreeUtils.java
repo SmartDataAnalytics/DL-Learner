@@ -320,6 +320,7 @@ public class QueryTreeUtils {
     				return false;
     			} else {
     				RDFDatatype d1 = tree1.getDatatype();
+					
     				return tree2.getDatatype().equals(d1);
     			}
     		}
@@ -884,6 +885,9 @@ public class QueryTreeUtils {
 				types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS));
 			});
 		}
+
+		// we don't keep owl:Thing todo make this configurable
+		types.remove(df.getOWLThing());
 
 		// process the collected (complex) types, i.e. add an rdf:type edge for each named class
 		types.forEach(type -> {
