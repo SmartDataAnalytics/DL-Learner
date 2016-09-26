@@ -198,7 +198,7 @@ public class DisjunctiveCELA extends AbstractCELA {
      * @param maxExecutionTimeInSeconds the overall the max. execution time
      */
     @Override
-    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+    public void setMaxExecutionTimeInSeconds(long maxExecutionTimeInSeconds) {
         super.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
     }
 
