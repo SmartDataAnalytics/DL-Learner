@@ -32,6 +32,9 @@ import java.io.ByteArrayInputStream;
 import java.util.*;
 
 /**
+ * Materialize the existential restrictions, i.e. for all instances x_i that belong to a concept \exists.r.C,
+ * we add facts r(x_i, _:newID), C(_:newID), and this recursively.
+ *
  * @author Lorenz Buehmann
  *
  */
