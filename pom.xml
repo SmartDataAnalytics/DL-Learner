@@ -4,7 +4,7 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.3.0-jena3-SNAPSHOT</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
