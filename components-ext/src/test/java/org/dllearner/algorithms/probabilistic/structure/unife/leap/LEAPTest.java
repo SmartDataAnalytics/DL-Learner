@@ -8,6 +8,7 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 import static junit.framework.TestCase.assertTrue;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.AbstractEDGE;
+import org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner;
 import org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -47,24 +48,6 @@ public class LEAPTest {
         ks = new OWLFile("../examples/probabilistic/family/father_oe.owl");
         ks.init();
 
-        rc = new ClosedWorldReasoner(ks);
-        rc.init();
-
-        lp = new ClassLearningProblem(rc);
-        lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://example.com/father#father")));
-        lp.setCheckConsistency(false);
-        lp.init();
-
-        lpr = new EDGE(lp, null);
-        lpr.setRandomize(true);
-        lpr.setRandomizeAll(true);
-        lpr.init();
-
-        cela = new CELOE(lp, rc);
-        cela.setMaxExecutionTimeInSeconds(10);
-        cela.setMaxNrOfResults(10);
-        cela.init();
-
     }
 
     @AfterClass
@@ -79,15 +62,96 @@ public class LEAPTest {
     public void tearDown() {
     }
 
-    @Test
+    //@Test
     public void testCase1() throws Exception {
-        System.out.println("Test case 1");
+        System.out.println("Test case 1 - Equivalent axioms");
+
+        rc = new ClosedWorldReasoner(ks);
+        rc.init();
+
+        lp = new ClassLearningProblem(rc);
+        lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://example.com/father#father")));
+        lp.setCheckConsistency(false);
+        lp.init();
+
+        lpr = new EDGE(lp, null);
+        lpr.setRandomize(true);
+        lpr.setProbabilizeAll(true);
+        lpr.init();
+
+        cela = new CELOE(lp, rc);
+        cela.setMaxExecutionTimeInSeconds(10);
+        cela.setMaxNrOfResults(10);
+        cela.init();
+
         System.out.println("Debug logger: " + logger.isDebugEnabled());
         LEAP leap = new LEAP(cela, lpr);
         leap.setClassExpressionLearningAlgorithm(cela);
         leap.setEdge((AbstractEDGE) lpr);
         leap.init();
-//        leap.setClassAxiomType("equivalentClasses");
+        leap.setClassAxiomType("equivalentClasses");
+        leap.start();
+        assertTrue(true);
+    }
+
+    //@Test
+    public void testCase2() throws Exception {
+        System.out.println("Test case 2 - SubClassOf axioms");
+
+        rc = new ClosedWorldReasoner(ks);
+        rc.init();
+
+        lp = new ClassLearningProblem(rc);
+        lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://example.com/father#father")));
+        lp.setCheckConsistency(false);
+        lp.init();
+
+        lpr = new EDGE(lp, null);
+        lpr.setRandomize(true);
+        lpr.setProbabilizeAll(true);
+        lpr.init();
+
+        cela = new CELOE(lp, rc);
+        cela.setMaxExecutionTimeInSeconds(10);
+        cela.setMaxNrOfResults(10);
+        cela.init();
+
+        System.out.println("Debug logger: " + logger.isDebugEnabled());
+        LEAP leap = new LEAP(cela, lpr);
+        leap.setClassExpressionLearningAlgorithm(cela);
+        leap.setEdge((AbstractEDGE) lpr);
+        leap.init();
+        leap.setClassAxiomType("subClassOf");
+        leap.start();
+        assertTrue(true);
+    }
+
+    @Test
+    public void testCase3() throws Exception {
+        System.out.println("Test case 3 - Dummy parameter learner");
+
+        rc = new ClosedWorldReasoner(ks);
+        rc.init();
+
+        lp = new ClassLearningProblem(rc);
+        lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://example.com/father#father")));
+        lp.setCheckConsistency(false);
+        lp.init();
+
+        lpr = new DummyParameterLearner(lp, null);
+        lpr.setProbabilizeAll(true);
+        lpr.init();
+
+        cela = new CELOE(lp, rc);
+        cela.setMaxExecutionTimeInSeconds(10);
+        cela.setMaxNrOfResults(10);
+        cela.init();
+
+        System.out.println("Debug logger: " + logger.isDebugEnabled());
+        LEAP leap = new LEAP(cela, lpr);
+        leap.setClassExpressionLearningAlgorithm(cela);
+        leap.setEdge((AbstractEDGE) lpr);
+        leap.init();
         leap.setClassAxiomType("subClassOf");
         leap.start();
         assertTrue(true);

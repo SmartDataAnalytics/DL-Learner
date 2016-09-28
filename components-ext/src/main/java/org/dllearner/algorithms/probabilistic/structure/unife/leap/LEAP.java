@@ -3,7 +3,9 @@ package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
@@ -65,7 +67,6 @@ public class LEAP extends AbstractLEAP {
 
 //        logger.debug("First EDGE cycle terminated.");
         //logger.debug("Initial Log-likelihood: " + edge.getLL());
-
         //OWLOntology originalOntology = edge.getLearnedOntology();
         logger.debug("Starting structure learner LEAP");
 //            Set<KnowledgeSource> newSources = Collections.singleton((KnowledgeSource) new OWLAPIOntology(ontology));
@@ -88,7 +89,7 @@ public class LEAP extends AbstractLEAP {
         // convert the class expressions into axioms
 //        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntologyManager manager = edge.getSourcesOntology().getOWLOntologyManager();
-        Set<? extends OWLAxiom> candidateAxioms;
+        List<? extends OWLAxiom> candidateAxioms;
         if (getClassAxiomType().equalsIgnoreCase("subClassOf") || getClassAxiomType().equalsIgnoreCase("both")) {
             candidateAxioms = convertIntoSubClassOfAxioms(manager, evaluatedDescriptions);
         } else {
@@ -154,7 +155,7 @@ public class LEAP extends AbstractLEAP {
      * add in the knowledge base.
      * @return the set of axioms added in the knowledge base.
      */
-    private Set<OWLAxiom> greedySearch(Set<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
+    private Set<OWLAxiom> greedySearch(List<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
         BigDecimal bestLL;
         if (edge instanceof AbstractEDGE) {
             bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(
@@ -189,18 +190,24 @@ public class LEAP extends AbstractLEAP {
                 throw new UnsupportedLearnedAxiom("LEAP cannot learn this type of axioms: " + getClassAxiomType());
         }
         logger.info(infoMsg);
-        int i = 0;
-        for (OWLAxiom axiom : candidateAxioms) {
+//        int i = 0;
+        int numChunks = (int) Math.ceil((double) candidateAxioms.size() / blockSizeGreedySearch);
+        logger.info("number of axiom chunks: " + numChunks);
+//        for (OWLAxiom axiom : candidateAxioms) {
+        for (int i = 0; i < numChunks; i++) {
+            int lastIndex = i < numChunks - 1 ? (i + 1) * blockSizeGreedySearch : candidateAxioms.size();
+            List<? extends OWLAxiom> axioms = candidateAxioms.subList(i * blockSizeGreedySearch, lastIndex);
             if (i >= 0) {
-                logger.info("Adding axiom: " + axiom);
+                for (OWLAxiom axiom : axioms) {
+                    logger.info("Adding axiom: " + axiom);
+                }
                 try {
-                    addAxiom(ontology, axiom);
+                    addAxioms(ontology, axioms);
                 } catch (InconsistencyException iex) {
                     logger.info(iex.getMessage());
                     logger.info("Trying with the next class expression");
                     continue;
                 }
-                logger.info("Axiom added.");
                 logger.info("Running parameter learner");
                 edge.start();
                 BigDecimal currLL = edge.getLL();
@@ -246,19 +253,23 @@ public class LEAP extends AbstractLEAP {
                 if (currLL.compareTo(bestLL) > 0) {
                     logger.info("Log-Likelihood enhanced. Updating ontologies...");
                     // I recover the annotation containing the learned probabilistic values
-                    OWLAnnotation annotation = df.
-                            getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY,
-                                    df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
-                    OWLAxiom updatedAxiom;
-                    if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
-                        updatedAxiom = df.getOWLSubClassOfAxiom(
-                                ((OWLSubClassOfAxiom) axiom).getSubClass(),
-                                ((OWLSubClassOfAxiom) axiom).getSuperClass(),
-                                Collections.singleton(annotation));
-                    } else {
-                        if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 
-                            // I have to remove the subsumption a
+                    for (OWLAxiom axiom : axioms) {
+                        OWLAxiom updatedAxiom;
+
+                        OWLAnnotation annotation = df.
+                                getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY,
+                                        df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
+
+                        if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+                            updatedAxiom = df.getOWLSubClassOfAxiom(
+                                    ((OWLSubClassOfAxiom) axiom).getSubClass(),
+                                    ((OWLSubClassOfAxiom) axiom).getSuperClass(),
+                                    Collections.singleton(annotation));
+                        } else {
+                            if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+
+                                // I have to remove the subsumption a
 //                        for (OWLClass subClass : ((OWLEquivalentClassesAxiom) axiom).getNamedClasses()) {
 //                            if (subClass.compareTo(getDummyClass()) != 0) {
 ////                                subClass = c;
@@ -275,20 +286,21 @@ public class LEAP extends AbstractLEAP {
 //                                break;
 //                            }
 //                        }
-                            updatedAxiom = df.getOWLEquivalentClassesAxiom(
-                                    ((OWLEquivalentClassesAxiom) axiom).getClassExpressions(),
-                                    Collections.singleton(annotation));
-                        } else {
-                            throw new UnsupportedLearnedAxiom("The axiom to add is not supported: "
-                                    + BundleUtilities.getManchesterSyntaxString(axiom));
+                                updatedAxiom = df.getOWLEquivalentClassesAxiom(
+                                        ((OWLEquivalentClassesAxiom) axiom).getClassExpressions(),
+                                        Collections.singleton(annotation));
+                            } else {
+                                throw new UnsupportedLearnedAxiom("The axiom to add is not supported: "
+                                        + BundleUtilities.getManchesterSyntaxString(axiom));
+                            }
                         }
+                        learnedAxioms.add(updatedAxiom);
                     }
-                    learnedAxioms.add(updatedAxiom);
                     updateOntology(); // queste operazioni fanno perdere tempo, sono da ottimizzare
                     bestLL = currLL;
                 } else {
-                    logger.info("Log-Likelihood worsened. Removing Last Axiom...");
-                    removeAxiom(ontology, axiom);
+                    logger.info("Log-Likelihood worsened. Removing Last Axioms...");
+                    removeAxioms(ontology, axioms);
                 }
                 for (Map.Entry<String, Long> timer : edge.getTimeMap().entrySet()) {
                     Long previousValue = timers.get(timer.getKey());
@@ -298,7 +310,6 @@ public class LEAP extends AbstractLEAP {
                     timers.put(timer.getKey(), previousValue + timer.getValue());
                 }
             }
-            i++;
         }
         return learnedAxioms;
     }

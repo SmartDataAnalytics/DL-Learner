@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -10,8 +10,10 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
 import edu.stanford.nlp.util.Factory;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -90,6 +92,12 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     @ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
     protected int maxExecutionTimeInSeconds = 10; // TO DO: stop when execution time is over
 
+    @ConfigOption(defaultValue = "1",
+            required = false,
+            description = "the number of probabilistic axioms that LEAP tries to "
+            + "add into the ontology at each iteration of the greedy search")
+    protected int blockSizeGreedySearch = 1;
+
     protected TreeMap<String, Long> timers;
 
     protected AbstractEDGE edge;
@@ -108,7 +116,6 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         timers = new TreeMap<>();
 
         //OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-
         OWLOntologyManager manager = edge.getSourcesOntology().getOWLOntologyManager();
         // create dummy class
         if (dummyClass == null) {
@@ -245,8 +252,9 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         this.accuracy = accuracy;
     }
 
-    protected LinkedHashSet<OWLSubClassOfAxiom> convertIntoSubClassOfAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
-        LinkedHashSet<OWLSubClassOfAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
+    private <T extends OWLAxiom> List<T> convertIntoAxioms(Class<T> type, OWLOntologyManager manager,
+            NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+        List<T> axioms = new LinkedList<>();
         OWLDataFactory factory = manager.getOWLDataFactory();
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
             OWLClassExpression ce = (OWLClassExpression) description.getDescription();
@@ -254,34 +262,64 @@ public abstract class AbstractLEAP extends AbstractPSLA {
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
 //            if (classAxiomType.equalsIgnoreCase("subClassOf") || classAxiomType.equalsIgnoreCase("both")) {
-            OWLSubClassOfAxiom axiom = factory.
-                    getOWLSubClassOfAxiom(ce, dummyClass, Collections.singleton(annotation));
+            T axiom;
+            if (type == OWLEquivalentClassesAxiom.class) {
+                axiom = (T) factory.getOWLEquivalentClassesAxiom(ce, dummyClass, Collections.singleton(annotation));
+
+            } else if (type == OWLSubClassOfAxiom.class) {
+                axiom = (T) factory.getOWLSubClassOfAxiom(ce, dummyClass, Collections.singleton(annotation));
+            } else {
+                throw new RuntimeException("convertIntoAxioms only works with "
+                        + "equivalent and subclassOf axioms");
+            }
             axioms.add(axiom);
-//            }
-//            if (classAxiomType.equalsIgnoreCase("equivalentClasses") || classAxiomType.equalsIgnoreCase("both")) {
-//                OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom((OWLClassExpression) description.getDescription(), dummyClass, Collections.singleton(annotation));
-//                axioms.add(axiom);
-//            }
         }
         return axioms;
     }
 
-    protected LinkedHashSet<OWLEquivalentClassesAxiom> convertIntoEquivalentClassesAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
-        LinkedHashSet<OWLEquivalentClassesAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
-        OWLDataFactory factory = manager.getOWLDataFactory();
-        for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
-            OWLClassExpression ce = (OWLClassExpression) description.getDescription();
-            ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
-            OWLAnnotation annotation = factory.
-                    getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
-
-            OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom(ce, dummyClass, Collections.singleton(annotation));
-            axioms.add(axiom);
-
-        }
+    protected List<OWLSubClassOfAxiom> convertIntoSubClassOfAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+        List<OWLSubClassOfAxiom> axioms = convertIntoAxioms(OWLSubClassOfAxiom.class, manager, evaluatedDescriptions);
         return axioms;
     }
 
+    protected List<OWLEquivalentClassesAxiom> convertIntoEquivalentClassesAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+        List<OWLEquivalentClassesAxiom> axioms = convertIntoAxioms(OWLEquivalentClassesAxiom.class, manager, evaluatedDescriptions);
+        return axioms;
+        
+    }
+
+    /*
+     protected List<OWLSubClassOfAxiom> convertIntoSubClassOfAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+     List<OWLSubClassOfAxiom> axioms = new LinkedList<>();
+     OWLDataFactory factory = manager.getOWLDataFactory();
+     for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
+     OWLClassExpression ce = (OWLClassExpression) description.getDescription();
+     ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
+     OWLAnnotation annotation = factory.
+     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
+     OWLSubClassOfAxiom axiom = factory.
+     getOWLSubClassOfAxiom(ce, dummyClass, Collections.singleton(annotation));
+     axioms.add(axiom);
+     }
+     return axioms;
+     }
+
+     protected LinkedHashSet<OWLEquivalentClassesAxiom> convertIntoEquivalentClassesAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
+     LinkedHashSet<OWLEquivalentClassesAxiom> axioms = new LinkedHashSet<>(evaluatedDescriptions.size());
+     OWLDataFactory factory = manager.getOWLDataFactory();
+     for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
+     OWLClassExpression ce = (OWLClassExpression) description.getDescription();
+     ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
+     OWLAnnotation annotation = factory.
+     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
+
+     OWLEquivalentClassesAxiom axiom = factory.getOWLEquivalentClassesAxiom(ce, dummyClass, Collections.singleton(annotation));
+     axioms.add(axiom);
+
+     }
+     return axioms;
+     }
+     */
     /**
      *
      * @param finalOntology
@@ -370,34 +408,34 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     }
 
     /**
-     * It tries to add the axiom into the ontology. If there is an inconsistency
+     * It tries to add a set of axioms into the ontology. If there is an inconsistency
      * after adding the axiom the axiom is removed from the ontology and an
      * InconsistencyException is thrown.
      *
      * @param ontology ontology to modify
-     * @param axiom axiom to add
+     * @param axioms axioms to add
      * @throws InconsistencyException if adding the exceptions leads to an
      * inconsistency
      */
-    protected void addAxiom(OWLOntology ontology, OWLAxiom axiom) throws InconsistencyException {
+    protected void addAxioms(OWLOntology ontology, List<? extends OWLAxiom> axioms) throws InconsistencyException {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
-        manager.addAxiom(ontology, axiom);
+        manager.addAxioms(ontology, new HashSet<>(axioms));
 //        PelletReasoner pelletReasoner = new PelletReasonerFactory().createReasoner(ontology);
         PelletReasoner pelletReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
         if (!pelletReasoner.isConsistent()) {
             String message = "The axiom will make the KB inconsistent.\n"
                     + "It will NOT be added";
             logger.warn(message);
-            manager.removeAxiom(ontology, axiom);
+            manager.removeAxioms(ontology, new HashSet<>(axioms));
             pelletReasoner.dispose();
             throw new InconsistencyException(message);
         }
         pelletReasoner.dispose();
     }
 
-    protected void removeAxiom(OWLOntology ontology, OWLAxiom axiom) {
+    protected void removeAxioms(OWLOntology ontology, List<? extends OWLAxiom> axioms) {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
-        manager.removeAxiom(ontology, axiom);
+        manager.removeAxioms(ontology, new HashSet<>(axioms));
     }
 
     /**
@@ -419,6 +457,13 @@ public abstract class AbstractLEAP extends AbstractPSLA {
      */
     public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
         this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+    }
+
+    /**
+     * @param blockSizeGreedySearch the blockSizeGreedySearch to set
+     */
+    public void setBlockSizeGreedySearch(int blockSizeGreedySearch) {
+        this.blockSizeGreedySearch = blockSizeGreedySearch;
     }
 
 }

@@ -50,8 +50,9 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     protected boolean randomize = false;
 
     // se randomize All è true allora anche randomize è true
-    @ConfigOption(description = "randomize all the axioms in the starting probabilistic ontology (including non probabilistic ones)", defaultValue = "false")
-    protected boolean randomizeAll = false;
+    @ConfigOption(description = "make probabilistic all the axioms in the starting probabilistic "
+            + "ontology (including non probabilistic ones)", defaultValue = "false")
+    protected boolean probabilizeAll = false;
 
     @ConfigOption(description = "stop difference between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double differenceLL = 0.00028;
@@ -59,8 +60,8 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     @ConfigOption(description = "stop ratio between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double ratioLL = 0.00028;
 
-    @ConfigOption(description = "maximum number of cycles", defaultValue = "2147000000")
-    protected long maxIterations = 2147000000L;
+    @ConfigOption(description = "maximum number of cycles", defaultValue = "" + Long.MAX_VALUE)
+    protected long maxIterations = Long.MAX_VALUE;
 
     @ConfigOption(description = "the maximum number of explanations to find for each query", defaultValue = "" + Integer.MAX_VALUE)
     protected int maxExplanations = Integer.MAX_VALUE;
@@ -134,7 +135,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             edge.setMaxIterations(maxIterations);
             edge.setMerge(true);
             edge.setRandomize(randomize);
-            edge.setRandomizeAll(randomizeAll);
+            edge.setProbabilizeAll(probabilizeAll);
             edge.setRatioLL("" + ratioLL);
             edge.setSeed(seed);
             edge.setShowAll(showAll);
@@ -203,14 +204,14 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
      * @return the randomizeAll
      */
     public boolean isRandomizeAll() {
-        return randomizeAll;
+        return probabilizeAll;
     }
 
     /**
-     * @param randomizeAll the randomizeAll to set
+     * @param probabilizeAll the randomizeAll to set
      */
-    public void setRandomizeAll(boolean randomizeAll) {
-        this.randomizeAll = randomizeAll;
+    public void setProbabilizeAll(boolean probabilizeAll) {
+        this.probabilizeAll = probabilizeAll;
     }
 
     /**
