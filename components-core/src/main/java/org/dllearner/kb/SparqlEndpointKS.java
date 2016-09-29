@@ -20,10 +20,14 @@ package org.dllearner.kb;
 
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -78,7 +82,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	private boolean useCache = true;
 
 	@ConfigOption(defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
-	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
+	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache;COMPRESS=TRUE";
 
 	@ConfigOption(defaultValue = "86400", description = "The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).", required = false)
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
@@ -128,6 +132,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		this.cache = cache;
 	}
 
+	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
+		this.qef = qef;
+	}
+
 	@Override
 	public void init() throws ComponentInitException {
 		if(!initialized){
@@ -151,6 +159,12 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
+		qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
 
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );

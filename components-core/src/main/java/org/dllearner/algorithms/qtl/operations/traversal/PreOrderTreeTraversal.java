@@ -7,6 +7,9 @@ import java.util.*;
 /**
  * An iterator for pre-order resp. depth-first traversal on the nodes in the query tree.
  *
+ * 1. Visit the root.
+ * 2. Traverse the subtrees
+ *
  * @author Lorenz Buehmann
  */
 public class PreOrderTreeTraversal implements TreeTraversal{

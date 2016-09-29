@@ -27,17 +27,17 @@ import org.dllearner.kb.sparql.simple.QueryExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.ontology.DatatypeProperty;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.ObjectProperty;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 public class TypeOntology {
 

@@ -20,7 +20,7 @@ package org.dllearner.algorithms.pattern;
 
 import org.semanticweb.owlapi.model.OWLClass;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * @author Lorenz Buehmann

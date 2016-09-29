@@ -21,12 +21,12 @@ package org.dllearner.algorithms.properties;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
 import org.dllearner.core.*;
@@ -63,7 +63,7 @@ public class MultiPropertyAxiomLearner {
 	private SparqlEndpointKS ks;
 	private SPARQLReasoner reasoner;
 	private QueryExecutionFactory qef;
-	
+
 	private boolean useSampling = false;
 	private long maxSampleGenerationTimeMilliseconds = 10000;
 	private long pageSize = 10000;

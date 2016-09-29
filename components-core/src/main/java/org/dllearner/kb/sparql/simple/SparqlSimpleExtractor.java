@@ -18,10 +18,10 @@
  */
 package org.dllearner.kb.sparql.simple;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.*;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.*;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractKnowledgeSource;

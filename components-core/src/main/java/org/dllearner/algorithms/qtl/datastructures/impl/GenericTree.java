@@ -157,7 +157,7 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         String stringRepresentation = getData().toString() + ":[";
 
         for (V node : getChildren()) {
-            stringRepresentation += node.getData().toString() + ", ";
+            stringRepresentation += node.toStringVerbose() + ", ";
         }
 
         //Pattern.DOTALL causes ^ and $ to match. Otherwise it won't. It's retarded.

@@ -18,7 +18,7 @@
  */
 package org.dllearner.test;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;

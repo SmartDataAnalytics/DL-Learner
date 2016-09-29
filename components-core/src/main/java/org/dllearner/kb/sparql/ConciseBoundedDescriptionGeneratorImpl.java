@@ -19,15 +19,19 @@
 package org.dllearner.kb.sparql;
 
 import com.google.common.base.Joiner;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.core.Var;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +40,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-//import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
-//import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
  * {@inheritDoc}
@@ -51,17 +53,19 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
 	private Set<String> allowedObjectNamespaces = new TreeSet<>();
 	
-	private static final int MAX_RECURSION_DEPTH_DEFAULT = 1;
-	
-	private int maxRecursionDepth = 1;
-	
 	private Model baseModel;
 	private QueryExecutionFactory qef;
 	
 	private Set<String> propertyBlacklist = new TreeSet<>();
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
+
 		if(cache != null){
 			qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
@@ -72,10 +76,14 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this.qef = qef;
 	}
 	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
-		
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
+		qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.end()
+				.create();
+
 		if(cacheDir != null){
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
 				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDir, true, timeToLive);
@@ -83,11 +91,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		}
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
-	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
-		this(endpoint, cacheDir, MAX_RECURSION_DEPTH_DEFAULT);
-	}
-	
+
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
 		this(endpoint, (String)null);
 	}
@@ -97,17 +101,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		
 		qef = new QueryExecutionFactoryModel(baseModel);
 	}
-	
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI){
-		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
-	}
-	
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth){
-		return getConciseBoundedDescription(resourceURI, depth, false);
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
 	 */
@@ -116,7 +110,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, depth, withTypesForLeafs);
-//		System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close(); 
@@ -133,11 +126,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	@Override
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
-	}
-	
-	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
 	}
 	
 	/**

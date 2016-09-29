@@ -24,7 +24,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 
 @ComponentAnn(name="symmetric object property axiom learner", shortName="oplsymm", version=0.1, description="A learning algorithm for symmetric object property axioms.")
 public class SymmetricObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLSymmetricObjectPropertyAxiom> {

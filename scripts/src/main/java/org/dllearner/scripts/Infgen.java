@@ -1,8 +1,8 @@
 package org.dllearner.scripts;
 
-import com.hp.hpl.jena.rdf.model.InfModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.InfModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
@@ -53,8 +53,8 @@ public class Infgen {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("file:///"+in);
 		System.out.println("rwp; size:"+model.size());
-		InfModel inf = ModelFactory.createInfModel(PelletReasonerFactory.theInstance().create(), model);
-		inf.write(new FileOutputStream(out));
+//		InfModel inf = ModelFactory.createInfModel(PelletReasonerFactory.theInstance().create(), model);
+//		inf.write(new FileOutputStream(out));
 	}
 	
 	private static void reasonWithHermit(String in, String out, boolean copy) throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {

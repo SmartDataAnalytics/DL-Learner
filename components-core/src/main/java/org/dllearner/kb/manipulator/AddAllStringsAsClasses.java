@@ -27,8 +27,8 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 
 public class AddAllStringsAsClasses extends Rule{
 	String namespace;

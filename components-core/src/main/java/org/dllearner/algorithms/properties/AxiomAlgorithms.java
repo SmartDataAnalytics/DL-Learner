@@ -69,7 +69,7 @@ import org.semanticweb.owlapi.model.OWLObject;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 
 /**
  * A utility class that holds links between entity type, axiom types and axiom algorithms.

@@ -24,22 +24,22 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
-import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.core.TriplePath;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.expr.*;
-import com.hp.hpl.jena.sparql.syntax.*;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
+import org.apache.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.syntax.*;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -182,8 +182,7 @@ public class QALDExperiment {
 		qef = kb.ks.getQueryExecutionFactory();
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxDepth);
-		
+
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
@@ -266,7 +265,7 @@ public class QALDExperiment {
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
-						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
+						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.apply(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
 
 						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
 
@@ -297,7 +296,7 @@ public class QALDExperiment {
 							logger.info("Position of best covering tree in list: " + position);
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
+							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.apply(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
 							precision = bestMatchingScore.getPrecision();
 							recall = bestMatchingScore.getRecall();
 							fmeasure = bestMatchingScore.getFmeasure();
@@ -374,7 +373,7 @@ public class QALDExperiment {
 			RDFResourceTree tree = evalutedTree.getTree();
 			
 			// apply predicate existence filter
-			tree = filter.filter(tree);
+			tree = filter.apply(tree);
 			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, kb.baseIRI, kb.prefixMapping);
 			System.out.println(learnedSPARQLQuery);
 			// compute score
@@ -429,7 +428,7 @@ public class QALDExperiment {
 		if(rs.hasNext()){
 			Resource object = rs.next().getResource("o");
 			Model cbd = cbdGen.getConciseBoundedDescription(object.getURI(), maxTreeDepth);
-			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd);
+			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd, maxTreeDepth);
 			similarTree.setData(object.asNode());
 			return similarTree;
 		}
@@ -652,7 +651,7 @@ public class QALDExperiment {
 	}
 	
 	private RDFResourceTree getQueryTree(String resource){
-		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxDepth);
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
 			String modelAsString = new String(baos.toByteArray());
@@ -1004,7 +1003,7 @@ public class QALDExperiment {
 	                	
 	            		singleProjectionVariable = q.getProjectVars().size() == 1;
 	                	List<Var> projectVars = q.getProjectVars();
-	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIngoingTriplePatterns(q, projectVars.get(0).asNode());
+	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIncomingTriplePatterns(q, projectVars.get(0).asNode());
 	                	hasIngoingLinks = !ingoingTriplePatterns.isEmpty();
 	            	}
 //	            	if(!hasIngoingLinks){

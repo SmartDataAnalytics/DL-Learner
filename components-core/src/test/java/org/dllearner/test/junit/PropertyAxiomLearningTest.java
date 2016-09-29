@@ -18,11 +18,11 @@
  */
 package org.dllearner.test.junit;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.dllearner.algorithms.properties.*;
 import org.dllearner.core.EvaluatedAxiom;

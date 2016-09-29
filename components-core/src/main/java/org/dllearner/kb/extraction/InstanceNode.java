@@ -38,7 +38,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Literal;
 
 /**
  * A node in the graph that is an instance.

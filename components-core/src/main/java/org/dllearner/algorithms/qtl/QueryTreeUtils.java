@@ -20,22 +20,23 @@ package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.ReasonerRegistry;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.expr.*;
-import com.hp.hpl.jena.sparql.serializer.SerializationContext;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.Syntax;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.ReasonerRegistry;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.serializer.SerializationContext;
+import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
@@ -44,6 +45,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
+import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -66,6 +68,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -143,6 +147,7 @@ public class QueryTreeUtils {
 		return getNodes(tree).size();
 	}
 	
+
 	/**
 	 * Returns the set of edges that occur in the given query tree, i.e. the 
 	 * closure of the edges.
@@ -274,10 +279,10 @@ public class QueryTreeUtils {
      * @param tree the query tree
      * @return the depth
      */
-    public static int getDepth(RDFResourceTree tree) {
+    public static <T, V extends GenericTree<T, V>> int getDepth(GenericTree<T, V> tree) {
 		int maxDepth = 0;
 		
-		for(RDFResourceTree child : tree.getChildren()) {
+		for(GenericTree<T, V> child : tree.getChildren()) {
 			int depth;
 			if(child.isLeaf()) {
 				depth = 1;
@@ -314,8 +319,13 @@ public class QueryTreeUtils {
     			if(tree2.isLiteralValueNode()) {
     				return false;
     			} else {
-    				RDFDatatype d1 = tree1.getDatatype();
-    				return tree2.getDatatype().equals(d1);
+					RDFDatatype d1 = tree1.getDatatype();
+					RDFDatatype d2 = tree1.getDatatype();
+					// if there is a datatype, it must match for both trees
+					if(d1 != null) {
+						return d1.equals(d2);
+					}
+    				return d2 == null;
     			}
     		}
     		
@@ -446,9 +456,8 @@ public class QueryTreeUtils {
       	 * @return
       	 */
           public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, AbstractReasonerComponent reasoner, boolean typeNode) {
-          	// 1.compare the root nodes
-          	
-          	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+          		// 1.compare the root nodes
+			  // (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
           	if(!tree1.isVarNode() && !tree2.isVarNode()) {
           		if(tree1.getData().equals(tree2.getData())) {
           			return true;
@@ -531,7 +540,7 @@ public class QueryTreeUtils {
 	
 	public static Model toModel(RDFResourceTree tree) {
 		Model model = ModelFactory.createDefaultModel();
-		buildModel(model, tree, model.asRDFNode(NodeFactory.createAnon()).asResource());
+		buildModel(model, tree, model.asRDFNode(NodeFactory.createBlankNode()).asResource());
 		return model;
 	}
 	
@@ -546,7 +555,7 @@ public class QueryTreeUtils {
 		for (Node edge : tree.getEdges()) {
 			Property p = model.getProperty(edge.getURI());
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createAnon()) : model.asRDFNode(child.getData());
+				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createBlankNode()) : model.asRDFNode(child.getData());
 				model.add(subject, p, object);
 //				if (child.isVarNode()) {
 					buildModel(model, child, object.asResource());
@@ -567,7 +576,7 @@ public class QueryTreeUtils {
 		Set<OWLClassExpression> classExpressions = new HashSet<>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode())) {
+				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode()) || edge.equals(OWL.equivalentClass.asNode())) {
 					if(child.isVarNode()) {
 						classExpressions.add(buildOWLClassExpression(child, literalConversion));
 					} else {
@@ -585,21 +594,26 @@ public class QueryTreeUtils {
 						}
 						
 					} else {
+						OWLObjectPropertyExpression pe = df.getOWLObjectProperty(IRI.create(edge.getURI()));
+						if(edge instanceof NodeInv) {
+							pe = pe.getInverseProperty();
+						}
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
 							filler = buildOWLClassExpression(child, literalConversion);
 							classExpressions.add(df.getOWLObjectSomeValuesFrom(
-									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									pe,
 									filler));
 						} else if (child.isResourceNode()) {
 							classExpressions.add(df.getOWLObjectHasValue(
-									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									pe,
 									df.getOWLNamedIndividual(IRI.create(child.getData().getURI()))));
 						}
 					}
 				}
 			}
 		}
+		classExpressions.remove(df.getOWLThing());
 		if(classExpressions.isEmpty()) {
 			return df.getOWLThing();
 		} else if(classExpressions.size() == 1){
@@ -706,11 +720,7 @@ public class QueryTreeUtils {
 	    		
 	    		Edge edge = new Edge(Long.valueOf(parentId + "0" + childId), edgeLabel);
 				graph.addEdge(parent, childVertex, edge);
-				System.err.println(edgeLabel);
-				System.err.println(graph.getEdgeSource(edge).getId());
-				System.err.println(graph.getEdgeTarget(edge).getId());
-				System.err.println(childId + "::" + childLabel);
-				
+
 				childId = buildGraph(childId, graph, child, context);
 			}
     	}
@@ -770,7 +780,15 @@ public class QueryTreeUtils {
 					
 					// process object
 					String objectStr = FmtUtils.stringForNode(object, context);
-					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
+
+					// append triple pattern
+					String tpStr;
+					if(edge instanceof NodeInv) {
+						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, objectStr, predicateStr, subjectStr);
+					} else {
+						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr);
+					}
+					sb.append(tpStr).append("\n");
 					
 					/*
 					 * only if child is var node recursively process children if
@@ -785,6 +803,112 @@ public class QueryTreeUtils {
 			}
 		}
     }
+
+    public static RDFResourceTree materializePropertyDomains(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		RDFResourceTree newTree = new RDFResourceTree(tree.getData());
+
+		Consumer<OWLClass> addTypeChild = (cls) -> newTree.addChild(new RDFResourceTree(OwlApiJenaUtils.asNode(cls)), RDF.type.asNode());
+
+		tree.getEdges().forEach(edge -> {
+			List<RDFResourceTree> children = tree.getChildren(edge);
+
+			// add existing children
+			children.forEach(child -> {
+				RDFResourceTree newChild = materializePropertyDomains(child, reasoner);
+				newTree.addChild(newChild, edge);
+			});
+
+			// add the rdf:type statements for the property domain(s)
+			OWLClassExpression dom = reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY));
+			if(!dom.isAnonymous() && !dom.isOWLThing()) {
+				addTypeChild.accept(dom.asOWLClass());
+			} else {
+				if(dom.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF) {
+					dom.getNestedClassExpressions().stream()
+							.filter(ce -> !ce.isAnonymous())
+							.map(OWLClassExpression::asOWLClass)
+							.forEach(addTypeChild);
+				}
+			}
+		});
+
+		return newTree;
+	}
+
+	/**
+	 * Adds all rdf:type statements to each node based on the domain and range of the edges as well as the subClassOf
+	 * relations between all existing types.
+	 *
+	 * @param tree the query tree
+	 * @param reasoner the reasoner
+	 * @return a new rdf:type materialized tree
+	 */
+	public static RDFResourceTree materializeTypes(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		RDFResourceTree newTree = new RDFResourceTree(tree.getData());
+
+		Consumer<OWLClass> addTypeChild = (cls) -> newTree.addChild(new RDFResourceTree(OwlApiJenaUtils.asNode(cls)), RDF.type.asNode());
+
+		Set<OWLClassExpression> types = new HashSet<>();
+
+		// process the outgoing non-rdf:type edges
+		tree.getEdges().stream().filter(edge -> !edge.equals(RDF.type.asNode())).forEach(edge -> {
+			List<RDFResourceTree> children = tree.getChildren(edge);
+
+			// add existing children
+			children.forEach(child -> {
+				RDFResourceTree newChild = materializeTypes(child, reasoner);
+				newTree.addChild(newChild, edge);
+			});
+
+			// collect rdf:type information, based on the edge
+			// a) normal edge: the rdfs:domain information if exist
+			// b) inverse edge: the rdfs:range information if exist
+			if(edge instanceof NodeInv) {
+				types.add(reasoner.getRange(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY)));
+			} else {
+				types.add(reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(edge, EntityType.OBJECT_PROPERTY)));
+			}
+		});
+
+		// collect rdf:type information, based on the incoming edge(s)
+		// a) normal edge: the rdfs:range information if exist
+		// b) inverse edge: the rdfs:domain information if exist
+		if(!tree.isRoot()) {
+			Node inEdge = tree.getEdgeToParent();
+			if(inEdge instanceof NodeInv) {
+				types.add(reasoner.getDomain(OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY)));
+			} else {
+				types.add(reasoner.getRange(OwlApiJenaUtils.asOWLEntity(inEdge, EntityType.OBJECT_PROPERTY)));
+			}
+		}
+
+		// collect the existing rdf:type nodes
+		List<RDFResourceTree> children = tree.getChildren(RDF.type.asNode());
+		if(children != null) {
+			children.forEach(child -> {
+				types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS));
+			});
+		}
+
+		// we don't keep owl:Thing todo make this configurable
+		types.remove(df.getOWLThing());
+
+		// process the collected (complex) types, i.e. add an rdf:type edge for each named class
+		types.forEach(type -> {
+			if(!type.isAnonymous()) {
+				addTypeChild.accept(type.asOWLClass());
+			} else {
+				if(type.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF) {
+					type.getNestedClassExpressions().stream()
+							.filter(ce -> !ce.isAnonymous())
+							.map(OWLClassExpression::asOWLClass)
+							.forEach(addTypeChild);
+				}
+			}
+		});
+
+		return newTree;
+	}
 	
 	/**
 	 * Remove trivial statements according to the given entailment semantics:
@@ -910,7 +1034,7 @@ public class QueryTreeUtils {
 //					}
 //				}
 //				if(typeChildren != null) {
-//					// remove type children which are already covered implicitely
+//					// remove type children which are already covered implicitly
 //					for (RDFResourceTree child : new ArrayList<RDFResourceTree>(tree.getChildren(RDF.type.asNode()))) {
 //						if(child.isResourceNode() && implicitTypes.contains(new OWLClassImpl(IRI.create(child.getData().getURI())))) {
 //							tree.removeChild(child, RDF.type.asNode());
@@ -949,6 +1073,60 @@ public class QueryTreeUtils {
 			
 			
 		}
+		return modified;
+	}
+
+	/**
+	 * Prune the rdf:type nodes such that only the most specific types remain w.r.t. the given reasoner.
+	 *
+	 * @param tree the tree
+	 */
+	public static boolean keepMostSpecificTypes(RDFResourceTree tree, AbstractReasonerComponent reasoner) {
+		boolean modified = false;
+
+		// process child nodes first
+		for (Node edge : tree.getEdges()) {
+			for (RDFResourceTree child : tree.getChildren(edge)) {
+				modified |= keepMostSpecificTypes(child, reasoner);
+			}
+		}
+
+		// prune the rdf:type nodes
+		List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+		if (typeChildren != null) {
+			// collapse rdfs:subClassOf paths
+			new ArrayList<>(typeChildren).forEach(child -> {
+				if(child.isVarNode()) {
+					new ArrayList<>(child.getChildren(RDFS.subClassOf.asNode())).forEach(childChild -> {
+						if(childChild.isResourceNode()) {
+							tree.addChild(childChild, RDF.type.asNode());
+							child.removeChild(childChild, RDFS.subClassOf.asNode());
+						}
+					});
+					tree.removeChild(child, RDF.type.asNode());
+				}
+			});
+			typeChildren = tree.getChildren(RDF.type.asNode());
+
+			List<RDFResourceTree> children2Remove = new ArrayList<>();
+
+			for (int i = 0; i < typeChildren.size(); i++) {
+				RDFResourceTree child1 = typeChildren.get(i);
+				OWLClass cls1 = df.getOWLClass(IRI.create(child1.getData().getURI()));
+				for (int j = i+1; j < typeChildren.size(); j++) {
+					RDFResourceTree child2 = typeChildren.get(j);
+					OWLClass cls2 = df.getOWLClass(IRI.create(child2.getData().getURI()));
+
+					if(reasoner.isSuperClassOf(cls1, cls2)) { // T2 subClassOf T1 -> remove T1
+						children2Remove.add(child1);
+					} else if(reasoner.isSuperClassOf(cls2, cls1)) { // T1 subClassOf T2 -> remove T2
+						children2Remove.add(child2);
+					}
+				}
+			}
+			children2Remove.forEach(c -> tree.removeChild(c, RDF.type.asNode()));
+		}
+
 		return modified;
 	}
 	
@@ -1143,5 +1321,32 @@ public class QueryTreeUtils {
 			}
 		}
 		return relatedEdges;
+	}
+
+	/**
+	 * Returns all paths to leaf nodes.
+	 *
+	 * @param tree the tree
+	 * @param <T>
+	 * @param <V>
+	 * @return all paths to leaf nodes
+	 */
+	public static <T, V extends GenericTree<T, V>> List<List<V>> getPathsToLeafs(GenericTree<T, V> tree) {
+		List<List<V>> paths = new ArrayList<>();
+		getPathsToLeafs(paths, new ArrayList<>(), tree);
+		return paths;
+	}
+
+	private static <T, V extends GenericTree<T, V>> void getPathsToLeafs(List<List<V>> paths, List<V> path, GenericTree<T, V> tree) {
+		List<V> children = tree.getChildren();
+		for (V child : children) {
+			List<V> newPath = new ArrayList<>(path);
+			newPath.add(child);
+			if(child.isLeaf()) {
+				paths.add(newPath);
+			} else {
+				getPathsToLeafs(paths, newPath, child);
+			}
+		}
 	}
 }

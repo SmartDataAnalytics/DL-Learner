@@ -21,9 +21,9 @@ package org.dllearner.refinementoperators;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.*;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
@@ -53,6 +53,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.primitives.Ints.max;
 
@@ -342,19 +346,32 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				Map<OWLLiteral, Integer> dpMap = new TreeMap<>();
 				dataValueFrequency.put(dp, dpMap);
 
+//				long s1 = System.currentTimeMillis();
+//				ConcurrentMap<OWLLiteral, Integer> lit2frequency = reasoner.getDatatypeMembers(dp).values()
+//						.parallelStream()
+//						.map(set -> set.stream().collect(Collectors.toList()))
+//						.flatMap(list -> list.stream())
+//						.collect(Collectors.toConcurrentMap(
+//								Function.identity(), lit -> 1, Integer::sum));
+//				long s2 = System.currentTimeMillis();
+//				System.out.println(s2 - s1);
+
 				// sets ordered by corresponding individual (which we ignore)
+//				s1 = System.currentTimeMillis();
 				Collection<SortedSet<OWLLiteral>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<OWLLiteral> fillerSet : fillerSets) {
-					for(OWLLiteral i : fillerSet) {
-						Integer value = dpMap.get(i);
+					for(OWLLiteral lit : fillerSet) {
+						Integer frequency = dpMap.get(lit);
 
-						if(value != null) {
-							dpMap.put(i, value+1);
+						if(frequency != null) {
+							dpMap.put(lit, frequency+1);
 						} else {
-							dpMap.put(i, 1);
+							dpMap.put(lit, 1);
 						}
 					}
 				}
+//				s2 = System.currentTimeMillis();
+//				System.out.println(s2 - s1);
 
 				// keep only frequent patterns
 				Set<OWLLiteral> frequentInds = new TreeSet<>();
@@ -2030,5 +2047,4 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		logger.debug("mMaxLength = " + mMaxLength);
 	}
-
 }

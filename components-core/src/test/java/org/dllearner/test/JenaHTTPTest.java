@@ -25,7 +25,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
 
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class JenaHTTPTest {
 	

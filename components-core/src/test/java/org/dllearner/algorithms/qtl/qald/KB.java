@@ -24,7 +24,7 @@ import java.util.Map;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
 
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 class KB {
 	

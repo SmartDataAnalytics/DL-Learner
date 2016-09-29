@@ -18,32 +18,56 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.shared.PrefixMapping;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.util.iterator.Filter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Contains a knowledge base and a set of SPARQL queries.
  * @author Lorenz Buehmann
  *
  */
-public class EvaluationDataset {
+public abstract class EvaluationDataset {
+
+	String name;
 
 	SparqlEndpointKS ks;
 	String baseIRI;
 	PrefixMapping prefixMapping;
 	
 	AbstractReasonerComponent reasoner;
-	
-	List<String> sparqlQueries;
-	List<Filter<Statement>> queryTreeFilters = new ArrayList<>();
-	
+
+	Map<String, Query> sparqlQueries;
+	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
+
+	private PredicateExistenceFilter predicateFilter;
+
+	public EvaluationDataset(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public SparqlEndpointKS getKS() {
 		return ks;
 	}
@@ -60,11 +84,128 @@ public class EvaluationDataset {
 		return prefixMapping;
 	}
 	
-	public List<String> getSparqlQueries() {
+	public Map<String, Query> getSparqlQueries() {
 		return sparqlQueries;
 	}
 	
-	public List<Filter<Statement>> getQueryTreeFilters() {
+	public List<Predicate<Statement>> getQueryTreeFilters() {
 		return queryTreeFilters;
+	}
+
+	public PredicateExistenceFilter getPredicateFilter() {
+		return predicateFilter;
+	}
+
+	public void setPredicateFilter(PredicateExistenceFilter predicateFilter) {
+		this.predicateFilter = predicateFilter;
+	}
+
+	public abstract boolean usesStrictOWLTypes();
+
+	/**
+	 * Writes the ID and SPARQL queries line-wise to file.
+	 *
+	 * @param file the file
+	 */
+	public void saveToDisk(File file) throws IOException {
+		// adjust the PREFIX declarations
+		sparqlQueries.entrySet().stream().forEach(entry -> adjustPrefixes(entry.getValue()));
+
+		// create directory and file if not exist
+		java.nio.file.Path pathToFile = file.toPath();
+		Files.createDirectories(pathToFile.getParent());
+		Files.createFile(pathToFile);
+
+		// write ID + queries to disk
+		Files.write(pathToFile,
+				sparqlQueries.entrySet().stream()
+						.map(entry -> entry.getKey() + ", " + entry.getValue().toString().replace("\n", " "))
+						.collect(Collectors.toList()));
+	}
+
+	protected void adjustPrefixes(Query query) {
+		query.getPrefixMapping().removeNsPrefix("owl");
+		query.getPrefixMapping().removeNsPrefix("rdfs");
+		query.getPrefixMapping().removeNsPrefix("foaf");
+		query.getPrefixMapping().removeNsPrefix("rdf");
+
+		prefixMapping.getNsPrefixMap().entrySet().forEach(entry -> {
+			if(query.toString().contains(entry.getValue())) {
+				query.getPrefixMapping().setNsPrefix(entry.getKey(), entry.getValue());
+			}
+		});
+
+//		if(query.toString().contains("http://dbpedia.org/ontology/")) {
+//			query.getPrefixMapping().setNsPrefix("dbo", "http://dbpedia.org/ontology/");
+//		}
+//		if(query.toString().contains("http://dbpedia.org/property/")) {
+//			query.getPrefixMapping().setNsPrefix("dbp", "http://dbpedia.org/property/");
+//		}
+//		if(query.toString().contains("http://xmlns.com/foaf/0.1/")) {
+//			query.getPrefixMapping().setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
+//		}
+//		if(query.toString().contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#") || query.toString().contains(" a ")) {
+//			query.getPrefixMapping().setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+//		}
+//		if(query.toString().contains("http://dbpedia.org/resource/")) {
+//			query.getPrefixMapping().setNsPrefix("", "http://dbpedia.org/resource/");
+//		}
+	}
+
+	public void analyze() {
+		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
+
+		String separator = "\t";
+		String tsv = sparqlQueries.entrySet().stream().map(entry -> {
+			StringBuilder sb = new StringBuilder();
+
+			// ID
+			String id = entry.getKey();
+			sb.append(id).append(separator);
+
+			// query
+			Query q = entry.getValue();
+			sb.append(q.toString().replace("\n", " "));
+			try {
+				// get query result
+				List<String> result = SPARQLUtils.getResult(ks.getQueryExecutionFactory(), q);
+				sb.append(separator).append(result.size());
+
+				// query type
+				SPARQLUtils.QueryType queryType = SPARQLUtils.getQueryType(q);
+				sb.append(separator).append(queryType.name());
+
+				// check CBD sizes and time
+				Monitor mon = MonitorFactory.getTimeMonitor("CBD");
+				mon.reset();
+				DescriptiveStatistics sizeStats = new DescriptiveStatistics();
+				result.stream()
+						.map(r -> {
+							System.out.println(r);
+							mon.start();
+							Model cbd = cbdGen.getConciseBoundedDescription(r, 2);
+							mon.stop();
+							return cbd;
+						})
+						.map(Model::size)
+						.forEach(sizeStats::addValue);
+
+				// show min., max. and avg. size
+				sb.append(separator).append(sizeStats.getMin());
+				sb.append(separator).append(sizeStats.getMax());
+				sb.append(separator).append(sizeStats.getMean());
+
+				// show min., max. and avg. CBD time
+				sb.append(separator).append(mon.getTotal());
+				sb.append(separator).append(mon.getMin());
+				sb.append(separator).append(mon.getMax());
+				sb.append(separator).append(mon.getAvg());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return sb;
+		}).collect(Collectors.joining("\n"));
+
+		System.out.println(tsv);
 	}
 }

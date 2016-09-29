@@ -21,22 +21,44 @@ package org.dllearner.utilities;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.sparql.core.TriplePath;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.syntax.*;
-import com.hp.hpl.jena.sparql.util.VarUtils;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.util.mxCellRenderer;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.png.mxPngEncodeParam;
+import com.mxgraph.util.png.mxPngImageEncoder;
+import com.mxgraph.view.mxStylesheet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.*;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.syntax.*;
+import org.apache.jena.sparql.util.VarUtils;
+import org.apache.jena.vocabulary.RDF;
+import org.dllearner.kb.sparql.CBDStructureTree;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/**
+ * Utilities for SPARQL queries.
+ */
 public class QueryUtils extends ElementVisitorBase {
 	
 private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);	
@@ -268,40 +290,63 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		
 		return maxDepth;
 	}
-	
+
+	public static CBDStructureTree getOptimalCBDStructure(Query query) {
+		CBDStructureTree tree = new CBDStructureTree("root");
+
+		Var var = query.getProjectVars().get(0);
+
+		getOptimalCBDStructure(query, tree, var.asNode(), null, "");
+
+		return tree;
+	}
+
+	private static void getOptimalCBDStructure(Query query, CBDStructureTree structureTree, Node current, Node parent, String direction) {
+		QueryUtils utils = new QueryUtils();
+
+		// traverse the outgoing paths
+		Set<Triple> tmp = utils.extractOutgoingTriplePatterns(query, current)
+				.stream()
+				.filter(tp -> !direction.equals("in") || !tp.getObject().matches(parent))
+				.collect(Collectors.toSet());
+		if(!tmp.isEmpty()) {
+			List<CBDStructureTree> outChildren = structureTree.getChildren().stream().filter(t -> t.isOutNode()).collect(Collectors.toList());
+			CBDStructureTree outChild;
+			if(outChildren.isEmpty()) {
+				outChild = structureTree.addOutNode();
+			} else {
+				outChild = outChildren.get(0);
+			}
+			tmp.stream()
+					.filter(tp -> tp.getObject().isVariable())
+					.map(tp -> tp.getObject())
+					.forEach(node -> getOptimalCBDStructure(query, outChild, node, current, "out"));
+		}
+		// traverse the incoming paths
+		tmp = utils.extractIncomingTriplePatterns(query, current)
+				.stream()
+				.filter(tp -> !direction.equals("out") || !tp.getSubject().matches(parent))
+				.collect(Collectors.toSet());
+		if(!tmp.isEmpty()) {
+			CBDStructureTree inChild = structureTree.addInNode();
+
+			tmp.stream()
+					.filter(tp -> tp.getSubject().isVariable())
+					.map(tp -> tp.getSubject())
+					.forEach(node -> getOptimalCBDStructure(query, inChild, node, current, "in"));
+		}
+	}
+
 	/**
 	 * Returns all variables that occur as object in a triple pattern of the SPARQL query.
 	 * @param query the query
 	 * @return
 	 */
 	public static Set<Var> getObjectVars(Query query){
-		final Set<Var> vars = new HashSet<>();
-		
-		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
-			@Override
-			public void visit(ElementTriplesBlock el) {
-				Iterator<Triple> triples = el.patternElts();
-	            while (triples.hasNext()) {
-	            	Triple triple = triples.next();
-	            	if(triple.getObject().isVariable()) {
-	            		vars.add(Var.alloc(triples.next().getObject()));
-	            	}
-	            }
-			}
-			
-			@Override
-			public void visit(ElementPathBlock el) {
-				Iterator<TriplePath> triples = el.patternElts();
-	            while (triples.hasNext()) {
-	            	TriplePath triple = triples.next();
-	            	if(triple.getObject().isVariable()) {
-	            		vars.add(Var.alloc(triples.next().getObject()));
-	            	}
-	            }
-			}
-		});
-		
-		return vars;
+		return getTriplePatterns(query).stream()
+				.filter(tp -> tp.getObject().isVariable())
+				.map(tp -> Var.alloc(tp.getObject()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -310,17 +355,10 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getObjectVariables(Query query){
-		Set<Var> vars = new HashSet<>();
-
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		
-		for (Triple tp : triplePatterns) {
-			if(tp.getObject().isVariable()){
-				vars.add(Var.alloc(tp.getObject()));
-			}
-		}
-
-		return vars;
+		return extractTriplePattern(query, false).stream()
+				.filter(tp -> tp.getObject().isVariable())
+				.map(tp -> Var.alloc(tp.getObject()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -331,17 +369,19 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractOutgoingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in subject position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.subjectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
+		return extractTriplePattern(query, false).stream()
+				.filter(t -> t.subjectMatches(node))
+				.collect(Collectors.toSet());
 	}
-	
+
+	public Set<Triple> extractOutgoingTriplePatternsTrans(Query query, Node node) {
+		return Stream.concat(extractOutgoingTriplePatterns(query, node).stream(),
+							 extractOutgoingTriplePatterns(query, node).stream()
+									 .map(tp -> extractOutgoingTriplePatternsTrans(query, tp.getObject()))
+									 .flatMap(set -> set.stream()))
+				.collect(Collectors.toSet());
+	}
+
 	/**
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the incoming
 	 * triple patterns.
@@ -350,36 +390,19 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractIncomingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in subject position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.objectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
+		return extractTriplePattern(query, false).stream()
+				.filter(tp -> tp.objectMatches(node))
+				.collect(Collectors.toSet());
 	}
-	
-	/**
-	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the ingoing
-	 * triple patterns.
-	 * @param query The SPARQL query.
-	 * @param node the node
-	 * @return
-	 */
-	public Set<Triple> extractIngoingTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		//remove triple patterns not containing triple patterns with given node in object position
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Triple triple = iterator.next();
-			if(!triple.objectMatches(node)){
-				iterator.remove();
-			}
-		}
-		return triplePatterns;
+
+	public Set<Triple> extractIncomingTriplePatternsTrans(Query query, Node node) {
+		return Stream.concat(extractIncomingTriplePatterns(query, node).stream(),
+							 extractIncomingTriplePatterns(query, node).stream()
+									 .map(tp -> extractIncomingTriplePatternsTrans(query, tp.getSubject()))
+									 .flatMap(set -> set.stream()))
+				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the ingoing and outgoing triple patterns.
@@ -389,7 +412,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public Set<Triple> extractTriplePatterns(Query query, Node node){
 		Set<Triple> triplePatterns = new HashSet<>();
-		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
+		triplePatterns.addAll(extractIncomingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		return triplePatterns;
 	}
@@ -426,7 +449,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public Set<Triple> extractNonOptionalTriplePatterns(Query query, Node node){
 		Set<Triple> triplePatterns = new HashSet<>();
-		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
+		triplePatterns.addAll(extractIncomingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		triplePatterns.removeAll(optionalTriplePattern);
 		return triplePatterns;
@@ -441,7 +464,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
 			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
+			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -494,7 +517,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
 			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
+			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
 		return var2TriplePatterns;
@@ -549,18 +572,43 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	public Query removeUnboundObjectVarTriples(Query query) {
 		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
-		for (Triple tp : triplePatterns) {
-			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
+
+		Var rootVar = query.getProjectVars().get(0);
+
+		// 1. outgoing triple paths pruning
+		Set<Triple> outgoingTriplePatterns = queryUtils.extractOutgoingTriplePatternsTrans(query, rootVar);
+		Multimap<Var, Triple> var2OutgoingTriplePatterns = HashMultimap.create();
+
+		// mapping from variable to triple pattern
+		for (Triple tp : outgoingTriplePatterns) {
+			var2OutgoingTriplePatterns.put(Var.alloc(tp.getSubject()), tp);
 		}
-		
-		Iterator<Triple> iterator = triplePatterns.iterator();
+
+		// remove triple patterns with object is var node and leaf node
+		Iterator<Triple> iterator = outgoingTriplePatterns.iterator();
 		while (iterator.hasNext()) {
 			Triple triple = iterator.next();
 			Node object = triple.getObject();
-			if(object.isVariable() && !var2TriplePatterns.containsKey(Var.alloc(object))) {
+			if(object.isVariable() && !var2OutgoingTriplePatterns.containsKey(Var.alloc(object))) {
+				iterator.remove();
+			}
+		}
+
+		// 2. incoming triple paths pruning
+		Set<Triple> incomingTriplePatterns = queryUtils.extractIncomingTriplePatternsTrans(query, rootVar);
+		Multimap<Var, Triple> var2IncomingTriplePatterns = HashMultimap.create();
+
+		// mapping from variable to triple pattern
+		for (Triple tp : incomingTriplePatterns) {
+			var2IncomingTriplePatterns.put(Var.alloc(tp.getObject()), tp);
+		}
+
+		// remove triple patterns with object is var node and leaf node
+		iterator = incomingTriplePatterns.iterator();
+		while (iterator.hasNext()) {
+			Triple triple = iterator.next();
+			Node s = triple.getSubject();
+			if(s.isVariable() && !var2IncomingTriplePatterns.containsKey(Var.alloc(s))) {
 				iterator.remove();
 			}
 		}
@@ -568,7 +616,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Query newQuery = new Query();
 		newQuery.addProjectVars(query.getProjectVars());
 		ElementTriplesBlock el = new ElementTriplesBlock();
-		for (Triple triple : triplePatterns) {
+		for (Triple triple : Sets.union(outgoingTriplePatterns, incomingTriplePatterns)) {
 			el.addTriple(triple);
 		}
 		newQuery.setQuerySelectType();
@@ -617,6 +665,77 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 			// remove triple patterns
 			triplePatterns.removeAll(triplesPatterns2Remove);
 		}
+	}
+
+	public static DirectedGraph<Node, LabeledEdge> asJGraphT(Query query) {
+		QueryUtils utils = new QueryUtils();
+
+		Set<Triple> tps = utils.extractTriplePattern(query);
+
+		DirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<Node, LabeledEdge>(LabeledEdge.class);
+
+		tps.forEach(tp -> {
+			g.addVertex(tp.getSubject());
+			g.addVertex(tp.getObject());
+			g.addEdge(tp.getSubject(), tp.getObject(), new LabeledEdge(tp.getSubject(), tp.getObject(), tp.getPredicate()));
+		});
+
+		return g;
+	}
+
+	public static void exportAsGraph(Query query, File file) {
+		DirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
+		System.out.println(g.edgeSet().size());
+
+		JGraphXAdapter adapter = new JGraphXAdapter(g);
+
+
+		// positioning via jgraphx layouts
+		mxHierarchicalLayout layout = new mxHierarchicalLayout(adapter);
+		layout.execute(adapter.getDefaultParent());
+
+		Map<String, Object> edgeStyle = new HashMap<String, Object>();
+//edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ORTHOGONAL);
+		edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);
+		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
+		edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+		edgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
+
+		Map<String, Object> nodeStyle = new HashMap<>();
+		nodeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_ELLIPSE);
+		nodeStyle.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
+
+		mxStylesheet stylesheet = new mxStylesheet();
+		stylesheet.setDefaultEdgeStyle(edgeStyle);
+		stylesheet.setDefaultVertexStyle(nodeStyle);
+
+		adapter.setStylesheet(stylesheet);
+
+//		JFrame frame = new JFrame();
+//		frame.getContentPane().add(new mxGraphComponent(adapter));
+//		frame.pack();
+//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//		frame.setVisible(true);
+
+
+
+		BufferedImage image = mxCellRenderer.createBufferedImage(adapter, null, 1, Color.WHITE, true, null);
+		mxPngEncodeParam param = mxPngEncodeParam.getDefaultEncodeParam(image);
+
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(file);
+			mxPngImageEncoder encoder = new mxPngImageEncoder(outputStream, param);
+			if (image != null) {
+				encoder.encode(image);
+			}
+			outputStream.close();
+//			ImageIO.write(image, "PNG", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
@@ -729,6 +848,27 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	public ElementGroup getElementGroup(Triple triple){
 		return triple2Parent.get(triple);
 	}
+
+	static class LabeledEdge extends DefaultEdge {
+		private final Node s;
+		private final Node t;
+		private final Node edge;
+
+		public LabeledEdge(Node s, Node t, Node edge) {
+			this.s = s;
+			this.t = t;
+			this.edge = edge;
+		}
+
+		public Node getEdge() {
+			return edge;
+		}
+
+		@Override
+		public String toString() {
+			return edge.toString();
+		}
+	}
 	
 	public static void main(String[] args) throws Exception {
 		Query q = QueryFactory.create(
@@ -736,9 +876,10 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				"PREFIX  dbo: <http://dbpedia.org/ontology/>\n" + 
 				"SELECT  ?thumbnail\n" + 
 				"WHERE\n" + 
-				"  { dbp:total !dbo:thumbnail ?thumbnail }");
+				"  { dbp:total dbo:thumbnail ?thumbnail }");
 		QueryUtils queryUtils = new QueryUtils();
-		queryUtils.extractIngoingTriplePatterns(q, q.getProjectVars().get(0));
+		System.out.println(queryUtils.extractOutgoingTriplePatterns(q, q.getProjectVars().get(0)));
+		System.out.println(queryUtils.extractIncomingTriplePatterns(q, q.getProjectVars().get(0)));
 		
 		q = QueryFactory.create("SELECT DISTINCT  ?x0\n" + 
 				"WHERE\n" + 
@@ -773,5 +914,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				+ "?o1 <http://dbpedia.org/ontology/timeZone> <http://dbpedia.org/resource/Eastern_Time_Zone> .}";
 		
 		System.out.println(QueryUtils.getSubjectObjectJoinDepth(QueryFactory.create(query), Var.alloc("s")));
+
+		System.out.println(queryUtils.extractOutgoingTriplePatternsTrans(QueryFactory.create(query), Var.alloc("s")));
 	}
+
+
 }

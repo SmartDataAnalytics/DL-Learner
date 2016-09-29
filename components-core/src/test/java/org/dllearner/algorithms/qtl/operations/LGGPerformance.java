@@ -18,8 +18,8 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;

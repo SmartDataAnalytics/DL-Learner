@@ -128,6 +128,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Multimap<OWLDatatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<>();
 
+	@ConfigOption(description = "if property domains should be precomputed", defaultValue = "true")
+	protected boolean precomputePropertyDomains = true;
+	protected Map<OWLProperty, OWLClassExpression> propertyDomains = new HashMap<>();
+
+	@ConfigOption(description = "if object property ranges should be precomputed", defaultValue = "true")
+	protected boolean precomputeObjectPropertyRanges = true;
+	protected Map<OWLObjectProperty, OWLClassExpression> objectPropertyRanges = new HashMap<>();
+
 	/**
 	 * The underlying knowledge sources.
 	 */
@@ -1165,6 +1173,28 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 		throw new ReasoningMethodUnsupportedException();
 	}
+
+	protected <T extends OWLProperty> OWLClassExpression getDomain(T role) {
+		if(precomputePropertyDomains) {
+			return propertyDomains.get(role);
+		} else {
+			try {
+				return getDomainImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		throw null;
+	}
+
+	protected <T extends OWLProperty> OWLClassExpression getDomainImpl(T role) throws ReasoningMethodUnsupportedException {
+		if(OWLObjectProperty.class.isInstance(role)) {
+			return getDomainImpl((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role)) {
+			return getDomainImpl((OWLDataProperty) role);
+		}
+		throw new ReasoningMethodUnsupportedException();
+	}
 	
 	
 	@Override
@@ -1336,7 +1366,6 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	@Override
 	public final ObjectPropertyHierarchy getObjectPropertyHierarchy() {
-
 		try {
 			if (roleHierarchy == null) {
 				roleHierarchy = prepareObjectPropertyHierarchy();

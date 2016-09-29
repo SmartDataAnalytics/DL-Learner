@@ -25,17 +25,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.net.UrlEscapers;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.core.Var;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.core.Var;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.semanticweb.owlapi.model.OWLClass;
 
@@ -45,6 +45,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
+
 
 public class PathDetectionTask implements Callable<List<Path>> {
 

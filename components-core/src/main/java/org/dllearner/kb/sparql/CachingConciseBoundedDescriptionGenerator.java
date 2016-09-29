@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 public class CachingConciseBoundedDescriptionGenerator implements ConciseBoundedDescriptionGenerator{
 	
@@ -68,12 +68,8 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	}
 	
 	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		delegatee.setRecursionDepth(maxRecursionDepth);
-	}
-	
-	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
+		delegatee.addPropertiesToIgnore(properties);
 	}
 
 	/* (non-Javadoc)

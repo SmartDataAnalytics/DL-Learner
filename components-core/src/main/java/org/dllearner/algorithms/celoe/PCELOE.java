@@ -993,16 +993,6 @@ public class PCELOE extends AbstractCELA {
 		this.maxClassExpressionTests = maxClassDescriptionTests;
 	}
 
-	@Override
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	@Override
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
-
 	public boolean isTerminateOnNoiseReached() {
 		return terminateOnNoiseReached;
 	}

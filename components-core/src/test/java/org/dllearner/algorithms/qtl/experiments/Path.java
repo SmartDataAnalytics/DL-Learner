@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
 
-import com.hp.hpl.jena.sparql.core.Var;
+import org.apache.jena.sparql.core.Var;
 
 public class Path {
 	

@@ -19,8 +19,8 @@
 package org.dllearner.utilities.datastructures;
 
 import com.google.common.collect.ComparisonChain;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.sparql.util.NodeComparator;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.sparql.util.NodeComparator;
 import org.dllearner.kb.extraction.LiteralNode;
 
 /**

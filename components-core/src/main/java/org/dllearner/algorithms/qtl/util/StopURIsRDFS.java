@@ -21,7 +21,7 @@ package org.dllearner.algorithms.qtl.util;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.RDFS;
 
 /**
  * @author Lorenz Buehmann

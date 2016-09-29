@@ -1,6 +1,6 @@
 package org.dllearner.algorithms.schema;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;

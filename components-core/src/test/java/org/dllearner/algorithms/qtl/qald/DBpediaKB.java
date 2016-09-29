@@ -25,7 +25,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 
 import com.google.common.collect.Lists;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 /**
  * @author Lorenz Buehmann

@@ -18,9 +18,9 @@
  */
 package org.dllearner.algorithms.qtl.filters;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.Filter;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;

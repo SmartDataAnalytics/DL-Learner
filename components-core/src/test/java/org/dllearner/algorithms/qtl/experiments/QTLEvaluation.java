@@ -25,29 +25,8 @@ import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.expr.*;
-import com.hp.hpl.jena.sparql.expr.aggregate.AggCountVarDistinct;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.util.TripleComparator;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import javassist.runtime.Desc;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -63,6 +42,25 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.apache.commons.math3.util.Pair;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.expr.aggregate.AggCountVarDistinct;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementFilter;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementTriplesBlock;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -73,7 +71,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
@@ -86,8 +84,8 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -95,6 +93,7 @@ import org.dllearner.utilities.QueryUtils;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.io.*;
@@ -111,6 +110,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -119,7 +120,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("unchecked")
 public class QTLEvaluation {
 	
-	private static final Logger logger = Logger.getLogger(QTLEvaluation.class.getName());
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(QTLEvaluation.class.getName());
 	
 	private static final ParameterizedSparqlString superClassesQueryTemplate2 = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
@@ -141,12 +142,12 @@ public class QTLEvaluation {
 		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
 	}
 
-	QueryExecutionFactory qef;
+	private QueryExecutionFactory qef;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
-	
-	RandomDataGenerator rnd = new RandomDataGenerator();
+
+	private RandomDataGenerator rnd = new RandomDataGenerator();
 
 	private EvaluationDataset dataset;
 	
@@ -155,8 +156,8 @@ public class QTLEvaluation {
 	private int kbSize;
 
 	private boolean splitComplexQueries = true;
-	
-	PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+
+	private PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
 	
 	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
@@ -172,26 +173,26 @@ public class QTLEvaluation {
 	// max. time for each QTL run
 	private int maxExecutionTimeInSeconds = 60;
 
-	int minNrOfPositiveExamples = 9;
+	private int minNrOfPositiveExamples = 9;
 
-	int maxTreeDepth = 3;
-	
-	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
+	private int maxTreeDepth = 2;
+
+	private NoiseMethod noiseMethod = NoiseMethod.RANDOM;
 
 	// whether to override existing results
 	private boolean override = false;
 	
 	// parameters
-	int[] nrOfExamplesIntervals = {
+	private int[] nrOfExamplesIntervals = {
 //					5,
 //					10,
 //					15,
 					20,
 //					25,
 //					30
-					}; 
-			
-	double[] noiseIntervals = {
+					};
+
+	private double[] noiseIntervals = {
 					0.0,
 					0.1,
 //					0.2,
@@ -223,6 +224,11 @@ public class QTLEvaluation {
 
 	private long timeStamp;
 
+	Set<String> tokens = Sets.newHashSet(
+//			"The_Three_Dancers"
+			"Queen_Victoria"
+	);
+
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -232,24 +238,23 @@ public class QTLEvaluation {
 		this.useEmailNotification = useEmailNotification;
 		this.nrOfThreads = nrOfThreads;
 
-		queryTreeFactory = new QueryTreeFactoryBase();
+		queryTreeFactory = new QueryTreeFactoryBaseInv();
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
 		
 		// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
-		List<Filter<Statement>> var = dataset.getQueryTreeFilters();
-		queryTreeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
+		List<Predicate<Statement>> var = dataset.getQueryTreeFilters();
+		queryTreeFactory.addDropFilters((Predicate<Statement>[]) var.toArray(new Predicate[var.size()]));
 		
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxTreeDepth);
-		
+		cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(qef);
+
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
 
 		timeStamp = System.currentTimeMillis();
-		
+
 		if(write2DB) {
 			setupDatabase();
 		}
@@ -271,7 +276,7 @@ public class QTLEvaluation {
 			java.sql.Statement stmt = conn.createStatement();
 
 			// create database
-			String databaseName = "QTL_" + timeStamp;
+			String databaseName = "QTL_" + dataset.getName() + "_" + timeStamp;
 			logger.info("Creating database '" + databaseName + "'");
 			String sql = "CREATE DATABASE " + databaseName;
 			stmt.executeUpdate(sql);
@@ -429,6 +434,7 @@ public class QTLEvaluation {
 			Iterator<String> iterator = queries.iterator();
 			while(iterator.hasNext() && tmp.size() < nrOfQueriesPerDepth) {
 				String queryString = iterator.next();
+
 				Query q = QueryFactory.create(queryString);
 				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
 				if(subjectObjectJoinDepth == (depth - 1)) {
@@ -440,7 +446,7 @@ public class QTLEvaluation {
 		return subset;
 	}
 
-	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
+	public void run(int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
 
@@ -457,24 +463,45 @@ public class QTLEvaluation {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = getSparqlQueries(queriesFile);
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
+
+		// filter for debugging purposes
+		queries = queries.stream().filter(q -> tokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
+
 
 		if(maxNrOfProcessedQueries == -1) {
 			maxNrOfProcessedQueries = queries.size();
 		}
 
-		queries = filter(queries, maxNrOfProcessedQueries / maxTreeDepth);
+//		queries = filter(queries, (int) Math.ceil((double) maxNrOfProcessedQueries / maxTreeDepth));
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
-		
+
 		// generate examples for each query
 		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
-		for (String query : queries) {
+		for (String query : queries) {//if(!(query.contains("Borough_(New_York_City)")))continue;
 			query2Examples.put(query, generateExamples(query));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
+
+		// check for queries that do not return any result (should not happen, but we never know)
+		Set<String> emptyQueries = query2Examples.entrySet().stream()
+				.filter(e -> e.getValue().correctPosExampleCandidates.isEmpty())
+				.map(e -> e.getKey())
+				.collect(Collectors.toSet());
+		logger.info("got {} empty queries.", emptyQueries.size());
+		queries.removeAll(emptyQueries);
+
+		// min. pos examples
+		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
+				.filter(e -> e.getValue().correctPosExampleCandidates.size() < 2)
+				.map(e -> e.getKey())
+				.collect(Collectors.toSet());
+		logger.info("got {} queries with < 2 pos. examples.", emptyQueries.size());
+		queries.removeAll(lowNrOfExamplesQueries);
+
 
 		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
@@ -555,16 +582,16 @@ public class QTLEvaluation {
 
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
-							
-//							if(!(sparqlQuery.contains("VideoGame")))continue;
-							
+
 							tp.submit(() -> {
 
 								logger.info("##############################################################");
 								logger.info("Processing query\n" + sparqlQuery);
 
 								try {
-									ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
+									ExamplesWrapper examples = query2Examples
+																.get(sparqlQuery)
+																.get(nrOfExamples, nrOfExamples, noise);
 									logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
 									logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
 
@@ -600,7 +627,7 @@ public class QTLEvaluation {
 									QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 									la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 									la.setReasoner(dataset.getReasoner());
-									la.setEntailment(Entailment.RDFS);
+									la.setEntailment(Entailment.SIMPLE);
 									la.setTreeFactory(queryTreeFactory);
 									la.setPositiveExampleTrees(examples.posExamplesMapping);
 									la.setNegativeExampleTrees(examples.negExamplesMapping);
@@ -636,7 +663,7 @@ public class QTLEvaluation {
 									bestReturnedSolutionFMeasureStats.addValue(score.fmeasure);
 									bestReturnedSolutionPredAccStats.addValue(score.predAcc);
 									bestReturnedSolutionMathCorrStats.addValue(score.mathCorr);
-									logger.info(score);
+									logger.info(score.toString());
 
 									// find the extensionally best matching tree in the list
 									Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTreeFast(solutions, sparqlQuery, noise, examples);
@@ -653,7 +680,7 @@ public class QTLEvaluation {
 										logger.info("Best covering solution:\n" + render(bestMatchingTree.asEvaluatedDescription()));
 										logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 										bestScore = bestMatchingScore;
-										logger.info(bestMatchingScore);
+										logger.info(bestMatchingScore.toString());
 									} else {
 										logger.info("Best returned solution was also the best covering solution.");
 									}
@@ -671,7 +698,7 @@ public class QTLEvaluation {
 									}
 
 									String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
-											filter.filter(bestMatchingTree.getTree()),
+											filter.apply(bestMatchingTree.getTree()),
 											dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 
 									if(write2DB) {
@@ -738,7 +765,7 @@ public class QTLEvaluation {
 							result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
 							result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
 							result += "Tree size(avg):\t" + treeSizeStats.getMean() + "\n";
-									
+
 							logger.info(result);
 							
 							try {
@@ -793,7 +820,7 @@ public class QTLEvaluation {
 				try {
 					Files.write(content, examplesVsNoise, Charsets.UTF_8);
 				} catch (IOException e) {
-					logger.error(e);
+					logger.error("failed to write stats to file", e);
 				}
 			}
 		}
@@ -1103,7 +1130,7 @@ public class QTLEvaluation {
 	private String hash(String query) {
 		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
-	
+
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
 		logger.info("Generating examples for query ..." + sparqlQuery);
 
@@ -1129,7 +1156,7 @@ public class QTLEvaluation {
 		}
 		Collections.sort(posExamples);
 		logger.info("#Pos. examples: " + posExamples.size());
-		
+
 		// get some neg. examples, i.e. resources not returned by the query
 		int maxNrOfNegExamples = 100;
 		List<String> negExamples;
@@ -1165,7 +1192,7 @@ public class QTLEvaluation {
 		if(rs.hasNext()){
 			Resource object = rs.next().getResource("o");
 			Model cbd = cbdGen.getConciseBoundedDescription(object.getURI(), maxTreeDepth);
-			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd);
+			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd, maxTreeDepth);
 			similarTree.setData(object.asNode());
 			return similarTree;
 		}
@@ -1424,10 +1451,12 @@ public class QTLEvaluation {
 	
 	private RDFResourceTree getQueryTree(String resource){
 		// get CBD
-		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = cbdGen.getConciseBoundedDescription(resource);
-		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
-		
+		logger.info("loading data for {} ...", resource);
+		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, maxTreeDepth);
+		mon.stop();
+		logger.info("got {} triples in {}ms.", cbd.size(), mon.getLastValue());
+
 		// rewrite NAN to NaN to avoid parse exception
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
@@ -1439,11 +1468,15 @@ public class QTLEvaluation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		// generate tree
-		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
-		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
-		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
+		logger.info("generating query tree for {} ...", resource);
+		mon = MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
+		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd, maxTreeDepth);
+		mon.stop();
+		logger.info("generating query tree for {} took {}ms.", resource, mon.getLastValue());
+
+//		System.out.println(tree.getStringRepresentation());
 
 		// keep track of tree size
 		int size = QueryTreeUtils.getNrOfNodes(tree);
@@ -1491,170 +1524,14 @@ public class QTLEvaluation {
 	 */
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
-		logger.trace("Getting result set for\n" + query);
-		
-		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		// remove triple patterns with unbound object vars
-		if(triplePatterns.size() > 10) {
-			query = queryUtils.removeUnboundObjectVarTriples(query);
-			triplePatterns = queryUtils.extractTriplePattern(query);
-		} 
-		
-	//  Virtuoso bug workaround with literals of type xsd:float and xsd:double
-		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
-			Node object = iterator.next().getObject();
-			if(object.isLiteral() && object.getLiteralDatatype() != null 
-					&& (object.getLiteralDatatype().equals(XSDDatatype.XSDfloat) || object.getLiteralDatatype().equals(XSDDatatype.XSDdouble))){
-				iterator.remove();
-			}
-		}
-					
-		
-		Var targetVar = query.getProjectVars().get(0); // should be ?x0
-		
-		final Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
-		for (Triple tp : triplePatterns) {
-			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
-		}
-		
-		// we keep only the most specific types for each var
-		filterOutGeneralTypes(var2TriplePatterns);
-		
-		// 1. get the outgoing triple patterns of the target var that do not have
-		// outgoing triple patterns
-		Set<Triple> fixedTriplePatterns = new HashSet<>();
-		Set<Set<Triple>> clusters = new HashSet<>();
-		Collection<Triple> targetVarTriplePatterns = var2TriplePatterns.get(targetVar);
-		boolean useSplitting = false;
-		for (Triple tp : targetVarTriplePatterns) {
-			Node object = tp.getObject();
-			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
-				fixedTriplePatterns.add(tp);
-			} else {
-				Set<Triple> cluster = new TreeSet<>((o1, o2) -> {
-					return ComparisonChain.start().
-					compare(o1.getSubject().toString(), o2.getSubject().toString()).
-					compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-					compare(o1.getObject().toString(), o2.getObject().toString()).
-					result();
-				});
-				cluster.add(tp);
-				clusters.add(cluster);
-				useSplitting = true;
-			}
-		}
-		
-		if(!useSplitting){
-			clusters.add(Sets.newHashSet(fixedTriplePatterns));
-		} else {
-			logger.trace("Query too complex. Splitting...");
-			// 2. build clusters for other
-			for (Set<Triple> cluster : clusters) {
-				Triple representative = cluster.iterator().next();
-				cluster.addAll(var2TriplePatterns.get(Var.alloc(representative.getObject())));
-				cluster.addAll(fixedTriplePatterns);
-			}
-		}
-		
-		// again split clusters to have only a maximum number of triple patterns
-		int maxNrOfTriplePatternsPerQuery = 20;// number of outgoing triple patterns form the target var in each executed query
-		Set<Set<Triple>> newClusters = new HashSet<>();
-		for (Set<Triple> cluster : clusters) {
-			int cnt = 0;
-			for (Triple triple : cluster) {
-				if(triple.getSubject().matches(targetVar)) {
-					cnt++;
-				}
-			}
-			
-			if(cnt > maxNrOfTriplePatternsPerQuery) {
-				Set<Triple> newCluster = new HashSet<>();
-				for (Triple triple : cluster) {
-					if(triple.getSubject().matches(targetVar)) {
-						newCluster.add(triple);
-					}
-					if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
-						newClusters.add(newCluster);
-						newCluster = new HashSet<>();
-					}
-				}
-				if(!newCluster.isEmpty()) {
-					newClusters.add(newCluster);
-				}
-			}
-		}
-		
-		for (Set<Triple> cluster : newClusters) {
-			for(int i = 1; i < maxTreeDepth; i++) {
-				Set<Triple> additionalTriples = new HashSet<>();
-				cluster.stream().filter(triple -> triple.getObject().isVariable()).forEach(triple -> {
-					Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
-					additionalTriples.addAll(triples);
-				});
-				cluster.addAll(additionalTriples);
-			}
-		}
-//		clusters = newClusters;
-		
-		
-		
-		Set<String> resources = null;
-		// 3. run query for each cluster
-		for (Set<Triple> cluster : clusters) {
-			// remove redundant edges
-			SortedSet<Triple> tmp = new TreeSet<>(new Comparator<Triple>() {
+		logger.trace("Getting result set splitted for\n{}", query);
 
-				TripleComparator comp = new TripleComparator();
+		List<Query> queries = QueryRewriter.split(query);
 
-				@Override
-				public int compare(Triple o1, Triple o2) {
-					boolean same = o1.subjectMatches(o2.getSubject())
-							&& o2.predicateMatches(o2.getPredicate())
-							&& o1.getObject().isVariable() && o2.getObject().isVariable();
-//							&& !var2TriplePatterns.containsKey(o1.getObject());
-					if (same) return 0;
-					return comp.compare(o1, o2);
-				}
-			});
-			tmp.addAll(cluster);
-			cluster = tmp;
-			
-			// build query
-			Query q = new Query();
-			q.addProjectVars(Collections.singleton(targetVar));
-			ElementTriplesBlock el = new ElementTriplesBlock();
-			for (Triple triple : cluster) {
-				el.addTriple(triple);
-			}
-			q.setQuerySelectType();
-			q.setDistinct(true);
-			q.setQueryPattern(el);
-			
-			q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
-//			q = rewriteForVirtuosoFloatingPointIssue(q);
-			logger.trace(q);
-//			sparqlQuery = getPrefixedQuery(sparqlQuery);
-			System.out.println(q);
-			List<String> partialResult = getResult(q.toString());
-			Set<String> resourcesTmp = new HashSet<>(partialResult);
-			
-			if(resourcesTmp.isEmpty()) {
-				System.err.println("Empty query result");
-				System.err.println(q);
-//				System.exit(0);
-				return Collections.EMPTY_LIST;
-			}
-			
-			if(resources == null){
-				resources = resourcesTmp;
-			} else {
-				resources.retainAll(resourcesTmp);
-			}
-		}
-		
-		return new ArrayList<>(resources);
+		List<String> resources = getResult(queries.remove(0).toString());
+		queries.stream().map(q -> getResult(q.toString())).forEach(l -> resources.retainAll(l));
+
+		return resources;
 	}
 	
 	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples) {
@@ -1790,9 +1667,17 @@ public class QTLEvaluation {
 		// apply some filters
 		QueryTreeUtils.removeVarLeafs(tree);
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
-		
+
+		// remove redundant rdf:type triples
+		QueryTreeUtils.keepMostSpecificTypes(tree, dataset.getReasoner());
+
+		//
+		PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+		tree = filter.apply(tree);
+
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-		
+		logger.info("learned SPARQL query:\n{}", learnedSPARQLQuery);
+
 		if(QueryUtils.getTriplePatterns(QueryFactory.create(learnedSPARQLQuery)).size() < 25) {
 			return computeScoreBySparqlCount(referenceSparqlQuery, tree, noise);
 		}
@@ -1817,8 +1702,9 @@ public class QTLEvaluation {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
+		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
-			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
+			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();
 		}
 
@@ -1834,10 +1720,11 @@ public class QTLEvaluation {
 	}
 	
 	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
-		logger.trace("Computing score...");
+		logger.debug("Computing score by COUNT query...");
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-		
-		final ExprVar s = new ExprVar("s");
+
+		Query referenceQuery = QueryFactory.create(referenceSparqlQuery);
+		final ExprVar s = new ExprVar(referenceQuery.getProjectVars().get(0));
 		Var cntVar = Var.alloc("cnt");
 		
 		// Q1
@@ -1846,6 +1733,7 @@ public class QTLEvaluation {
 		q1Count.setQuerySelectType();
 		q1Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q1Count.setQueryPattern(q1.getQueryPattern());
+		logger.debug("Reference COUNT query:\n" + q1Count);
 		QueryExecution qe = qef.createQueryExecution(q1Count);
 		ResultSet rs = qe.execSelect();
 		QuerySolution qs = rs.next();
@@ -1865,11 +1753,12 @@ public class QTLEvaluation {
 				
 		// Q2
 		Query q2 = QueryFactory.create(learnedSPARQLQuery);
+		Var targetVar = q2.getProjectVars().get(0);
 		Query q2Count = QueryFactory.create();
 		q2Count.setQuerySelectType();
-		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
+		q2Count.getProject().add(cntVar, new ExprAggregator(targetVar, new AggCountVarDistinct(new ExprVar(targetVar))));
 		q2Count.setQueryPattern(q2.getQueryPattern());
-		logger.trace("Learned query:\n" + q2Count);
+		logger.debug("Learned COUNT query:\n" + q2Count);
 		q2Count = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q2Count);
 		qe = qef.createQueryExecution(q2Count);
 		rs = qe.execSelect();
@@ -1893,7 +1782,7 @@ public class QTLEvaluation {
 				whereClause.addElement(el);
 			}
 			q12.setQueryPattern(whereClause);
-			logger.trace("Combined query:\n" + q12);
+			logger.debug("Combined COUNT query:\n" + q12);
 			q12 = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q12);
 			qe = qef.createQueryExecution(q12);
 			rs = qe.execSelect();
@@ -1907,7 +1796,7 @@ public class QTLEvaluation {
 		int fn = referenceCnt - overlap;
 		int tn = kbSize - tp - fp - fn;
 
-		logger.trace("finished computing score.");
+		logger.debug("finished computing score.");
 
 		return score(tp, fp, tn, fn);
 	}
@@ -1970,7 +1859,7 @@ public class QTLEvaluation {
 
 			psInsertDetailEval.setLong(19, returnedRuntime);
 
-			logger.trace(psInsertDetailEval);
+//			logger.trace(psInsertDetailEval);
 			psInsertDetailEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
@@ -2014,7 +1903,7 @@ public class QTLEvaluation {
 			
 			psInsertOverallEval.setDouble(21, bestReturnedSolutionRuntime);
 
-			logger.trace(psInsertOverallEval);
+//			logger.trace(psInsertOverallEval.toString());
 			psInsertOverallEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
@@ -2033,14 +1922,14 @@ public class QTLEvaluation {
 		
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> benchmarkDirectorySpec = parser.accepts("d", "base directory").withRequiredArg().ofType(File.class).required();
-		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class).required();
+		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class);
 		OptionSpec<URL> endpointURLSpec = parser.accepts("e", "endpoint URL").withRequiredArg().ofType(URL.class).required();
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> overrideSpec = parser.accepts("o", "override previous results").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of processed queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
+		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(2);
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
@@ -2051,7 +1940,6 @@ public class QTLEvaluation {
         OptionSet options = parser.parse(args);
 
 		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
-		File queriesFile = options.valueOf(queriesFileSpec);
 		boolean write2DB = options.valueOf(write2DBSpec);
 		boolean override = options.valueOf(overrideSpec);
 		boolean useEmailNotification = options.valueOf(emailNotificationSpec);
@@ -2062,6 +1950,11 @@ public class QTLEvaluation {
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
 		int nrOfThreads = options.valueOf(nrOfThreadsSpec);
+
+		File queriesFile = null;
+		if(options.has(queriesFileSpec)) {
+			queriesFile = options.valueOf(queriesFileSpec);
+		}
 
 		int[] exampleInterval = null;
 		if(options.has(exampleIntervalsSpec)) {
@@ -2097,9 +1990,10 @@ public class QTLEvaluation {
 			}
 		}
 
-		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint);
+//		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint, queriesFile);
+		EvaluationDataset dataset = new QALD6DBpediaEvaluationDataset(benchmarkDirectory);
 		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
-		eval.run(queriesFile, maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
+		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
@@ -2146,7 +2040,7 @@ public class QTLEvaluation {
 		public ExamplesWrapper get(int nrOfPosExamples, int nrOfNegExamples, double noise) {
 			Random rnd = new Random(123);
 			
-			// random sublist of the pos. examples
+			// random sublist of the pos. examplessak
 			List<String> correctPosExamples = new ArrayList<>(correctPosExampleCandidates);
 			Collections.sort(correctPosExamples);
 			Collections.shuffle(correctPosExamples, rnd);

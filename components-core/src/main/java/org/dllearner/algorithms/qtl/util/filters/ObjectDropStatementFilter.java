@@ -20,8 +20,8 @@ package org.dllearner.algorithms.qtl.util.filters;
 
 import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.Filter;
 
 /**
  * A filter that drops statements whose object IRI is in given blacklist.
@@ -38,7 +38,7 @@ public class ObjectDropStatementFilter extends Filter<Statement> {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.hp.hpl.jena.util.iterator.Filter#accept(java.lang.Object)
+	 * @see org.apache.jena.util.iterator.Filter#accept(java.lang.Object)
 	 */
 	@Override
 	public boolean accept(Statement st) {

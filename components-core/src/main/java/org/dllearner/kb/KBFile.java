@@ -80,12 +80,11 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     	try {
     		if (url == null) {
     			/* Copyied from OWLFile */
-    			Path path;
-    			if(fileName.startsWith("/")) {
-    				path = Paths.get(fileName);
-    			} else {// else relative to base directory
-    				path = Paths.get(baseDir, fileName);
-    			}
+				Path path = Paths.get(fileName);
+
+				if(!path.isAbsolute() && baseDir != null) {// else relative to base directory
+				    path = Paths.get(baseDir, fileName);
+				}
 
     			URI uri = path.normalize().toUri();
     			setUrl(uri.toURL().toString());
