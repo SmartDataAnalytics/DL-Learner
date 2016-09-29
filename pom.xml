@@ -19,7 +19,7 @@
         <owlapi.version>4.2.4</owlapi.version>
         <spring.version>4.2.4.RELEASE</spring.version>
         <jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
-		<pellet.version>2.4.0-dllearner</pellet.version>
+		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
 	<modules>
