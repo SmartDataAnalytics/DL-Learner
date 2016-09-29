@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Score;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -69,6 +70,7 @@ import org.apache.jena.vocabulary.RDF;
  * @author Lorenz Buehmann
  *
  */
+@ComponentAnn(name = "patla", shortName = "patla", version = 0.1, description = "Pattern-based algorithm uses OWL axioms as pattern.")
 public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm<OWLAxiom, OWLObject, OWLEntity>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(PatternBasedAxiomLearningAlgorithm.class);
