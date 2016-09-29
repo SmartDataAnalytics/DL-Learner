@@ -417,7 +417,7 @@ public class Enrichment {
 		// use own implementation of negative example finder
 		System.out.print("finding negatives ... ");
 		startTime = System.currentTimeMillis();
-		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint(), reasoner);
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(reasoner);
 		SortedSet<OWLIndividual> negExamples = finder.getNegativeExamples(nc, posExamples, maxNrOfNegativeExamples);
 		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<>(posExamples, negExamples);
 		runTime = System.currentTimeMillis() - startTime;
