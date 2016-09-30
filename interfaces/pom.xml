@@ -1,14 +1,11 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 
 	<artifactId>interfaces</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<name>dllearner-interfaces</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<description>Interfaces: GUI, CLI, Web Service</description>
-
 
 	<parent>
 		<groupId>org.dllearner</groupId>
@@ -30,12 +27,6 @@
 			</properties>
 			<build>
 				<plugins>
-					<!-- <plugin> <groupId>org.simplericity.jettyconsole</groupId> <artifactId>jetty-console-maven-plugin</artifactId> 
-						<version>1.50</version> <executions> <execution> <goals> <goal>createconsole</goal> 
-						</goals> <configuration> <backgroundImage>${basedir}/src/main/resources/dl.gif</backgroundImage> 
-						<additionalDependencies> <additionalDependency> <artifactId>jetty-console-log4j-plugin</artifactId> 
-						</additionalDependency> </additionalDependencies> </configuration> </execution> 
-						</executions> </plugin> -->
 					<plugin>
 						<groupId>org.apache.tomcat.maven</groupId>
 						<artifactId>tomcat7-maven-plugin</artifactId>
@@ -52,30 +43,6 @@
 									<enableNaming>false</enableNaming>
 									<finalName>dl-learner-standalone.jar</finalName>
 									<charset>utf-8</charset>
-									<extraDependencies>
-    <!--
-										<dependency>
-											<groupId>org.slf4j</groupId>
-											<artifactId>slf4j-api</artifactId>
-											<version>${slf4j.version}</version>
-										</dependency>
-										<dependency>
-											<groupId>org.slf4j</groupId>
-											<artifactId>jul-to-slf4j</artifactId>
-											<version>${slf4j.version}</version>
-										</dependency>
-										<dependency>
-											<groupId>org.slf4j</groupId>
-											<artifactId>slf4j-log4j12</artifactId>
-											<version>${slf4j.version}</version>
-										</dependency>
-										<dependency>
-											<groupId>log4j</groupId>
-											<artifactId>log4j</artifactId>
-											<version>${log4j.version}</version>
-										</dependency>
-    -->
-									</extraDependencies>
 									<extraResources>
 										<extraRexource>
 											<directory>${basedir}/src/main/resources/</directory>
@@ -91,6 +58,7 @@
 				</plugins>
 			</build>
 		</profile>
+
 		<profile>
 			<id>release</id>
 			<properties>
@@ -116,13 +84,6 @@
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
-							<!-- <defaultJvmSettings>
-								<initialMemorySize>512M</initialMemorySize>
-           						<maxMemorySize>1024M</maxMemorySize>
-           						<extraArguments>
-					                <extraArgument>-Dlog4j.configuration=../conf/log4j.properties</extraArgument>
-				           		</extraArguments>
-							</defaultJvmSettings> -->
 							<configurationSourceDirectory>src/main/conf</configurationSourceDirectory>
 							<!-- Set the target configuration directory -->
 							<configurationDirectory>etc</configurationDirectory>
@@ -131,11 +92,9 @@
 							<!-- Include the target configuration directory in the classpath -->
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
-							-Xms256m -Xmx2g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
+								-Xms256m -Xmx2g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
 							</extraJvmArguments>
-							
 							<installArtifacts>false</installArtifacts>
-							<!-- <configurationDirectory>/</configurationDirectory> -->
 							<platforms>
 								<platform>windows</platform>
 								<platform>unix</platform>
@@ -153,10 +112,6 @@
 									<mainClass>org.dllearner.cli.SemKernelCLI</mainClass>
 									<name>semkernel</name>
 								</program>
-								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
-									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
-									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
-									<name>ws</name> </program> -->
 							</programs>
 						</configuration>
 					</plugin>
@@ -178,57 +133,10 @@
 							</descriptors>
 						</configuration>
 					</plugin>
-					<plugin>
-						<groupId>de.akquinet.jbosscc.latex</groupId>
-						<artifactId>maven-latex-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<settings>
-								<!-- all tex main documents in this folder (including subfolders) 
-									will be processed -->
-								<texDirectory>${basedir}/doc/manual</texDirectory>
-								<!-- the generated artifacts will be copied to this folder relative 
-									to ${project.reporting.outputDirectory} -->
-								<outputDirectory>.</outputDirectory>
-								<!-- the working directory, for temporary files and LaTeX processing -->
-								<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
-								<!-- clean up the working directory in the end? May be used for debugging -->
-								<cleanUp>true</cleanUp>
-								<!-- path to the TeX scripts, if none, it must be on the system path -->
-								<texPath />
-								<!-- the latex command -->
-								<texCommand>pdflatex</texCommand>
-								<!-- the bibtex command -->
-								<bibtexCommand>bibtex</bibtexCommand>
-								<!-- the arguments to use when calling latex -->
-								<texCommandArgs>
-									<texCommandArg>-interaction=nonstopmode</texCommandArg>
-									<texCommandArg>--src-specials</texCommandArg>
-								</texCommandArgs>
-							</settings>
-						</configuration>
-						<executions>
-							<!-- execute latex goal automatically during the site phase -->
-							<execution>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>latex</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<!--  <plugin>
-			          <groupId>org.codehaus.mojo</groupId>
-			          <artifactId>latex-maven-plugin</artifactId>
-			          <version>1.1</version>
-			          <configuration>
-			          <docsRoot>${basedir}/doc/manual/</docsRoot>
-			          <latexBuildDir>/tmp/latex</latexBuildDir>
-			          </configuration>
-        			</plugin> -->
 				</plugins>
 			</build>
 		</profile>
+
 		<profile>
 			<id>debpackage</id>
 			<properties>
@@ -267,52 +175,9 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>dl-learner-enrichment</name>
 								</program>
-								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
-									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
-									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
-									<name>ws</name> </program> -->
 							</programs>
 						</configuration>
 					</plugin>
-					<!-- <plugin>
-						<groupId>de.akquinet.jbosscc.latex</groupId>
-						<artifactId>maven-latex-plugin</artifactId>
-						<version>1.2</version>
-						<configuration>
-							<settings>
-								all tex main documents in this folder (including subfolders) 
-									will be processed
-								<texDirectory>${basedir}/doc/manual</texDirectory>
-								the generated artifacts will be copied to this folder relative 
-									to ${project.reporting.outputDirectory}
-								<outputDirectory>.</outputDirectory>
-								the working directory, for temporary files and LaTeX processing
-								<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
-								clean up the working directory in the end? May be used for debugging
-								<cleanUp>true</cleanUp>
-								path to the TeX scripts, if none, it must be on the system path
-								<texPath />
-								the latex command
-								<texCommand>pdflatex</texCommand>
-								the bibtex command
-								<bibtexCommand>bibtex</bibtexCommand>
-								the arguments to use when calling latex
-								<texCommandArgs>
-									<texCommandArg>-interaction=nonstopmode</texCommandArg>
-									<texCommandArg>src-specials</texCommandArg>
-								</texCommandArgs>
-							</settings>
-						</configuration>
-						<executions>
-							execute latex goal automatically during the site phase
-							<execution>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>latex</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin> -->
 					<plugin>
 						<artifactId>jdeb</artifactId>
 						<groupId>org.vafer</groupId>
@@ -338,7 +203,6 @@
 										<data>
 											<src>${project.build.directory}/${dist-dir}/bin/dl-learner-cli</src>
 											<type>file</type>
-
 											<mapper>
 												<type>perm</type>
 												<filemode>777</filemode>
@@ -348,7 +212,6 @@
 										<data>
 											<src>${project.build.directory}/${dist-dir}/bin/dl-learner-enrichment</src>
 											<type>file</type>
-
 											<mapper>
 												<type>perm</type>
 												<filemode>777</filemode>
@@ -384,30 +247,10 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<build>
 		<finalName>dl-learner</finalName>
-		
 		<plugins>
-		<!--	<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.dllearner.cli.CLI</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
@@ -424,7 +267,6 @@
 					<schemaDirectory>src/main/xsd</schemaDirectory>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
@@ -434,29 +276,35 @@
 				<artifactId>maven-resources-plugin</artifactId>
 			</plugin>
 			<plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>javacc-maven-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <id>javacc</id>
-            <goals>
-              <goal>javacc</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>latex-maven-plugin</artifactId>
-          <version>1.1</version>
-          <configuration>
-          <docsRoot>${basedir}/doc/manual/</docsRoot>
-          <latexBuildDir>/tmp/latex</latexBuildDir>
-          </configuration>
-        </plugin>
-            
-
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javacc-maven-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>javacc</id>
+						<goals>
+							<goal>javacc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.fracpete</groupId>
+				<artifactId>latex-maven-plugin</artifactId>
+				<version>1.4.2</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>latex</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<forceBuild>true</forceBuild>
+					<bibtex>bibtex</bibtex>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
@@ -477,16 +325,8 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-
 				</configuration>
-				<!--execution is used for testing -->
-				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase> 
-					<goals> <goal>run</goal> </goals> <configuration> <scanIntervalSeconds>0</scanIntervalSeconds> 
-					<daemon>true</daemon> <stopKey>stopKey</stopKey> <stopPort>9999</stopPort> 
-					</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase> 
-					<goals> <goal>stop</goal> </goals> </execution> </executions -->
 			</plugin>
-
 			<!--Surefire - for JUnits -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -499,7 +339,7 @@
 						<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
 						<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
 					</excludes>
-							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+					<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -521,8 +361,8 @@
 					</arguments>
 				</configuration>
 			</plugin>
-
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -535,15 +375,9 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											xmlbeans-maven-plugin
-										</artifactId>
-										<versionRange>
-											[2.3.3,)
-										</versionRange>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>xmlbeans-maven-plugin</artifactId>
+										<versionRange>[2.3.3,)</versionRange>
 										<goals>
 											<goal>xmlbeans</goal>
 										</goals>
@@ -554,15 +388,9 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											javacc-maven-plugin
-										</artifactId>
-										<versionRange>
-											[2.6,)
-										</versionRange>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>javacc-maven-plugin</artifactId>
+										<versionRange>[2.6,)</versionRange>
 										<goals>
 											<goal>javacc</goal>
 										</goals>
@@ -598,37 +426,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!--dependency> <groupId>org.dllearner</groupId> <artifactId>components-ext</artifactId> 
-			</dependency -->
-		<!-- Added the dependency of the core tests so that they will be accessible 
-			from the tests in this component -->
-
-
-<!--
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-core</artifactId>
-			<classifier>tests</classifier>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>stanford-corenlp</artifactId>
-					<groupId>edu.stanford.nlp</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
--->
-
-    <!--
-		<dependency>
-			<groupId>com.jamonapi</groupId>
-			<artifactId>jamon</artifactId>
-		</dependency>
-    -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -642,31 +439,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>
 		</dependency>
-    <!--
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-		</dependency>
-    -->
-		<!-- <dependency>
-			<groupId>org.aksw.commons</groupId>
-			<artifactId>model</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					Exclude Project-D from Project-B
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-				 <exclusion>
-					<groupId>net.sourceforge.owlapi</groupId>
-					<artifactId>owlapi</artifactId>
-				</exclusion>
-				 <exclusion>
-					<groupId>com.owldl</groupId>
-					<artifactId>pellet</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency> -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -675,104 +447,32 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
-    <!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-    -->
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
-
-    <!--
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>spring-xmlbeans-3.0</artifactId>
-			<version>1.0</version>
-		</dependency>
-    -->
-
-
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
-
-    <!--
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-		</dependency>
-    -->
-
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.3</version>
 		</dependency>
-
-		<!--BEGIN Logging Dependencies -->
-
-		<!--This is the api jar, it's needed at compile time -->
-    <!--
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
 		</dependency>
-    -->
-		<!--This is the bridge that ties calls to the slf4j api to the log4j framework. 
-			This is a runtime dependency for programs which wish to use log4j as their 
-			implementation. -->
-    <!--
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-    -->
-		<!--Log4J dependency needed for the runtime as well as some specific compile 
-			time calls -->
-    <!--
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
+	</dependencies>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-    -->
-		<!--END Logging Dependencies -->
-    <!--
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.8.0</version>
-		</dependency>
-
-                    <dependency>
-                            <groupId>gurobi</groupId>
-                            <artifactId>gurobi</artifactId>
-                    </dependency>
-        -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-    </dependencies>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-            </plugin>
-        </plugins>
-    </reporting>
-
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javacc-maven-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

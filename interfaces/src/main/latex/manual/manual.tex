@@ -8,22 +8,25 @@
 \usepackage{color,graphicx}
 \usepackage{listings}
 \usepackage{mathabx}
-% \usepackage{hyperref}
+\usepackage{hyperref}
 
 % define common URLs
 \usepackage{url}
 \urlstyle{tt}
-\urldef{\wwwc}{\url}{http://www.w3.org}
-\urldef{\owl}{\url}{http://www.w3.org/2004/OWL/}
-\urldef{\owlce}{\url}{http://www.w3.org/TR/owl2-syntax/#Class_Expressions}
-\urldef{\carc}{\url}{http://dl-learner.org/community/Carcinogenesis}
-\urldef{\dldownload}{\url}{https://github.com/AKSW/DL-Learner/releases}
-\urldef{\mos}{\url}{http://www.w3.org/2007/OWL/wiki/ManchesterSyntax}
-\urldef{\wsjavadoc}{\url}{http://dl-learner.org/javadoc/org/dllearner/server/DLLearnerWS.html}
-\urldef{\wsphpexamples}{\url}{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/}
-\urldef{\wikiprotplugin}{\url}{http://dl-learner.org/community/protege-plugin/}
-\urldef{\owlapi}{\url}{http://owlapi.sourceforge.net}
-\urldef{\dig}{\url}{http://dl.kr.org/dig/}
+\urldef{\wwwc}\url{http://www.w3.org}
+\urldef{\owl}\url{http://www.w3.org/2004/OWL/}
+\urldef{\owlce}\url{http://www.w3.org/TR/owl2-syntax/#Class_Expressions}
+\urldef{\carc}\url{http://dl-learner.org/community/Carcinogenesis}
+\urldef{\dldownload}\url{https://github.com/AKSW/DL-Learner/releases}
+\urldef{\mos}\url{http://www.w3.org/2007/OWL/wiki/ManchesterSyntax}
+\urldef{\wsjavadoc}\url{http://dl-learner.org/javadoc/org/dllearner/server/DLLearnerWS.html}
+\urldef{\wsphpexamples}\url{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/}
+\urldef{\wikiprotplugin}\url{http://dl-learner.org/community/protege-plugin/}
+\urldef{\owlapi}\url{http://owlapi.sourceforge.net}
+\urldef{\dig}\url{http://dl.kr.org/dig/}
+
+\hyphenation{all/many}
+\hyphenation{none/few}
 
 \title{DL-Learner Manual}
 \author{Jens Lehmann}
@@ -44,16 +47,18 @@
 DL-Learner is a machine learning framework for OWL and description logics. It includes several learning algorithms and is easy to extend. DL-Learner widens the scope of Inductive Logic Programming to description logics and the Semantic Web. This manual provides the entry point to using DL-Learner and explains its basic concepts.
 
 Please refer to the following publication (BibTeX) when citing DL-Learner:
+{\fontsize{8.6pt}{12pt}
 \begin{verbatim}
-	@Article{dllearner_jmlr,
-  author = "Jens Lehmann",
-  title  = "{DL-Learner:} Learning Concepts in Description Logics",
-  journal = "Journal of Machine Learning Research (JMLR)",
-  year   = "2009",
-  volume = "10",
-  pages = "2639--2642"
+@Article{dllearner_jws,
+ author = "Lorenz B\"uhmann and Jens Lehmann and Patrick Westphal",
+ title = "{DL-Learner} -- A framework for inductive learning on the Semantic Web",
+ journal = "Journal of Web Semantics",
+ year = "2016",
+ volume = "39",
+ pages = "15-24"
 }
 \end{verbatim}
+}
 \end{abstract}
 
 %\vspace{-25pt}
@@ -81,7 +86,7 @@ Please note that the latest versions of DL-Learner are not limited to OWL class 
 \section{Getting Started}
 \label{sec:start}
 
-DL-Learner is written in Java, i.e.~it can be used on almost all platforms. Currently, Java 6 or higher is required. To install the latest release, please visit the download page\footnote{\dldownload} and extract the file on your harddisk. In the \verb|bin| directory, you will notice several executables. Those files ending with \verb|bat| are Windows executables, whereas the corresponding files without file extension are the Non-Windows (e.g.~Linux, Mac) executables. To test whether DL-Learner works, please run the following on the command line depending on your operating system:
+DL-Learner is written in Java, i.e.~it can be used on almost all platforms. Currently, Java 8 or higher is required. To install the latest release, please visit the download page\footnote{\dldownload} and extract the file on your harddisk. In the \verb|bin| directory, you will notice several executables. Those files ending with \verb|bat| are Windows executables, whereas the corresponding files without file extension are the Non-Windows (e.g.~Linux, Mac) executables. To test whether DL-Learner works, please run the following on the command line depending on your operating system:
 
 \begin{verbatim}
 bin/cli examples/father.conf       (Non-Windows Operating System)
@@ -135,19 +140,21 @@ The first part of the output (line 1-5) tells you which components are used (mor
 DL-Learner (see also~\cite{dllearner_jmlr}) consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts. The general structure is illustrated in Figure \ref{fig:structure}.
 
 \begin{figure}
- \includegraphics[width=\textwidth]{structure_print}
+ \includegraphics[width=\textwidth]{../../../../images/structure_print.pdf}
  \caption{Overall structure of the DL-Learner software.}
  \label{fig:structure}
 \end{figure}
 
 To be flexible in integrating new learning algorithms, new kinds of learning problems, new knowledge bases, and new reasoner implementations, DL-Learner uses a component based model. Adding a component can be done by implementing the appropriate Java interface and adding appropriate annotations (more on that in Section \ref{sec:developing}).
 
-There are four common types of components (knowledge source, reasoning service, learning problem, learning algorithm). DL-Learner is not restricted to those types, i.e.~others can easily be added, but we limit ourselves to those four to make this manual easier to read. For each type, there are several implemented components and each component can have its own configuration options as illustrated in Figure \ref{fig:components}. Configuration options can be used to change parameters/settings of a component. In Section \ref{sec:components}, we describe the components in DL-Learner and their configuration options.
+There are five common types of components (knowledge source, reasoning service, learning problem, learning algorithm, refinement operator). DL-Learner is not restricted to those types, i.e.~others can easily be added, but we limit ourselves to those five to make this manual easier to read. For each type, there are several implemented components and each component can have its own configuration options as illustrated in Figure \ref{fig:components}. Configuration options can be used to change parameters/settings of a component. In Section \ref{sec:components}, we describe the components in DL-Learner and their configuration options.
 
-\begin{figure}
- \includegraphics[width=\textwidth]{components_print.pdf}
- \caption{The architecture of DL-Learner is based on four component types, which can each have their own configuration options. DL-Learner uses a component manager to organise all components.}
- \label{fig:components}
+\begin{figure}[t]
+  \centering
+  %\includegraphics[width=\textwidth]{../../../../images/components_print.pdf}
+  \includegraphics[width=.70\textwidth]{../../../../images/components.pdf}
+  \caption{The architecture of DL-Learner is based on four component types, which can each have their own configuration options. DL-Learner uses a component manager to organise all components.}
+  \label{fig:components}
 \end{figure}
 
 \section{DL-Learner Components}
@@ -190,7 +197,7 @@ Note that OWLlink reasoners can be attached via the OWL API interface.
  \begin{itemize}
   \item reasonerType: Selects the desired reasoner. By default, Pellet is used. Usage: \verb|owlAPIReasoner.reasonerType = fact|. Pellet, FaCT++ and HermiT are already included in DL-Learner. Note that for FaCT++, you need to add -Djava.library.path=lib/fact/64bit (or 32bit) to the Java command. You can also use an external OWLlink reasoner by setting the reasoner type to \verb|owllink|. You can then use the option \verb|owlLinkURL| to specify the URL of the OWLlink reasoner (http://localhost:8080/ by default).
  \end{itemize}
- \item[DIG] DIG 1.1\footnote{\dig} is an interface to description logic reasoners and supported by a large variety of reasoners including Pellet, FaCT++, KAON2, and Racer Pro. The major drawback is that the current version DIG 1.1 is not aligned with the OWL specification and therefore lacks several features, which are crucial to the more recent learning algorithms in DL-Learner. If you still want to use the DIG interface, you have to download a DIG capable reasoner and start the DIG server there. DL-Learner communicates with the reasoner using the XML based protocol over HTTP. In the latest versions of DL-Learner, DIG support is considered unsupported. You can use it at your own risk, but we will not maintain this part of the code and may remove it in the future.
+ \item[SPARQL Reasoner] \todo{Simon}
  \item[Closed World Reasoner] Instance checks, i.e.~testing whether an individual is instance of a class, is the major reasoner task in many learning algorithms. This reasoner is a self-development of the DL-Learner project. It remedies some problems related to Machine Learning and the Open World Assumption in OWL and therefore is not correct w.r.t.~OWL semantics. (See \cite{cheng00} Section 4 for an explanation.) Furthermore, it provides an improved performance for instance checks by precomputing some inferences and keeping them in memory. The closed world reasoner is build on top of any other reasoner component in DL-Learner.
 \end{description}
 
@@ -200,49 +207,40 @@ In the introductory Sections \ref{sec:whatis} and \ref{sec:start}, we described 
 %You can switch between the different problems using \verb|problem=$value;|, where \verb|$value| is one of \verb|posNegLPStandard|, \verb|posOnlyLP|, \verb|classLearning|. The default is \verb|posNegLPStandard|.
 
 \begin{description}
- \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which you can specify via, e.g.~\verb|posNegLPStandard.positiveExamples = {...}|.
+ \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which you can specify via, e.g.~\texttt{\small posNegLPStandard.positiveExamples = \{...\}}.
  \item[Positive Examples] This learning problem is similar to the one before, but without negative examples. In this case, it is desirable to find a class expression which closely fits the positive examples while still generalising sufficiently well. For instance, you usually do not want to have \verb|owl:Thing| as a solution for this problem, but neither do you want to have an enumeration of all examples.
  \item[Class Learning] In class learning, you are given an existing class $A$ within your ontology $\mathcal{O}$ and want to describe it. It is similar to the previous problem in that you can use the instances of the class as positive examples. However, there are some differences, e.g.~you do not want to have $A$ itself as a proposed solution of the problem, and since this is an ontology engineering task, the focus on short and readable class expressions is stronger than for the two problems mentioned before. The learner can also take advantage of existing knowledge about the class to describe.
 \end{description}
 
 \subsection{Learning Algorithms}
 
-The implemented algorithms vary from very simple (and usually inappropriate) algorithms to sophisticated ones. 
-%You can switch between the different algorithms using \verb|algorithm=$value;|, where \verb|$value| is one of \verb|bruteForce|, \verb|random|, \verb|gp|, \verb|refinement|, \verb|refexamples|, \verb|celoe|, \verb|el| and \verb|disjunctiveEL|. The default is \verb|refexamples|.
+The implemented algorithms vary from very simple (and usually inappropriate) algorithms to sophisticated ones.
+Learning algorithms can make use of a refinement operator (see Sec.~\ref{sec:refinementoperators}) to traverse the search space.
 
 \begin{description}
- \item[Brute Force]: This algorithm tests all class expressions up to a specified length, which you can set using e.g.~\verb|bruteForce.maxlength = 7|.
- \item[Random Guesser]: This algorithm randomly generates class expressions. To do this, it creates trees, which can be mapped to class expressions. Its main parameter is the number of created trees, which you can set using e.g.~\verb|random.numberOfTrees = 5|.
- \item[Genetic Programming (GP)]: GP is a well-known general problem solution method, which can be adapted to class expression learning. The adaption is straightforward. In DL-Learner, however, an additional genetic refinement operator was implemented, which has shown to improve GP performance\cite{hybrid_gp}. Some options are:
- \begin{itemize}
-  \item number of individuals: The individual count is the size of each generation in a GP algorithm. It is one of the most crucial parameters. Setting it to a higher value usually means investing more computational resource for increasing the likelihood that a solution will be found. Usage: \verb|gp.numberOfIndividuals = 100|.
-  \item refinement probability: This is used to specify how likely the usage of the genetic refinement operator should be, e.g.~\verb|gp.refinementProbability = 0.6| means that it will be selected 60\% of the time.
- \end{itemize}
- The GP algorithm has 15 more options which are documented in \verb|interfaces/doc/| \verb|configOptions.html|. % FIXME
- \item[Refinement] This is a top down refinement operator approach, which is described in \cite{alc_learning_algorithm} and based on insights in \cite{property_analysis}. Some options include:
- \begin{itemize}
-  \item target language: The standard target language of this algorithm is $\mathcal{ALCN(D)}$. However, you can change the language, i.e.~you can exclude the $\forall$ constructor by using \verb|refinement.useAllConstructor = false|. Similar options exist for $\exists$, $\neg$, cardinality restrictions, and boolean datatypes.
-  \item maximum execution time: If there is no perfect solution of a given problem, the algorithm can potentially run forever (in practice it will run out of memory). It is therefore often interesting to limit the execution time. You can use e.g.~\verb|refinement.maxExecutionTimeInSeconds = 100| to say that the algorithm should run for at most 100 seconds. Often, it will run slightly longer than the maximum execution time since it waits for the next internal loop of the algorithm to stop gracefully.
- \end{itemize}
-  The algorithm supports a range of further options. For instance, one can specify which classes and properties must not occur in resulting class expressions.
- \item[Refexamples (OCEL)] The previous algorithm has been extended to make more sophisticated use of background knowledge~\cite{mlj} and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem.
+ \item[OWL Class Expression Learner (OCEL)] \todo{update} The previous algorithm has been extended to make more sophisticated use of background knowledge~\cite{mlj} and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem.
  \item[Class Expression Learning for Ontology Engineering (CELOE)] Currently CELOE is the best class learning algorithm available within DL-Learner. It uses the same refinement operator as OCEL, but a completely different heuristics. Furthermore, it guarantees that the returned class expressions are minimal in the sense that one cannot remove parts of them without getting an inequivalent expression. Furthermore, it makes use of existing background knowledge in coverage checks. Statistical methods are used to improve the efficiency of the algorithm such that it scales to large knowledge bases. While it was originally designed for ontology engineering, it can also be used for other learning problems and might even be superior to the other algorithms in many cases (not well-tested yet). Note that many configuration options of OCEL were dropped for the sake of simplicity, but may be introduced if needed.
  \item[EL Tree Learner (ELTL)] This algorithm has EL as its target language, i.e. is specialized for this relatively simple language. There are two algorithms: \verb|el| learns EL concepts and \verb|disjunctiveEL| learns disjunctions of EL concepts.
+ \item[Inductive Statistical Learning of Expressions (ISLE)] \todo{write}
 \end{description}
 
-Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. Table \ref{tab:la_lp_comp} provides a compatibility matrix. Note that this can change in future releases, because algorithms may be extended to support new learning problems or drop support for them.
+% Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. Table \ref{tab:la_lp_comp} provides a compatibility matrix. Note that this can change in future releases, because algorithms may be extended to support new learning problems or drop support for them.
+% 
+% \begin{table}[htb]
+% \centering
+% \begin{tabular}{c|ccccccc}
+% learning problem & BF & RG & GP & Ref & OCEL & CELOE & ELTL \\\hline
+% pos only & x & x & & & & x & \\
+% pos neg & x & x & x & x & x & x & x  \\
+% class learning & x & x & & & & x &
+% \end{tabular}
+% \caption{Learning problem - learning algorithm compatibility matrix in DL-Learner. Legend: BF = brute force, RG = random guesser, Ref = Refinement}
+% \label{tab:la_lp_comp}
+% \end{table}
 
-\begin{table}[htb]
-\centering
-\begin{tabular}{c|ccccccc}
-learning problem & BF & RG & GP & Ref & OCEL & CELOE & ELTL \\\hline
-pos only & x & x & & & & x & \\
-pos neg & x & x & x & x & x & x & x  \\
-class learning & x & x & & & & x &
-\end{tabular}
-\caption{Learning problem - learning algorithm compatibility matrix in DL-Learner. Legend: BF = brute force, RG = random guesser, Ref = Refinement}
-\label{tab:la_lp_comp}
-\end{table}
+\subsection{Refinement Operators}
+\label{sec:refinementoperators}
+\todo{write}
 
 \section{Enrichment using DL-Learner}
 
@@ -598,7 +596,7 @@ This quick introduction only serves as an entry point to get you started. For mo
 
 \nocite{*}
 \bibliographystyle{apalike}
-\bibliography{manual}
+\bibliography{manual.bib}
 
 \end{document}
 
