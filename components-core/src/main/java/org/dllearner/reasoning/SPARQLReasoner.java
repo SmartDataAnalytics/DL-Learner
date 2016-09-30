@@ -1513,6 +1513,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		SortedSet<OWLIndividual> objects;
 		while(rs.hasNext()){
 			qs = rs.next();
+			if (qs.getResource("s") == null || qs.getResource("s").getURI() == null) {
+				logger.warn(sparql_debug, "The ?s is empty {} {}", query, qs);
+				continue;
+			}
 			sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			obj = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
 			objects = subject2objects.get(sub);
