@@ -29,10 +29,7 @@ import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
@@ -2324,11 +2321,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits){
 		logger.trace("Sending query \n {}", queryString);//System.out.println(queryString);
-		QueryExecution qe = qef.createQueryExecution(queryString);
-		qe.setTimeout(timeout, timeoutUnits);
-		try {
+		try(QueryExecution qe = qef.createQueryExecution(queryString)) {
+			qe.setTimeout(timeout, timeoutUnits);
 			ResultSet rs = qe.execSelect();
-			return rs;
+			return ResultSetFactory.copyResults(rs);
 		} catch (QueryExceptionHTTP e) {
 			throw new QueryExceptionHTTP("Error sending query \"" + queryString + "\" to endpoint " + qef.getId(), e);
 		} catch (Exception e) {
@@ -2344,6 +2340,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		logger.trace("Sending query \n {}", queryString);
 		QueryExecution qe = qef.createQueryExecution(queryString);
 		boolean ret = qe.execAsk();
+		qe.close();
 		return ret;
 	}
 
