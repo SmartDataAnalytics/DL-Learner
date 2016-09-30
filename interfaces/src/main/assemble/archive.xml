@@ -28,7 +28,6 @@
 					*.bat
 				</exclude>
 			</excludes>
-			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../examples</directory>
@@ -55,7 +54,7 @@
             <outputDirectory>etc</outputDirectory>
         </fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/site</directory>
+			<directory>${project.build.directory}/latex/manual</directory>
 			<outputDirectory>docs</outputDirectory>
 			<includes>
 				<include>manual.pdf</include>
