@@ -89,9 +89,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description = "the reasoner to use")
 	private AbstractReasonerComponent reasoner;
 
+	//@ConfigOption(description = "the learning algorithm")
+	//private
+
 	// hierarchies
 	@NoConfigOption
-	private ClassHierarchy subHierarchy;
+	private ClassHierarchy classHierarchy;
 	@NoConfigOption
 	private ObjectPropertyHierarchy objectPropertyHierarchy;
 	@NoConfigOption
@@ -248,7 +251,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
 		setCardinalityLimit(op.cardinalityLimit);
-		setClassHierarchy(op.subHierarchy);
+		setClassHierarchy(op.classHierarchy);
 		setDataPropertyHierarchy(op.dataPropertyHierarchy);
 		setDropDisjuncts(op.dropDisjuncts);
 		setFrequencyThreshold(op.frequencyThreshold);
@@ -256,7 +259,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
 		setReasoner(op.reasoner);
 		setStartClass(op.startClass);
-		setSubHierarchy(op.subHierarchy);
+		setSubHierarchy(op.classHierarchy);
 		setUseAllConstructor(op.useAllConstructor);
 		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
@@ -272,10 +275,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@Override
     public void init() throws ComponentInitException {
+		/*
 		if(initialized) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
-//		System.out.println("subHierarchy: " + subHierarchy);
+		*/
+
+		if (classHierarchy == null) classHierarchy = reasoner.getClassHierarchy();
+		if (dataPropertyHierarchy == null) dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
+		if (objectPropertyHierarchy == null) objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
+
+//		System.out.println("classHierarchy: " + classHierarchy);
 //		System.out.println("object properties: " + reasoner.getObjectProperties());
 
 		// query reasoner for domains and ranges
@@ -469,8 +479,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(startClass, reasoner, df, logger);
 
-		if(subHierarchy == null) {
-			subHierarchy = reasoner.getClassHierarchy();
+		if(classHierarchy == null) {
+			classHierarchy = reasoner.getClassHierarchy();
 		}
 		if(objectPropertyHierarchy == null) {
 			objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
@@ -544,16 +554,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 				refinements = (TreeSet<OWLClassExpression>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
-//			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+//			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
 		} else if(description.isOWLNothing()) {
 			// cannot be further refined
 		} else if(!description.isAnonymous()) {
-			refinements.addAll(subHierarchy.getSubClasses(description, true));
+			refinements.addAll(classHierarchy.getSubClasses(description, true));
 			refinements.remove(df.getOWLNothing());
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()){
-				tmp = subHierarchy.getSuperClasses(operand, true);
+				tmp = classHierarchy.getSuperClasses(operand, true);
 
 				for(OWLClassExpression c : tmp) {
 					if(!c.isOWLThing()){
@@ -1168,12 +1178,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			m.put(i, new TreeSet<>());
 		}
 
-		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing(), true);
+		SortedSet<OWLClassExpression> m1 = classHierarchy.getSubClasses(df.getOWLThing(), true);
 		m.get(lengthMetric.classLength).addAll(m1);
 
 		if(useNegation) {
 			int lc = lengthMetric.objectComplementLength + lengthMetric.classLength;
-			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing(), true);
+			Set<OWLClassExpression> m2tmp = classHierarchy.getSuperClasses(df.getOWLNothing(), true);
 			for(OWLClassExpression c : m2tmp) {
 				if(!c.isOWLThing()) {
 					m.get(lc).add(df.getOWLObjectComplementOf(c));
@@ -1416,7 +1426,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private SortedSet<OWLClassExpression> getClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression upperClass) {
 		SortedSet<OWLClassExpression> candidates = new TreeSet<>();
 
-		SortedSet<OWLClassExpression> subClasses = subHierarchy.getSubClasses(upperClass, true);
+		SortedSet<OWLClassExpression> subClasses = classHierarchy.getSubClasses(upperClass, true);
 
 		if(reasoner instanceof SPARQLReasoner) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
@@ -1500,7 +1510,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> candidates = new TreeSet<>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
-		SortedSet<OWLClassExpression> superClasses = subHierarchy.getSuperClasses(lowerClass);
+		SortedSet<OWLClassExpression> superClasses = classHierarchy.getSuperClasses(lowerClass);
 
 		if(reasoner instanceof SPARQLReasoner) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
@@ -1908,11 +1918,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public ClassHierarchy getSubHierarchy() {
-		return subHierarchy;
+		return classHierarchy;
 	}
 
 	public void setSubHierarchy(ClassHierarchy subHierarchy) {
-		this.subHierarchy = subHierarchy;
+		this.classHierarchy = subHierarchy;
 	}
 
 	public OWLClassExpression getStartClass() {
@@ -1957,7 +1967,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@Override @NoConfigOption
 	public void setClassHierarchy(ClassHierarchy classHierarchy) {
-		subHierarchy = classHierarchy;
+		this.classHierarchy = classHierarchy;
 	}
 
 	/**
