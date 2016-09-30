@@ -94,7 +94,7 @@ public class LEAPTest {
         assertTrue(true);
     }
 
-    //@Test
+    @Test
     public void testCase2() throws Exception {
         System.out.println("Test case 2 - SubClassOf axioms");
 
@@ -126,7 +126,7 @@ public class LEAPTest {
         assertTrue(true);
     }
 
-    //@Test
+    @Test
     public void testCase3() throws Exception {
         System.out.println("Test case 3 - Dummy parameter learner");
 
