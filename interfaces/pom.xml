@@ -68,6 +68,23 @@
 				<finalName>interfaces</finalName>
 				<plugins>
 					<plugin>
+						<groupId>com.github.fracpete</groupId>
+						<artifactId>latex-maven-plugin</artifactId>
+						<version>1.4.2</version>
+						<executions>
+							<execution>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>latex</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<forceBuild>true</forceBuild>
+							<bibtex>bibtex</bibtex>
+						</configuration>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
 						<version>1.9</version>
@@ -287,23 +304,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.github.fracpete</groupId>
-				<artifactId>latex-maven-plugin</artifactId>
-				<version>1.4.2</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>latex</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<forceBuild>true</forceBuild>
-					<bibtex>bibtex</bibtex>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
