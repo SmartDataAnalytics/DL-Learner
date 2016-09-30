@@ -421,7 +421,7 @@ public class SPARQLTasks {
 		
 		rsw.reset();
 		} catch (Exception e) {
-			logger.info("ignoring (see log for details): Exception caught in SPARQLTasks, passing emtpy result: "+e.getMessage());
+			logger.info("ignoring (see log for details): Exception caught in SPARQLTasks, passing empty result: "+e.getMessage());
 		}
 		
 		return returnSet;
