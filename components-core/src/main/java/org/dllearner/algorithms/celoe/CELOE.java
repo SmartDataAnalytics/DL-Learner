@@ -304,13 +304,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			operator = new RhoDRDown();
 			((CustomStartRefinementOperator) operator).setStartClass(startClass);
 			((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
-			operator.init();
 		}
 		if (operator instanceof CustomHierarchyRefinementOperator) {
 			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
+		operator.init();
 	}
 	
 	@Override

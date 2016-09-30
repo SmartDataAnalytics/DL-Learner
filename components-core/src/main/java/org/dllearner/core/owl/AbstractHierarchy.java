@@ -66,6 +66,13 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		return getChildren(entity, true);
 	}
 
+	/**
+	 * @return all entities in this hierarchy
+	 */
+	public Set<T> getEntities() {
+		return Sets.union(hierarchyDown.keySet(), hierarchyUp.keySet());
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Hierarchy#getChildren(org.semanticweb.owlapi.model.OWLEntity, boolean)
 	 */
@@ -332,7 +339,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 				subsumptionHierarchyDownNew.put(key, newChildren);
 			}
 		}		
-		
+
 		try {
 			return this.getClass().getConstructor(
 					SortedMap.class, SortedMap.class).newInstance(
