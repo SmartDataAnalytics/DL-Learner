@@ -13,11 +13,11 @@
 		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.7.16</slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <log4j.version>1.2.17</log4j.version>
         <solr.version>5.3.0</solr.version>
         <owlapi.version>4.2.4</owlapi.version>
-        <spring.version>4.2.4.RELEASE</spring.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
         <jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
@@ -112,13 +112,13 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.19</version>
+					<version>2.19.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
+					<version>3.5.1</version>
 					<configuration>
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
@@ -135,7 +135,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.0.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -165,12 +165,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.0.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>2.10.4</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>
@@ -178,7 +178,7 @@
 			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>2.11</version>
+				<version>3.0</version>
 				<configuration>
 				<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
 					<header>license_header.txt</header>
@@ -213,7 +213,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
+				<version>3.0.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
@@ -239,7 +239,7 @@
 	<plugin>
 	<groupId>com.amashchenko.maven.plugin</groupId>
 	<artifactId>gitflow-maven-plugin</artifactId>
-	<version>1.0.8</version>
+	<version>1.2.3</version>
 	<configuration>
 		<installProject>false</installProject>
 		<verbose>true</verbose>
@@ -258,7 +258,7 @@
 				<plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.4</version>
+                    <version>3.5.1</version>
                 	<configuration>
 						<!--<skipDeploy>true</skipDeploy>-->
 					</configuration>
@@ -266,7 +266,7 @@
 						<dependency><!-- add support for ssh/scp -->
 							<groupId>org.apache.maven.wagon</groupId>
 							<artifactId>wagon-ssh</artifactId>
-							<version>2.0</version>
+							<version>2.10</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -275,6 +275,7 @@
 					<!-- the plugin to generate changelog and release announcements -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-changes-plugin</artifactId>
+					<version>2.12</version>
 					<configuration>
 						<developmentTeam>DL-Learner team</developmentTeam>
 						<!-- the changes filtered source changes file -->
@@ -378,7 +379,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
-				<version>3.5</version>
+				<version>3.6.1</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
@@ -518,7 +519,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20151123</version>
+				<version>20160810</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->
@@ -531,7 +532,7 @@
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
-				<version>4.9</version>
+				<version>5.0.3</version>
 			</dependency>
 
 			<dependency>
@@ -647,13 +648,13 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.38</version>
+				<version>6.0.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.4-1206-jdbc42</version>
+				<version>9.4.1211</version>
 			</dependency>
 
 			<dependency>
@@ -788,7 +789,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.9.1</version>
+				<version>2.9.4</version>
 			</dependency>
 			<dependency>
 				<groupId>edu.berkeley.compbio</groupId>
