@@ -87,6 +87,9 @@
 						<configuration>
 							<header></header>
 							<show>public</show>
+							<links>
+								<link>https://docs.oracle.com/javase/8/docs/api/</link>
+							</links>
 							<nohelp>true</nohelp>
 							<destDir>doc/javadoc</destDir>
 							<doctitle>DL-Learner Javadoc</doctitle>
@@ -108,7 +111,7 @@
 								src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
 								border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
 								under the terms of the GNU General Public License.&lt;br
-								/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+								/&gt;Copyright &amp;#169; 2007-2016 Jens Lehmann</bottom>
 							<encoding>ISO-8859-1</encoding>
 							<windowtitle>DL-Learner Javadoc</windowtitle>
 							<additionalparam>-Xdoclint:none</additionalparam>
@@ -195,10 +198,24 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
+				<!--<configuration>-->
+					<!--<source>1.8</source>-->
+					<!--<target>1.8</target>-->
+				<!--</configuration>-->
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<configuration>
+							<testExcludes>
+								<exclude>**/QueryToGraphExporter.java</exclude>
+							</testExcludes>
+						</configuration>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- Code coverage -->

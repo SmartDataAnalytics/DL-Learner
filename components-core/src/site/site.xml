@@ -7,7 +7,7 @@
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
     </skin>
     <custom>
         <fluidoSkin>
@@ -20,7 +20,8 @@
         <title>DL-Learner</title>
         <src>https://raw.githubusercontent.com/AKSW/DL-Learner/develop/images/logos/D_quadratic.png</src>
         <href>http://dl-learner.org/</href>
-        <height>1cm</height>
+        <width>40</width>
+        <height>40</height>
     </bannerLeft>
 
     <body>
