@@ -108,7 +108,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
             for (String graph : namedGraphURIs) {
                 sb.append("&named-graph-uri=").append(URLencodeUTF8.encode(graph));
             }
-            logger.info(sb.toString());
+            logger.debug(sb.toString());
 
             try {
                 url = new URL(sb.toString());
