@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+<project name="DL-Learner" xmlns="http://maven.apache.org/DECORATION/1.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
 
@@ -13,16 +13,30 @@
         <fluidoSkin>
             <sideBarEnabled>true</sideBarEnabled>
         </fluidoSkin>
+        <brand>
+            <name>DL-Learner</name>
+        </brand>
     </custom>
+
+    <version position="right" />
 
     <bannerLeft>
         <name>DL-Learner</name>
         <title>DL-Learner</title>
         <src>https://raw.githubusercontent.com/AKSW/DL-Learner/develop/images/logos/D_quadratic.png</src>
         <href>http://dl-learner.org/</href>
-        <width>40</width>
-        <height>40</height>
+        <width>80</width>
+        <height>80</height>
     </bannerLeft>
+
+    <bannerRight>
+        <name>AKSW</name>
+        <title>AKSW</title>
+        <src>http://slidewiki.org/upload/media/images/2/2196.png</src>
+        <href>http://aksw.org/</href>
+        <width>80</width>
+        <!--<height>40</height>-->
+    </bannerRight>
 
     <body>
         <menu ref="modules" />
