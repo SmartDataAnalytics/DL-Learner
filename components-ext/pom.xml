@@ -292,10 +292,23 @@
                 <updatePolicy>always</updatePolicy>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
             <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/releases</url>
+        </repository>
+        <repository>
+            <id>ml-unife-maven-repositorysnapshots</id>
+            <name>ML@UniFe Maven Repository</name>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/snapshots</url>
         </repository>
     </repositories>
     
