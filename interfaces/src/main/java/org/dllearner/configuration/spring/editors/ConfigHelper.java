@@ -26,6 +26,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
+import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -96,7 +97,16 @@ public class ConfigHelper {
 				try {
 					// we invoke the public getter instead of accessing a private field (may cause problem with SecurityManagers)
 					// use Spring BeanUtils TODO: might be unnecessarily slow because we already have the field?
-					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.getName()).getReadMethod().invoke(component);
+					PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(
+							component.getClass(),
+							field.getName()
+					);
+					Method readMethod = propertyDescriptor.getReadMethod();
+					if(readMethod == null) {
+						throw new RuntimeException("Getter method is missing for field " + field + " in component " + component);
+					}
+					Object value = readMethod.invoke(component);
+
 					optionValues.put(field, value);
 				} catch (IllegalArgumentException | InvocationTargetException | BeansException | IllegalAccessException e1) {
 					e1.printStackTrace();
