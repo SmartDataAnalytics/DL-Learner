@@ -163,6 +163,7 @@ There are five common types of components (knowledge source, reasoning service, 
 In this part, we describe concrete components currently implemented in DL-Learner. Each of the subsections contains a list of components according to the type specified in the subsection heading. Note that this does not constitute a full description, i.e.~we omit some components and many configuration options. The purpose of the manual is to obtain a general understanding of the implemented components. A full list, which is generated automatically from the source code, can be found in \verb|interfaces/doc/configOptions.html| including the default values for all options and their usage in conf files. The file is also available online at \url{http://htmlpreview.github.io/?https://github.com/AKSW/DL-Learner/blob/master/interfaces/doc/configOptions.html}.
 
 \subsection{Knowledge Sources}
+\label{sec:knowledgesources}
 
 %Knowledge sources have a URI and can be included in conf files using \verb|import("$url");|, e.g.~\verb|import("ontology.owl")|. Depending on the file ending, DL-Learner will guess the correct type of knowledge source. If you want to overwrite this, you can use a second parameter with value \verb|OWL|, \verb|KB|, or \verb|SPARQL|, e.g.~\verb|import("ontology.owl","OWL")|.
 The following contains some knowledge sources implemented in DL-Learner. To give an example, this is how a local OWL file can be declared as knowlege source in a conf file:
@@ -218,29 +219,32 @@ The implemented algorithms vary from very simple (and usually inappropriate) alg
 Learning algorithms can make use of a refinement operator (see Sec.~\ref{sec:refinementoperators}) to traverse the search space.
 
 \begin{description}
- \item[OWL Class Expression Learner (OCEL)] \todo{update} The previous algorithm has been extended to make more sophisticated use of background knowledge~\cite{mlj} and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem.
+ \item[OWL Class Expression Learner (OCEL)]
+ The general idea of the OCEL algorithm is to build a search tree based on a refinement operator and making use of a heuristic guiding the traversal of the search space.
+ While the refinement operator defines how new candidate concepts may be derived from concepts already in the search tree, the heuristic can be configured to find \emph{`good'} candidates to look at (e.g. w.r.t. the concept length, its specificity and the number of covered examples).
+ 
+ The OCEL algorithm supports double datatypes and hasValue restrictions (which again can be turned on or off as desired).
+ It also includes explicit noise handling through the \verb|noisePercentage| option.
+ More than 30 options can be set to control its behaviour.
+
  \item[Class Expression Learning for Ontology Engineering (CELOE)] Currently CELOE is the best class learning algorithm available within DL-Learner. It uses the same refinement operator as OCEL, but a completely different heuristics. Furthermore, it guarantees that the returned class expressions are minimal in the sense that one cannot remove parts of them without getting an inequivalent expression. Furthermore, it makes use of existing background knowledge in coverage checks. Statistical methods are used to improve the efficiency of the algorithm such that it scales to large knowledge bases. While it was originally designed for ontology engineering, it can also be used for other learning problems and might even be superior to the other algorithms in many cases (not well-tested yet). Note that many configuration options of OCEL were dropped for the sake of simplicity, but may be introduced if needed.
  \item[EL Tree Learner (ELTL)] This algorithm has EL as its target language, i.e. is specialized for this relatively simple language. There are two algorithms: \verb|el| learns EL concepts and \verb|disjunctiveEL| learns disjunctions of EL concepts.
- \item[Inductive Statistical Learning of Expressions (ISLE)] \todo{write}
+ \item[Inductive Statistical Learning of Expressions (ISLE)]
+ The ISLE approach \cite{Buehmann2014_short} is an extension of the ELTL algorithm, which can take standard knowledge sources (see Sec. \ref{sec:knowledgesources}) and textual evidence into account.
+ An input corpus should contain textual descriptions of classes which support the generation on an ontology in an \emph{ontology learning} setting.
 \end{description}
-
-% Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. Table \ref{tab:la_lp_comp} provides a compatibility matrix. Note that this can change in future releases, because algorithms may be extended to support new learning problems or drop support for them.
-% 
-% \begin{table}[htb]
-% \centering
-% \begin{tabular}{c|ccccccc}
-% learning problem & BF & RG & GP & Ref & OCEL & CELOE & ELTL \\\hline
-% pos only & x & x & & & & x & \\
-% pos neg & x & x & x & x & x & x & x  \\
-% class learning & x & x & & & & x &
-% \end{tabular}
-% \caption{Learning problem - learning algorithm compatibility matrix in DL-Learner. Legend: BF = brute force, RG = random guesser, Ref = Refinement}
-% \label{tab:la_lp_comp}
-% \end{table}
 
 \subsection{Refinement Operators}
 \label{sec:refinementoperators}
-\todo{write}
+
+Refinement operators define a mapping from a given input concept description to a set of derived, or \emph{refined} concept descriptions.
+In general there are to kinds of refinement operators: 1) \emph{upward refinement operators}, returning refined concept descriptions that are more general than the input concept description, and 2) \emph{downward refinement operators} returning concept descriptions that are more specific than the input concept description.
+The specificity/generality here refers to the concept hierarchy in terms of subclass-of relations of concept descriptions.
+
+Besides this, refinement operators differ in their expressiveness, i.e. the types of DL constructs they support.
+As an example, the \texttt{rho} \emph{Rho (downward) refinement operator} can be configured to create refinements that contain cardinality restrictions, which is not supported by the \texttt{eldown} \emph{EL Downward refinement operator}.
+
+A list of available refinement operators is given in the components and configuration settings document.
 
 \section{Enrichment using DL-Learner}
 
@@ -488,7 +492,7 @@ public class TestAlgorithm implements LearningAlgorithm {
     }
 
     public void setTestOption(double testOption) {
-        this.startNodeBonus = startNodeBonus;
+        this.testOption = testOption;
     }
 
 }
@@ -519,7 +523,6 @@ If you added this in \verb|test.conf|, then this generates a \verb|file.xml|, wh
 
 If you are a DL-Learner developer and want to properly document your component, you should do some further steps:
 \begin{itemize}
-	\item add your class to \verb|AnnComponentManager.componentClassNames|
 	\item add an annotation for your class
 	\item add annotations for all configuration options
 \end{itemize}
@@ -531,8 +534,8 @@ An example of an annotated class could look as follows:
   description="My first experiment.")
 public class TestAlgorithm implements LearningAlgorithm { ...
 
-    @ConfigOption(name="testOption", defaultValue="0.0", 
-        description="The option allows to control xyz.")
+    @ConfigOption(defaultValue="0.0",
+      description="The option allows to control xyz.")
     private double testOption = 0.0;
 
     [...]
@@ -542,7 +545,7 @@ public class TestAlgorithm implements LearningAlgorithm { ...
     }
 
     public void setTestOption(double testOption) {
-        this.startNodeBonus = startNodeBonus;
+        this.testOption = testOption;
     }
 
 }
@@ -590,8 +593,8 @@ This quick introduction only serves as an entry point to get you started. For mo
  \item GitHub project page: \url{https://github.com/AKSW/DL-Learner}
  \item Tracker (bugs, features): \url{https://github.com/AKSW/DL-Learner/issues}
  \item Mailing Lists: \url{http://sourceforge.net/p/dl-learner/mailman/}
- \item Contact: lehmann@informatik.uni-leipzig.de (please use the mailing list if possible)
- \item Latest Release: \url{https://github.com/AKSW/DL-Learner/releases/tag/v1.2}
+ \item Contact: \href{mailto:jens.lehmann@cs.uni-bonn.de}{jens.lehmann@cs.uni-bonn.de} (please use the mailing list if possible)
+ \item Latest Release: \url{https://github.com/AKSW/DL-Learner/releases/tag/v1.3}
 \end{itemize}
 
 \nocite{*}
