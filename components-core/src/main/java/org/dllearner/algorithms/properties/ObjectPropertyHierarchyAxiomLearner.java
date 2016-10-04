@@ -98,7 +98,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 		// check for each candidate if an overlap exist
 		int i = 1;
-		for (OWLObjectProperty p : candidates) {
+		for (OWLObjectProperty p : candidates) {if(i==10)break;
+			logger.debug("processing candidate property {}...", p);
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			// get the popularity of the candidate
@@ -276,4 +277,11 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		this.strictMode = strictMode;
 	}
 
+	public boolean isStrictMode() {
+		return strictMode;
+	}
+
+	public double getBeta() {
+		return beta;
+	}
 }
