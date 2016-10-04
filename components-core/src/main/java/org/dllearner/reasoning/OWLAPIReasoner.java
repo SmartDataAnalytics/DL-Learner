@@ -185,7 +185,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             for (OWLOntology toRemove : owlAPIOntologies) {
                 manager.removeOntology(toRemove);
             }
-            owlAPIOntologies = null;
+            owlAPIOntologies = new HashSet<>();
         } catch (OWLOntologyCreationException e1) {
             e1.printStackTrace();
         }

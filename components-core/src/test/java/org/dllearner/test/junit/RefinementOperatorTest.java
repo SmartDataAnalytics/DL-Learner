@@ -109,7 +109,6 @@ public class RefinementOperatorTest {
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
-		reasoner.init();
 		baseURI = reasoner.getBaseURI();
 		
 		RhoDRDown op = new RhoDRDown();
@@ -218,8 +217,7 @@ public class RefinementOperatorTest {
 	@Test
 	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.SWORE);
-		reasoner.init();
-		
+
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
 		op.setSubHierarchy(reasoner.getClassHierarchy());
@@ -315,8 +313,7 @@ public class RefinementOperatorTest {
 	@Test
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
-		reasoner.init();
-		
+
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
 		op.setSubHierarchy(reasoner.getClassHierarchy());
