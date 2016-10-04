@@ -70,7 +70,7 @@ import org.apache.jena.vocabulary.RDF;
  * @author Lorenz Buehmann
  *
  */
-@ComponentAnn(name = "patla", shortName = "patla", version = 0.1, description = "Pattern-based algorithm uses OWL axioms as pattern.")
+@ComponentAnn(name = "pattern-based learner", shortName = "patla", version = 0.1, description = "Pattern-based algorithm uses OWL axioms as pattern.")
 public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm<OWLAxiom, OWLObject, OWLEntity>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(PatternBasedAxiomLearningAlgorithm.class);

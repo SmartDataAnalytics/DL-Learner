@@ -43,7 +43,7 @@ import org.dllearner.algorithms.decisiontrees.utils.Split;
 import org.dllearner.learningproblems.PosNegUndLP;
 //import evaluation.Parameters;
 //import knowledgeBasesHandler.KnowledgeBase;
-@ComponentAnn(name="tdt", shortName="tdt", version=1.0, description="A Terminological Decision Tree")
+@ComponentAnn(name="TDT", shortName="tdt", version=1.0, description="A Terminological Decision Tree")
 
 public class TDTClassifier extends AbstractTDTClassifier {
 	private static Logger logger = LoggerFactory.getLogger(TDTClassifier.class);
