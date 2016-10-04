@@ -48,8 +48,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 public class SomeOnlyReasonerTest {
 	
 	@Ignore
-    public void someOnlyTest() throws ComponentInitException {
-        // TODO: use aksw-commons-sparql instead of sparql-scala
+    public void someOnlyTest() throws ComponentInitException, LearningProblemUnsupportedException {
         
         SortedSet<OWLIndividual> posExamples = new TreeSet<>();
         posExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Archytas")));

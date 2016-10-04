@@ -180,6 +180,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				}
             }
             manager.applyChanges(addImports);
+            // free some memory. It is useless to keep two copies of the same 
+            // ontology
+            for (OWLOntology toRemove : owlAPIOntologies) {
+                manager.removeOntology(toRemove);
+            }
+            owlAPIOntologies = null;
         } catch (OWLOntologyCreationException e1) {
             e1.printStackTrace();
         }
@@ -232,7 +238,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private void initDatatypes() {
 	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
 	    for (OWLDataProperty dataProperty : datatypeProperties) {
-		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+//		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, ontology);
 		    Iterator<OWLDataRange> it = ranges.iterator();
 		    if (it.hasNext()) {
 			    OWLDataRange range = it.next();
@@ -1085,9 +1092,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         reasoner.dispose();
     }
 
-    public Set<OWLOntology> getOWLAPIOntologies() {
-        return owlAPIOntologies;
-    }
+//    public Set<OWLOntology> getOWLAPIOntologies() {
+//        return owlAPIOntologies;
+//    }
 
     /*public void setReasonerType(String type){
          configurator.setReasonerType(type);
