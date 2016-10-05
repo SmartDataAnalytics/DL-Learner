@@ -167,12 +167,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             }
         }
 
+		manager.getOntologies().stream().map(OWLOntology::getOntologyID).forEach(System.out::println);
+
         //Now merge all of the knowledge sources into one ontology instance.
         try {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
-            ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<>(owlAPIOntologies));
-            //we have to add all import declarations manually here, because these are not OWL axioms
+            ontology = manager.createOntology(IRI.generateDocumentIRI(), new HashSet<>(owlAPIOntologies));
+
+			//we have to add all import declarations manually here, because these are not OWL axioms
             List<OWLOntologyChange> addImports = new ArrayList<>();
             for (OWLOntology ont : owlAPIOntologies) {
             	for (OWLImportsDeclaration importDeclaration : ont.getImportsDeclarations()) {
