@@ -413,14 +413,6 @@
 			<artifactId>components-core</artifactId>
 			<exclusions>
 				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>stanford-corenlp</artifactId>
-					<groupId>edu.stanford.nlp</groupId>
-				</exclusion>
-				<exclusion>
 					<artifactId>slf4j-ext</artifactId>
 					<groupId>org.slf4j</groupId>
 				</exclusion>

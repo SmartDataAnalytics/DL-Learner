@@ -926,14 +926,6 @@ public class Enrichment {
 	}
 
 	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
-
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger.getRootLogger().setLevel(Level.WARN);
-		Logger.getLogger("org.dllearner").setLevel(Level.WARN); // seems to be needed for some reason (?)
-		Logger.getRootLogger().removeAllAppenders();
-		Logger.getRootLogger().addAppender(consoleAppender);
-
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
 //		parser.acceptsAll(asList("v", "verbose"), "Verbosity level.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
