@@ -399,21 +399,21 @@ given endpoint and graph. This can take several hours.
 
 \section*{Examples}
 
-Obtain enrichment suggestions for the \verb|currency| property in DBpedia Live:
+Obtain enrichment suggestions for the \verb|currency| property in DBpedia:
 \begin{verbatim}
--e http://live.dbpedia.org/sparql -g http://dbpedia.org 
+-e http://dbpedia.org/sparql -g http://dbpedia.org 
 -r http://dbpedia.org/ontology/currency
 \end{verbatim}
 
-Output those enrichments to a file \verb|results.txt|:
-\begin{verbatim}
--e http://live.dbpedia.org/sparql -g http://dbpedia.org 
--r http://dbpedia.org/ontology/currency -o results.txt
-\end{verbatim}
+%% Output those enrichments to a file \verb|results.txt|:
+%% \begin{verbatim}
+%% -e http://dbpedia.org/sparql -g http://dbpedia.org 
+%% -r http://dbpedia.org/ontology/currency -o results.txt
+%% \end{verbatim}
 
 Write the enrichments in Turtle syntax in a file using the enrichment ontology:
 \begin{verbatim}
--e http://live.dbpedia.org/sparql -g http://dbpedia.org 
+-e http://dbpedia.org/sparql -g http://dbpedia.org 
 -r http://dbpedia.org/ontology/currency -o results.ttl
 -f turtle
 \end{verbatim}
@@ -421,14 +421,14 @@ Write the enrichments in Turtle syntax in a file using the enrichment ontology:
 Do the same task with an increased threshold and without inference
 
 \begin{verbatim}
--e http://live.dbpedia.org/sparql -g http://dbpedia.org 
+-e http://dbpedia.org/sparql -g http://dbpedia.org 
 -r http://dbpedia.org/ontology/currency -o results.ttl
 -f turtle -t 0.9 -i false
 \end{verbatim}
 
-Generate all enrichments for DBpedia Live (will take several hours to complete):
+Generate all enrichments for DBpedia (will take several hours to complete):
 \begin{verbatim}
--e http://live.dbpedia.org/sparql -g http://dbpedia.org 
+-e http://dbpedia.org/sparql -g http://dbpedia.org 
 \end{verbatim}
 
 
