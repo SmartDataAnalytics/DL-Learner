@@ -26,12 +26,17 @@ function showAllCat(){
 <a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('AccMethod')">AccMethod</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodAMeasure">AMeasure</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodAMeasureApprox">AMeasure Approximate</a></li></div>
+<div class="type menu OtherComponent"><li><a href="#org.dllearner.core.probabilistic.unife.BUNDLE">BUNDLE</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassAsInstanceLearningProblem">Class as Instance LP</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassLearningProblem">ClassLearningProblem</a></li></div>
 <div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.el.DisjunctiveHeuristic">DisjunctiveHeuristic</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner">DummyParameterLearner</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE">EDGE</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistributedDynamic">EDGEDistributedDynamic</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistibutedSingleStep">EDGEDistributedSingleStep</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier">ETDT</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.learningproblems.ExampleLoader">ExampleLoader</a></li></div>
@@ -43,6 +48,8 @@ function showAllCat(){
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodGenFMeasure">Generalised FMeasure</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodJaccard">Jaccard Coefficient</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP">LEAP</a></li></div>
+<div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed">LEAPDistributed</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.ocel.LexicographicHeuristic">Lexicographic Heuristic</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.LocalModelBasedSparqlEndpointKS">Local Endpoint</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.MPSemKernelWorkflow">Mammalian Phenotype SemKernel Workflow</a></li></div>
@@ -62,6 +69,7 @@ function showAllCat(){
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PropertyAxiomLearningProblem">PropertyAxiomLearningProblem</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple">QueryTreeHeuristic</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex">QueryTreeHeuristicC</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator">Refinement Operator TDT</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.SPARQLReasoner">SPARQL Reasoner</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
@@ -111,6 +119,14 @@ function showAllCat(){
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 <tr><td>reasoner</td><td>(configured by learning problem)</td><td> Reasoner</td><td></td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type OtherComponent"><a name="org.dllearner.core.probabilistic.unife.BUNDLE"><h2>BUNDLE <small class="default-hidden">org.dllearner.core.probabilistic.unife.BUNDLE</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>bundle</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracy</td><td>accuracy used during the computation of the probabilistic values (number of digital places)</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>bddFType</td><td>library used for BDD compilation</td><td> String</td><td>buddy</td><td> false</td></tr>
+<tr><td>maxExplanations</td><td>the maximum number of explanations to find for each query</td><td> int</td><td>2147483647</td><td> false</td></tr>
+<tr><td>timeout</td><td>max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)</td><td> String</td><td>0s (infinite timeout)</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.celoe.CELOE"><h2>CELOE <small class="default-hidden">org.dllearner.algorithms.celoe.CELOE</small></h2></a>
@@ -194,6 +210,51 @@ function showAllCat(){
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.el.DisjunctiveHeuristic"><h2>DisjunctiveHeuristic <small class="default-hidden">org.dllearner.algorithms.el.DisjunctiveHeuristic</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>disjunctive_heuristic</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner"><h2>DummyParameterLearner <small class="default-hidden">org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>dummypl</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracy</td><td>accuracy used during the computation of the probabilistic values (number of digital places)</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>differenceLL</td><td>stop difference between log-likelihood of two consecutive EM cycles</td><td> double</td><td>0.000000000028</td><td> false</td></tr>
+<tr><td>fixedProbability</td><td>Value of the fixed probability. All the probabilistic axioms will have the same probability</td><td> double</td><td>0.4</td><td> false</td></tr>
+<tr><td>keepParameters</td><td>If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>maxExplanations</td><td>the maximum number of explanations to find for each query</td><td> int</td><td>2147483647</td><td> false</td></tr>
+<tr><td>maxIterations</td><td>maximum number of cycles</td><td> long</td><td>9223372036854775807</td><td> false</td></tr>
+<tr><td>maxNegativeExamples</td><td>max number of negative examples that edge must handle when a class learning problem is given</td><td> int</td><td>0 (infinite)</td><td> false</td></tr>
+<tr><td>maxPositiveExamples</td><td>max number of positive examples that edge must handle when a class learning problem is given</td><td> int</td><td>0 (infinite)</td><td> false</td></tr>
+<tr><td>outputformat</td><td>format of the output file</td><td> PossibleOutputFormat</td><td>OWLXML</td><td> false</td></tr>
+<tr><td>probabilizeAll</td><td>make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>randomize</td><td>randomize the starting probabilities of the probabilistic axioms</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>ratioLL</td><td>stop ratio between log-likelihood of two consecutive EM cycles</td><td> double</td><td>0.000000000028</td><td> false</td></tr>
+<tr><td>seed</td><td>seed for random generation</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>showAll</td><td>force the visualization of all results</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>timeout</td><td>max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)</td><td> String</td><td>0s (infinite timeout)</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE"><h2>EDGE <small class="default-hidden">org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>edge</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracy</td><td>accuracy used during the computation of the probabilistic values (number of digital places)</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>differenceLL</td><td>stop difference between log-likelihood of two consecutive EM cycles</td><td> double</td><td>0.000000000028</td><td> false</td></tr>
+<tr><td>keepParameters</td><td>If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>maxExplanations</td><td>the maximum number of explanations to find for each query</td><td> int</td><td>2147483647</td><td> false</td></tr>
+<tr><td>maxIterations</td><td>maximum number of cycles</td><td> long</td><td>9223372036854775807</td><td> false</td></tr>
+<tr><td>maxNegativeExamples</td><td>max number of negative examples that edge must handle when a class learning problem is given</td><td> int</td><td>0 (infinite)</td><td> false</td></tr>
+<tr><td>maxPositiveExamples</td><td>max number of positive examples that edge must handle when a class learning problem is given</td><td> int</td><td>0 (infinite)</td><td> false</td></tr>
+<tr><td>outputformat</td><td>format of the output file</td><td> PossibleOutputFormat</td><td>OWLXML</td><td> false</td></tr>
+<tr><td>probabilizeAll</td><td>make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>randomize</td><td>randomize the starting probabilities of the probabilistic axioms</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>ratioLL</td><td>stop ratio between log-likelihood of two consecutive EM cycles</td><td> double</td><td>0.000000000028</td><td> false</td></tr>
+<tr><td>seed</td><td>seed for random generation</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>showAll</td><td>force the visualization of all results</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>timeout</td><td>max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)</td><td> String</td><td>0s (infinite timeout)</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistributedDynamic"><h2>EDGEDistributedDynamic <small class="default-hidden">org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistributedDynamic</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>edgedynamic</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>chunkDim</td><td>number of example for chunk</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>maxSenderThreads</td><td> max number of concurrent threads which send examples to the slaves</td><td> int</td><td>#processors - 1</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistibutedSingleStep"><h2>EDGEDistributedSingleStep <small class="default-hidden">org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistibutedSingleStep</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>edgesingle</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithm"><h2>ELTL <small class="default-hidden">org.dllearner.algorithms.el.ELLearningAlgorithm</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>eltl</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
@@ -291,6 +352,27 @@ function showAllCat(){
 <tr><td>baseDir</td><td>change the base directory (must be absolute)</td><td> String</td><td>directory of conf file</td><td> false</td></tr>
 <tr><td>fileName</td><td>relative or absolute path to KB file</td><td> String</td><td></td><td> false</td></tr>
 <tr><td>url</td><td>URL pointer to the KB file</td><td> String</td><td></td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP"><h2>LEAP <small class="default-hidden">org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>leap</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracy</td><td>accuracy used during the computation of the probabilistic values (number of digital places)</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>blockSizeGreedySearch</td><td>the number of probabilistic axioms that LEAP tries to add into the ontology at each iteration of the greedy search</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>classAxiomType</td><td>This is used to set the type of class axiom to learn. Accepted values (case insensitive): 'subClassOf', 'equivalentClasses', 'both'</td><td> String</td><td>subClassOf</td><td> false</td></tr>
+<tr><td>dummyClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> IRI</td><td>owl:learnedClass</td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningAlgorithm"><a name="org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed"><h2>LEAPDistributed <small class="default-hidden">org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>leapdistr</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracy</td><td>accuracy used during the computation of the probabilistic values (number of digital places)</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>differenceLL</td><td>stop difference between log-likelihood of two consecutive iterations</td><td> BigDecimal</td><td>0.00001</td><td> false</td></tr>
+<tr><td>dummyClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> IRI</td><td>owl:learnedClass</td><td> false</td></tr>
+<tr><td>maxIterations</td><td>maximum number of iterations</td><td> long</td><td>2147000000</td><td> false</td></tr>
+<tr><td>procPLA</td><td>number of mpi processes of parameter learning algorithm for each probabilistic structure learner process</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>procPSLA</td><td>number of mpi processes of probabilistic structure learning algorithm</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>ratioLL</td><td>stop ratio between log-likelihood of two consecutive iterations</td><td> BigDecimal</td><td>0.00001</td><td> false</td></tr>
+<tr><td>targetAxiomsFilename</td><td>probabilistic target axioms which can be deleted from the ontology</td><td> String</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.LexicographicHeuristic"><h2>Lexicographic Heuristic <small class="default-hidden">org.dllearner.algorithms.ocel.LexicographicHeuristic</small></h2></a>
@@ -512,6 +594,8 @@ function showAllCat(){
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple"><h2>QueryTreeHeuristic <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_simple</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex"><h2>QueryTreeHeuristicC <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_complex</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type RefinementOperator"><a name="org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator"><h2>Refinement Operator TDT <small class="default-hidden">org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>tdtop</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beam</td><td>no description available</td><td> int</td><td>5</td><td> false</td></tr>

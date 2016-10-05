@@ -341,6 +341,344 @@ conf file usage: ks.tboxfilter = ""
 * LearningAlgorithm *
 *********************
 
+component: EDGEDistributedSingleStep (org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistibutedSingleStep) v1.0
+============================================================================================================================================
+
+conf file usage: la.type = "edgesingle"
+
+component: EDGEDistributedDynamic (org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistributedDynamic) v1.0
+=======================================================================================================================================
+
+conf file usage: la.type = "edgedynamic"
+
+option name: chunkDim
+description: number of example for chunk
+type: int
+required: false
+default value: 1
+conf file usage: la.chunkDim = 1
+
+option name: maxSenderThreads
+description:  max number of concurrent threads which send examples to the slaves
+type: int
+required: false
+default value: #processors - 1
+conf file usage: la.maxSenderThreads = #processors - 1
+
+component: DummyParameterLearner (org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner) v1.0
+=========================================================================================================================
+
+conf file usage: la.type = "dummypl"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.differenceLL = 0.000000000028
+
+option name: fixedProbability
+description: Value of the fixed probability. All the probabilistic axioms will have the same probability
+type: double
+required: false
+default value: 0.4
+conf file usage: la.fixedProbability = 0.4
+
+option name: keepParameters
+description: If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them
+type: boolean
+required: false
+default value: false
+conf file usage: la.keepParameters = false
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: la.maxExplanations = 2147483647
+
+option name: maxIterations
+description: maximum number of cycles
+type: long
+required: false
+default value: 9223372036854775807
+conf file usage: la.maxIterations = 9223372036854775807
+
+option name: maxNegativeExamples
+description: max number of negative examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxNegativeExamples = 0 (infinite)
+
+option name: maxPositiveExamples
+description: max number of positive examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxPositiveExamples = 0 (infinite)
+
+option name: outputformat
+description: format of the output file
+type: PossibleOutputFormat
+required: false
+default value: OWLXML
+conf file usage: la.outputformat = "OWLXML"
+
+option name: probabilizeAll
+description: make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)
+type: boolean
+required: false
+default value: false
+conf file usage: la.probabilizeAll = false
+
+option name: randomize
+description: randomize the starting probabilities of the probabilistic axioms
+type: boolean
+required: false
+default value: false
+conf file usage: la.randomize = false
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.ratioLL = 0.000000000028
+
+option name: seed
+description: seed for random generation
+type: int
+required: false
+default value: 0
+conf file usage: la.seed = 0
+
+option name: showAll
+description: force the visualization of all results
+type: boolean
+required: false
+default value: false
+conf file usage: la.showAll = false
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: la.timeout = "0s (infinite timeout)"
+
+component: EDGE (org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE) v1.0
+=======================================================================================
+
+conf file usage: la.type = "edge"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.differenceLL = 0.000000000028
+
+option name: keepParameters
+description: If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them
+type: boolean
+required: false
+default value: false
+conf file usage: la.keepParameters = false
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: la.maxExplanations = 2147483647
+
+option name: maxIterations
+description: maximum number of cycles
+type: long
+required: false
+default value: 9223372036854775807
+conf file usage: la.maxIterations = 9223372036854775807
+
+option name: maxNegativeExamples
+description: max number of negative examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxNegativeExamples = 0 (infinite)
+
+option name: maxPositiveExamples
+description: max number of positive examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxPositiveExamples = 0 (infinite)
+
+option name: outputformat
+description: format of the output file
+type: PossibleOutputFormat
+required: false
+default value: OWLXML
+conf file usage: la.outputformat = "OWLXML"
+
+option name: probabilizeAll
+description: make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)
+type: boolean
+required: false
+default value: false
+conf file usage: la.probabilizeAll = false
+
+option name: randomize
+description: randomize the starting probabilities of the probabilistic axioms
+type: boolean
+required: false
+default value: false
+conf file usage: la.randomize = false
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.ratioLL = 0.000000000028
+
+option name: seed
+description: seed for random generation
+type: int
+required: false
+default value: 0
+conf file usage: la.seed = 0
+
+option name: showAll
+description: force the visualization of all results
+type: boolean
+required: false
+default value: false
+conf file usage: la.showAll = false
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: la.timeout = "0s (infinite timeout)"
+
+component: LEAPDistributed (org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed) v1.0
+=========================================================================================================================
+
+conf file usage: la.type = "leapdistr"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive iterations
+type: BigDecimal
+required: false
+default value: 0.00001
+conf file usage: la.differenceLL = "0.00001"
+
+option name: dummyClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: IRI
+required: false
+default value: owl:learnedClass
+conf file usage: la.dummyClass = "owl:learnedClass"
+
+option name: maxIterations
+description: maximum number of iterations
+type: long
+required: false
+default value: 2147000000
+conf file usage: la.maxIterations = 2147000000
+
+option name: procPLA
+description: number of mpi processes of parameter learning algorithm for each probabilistic structure learner process
+type: int
+required: false
+default value: 1
+conf file usage: la.procPLA = 1
+
+option name: procPSLA
+description: number of mpi processes of probabilistic structure learning algorithm
+type: int
+required: false
+default value: 1
+conf file usage: la.procPSLA = 1
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive iterations
+type: BigDecimal
+required: false
+default value: 0.00001
+conf file usage: la.ratioLL = "0.00001"
+
+option name: targetAxiomsFilename
+description: probabilistic target axioms which can be deleted from the ontology
+type: String
+required: false
+default value: 
+conf file usage: la.targetAxiomsFilename = ""
+
+component: LEAP (org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP) v1.0
+=======================================================================================
+
+conf file usage: la.type = "leap"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: blockSizeGreedySearch
+description: the number of probabilistic axioms that LEAP tries to add into the ontology at each iteration of the greedy search
+type: int
+required: false
+default value: 1
+conf file usage: la.blockSizeGreedySearch = 1
+
+option name: classAxiomType
+description: This is used to set the type of class axiom to learn. Accepted values (case insensitive): 'subClassOf', 'equivalentClasses', 'both'
+type: String
+required: false
+default value: subClassOf
+conf file usage: la.classAxiomType = "subClassOf"
+
+option name: dummyClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: IRI
+required: false
+default value: owl:learnedClass
+conf file usage: la.dummyClass = "owl:learnedClass"
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
 
 
 **************************
@@ -2975,8 +3313,8 @@ required: false
 default value: 0.1
 conf file usage: h.startNodeBonus = 0.1
 
-component: QueryTreeHeuristic (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex) v0.1
-======================================================================================================
+component: QueryTreeHeuristicC (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex) v0.1
+=======================================================================================================
 
 conf file usage: h.type = "qtree_heuristic_complex"
 
@@ -3185,6 +3523,44 @@ type: double
 required: false
 default value: 1
 conf file usage: accMethod.posWeight = 1
+
+
+********************
+* Other Components *
+********************
+
+component: BUNDLE (org.dllearner.core.probabilistic.unife.BUNDLE) v1.0
+======================================================================
+
+conf file usage: component.type = "bundle"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: component.accuracy = 5
+
+option name: bddFType
+description: library used for BDD compilation
+type: String
+required: false
+default value: buddy
+conf file usage: component.bddFType = "buddy"
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: component.maxExplanations = 2147483647
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: component.timeout = "0s (infinite timeout)"
 
 
 ********************
