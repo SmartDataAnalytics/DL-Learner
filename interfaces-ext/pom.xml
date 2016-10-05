@@ -203,6 +203,10 @@
                                     <name>cli</name>
                                 </program>
                                 <program>
+                                    <mainClass>org.dllearner.cli.unife.CLILEAP</mainClass>
+                                    <name>clileap</name>
+                                </program>
+                                <program>
                                     <mainClass>org.dllearner.cli.Enrichment</mainClass>
                                     <name>enrichment</name>
                                 </program>
@@ -228,7 +232,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <finalName>dllearner-${project.version}</finalName>
+                            <finalName>dllearner-ext-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>src/main/assemble/archive.xml</descriptor>
