@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage{mathabx}
 \usepackage{hyperref}
+\usepackage{breakcites}
 
 % define common URLs
 \usepackage{url}
@@ -177,15 +178,17 @@ ks.fileName = "father.owl"
  \item[OWL File] DL-Learner supports OWL files in different formats, e.g. RDF/XML or N-Triples. If there is a standard OWL format, you want to use, but is not supported by DL-Learner please let us know. We use the OWL API for parsing, so all formats supported by it can be used\footnote{ for a list see \owlapi}.
  \item[KB File] KB files are an internal non-standardised knowledge representation format, which corresponds to description logic syntax except that the special symbols have been replaced by ASCII strings, e.g.~\verb|AND| instead of $\sqcap$. You can find several KB files in the examples folder. A description of the syntax is available online\footnote{\url{https://raw.githubusercontent.com/AKSW/DL-Learner/master/interfaces/doc/kbFileSyntax.txt}}. If in doubt, please use the standard OWL syntax formats.
 %The \verb|doc/kbFileSyntax.txt| contains an EBNF description of the language.
- \item[SPARQL Endpoint] DL-Learner allows to use SPARQL endpoints as background knowledge source, which enables the incorporation of very large knowledge bases, e.g. DBpedia\cite{2008_dbpedia}, in DL-Learner. This works by using a set of start instances, which usually correspond to the examples in a learning problem, and then retrieving knowledge about these instances via SPARQL queries. The obtained knowledge base fragment can be converted to OWL and consumed by a reasoner later since it is now sufficiently small to be processed in reasonable time. Please see \cite{2009_ijswis} for details about the knowledge fragment extraction algorithm. Some options of the SPARQL component are:
+ \item[SPARQL endpoint fragment] DL-Learner allows to use SPARQL endpoints as background knowledge source, which enables the incorporation of parts from very large knowledge bases, e.g. DBpedia\cite{2008_dbpedia}, in DL-Learner. This works by using a set of start instances, which usually correspond to the examples in a learning problem, and then retrieving knowledge about these instances via SPARQL queries. The obtained knowledge base fragment can be converted to OWL and consumed by a reasoner later since it is now sufficiently small to be processed in reasonable time. Please see \cite{2009_ijswis} for details about the knowledge fragment extraction algorithm. Some options of the SPARQL component are:
 \begin{itemize}
- \item instances: Set of individuals to use for starting the knowledge fragment extraction. Example use in conf file: \begin{verbatim}sparql.instances = {"http://dbpedia.org/resource/Matt_Stone",
+ \item instances: Set of individuals to use for starting the knowledge fragment extraction. Example use in conf file: \begin{verbatim}sparql.type = "SPARQL endpoint fragment"
+sparql.instances = {"http://dbpedia.org/resource/Matt_Stone",
  "http://dbpedia.org/resource/Sarah_Silverman"}\end{verbatim}
  \item recursionDepth: Maximum distance of an extracted individual from a start individual. This influences the size of the extracted fragment and depends on the maximum property depth you want the learned class expression to have. Example use in conf file: \verb|sparql.recursionDepth = 2|.
 \item saveExtractedFragment: Specifies whether the extracted ontology is written to a file or not. If set to true, then the OWL file is written to the cache dir. Example usage: \verb|sparql.saveExtractedFragment = true|
 \end{itemize}
  Many further options allow to modify the extracted fragment on the fly or fine-tune the extraction process.
 The extraction can be started separately by running and modifying \verb|org.dllearner.test.SparqlExtractionTest|. The collected ontology will be saved in the DL-Learner directory.
+\item[SPARQL endpoint] Algorithms which work directly on SPARQL endpoints (without fragment extraction) can make use of the SPARQL endpoint component. The endpoint will then be queried for each algorithm task as required.
 \end{description}
 
 \subsection{Reasoner Components}
@@ -197,9 +200,9 @@ Note that OWLlink reasoners can be attached via the OWL API interface.
 \begin{description}
  \item[OWL API] The OWL API reasoner interface can be used in conjunction with the Pellet, FaCT++, HermiT and OWLlink reasoners. The only option allows to switch between them:
  \begin{itemize}
-  \item reasonerType: Selects the desired reasoner. By default, Pellet is used. Usage: \verb|owlAPIReasoner.reasonerType = fact|. Pellet, FaCT++ and HermiT are already included in DL-Learner. Note that for FaCT++, you need to add -Djava.library.path=lib/fact/64bit (or 32bit) to the Java command. You can also use an external OWLlink reasoner by setting the reasoner type to \verb|owllink|. You can then use the option \verb|owlLinkURL| to specify the URL of the OWLlink reasoner (http://localhost:8080/ by default).
+  \item reasonerImplementation: Selects the desired reasoner. By default, Pellet is used. Usage: \verb|owlAPIReasoner.reasonerImplementation = "fact"|. Pellet, FaCT++ and HermiT are already included in DL-Learner. Note that for FaCT++, you need to add -Djava.library.path=lib/fact/64bit (or 32bit) to the Java command. You can also use an external OWLlink reasoner by setting the reasoner type to \verb|owllink|. You can then use the option \verb|owlLinkURL| to specify the URL of the OWLlink reasoner (http://localhost:8080/ by default).
  \end{itemize}
- \item[SPARQL Reasoner] \todo{Simon}
+ \item[SPARQL Reasoner] Combined with the SPARQL endpoint or an OWLFile through a Jena Model, instance checks can be translated into SPARQL queries. This requires that the SPARQL endpoint contains the necessary OWL statements and entailments. (See \cite{sparqllearner} for details.)
  \item[Closed World Reasoner] Instance checks, i.e.~testing whether an individual is instance of a class, is the major reasoner task in many learning algorithms. This reasoner is a self-development of the DL-Learner project. It remedies some problems related to Machine Learning and the Open World Assumption in OWL and therefore is not correct w.r.t.~OWL semantics. (See \cite{cheng00} Section 4 for an explanation.) Furthermore, it provides an improved performance for instance checks by precomputing some inferences and keeping them in memory. The closed world reasoner is build on top of any other reasoner component in DL-Learner.
 \end{description}
 
@@ -513,14 +516,16 @@ In your code, you should have an empty default constructor and an \verb|init()| 
 \end{itemize}
 
 By only requiring those few steps, we want to make adding further components to DL-Learner as lightweight as possible.
-If you are familiar with the Spring framework\footnote{\url{http://www.springsource.org}}, then it is helpful to know that conf files are just an abbreviated syntax for Spring XML configurations. You can use all powerful features of Spring in your code, which we do not describe in full detail here. In fact, you can convert the conf files to Spring configuration files by adding those lines:
-
-\begin{verbatim}
-cli.type = "org.dllearner.cli.CLI"
-cli.writeSpringConfiguration = true
-\end{verbatim}
-
-If you added this in \verb|test.conf|, then this generates a \verb|file.xml|, which is the Spring equivalent of conf file.
+If you are familiar with the Spring framework\footnote{\url{http://www.springsource.org}}, then it is helpful to know that conf files are just an abbreviated syntax for Spring XML configurations. You can use all powerful features of Spring in your code, which we do not describe in full detail here. 
+% The following code has been removed from DL-Learner
+%In fact, you can convert the conf files to Spring configuration files by adding those lines:
+%
+%\begin{verbatim}
+%cli.type = "org.dllearner.cli.CLI"
+%cli.writeSpringConfiguration = true
+%\end{verbatim}
+%
+%If you added this in \verb|test.conf|, then this generates a \verb|file.xml|, which is the Spring equivalent of conf file.
 
 If you are a DL-Learner developer and want to properly document your component, you should do some further steps:
 \begin{itemize}
