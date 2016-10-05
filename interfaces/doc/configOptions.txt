@@ -347,6 +347,54 @@ conf file usage: ks.tboxfilter = ""
 * AxiomLearningAlgorithm *
 **************************
 
+component: pattern-based learner (org.dllearner.algorithms.pattern.PatternBasedAxiomLearningAlgorithm) v0.1
+===========================================================================================================
+Pattern-based algorithm uses OWL axioms as pattern.
+
+conf file usage: la.type = "patla"
+
+option name: entityToDescribe
+description: the OWL entity to learn about
+type: OWLEntity
+required: false
+default value: 
+conf file usage: la.entityToDescribe = ""
+
+option name: ks
+description: the sparql endpoint knowledge source
+type: SparqlEndpointKS
+required: false
+default value: 
+conf file usage: la.ks = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds (abstract)
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxFetchedRows
+description: The maximum number of rows fetched from the endpoint to approximate the result.
+type: int
+required: false
+default value: 
+conf file usage: la.maxFetchedRows = 
+
+option name: reasoner
+description: The sparql reasoner instance to use
+type: SPARQLReasoner
+required: false
+default value: SPARQLReasoner
+conf file usage: la.reasoner = "SPARQLReasoner"
+
+option name: returnOnlyNewAxioms
+description: omit axioms already existing in the knowledge base
+type: boolean
+required: false
+default value: false
+conf file usage: la.returnOnlyNewAxioms = false
+
 component: asymmetric object property axiom learner (org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner) v0.1
 ===================================================================================================================================
 A learning algorithm for asymmetric object property axioms.
@@ -668,7 +716,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -840,7 +888,7 @@ conf file usage: la.maxDepth = 7
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1042,7 +1090,7 @@ conf file usage: la.maxDepth = 7
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1223,7 +1271,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1263,7 +1311,7 @@ required: false
 default value: true
 conf file usage: la.useMinimizer = true
 
-component: tdt (org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier) v1.0
+component: TDT (org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier) v1.0
 ==============================================================================
 A Terminological Decision Tree
 
@@ -1403,7 +1451,7 @@ conf file usage: la.maxClassExpressionDepth = 2
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1535,7 +1583,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1708,7 +1756,7 @@ conf file usage: la.maxClassDescriptionTests = 0
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1916,7 +1964,96 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+component: query tree learner with noise (disjunctive) - multi-threaded (org.dllearner.algorithms.qtl.QTL2DisjunctiveMultiThreaded) v0.8
+========================================================================================================================================
+
+conf file usage: la.type = "qtl2dismt"
+
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: beta
+description: how important it is not to cover negatives
+type: double
+required: false
+default value: 1
+conf file usage: la.beta = 1
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1952,6 +2089,13 @@ component: Class as Instance LP (org.dllearner.learningproblems.ClassAsInstanceL
 ====================================================================================================
 
 conf file usage: lp.type = "classasinstance"
+
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
 
 option name: negativeExamples
 description: no description available
@@ -2020,6 +2164,13 @@ type: boolean
 required: false
 default value: true
 conf file usage: lp.equivalence = true
+
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
 
 option name: maxExecutionTimeInSeconds
 description: Maximum execution time in seconds
@@ -2181,6 +2332,13 @@ component: positive only learning problem (org.dllearner.learningproblems.PosOnl
 
 conf file usage: lp.type = "posonlylp"
 
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
+
 option name: positiveExamples
 description: the positive examples
 type: SortedSet
@@ -2260,6 +2418,20 @@ required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
 
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
+
 option name: reasonerComponent
 description: the underlying reasoner implementation
 type: OWLAPIReasoner
@@ -2321,6 +2493,20 @@ required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
 
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
+
 option name: reasonerImplementation
 description: specifies the used OWL API reasoner implementation
 type: ReasonerImplementation
@@ -2381,6 +2567,20 @@ type: boolean
 required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
+
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
 
 option name: sources
 description: the underlying knowledge sources
@@ -2985,6 +3185,52 @@ type: double
 required: false
 default value: 1
 conf file usage: accMethod.posWeight = 1
+
+
+********************
+* Other Components *
+********************
+
+component: ExampleLoader (org.dllearner.learningproblems.ExampleLoader) v0.1
+============================================================================
+Load examples from Class Expression
+
+conf file usage: component.type = "ExampleLoader"
+
+option name: negativeExamples
+description: class expression of negative examples
+type: OWLClassExpression
+required: false
+default value: 
+conf file usage: component.negativeExamples = ""
+
+option name: negativeRandomCount
+description: randomly choose only so many negative examples
+type: int
+required: false
+default value: 
+conf file usage: component.negativeRandomCount = 
+
+option name: positiveExamples
+description: class expression of positive examples
+type: OWLClassExpression
+required: false
+default value: 
+conf file usage: component.positiveExamples = ""
+
+option name: positiveRandomCount
+description: randomly choose only so many positive examples
+type: int
+required: false
+default value: 
+conf file usage: component.positiveRandomCount = 
+
+option name: randomSeed
+description: random seed for deterministic example choice
+type: long
+required: false
+default value: 
+conf file usage: component.randomSeed = 
 
 
 ********************
