@@ -96,10 +96,11 @@
 							</execution>
 						</executions>
 						<configuration>
+							<!-- put dependency JARs to /lib folder -->
 							<repositoryLayout>flat</repositoryLayout>
+							<!-- shorter classpath which avoid exceptions especially under Windows environment-->
 							<useWildcardClassPath>true</useWildcardClassPath>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
-							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
 							<configurationSourceDirectory>src/main/conf</configurationSourceDirectory>
 							<!-- Set the target configuration directory -->
