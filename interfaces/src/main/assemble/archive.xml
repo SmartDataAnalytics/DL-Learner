@@ -13,7 +13,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
-			<outputDirectory>/bin</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>
 					*.bat
@@ -22,7 +22,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
-			<outputDirectory>/bin</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<excludes>
 				<exclude>
 					*.bat
@@ -62,7 +62,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>../</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>README</include>
 				<include>LICENSE</include>
