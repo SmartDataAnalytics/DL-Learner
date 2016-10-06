@@ -30,13 +30,6 @@ required: false
 default value: false
 conf file usage: cli.performCrossValidation = false
 
-option name: writeSpringConfiguration
-description: Write the Spring XML configuration to disk corresponding to the .conf file
-type: boolean
-required: false
-default value: false
-conf file usage: cli.writeSpringConfiguration = false
-
 component: GLOBAL OPTIONS (org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc) v0.0
 =======================================================================================
 
@@ -118,6 +111,13 @@ type: List
 required: false
 default value: {}
 conf file usage: ks.namedGraphURIs = {}
+
+option name: pageSize
+description: page size
+type: long
+required: false
+default value: 10 000
+conf file usage: ks.pageSize = 10000
 
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
@@ -234,6 +234,13 @@ required: false
 default value: {}
 conf file usage: ks.namedGraphURIs = {}
 
+option name: pageSize
+description: page size
+type: long
+required: false
+default value: 10 000
+conf file usage: ks.pageSize = 10000
+
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
 type: long
@@ -334,11 +341,397 @@ conf file usage: ks.tboxfilter = ""
 * LearningAlgorithm *
 *********************
 
+component: EDGEDistributedSingleStep (org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistibutedSingleStep) v1.0
+============================================================================================================================================
+
+conf file usage: la.type = "edgesingle"
+
+component: EDGEDistributedDynamic (org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge.EDGEDistributedDynamic) v1.0
+=======================================================================================================================================
+
+conf file usage: la.type = "edgedynamic"
+
+option name: chunkDim
+description: number of example for chunk
+type: int
+required: false
+default value: 1
+conf file usage: la.chunkDim = 1
+
+option name: maxSenderThreads
+description:  max number of concurrent threads which send examples to the slaves
+type: int
+required: false
+default value: #processors - 1
+conf file usage: la.maxSenderThreads = #processors - 1
+
+component: DummyParameterLearner (org.dllearner.algorithms.probabilistic.parameter.unife.edge.DummyParameterLearner) v1.0
+=========================================================================================================================
+
+conf file usage: la.type = "dummypl"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.differenceLL = 0.000000000028
+
+option name: fixedProbability
+description: Value of the fixed probability. All the probabilistic axioms will have the same probability
+type: double
+required: false
+default value: 0.4
+conf file usage: la.fixedProbability = 0.4
+
+option name: keepParameters
+description: If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them
+type: boolean
+required: false
+default value: false
+conf file usage: la.keepParameters = false
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: la.maxExplanations = 2147483647
+
+option name: maxIterations
+description: maximum number of cycles
+type: long
+required: false
+default value: 9223372036854775807
+conf file usage: la.maxIterations = 9223372036854775807
+
+option name: maxNegativeExamples
+description: max number of negative examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxNegativeExamples = 0 (infinite)
+
+option name: maxPositiveExamples
+description: max number of positive examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxPositiveExamples = 0 (infinite)
+
+option name: outputformat
+description: format of the output file
+type: PossibleOutputFormat
+required: false
+default value: OWLXML
+conf file usage: la.outputformat = "OWLXML"
+
+option name: probabilizeAll
+description: make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)
+type: boolean
+required: false
+default value: false
+conf file usage: la.probabilizeAll = false
+
+option name: randomize
+description: randomize the starting probabilities of the probabilistic axioms
+type: boolean
+required: false
+default value: false
+conf file usage: la.randomize = false
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.ratioLL = 0.000000000028
+
+option name: seed
+description: seed for random generation
+type: int
+required: false
+default value: 0
+conf file usage: la.seed = 0
+
+option name: showAll
+description: force the visualization of all results
+type: boolean
+required: false
+default value: false
+conf file usage: la.showAll = false
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: la.timeout = "0s (infinite timeout)"
+
+component: EDGE (org.dllearner.algorithms.probabilistic.parameter.unife.edge.EDGE) v1.0
+=======================================================================================
+
+conf file usage: la.type = "edge"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.differenceLL = 0.000000000028
+
+option name: keepParameters
+description: If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them
+type: boolean
+required: false
+default value: false
+conf file usage: la.keepParameters = false
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: la.maxExplanations = 2147483647
+
+option name: maxIterations
+description: maximum number of cycles
+type: long
+required: false
+default value: 9223372036854775807
+conf file usage: la.maxIterations = 9223372036854775807
+
+option name: maxNegativeExamples
+description: max number of negative examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxNegativeExamples = 0 (infinite)
+
+option name: maxPositiveExamples
+description: max number of positive examples that edge must handle when a class learning problem is given
+type: int
+required: false
+default value: 0 (infinite)
+conf file usage: la.maxPositiveExamples = 0 (infinite)
+
+option name: outputformat
+description: format of the output file
+type: PossibleOutputFormat
+required: false
+default value: OWLXML
+conf file usage: la.outputformat = "OWLXML"
+
+option name: probabilizeAll
+description: make probabilistic all the axioms in the starting probabilistic ontology (including non probabilistic ones)
+type: boolean
+required: false
+default value: false
+conf file usage: la.probabilizeAll = false
+
+option name: randomize
+description: randomize the starting probabilities of the probabilistic axioms
+type: boolean
+required: false
+default value: false
+conf file usage: la.randomize = false
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive EM cycles
+type: double
+required: false
+default value: 0.000000000028
+conf file usage: la.ratioLL = 0.000000000028
+
+option name: seed
+description: seed for random generation
+type: int
+required: false
+default value: 0
+conf file usage: la.seed = 0
+
+option name: showAll
+description: force the visualization of all results
+type: boolean
+required: false
+default value: false
+conf file usage: la.showAll = false
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: la.timeout = "0s (infinite timeout)"
+
+component: LEAPDistributed (org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed) v1.0
+=========================================================================================================================
+
+conf file usage: la.type = "leapdistr"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: differenceLL
+description: stop difference between log-likelihood of two consecutive iterations
+type: BigDecimal
+required: false
+default value: 0.00001
+conf file usage: la.differenceLL = "0.00001"
+
+option name: dummyClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: IRI
+required: false
+default value: owl:learnedClass
+conf file usage: la.dummyClass = "owl:learnedClass"
+
+option name: maxIterations
+description: maximum number of iterations
+type: long
+required: false
+default value: 2147000000
+conf file usage: la.maxIterations = 2147000000
+
+option name: procPLA
+description: number of mpi processes of parameter learning algorithm for each probabilistic structure learner process
+type: int
+required: false
+default value: 1
+conf file usage: la.procPLA = 1
+
+option name: procPSLA
+description: number of mpi processes of probabilistic structure learning algorithm
+type: int
+required: false
+default value: 1
+conf file usage: la.procPSLA = 1
+
+option name: ratioLL
+description: stop ratio between log-likelihood of two consecutive iterations
+type: BigDecimal
+required: false
+default value: 0.00001
+conf file usage: la.ratioLL = "0.00001"
+
+option name: targetAxiomsFilename
+description: probabilistic target axioms which can be deleted from the ontology
+type: String
+required: false
+default value: 
+conf file usage: la.targetAxiomsFilename = ""
+
+component: LEAP (org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP) v1.0
+=======================================================================================
+
+conf file usage: la.type = "leap"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: la.accuracy = 5
+
+option name: blockSizeGreedySearch
+description: the number of probabilistic axioms that LEAP tries to add into the ontology at each iteration of the greedy search
+type: int
+required: false
+default value: 1
+conf file usage: la.blockSizeGreedySearch = 1
+
+option name: classAxiomType
+description: This is used to set the type of class axiom to learn. Accepted values (case insensitive): 'subClassOf', 'equivalentClasses', 'both'
+type: String
+required: false
+default value: subClassOf
+conf file usage: la.classAxiomType = "subClassOf"
+
+option name: dummyClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: IRI
+required: false
+default value: owl:learnedClass
+conf file usage: la.dummyClass = "owl:learnedClass"
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
 
 
 **************************
 * AxiomLearningAlgorithm *
 **************************
+
+component: pattern-based learner (org.dllearner.algorithms.pattern.PatternBasedAxiomLearningAlgorithm) v0.1
+===========================================================================================================
+Pattern-based algorithm uses OWL axioms as pattern.
+
+conf file usage: la.type = "patla"
+
+option name: entityToDescribe
+description: the OWL entity to learn about
+type: OWLEntity
+required: false
+default value: 
+conf file usage: la.entityToDescribe = ""
+
+option name: ks
+description: the sparql endpoint knowledge source
+type: SparqlEndpointKS
+required: false
+default value: 
+conf file usage: la.ks = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds (abstract)
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxFetchedRows
+description: The maximum number of rows fetched from the endpoint to approximate the result.
+type: int
+required: false
+default value: 
+conf file usage: la.maxFetchedRows = 
+
+option name: reasoner
+description: The sparql reasoner instance to use
+type: SPARQLReasoner
+required: false
+default value: SPARQLReasoner
+conf file usage: la.reasoner = "SPARQLReasoner"
+
+option name: returnOnlyNewAxioms
+description: omit axioms already existing in the knowledge base
+type: boolean
+required: false
+default value: false
+conf file usage: la.returnOnlyNewAxioms = false
 
 component: asymmetric object property axiom learner (org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner) v0.1
 ===================================================================================================================================
@@ -364,11 +757,39 @@ A learning algorithm for disjoint data properties axioms.
 
 conf file usage: la.type = "dpldisjoint"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
 A learning algorithm for disjoint object properties axioms.
 
 conf file usage: la.type = "opldisjoint"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: equivalent data properties axiom learner (org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -376,11 +797,39 @@ A learning algorithm for equivalent data properties axioms.
 
 conf file usage: la.type = "dplequiv"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: equivalent object properties axiom learner (org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner) v0.1
 =====================================================================================================================================
 A learning algorithm for equivalent object properties axioms.
 
 conf file usage: la.type = "oplequiv"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
 ===============================================================================================================================
@@ -436,11 +885,39 @@ A learning algorithm data subproperty axioms.
 
 conf file usage: la.type = "dplsubprop"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
 ======================================================================================================================
 A learning algorithm object subproperty axioms.
 
 conf file usage: la.type = "oplsubprop"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -577,7 +1054,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -749,13 +1226,13 @@ conf file usage: la.maxDepth = 7
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
 
 option name: maxExecutionTimeInSecondsAfterImprovement
-description: maximum execution of the algorithm in seconds
+description: maximum execution of the algorithm in seconds after last improvement
 type: int
 required: false
 default value: 0
@@ -951,7 +1428,7 @@ conf file usage: la.maxDepth = 7
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1132,7 +1609,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1172,7 +1649,7 @@ required: false
 default value: true
 conf file usage: la.useMinimizer = true
 
-component: tdt (org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier) v1.0
+component: TDT (org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier) v1.0
 ==============================================================================
 A Terminological Decision Tree
 
@@ -1312,7 +1789,7 @@ conf file usage: la.maxClassExpressionDepth = 2
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1444,7 +1921,7 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1524,6 +2001,48 @@ required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
 
+option name: candidatePostReductionSize
+description: maximum number of candidates to retain
+type: int
+required: false
+default value: 30
+conf file usage: la.candidatePostReductionSize = 30
+
+option name: computeBenchmarkInformation
+description: specifies whether to compute and log benchmark information
+type: boolean
+required: false
+default value: false
+conf file usage: la.computeBenchmarkInformation = false
+
+option name: expansionPenaltyFactor
+description: For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)
+type: double
+required: false
+default value: 0.02
+conf file usage: la.expansionPenaltyFactor = 0.02
+
+option name: forceRefinementLengthIncrease
+description: if this variable is set to true, then the refinement operator is applied until all concept of equal length have been found e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage are potentially more method calls, but the advantage is that the algorithm is better in locating relevant concept in the subsumption hierarchy (otherwise, if the most general concept is not promising, it may never get expanded)
+type: boolean
+required: false
+default value: true
+conf file usage: la.forceRefinementLengthIncrease = true
+
+option name: guaranteeXgoodDescriptions
+description: how many sufficient solutions must be found before termination, if terminateOnNoiseReached is enabled
+type: int
+required: false
+default value: 1
+conf file usage: la.guaranteeXgoodDescriptions = 1
+
+option name: heuristic
+description: the heuristic to guide the search
+type: ExampleBasedHeuristic
+required: false
+default value: MultiHeuristic
+conf file usage: la.heuristic = "MultiHeuristic"
+
 option name: ignoredConcepts
 description: List of classes to ignore
 type: Set
@@ -1545,6 +2064,13 @@ required: false
 default value: 
 conf file usage: la.ignoredObjectProperties = {}
 
+option name: improveSubsumptionHierarchy
+description: if enabled, modifies the subsumption hierarchy such that for each class, there is only a single path to reach it via upward and downward refinement respectively.
+type: boolean
+required: false
+default value: true
+conf file usage: la.improveSubsumptionHierarchy = true
+
 option name: learningProblem
 description: The Learning Problem variable to use in this algorithm
 type: AbstractClassExpressionLearningProblem
@@ -1552,12 +2078,61 @@ required: false
 default value: 
 conf file usage: la.learningProblem = ""
 
+option name: lengthMetric
+description: adjust the weights of class expression length in refinement
+type: OWLClassExpressionLengthMetric
+required: false
+default value: OCEL default metric
+conf file usage: la.lengthMetric = "OCEL default metric"
+
+option name: maxClassDescriptionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassDescriptionTests = 0
+
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: minExecutionTimeInSeconds
+description: Minimum time the algorithm has to run before termination (even if solution already found
+type: int
+required: false
+default value: 0
+conf file usage: la.minExecutionTimeInSeconds = 0
+
+option name: negationPenalty
+description: (for the ExampleBasedNode.) penalty value to deduce for using a negated class expression (complementOf)
+type: int
+required: false
+default value: 0
+conf file usage: la.negationPenalty = 0
+
+option name: negativeWeight
+description: (for the ExampleBasedNode.) weighting factor on the number of true negatives (true positives are weigthed with 1)
+type: double
+required: false
+default value: 1.0
+conf file usage: la.negativeWeight = 1.0
+
+option name: noisePercentage
+description: noise regulates how many positives can be misclassified and when the algorithm terminates
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: operator
+description: the refinement operator instance to use
+type: LengthLimitedRefinementOperator
+required: false
+default value: RhoDRDown
+conf file usage: la.operator = "RhoDRDown"
 
 option name: reasoner
 description: The reasoner variable to use for this learning problem
@@ -1566,12 +2141,103 @@ required: false
 default value: 
 conf file usage: la.reasoner = ""
 
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.replaceSearchTree = false
+
+option name: searchTreeFile
+description: file to use for the search tree
+type: File
+required: false
+default value: log/searchTree.txt
+conf file usage: la.searchTreeFile = "log/searchTree.txt"
+
+option name: showBenchmarkInformation
+description: show additional timing info for benchmark purposes
+type: boolean
+required: false
+default value: false
+conf file usage: la.showBenchmarkInformation = false
+
+option name: startClass
+description: You can specify a start class for the algorithm
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: la.startClass = "ex:Male or http://example.org/ontology/Female"
+
+option name: startNodeBonus
+description: (for the ExampleBasedNode.) the score value for the start node
+type: double
+required: false
+default value: 0.1
+conf file usage: la.startNodeBonus = 0.1
+
+option name: terminateOnNoiseReached
+description: specifies whether to terminate when noise criterion is met
+type: boolean
+required: false
+default value: true
+conf file usage: la.terminateOnNoiseReached = true
+
+option name: useCandidateReduction
+description: candidate reduction: using this mechanism we can simulate the divide&conquer approach in many ILP programs using a clause by clause search; after a period of time the candidate set is reduced to focus CPU time on the most promising concepts
+type: boolean
+required: false
+default value: true
+conf file usage: la.useCandidateReduction = true
+
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
 required: false
 default value: true
 conf file usage: la.useMinimizer = true
+
+option name: useOverlyGeneralList
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: la.useOverlyGeneralList = true
+
+option name: usePropernessChecks
+description: if set to false we do not test properness; this may seem wrong but the disadvantage of properness testing are additional reasoner queries and a search bias towards ALL r.something because ALL r.TOP is improper and automatically expanded further
+type: boolean
+required: false
+default value: false
+conf file usage: la.usePropernessChecks = false
+
+option name: useShortConceptConstruction
+description: whether to shorten concepts to ignore identical refinement. e.g. male AND male is shortened to male. 
+type: boolean
+required: false
+default value: true
+conf file usage: la.useShortConceptConstruction = true
+
+option name: useTooWeakList
+description: exclude too weak concepts when they occur as sub concept
+type: boolean
+required: false
+default value: true
+conf file usage: la.useTooWeakList = true
+
+option name: useTreeTraversal
+description: tree traversal means to run through the most promising concepts and connect them in an intersection to find a solution (this is called irregularly e.g. every 100 seconds)
+type: boolean
+required: false
+default value: false
+conf file usage: la.useTreeTraversal = false
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.writeSearchTree = false
 
 component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
 ==========================================================================================================
@@ -1599,6 +2265,13 @@ required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
 
+option name: beta
+description: how important it is not to cover negatives
+type: double
+required: false
+default value: 1
+conf file usage: la.beta = 1
+
 option name: ignoredConcepts
 description: List of classes to ignore
 type: Set
@@ -1629,7 +2302,96 @@ conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
-type: int
+type: long
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+component: query tree learner with noise (disjunctive) - multi-threaded (org.dllearner.algorithms.qtl.QTL2DisjunctiveMultiThreaded) v0.8
+========================================================================================================================================
+
+conf file usage: la.type = "qtl2dismt"
+
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: beta
+description: how important it is not to cover negatives
+type: double
+required: false
+default value: 1
+conf file usage: la.beta = 1
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: long
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
@@ -1666,12 +2428,33 @@ component: Class as Instance LP (org.dllearner.learningproblems.ClassAsInstanceL
 
 conf file usage: lp.type = "classasinstance"
 
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
+
+option name: negativeExamples
+description: no description available
+type: Set
+required: false
+default value: 
+conf file usage: lp.negativeExamples = {}
+
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
 type: double
 required: false
 default value: 0.05
 conf file usage: lp.percentPerLengthUnit = 0.05
+
+option name: positiveExamples
+description: no description available
+type: Set
+required: false
+default value: 
+conf file usage: lp.positiveExamples = {}
 
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
@@ -1720,6 +2503,13 @@ required: false
 default value: true
 conf file usage: lp.equivalence = true
 
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
+
 option name: maxExecutionTimeInSeconds
 description: Maximum execution time in seconds
 type: int
@@ -1738,6 +2528,27 @@ type: HeuristicType
 required: false
 default value: PRED_ACC
 conf file usage: lp.accuracyMethod = "PRED_ACC"
+
+option name: fuzzyExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.fuzzyExamples = ""
+
+option name: negativeExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.negativeExamples = ""
+
+option name: positiveExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.positiveExamples = ""
 
 component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
 ==================================================================================
@@ -1859,6 +2670,13 @@ component: positive only learning problem (org.dllearner.learningproblems.PosOnl
 
 conf file usage: lp.type = "posonlylp"
 
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
+
 option name: positiveExamples
 description: the positive examples
 type: SortedSet
@@ -1896,12 +2714,26 @@ required: false
 default value: true
 conf file usage: reasoner.defaultNegation = true
 
-option name: forallSemantics
+option name: forAllSemantics
 description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
 type: ForallSemantics
 required: false
 default value: standard
-conf file usage: reasoner.forallSemantics = "standard"
+conf file usage: reasoner.forAllSemantics = "standard"
+
+option name: handlePunning
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.handlePunning = false
+
+option name: materializeExistentialRestrictions
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.materializeExistentialRestrictions = false
 
 option name: precomputeClassHierarchy
 description: if class hierarchy should be precomputed
@@ -1924,6 +2756,27 @@ required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
 
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
+
+option name: reasonerComponent
+description: the underlying reasoner implementation
+type: OWLAPIReasoner
+required: false
+default value: OWL API Reasoner
+conf file usage: reasoner.reasonerComponent = "OWL API Reasoner"
+
 option name: sources
 description: the underlying knowledge sources
 type: Set
@@ -1937,6 +2790,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useInstanceChecks = false
+
+option name: useMaterializationCaching
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.useMaterializationCaching = true
 
 component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
 =========================================================================
@@ -1970,6 +2830,20 @@ type: boolean
 required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
+
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
 
 option name: reasonerImplementation
 description: specifies the used OWL API reasoner implementation
@@ -2032,19 +2906,26 @@ required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
 
+option name: precomputeObjectPropertyRanges
+description: if object property ranges should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyRanges = true
+
+option name: precomputePropertyDomains
+description: if property domains should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputePropertyDomains = true
+
 option name: sources
 description: the underlying knowledge sources
 type: Set
 required: true
 default value: 
 conf file usage: reasoner.sources = {}
-
-option name: useCache
-description: Whether to use a file-based cache
-type: boolean
-required: false
-default value: true
-conf file usage: reasoner.useCache = true
 
 option name: useGenericSplitsCode
 description: Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended
@@ -2118,6 +2999,13 @@ required: false
 default value: true
 conf file usage: op.guaranteeLength = true
 
+option name: lengthMetric
+description: class expression length calculation metric
+type: OWLClassExpressionLengthMetric
+required: false
+default value: 
+conf file usage: op.lengthMetric = ""
+
 option name: operator
 description: operator to invert
 type: LengthLimitedRefinementOperator
@@ -2145,14 +3033,21 @@ default value: true
 conf file usage: op.applyAllFilter = true
 
 option name: applyExistsFilter
-description: no description available
+description: throwing out all refinements with duplicate ∃ r for any r
 type: boolean
 required: false
 default value: true
 conf file usage: op.applyExistsFilter = true
 
+option name: cardinalityLimit
+description: limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)
+type: int
+required: false
+default value: 5
+conf file usage: op.cardinalityLimit = 5
+
 option name: disjointChecks
-description: no description available
+description: skip combination of intersection between disjoint classes
 type: boolean
 required: false
 default value: true
@@ -2165,6 +3060,13 @@ required: false
 default value: false
 conf file usage: op.dropDisjuncts = false
 
+option name: frequencyThreshold
+description: minimum number an individual or literal has to be seen in the knowledge base before considering it for inclusion in concepts
+type: int
+required: false
+default value: 3
+conf file usage: op.frequencyThreshold = 3
+
 option name: instanceBasedDisjoints
 description: no description available
 type: boolean
@@ -2172,12 +3074,33 @@ required: false
 default value: true
 conf file usage: op.instanceBasedDisjoints = true
 
+option name: lengthMetric
+description: class expression length metric (should match learning algorithm usage)
+type: OWLClassExpressionLengthMetric
+required: false
+default value: default cel_metric
+conf file usage: op.lengthMetric = "default cel_metric"
+
 option name: maxNrOfSplits
 description: the number of generated split intervals for numeric types
 type: int
 required: false
 default value: 12
 conf file usage: op.maxNrOfSplits = 12
+
+option name: reasoner
+description: the reasoner to use
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: op.reasoner = ""
+
+option name: startClass
+description: You can specify a start class for the algorithm
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: op.startClass = "owl:Thing"
 
 option name: useAllConstructor
 description: support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C 
@@ -2338,7 +3261,7 @@ required: true
 default value: 
 conf file usage: h.percentPerLengthUnit = 
 
-component: Lexicograpgic Heuristic (org.dllearner.algorithms.ocel.LexicographicHeuristic) v0.1
+component: Lexicographic Heuristic (org.dllearner.algorithms.ocel.LexicographicHeuristic) v0.1
 ==============================================================================================
 
 conf file usage: h.type = "lexheuristic"
@@ -2349,49 +3272,49 @@ component: multiple criteria heuristic (org.dllearner.algorithms.ocel.MultiHeuri
 conf file usage: h.type = "multiheuristic"
 
 option name: expansionPenaltyFactor
-description: no description available
+description: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)
 type: double
 required: false
 default value: 0.02
 conf file usage: h.expansionPenaltyFactor = 0.02
 
 option name: gainBonusFactor
-description: no description available
+description: how accuracy gain should be weighted versus accuracy itself (typical value: 1.00)
 type: double
 required: false
 default value: 0.5
 conf file usage: h.gainBonusFactor = 0.5
 
 option name: negationPenalty
-description: no description available
+description: penalty value to deduce for using a negated class expression (complementOf)
 type: int
 required: false
 default value: 0
 conf file usage: h.negationPenalty = 0
 
 option name: negativeWeight
-description: no description available
+description: weighting factor on the number of true negatives (true positives are weigthed with 1)
 type: double
 required: false
 default value: 1.0
 conf file usage: h.negativeWeight = 1.0
 
 option name: nodeChildPenalty
-description: no description available
+description: penalty factor for the search tree node child count (use higher values for simple learning problems)
 type: double
 required: false
 default value: 0.0001
 conf file usage: h.nodeChildPenalty = 0.0001
 
 option name: startNodeBonus
-description: no description available
+description: the score value for the start node
 type: double
 required: false
 default value: 0.1
 conf file usage: h.startNodeBonus = 0.1
 
-component: QueryTreeHeuristic (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex) v0.1
-======================================================================================================
+component: QueryTreeHeuristicC (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex) v0.1
+=======================================================================================================
 
 conf file usage: h.type = "qtree_heuristic_complex"
 
@@ -2411,15 +3334,50 @@ component: AMeasure (org.dllearner.learningproblems.AccMethodAMeasure) v0.1
 
 conf file usage: accMethod.type = "ameasure"
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
 component: AMeasure Approximate (org.dllearner.learningproblems.AccMethodAMeasureApprox) v0.1
 =============================================================================================
 
 conf file usage: accMethod.type = "approx.ameasure"
 
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: accMethod.approxDelta = 0.05
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: (configured by learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
+
 component: FMeasure (org.dllearner.learningproblems.AccMethodFMeasure) v0.0
 ===========================================================================
 
 conf file usage: accMethod.type = "fmeasure"
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 component: FMeasure Approximate (org.dllearner.learningproblems.AccMethodFMeasureApprox) v0.0
 =============================================================================================
@@ -2433,6 +3391,20 @@ required: false
 default value: 0.05
 conf file usage: accMethod.approxDelta = 0.05
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: reasoner component (configured  by learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
+
 component: Weighted FMeasure (org.dllearner.learningproblems.AccMethodFMeasureWeighted) v0.0
 ============================================================================================
 
@@ -2444,6 +3416,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: accMethod.balanced = false
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 option name: negWeight
 description: weight on the negative examples
@@ -2464,6 +3443,13 @@ component: Generalised FMeasure (org.dllearner.learningproblems.AccMethodGenFMea
 
 conf file usage: accMethod.type = "gen_fmeasure"
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
 component: Jaccard Coefficient (org.dllearner.learningproblems.AccMethodJaccard) v0.1
 =====================================================================================
 
@@ -2473,6 +3459,13 @@ component: Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAcc)
 =====================================================================================
 
 conf file usage: accMethod.type = "pred_acc"
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 component: Predictive Accuracy Approximate (org.dllearner.learningproblems.AccMethodPredAccApprox) v0.0
 =======================================================================================================
@@ -2485,6 +3478,20 @@ type: double
 required: false
 default value: 0.05
 conf file usage: accMethod.approxDelta = 0.05
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: (configured by the learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
 
 component: Predictive Accuracy without Weak elimination (org.dllearner.learningproblems.AccMethodPredAccOCEL) v0.0
 ==================================================================================================================
@@ -2516,6 +3523,247 @@ type: double
 required: false
 default value: 1
 conf file usage: accMethod.posWeight = 1
+
+
+********************
+* Other Components *
+********************
+
+component: BUNDLE (org.dllearner.core.probabilistic.unife.BUNDLE) v1.0
+======================================================================
+
+conf file usage: component.type = "bundle"
+
+option name: accuracy
+description: accuracy used during the computation of the probabilistic values (number of digital places)
+type: int
+required: false
+default value: 5
+conf file usage: component.accuracy = 5
+
+option name: bddFType
+description: library used for BDD compilation
+type: String
+required: false
+default value: buddy
+conf file usage: component.bddFType = "buddy"
+
+option name: maxExplanations
+description: the maximum number of explanations to find for each query
+type: int
+required: false
+default value: 2147483647
+conf file usage: component.maxExplanations = 2147483647
+
+option name: timeout
+description: max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)
+type: String
+required: false
+default value: 0s (infinite timeout)
+conf file usage: component.timeout = "0s (infinite timeout)"
+
+
+********************
+* Other Components *
+********************
+
+component: ExampleLoader (org.dllearner.learningproblems.ExampleLoader) v0.1
+============================================================================
+Load examples from Class Expression
+
+conf file usage: component.type = "ExampleLoader"
+
+option name: negativeExamples
+description: class expression of negative examples
+type: OWLClassExpression
+required: false
+default value: 
+conf file usage: component.negativeExamples = ""
+
+option name: negativeRandomCount
+description: randomly choose only so many negative examples
+type: int
+required: false
+default value: 
+conf file usage: component.negativeRandomCount = 
+
+option name: positiveExamples
+description: class expression of positive examples
+type: OWLClassExpression
+required: false
+default value: 
+conf file usage: component.positiveExamples = ""
+
+option name: positiveRandomCount
+description: randomly choose only so many positive examples
+type: int
+required: false
+default value: 
+conf file usage: component.positiveRandomCount = 
+
+option name: randomSeed
+description: random seed for deterministic example choice
+type: long
+required: false
+default value: 
+conf file usage: component.randomSeed = 
+
+
+********************
+* Other Components *
+********************
+
+component: OWL Class Expression Length Metric (org.dllearner.utilities.owl.OWLClassExpressionLengthMetric) v0.1
+===============================================================================================================
+
+conf file usage: component.type = "cel_metric"
+
+option name: classLength
+description: Class: "C"
+type: int
+required: false
+default value: 1
+conf file usage: component.classLength = 1
+
+option name: dataAllValuesLength
+description: Data All Values: "∀" p.t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataAllValuesLength = 1
+
+option name: dataCardinalityLength
+description: Data Cardinaltiy restriction: "≤n" r.t
+type: int
+required: false
+default value: 2
+conf file usage: component.dataCardinalityLength = 2
+
+option name: dataComplementLength
+description: Data Complement: "¬"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataComplementLength = 1
+
+option name: dataHasValueLength
+description: Data Has Value: "∃" p."{V}"
+type: int
+required: false
+default value: 2
+conf file usage: component.dataHasValueLength = 2
+
+option name: dataIntersectionLength
+description: Data Intersection: datatype"⨅"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataIntersectionLength = 1
+
+option name: dataOneOfLength
+description: Data One of: ∃ p."{U,V,W}"
+type: int
+required: false
+default value: 1
+conf file usage: component.dataOneOfLength = 1
+
+option name: dataProperyLength
+description: Data Property: ∃ "p".t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataProperyLength = 1
+
+option name: dataSomeValuesLength
+description: Data Some Values: "∃" p.t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataSomeValuesLength = 1
+
+option name: dataUnionLength
+description: Data Union: datatype"<u>⨆</u>"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataUnionLength = 1
+
+option name: datatypeLength
+description: Datatype: "^^datatype"
+type: int
+required: false
+default value: 1
+conf file usage: component.datatypeLength = 1
+
+option name: objectAllValuesLength
+description: Obj. All Values: "∀" r.C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectAllValuesLength = 1
+
+option name: objectCardinalityLength
+description: Obj. Cardinaltiy restriction: "≤n" r.C
+type: int
+required: false
+default value: 2
+conf file usage: component.objectCardinalityLength = 2
+
+option name: objectComplementLength
+description: Complement: "¬"C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectComplementLength = 1
+
+option name: objectHasValueLength
+description: Obj. Has Value: "∃" r."{I}"
+type: int
+required: false
+default value: 2
+conf file usage: component.objectHasValueLength = 2
+
+option name: objectIntersectionLength
+description: Intersection: A"⨅"B
+type: int
+required: false
+default value: 1
+conf file usage: component.objectIntersectionLength = 1
+
+option name: objectInverseLength
+description: Inverse property: ∃ "r⁻".C
+type: int
+required: false
+default value: 2
+conf file usage: component.objectInverseLength = 2
+
+option name: objectOneOfLength
+description: Obj. One of: ∃ r."{X,Y,Z}"
+type: int
+required: false
+default value: 1
+conf file usage: component.objectOneOfLength = 1
+
+option name: objectProperyLength
+description: Obj. Property: ∃ "r".C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectProperyLength = 1
+
+option name: objectSomeValuesLength
+description: Obj. Some Values: "∃" r.C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectSomeValuesLength = 1
+
+option name: objectUnionLength
+description: Union: A"⨆"B
+type: int
+required: false
+default value: 1
+conf file usage: component.objectUnionLength = 1
 
 
 ********************

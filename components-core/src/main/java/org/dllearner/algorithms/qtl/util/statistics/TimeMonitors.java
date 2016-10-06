@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.qtl.util.statistics;
 
-
 /**
  * @author Lorenz Buehmann
  *

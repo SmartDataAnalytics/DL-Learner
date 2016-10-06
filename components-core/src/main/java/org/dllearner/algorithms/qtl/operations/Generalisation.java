@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.graph.Node;
+import org.apache.jena.vocabulary.RDF;
 
 public class Generalisation {
 	

@@ -62,8 +62,7 @@ public class ALCLearningAlgorithm extends RefinementOperatorBasedLearningAlgorit
 	 */
 	@Override
 	protected SearchTreeNode<OWLClassExpression> getNextNodeToExpand() {
-		SearchTreeNode<OWLClassExpression> bestNode = searchTree.getNodes().last();
-		return bestNode;
+		return searchTree.getNodes().last();
 	}
 
 	/* (non-Javadoc)

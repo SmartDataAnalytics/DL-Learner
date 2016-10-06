@@ -42,6 +42,7 @@ import java.util.Map.Entry;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class DocumentationGenerator {
 	static {
 		if (System.getProperty("log4j.configuration") == null)
@@ -51,7 +52,7 @@ public class DocumentationGenerator {
 	}
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
 	
-	private static final Map<Class, String> varNameMapping = new HashMap<Class, String>();
+	private static final Map<Class, String> varNameMapping = new HashMap<>();
 	
 	static {
 		varNameMapping.put(LearningAlgorithm.class, "la");

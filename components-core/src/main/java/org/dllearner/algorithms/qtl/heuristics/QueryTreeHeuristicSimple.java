@@ -42,6 +42,7 @@ public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 	public void init() throws ComponentInitException {
 	}
 	
+	@Override
 	public double getScore(EvaluatedRDFResourceTree tree){
 		QueryTreeScore treeScore = tree.getTreeScore();
 		

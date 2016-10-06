@@ -49,7 +49,7 @@ public class TestGetExampleBug {
 
 			
 				
-				SortedSet<String> positiveSet = new TreeSet<String>();
+				SortedSet<String> positiveSet = new TreeSet<>();
 				positiveSet.add("http://3ba.se/conferences/JensLehmann");
 				positiveSet.add("http://3ba.se/conferences/MuhammadAhtishamAslam");
 				positiveSet.add("http://3ba.se/conferences/SebastianDietzold");
@@ -58,8 +58,8 @@ public class TestGetExampleBug {
 
 				SPARQLTasks st = new SPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
 				AutomaticNegativeExampleFinderSPARQL ane = 
-					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st, new TreeSet<String>());
-				SortedSet<String> negExamples = new TreeSet<String>();
+					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st, new TreeSet<>());
+				SortedSet<String> negExamples = new TreeSet<>();
 				int results=100;
 				if(negExamples.isEmpty()){
 					//ane.makeNegativeExamplesFromRelatedInstances(positiveSet, "http://3ba.se/conferences/");

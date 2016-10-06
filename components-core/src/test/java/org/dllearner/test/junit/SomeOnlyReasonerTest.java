@@ -50,22 +50,22 @@ public class SomeOnlyReasonerTest {
 	@Ignore
     public void someOnlyTest() throws ComponentInitException, LearningProblemUnsupportedException {
         
-        SortedSet<OWLIndividual> posExamples = new TreeSet<OWLIndividual>();
+        SortedSet<OWLIndividual> posExamples = new TreeSet<>();
         posExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Archytas")));
         posExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Pythagoras")));
         posExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Philolaus")));
         
-        SortedSet<OWLIndividual> negExamples = new TreeSet<OWLIndividual>();
+        SortedSet<OWLIndividual> negExamples = new TreeSet<>();
         negExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Democritus")));
         negExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Zeno_of_Elea")));
         negExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Plato")));
         negExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Socrates")));
         
-        SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples,
+        SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<>(posExamples,
                 negExamples);
         
         SparqlSimpleExtractor ks = new SparqlSimpleExtractor();
-        ks.setInstances(new ArrayList<String>(Helper.getStringSet(examples
+        ks.setInstances(new ArrayList<>(Helper.getStringSet(examples
                 .getCompleteSet())));
         // ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO:
         // probably the official endpoint is too slow?
@@ -73,7 +73,7 @@ public class SomeOnlyReasonerTest {
         // ks.setUseLits(false);
         // ks.setUseCacheDatabase(true);
         ks.setRecursionDepth(1);
-        ArrayList<String> ontologyUrls = new ArrayList<String>();
+        ArrayList<String> ontologyUrls = new ArrayList<>();
         ontologyUrls.add("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl");
         ks.setOntologySchemaUrls(ontologyUrls);
         ks.setAboxfilter("FILTER ( !isLiteral(?o) &&   regex(str(?o), "

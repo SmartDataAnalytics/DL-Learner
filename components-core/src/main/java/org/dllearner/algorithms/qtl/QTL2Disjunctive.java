@@ -20,28 +20,12 @@ package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import com.jamonapi.MonitorFactory;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
@@ -49,19 +33,13 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNod
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.Score;
-import org.dllearner.core.StringRenderer;
+import org.dllearner.core.*;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
@@ -79,10 +57,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.jamonapi.MonitorFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
 public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
@@ -95,7 +75,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
 	private LGGGenerator lggGenerator;
 	
-	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory treeFactory;
+	private QueryTreeFactory treeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
 	
 	private Queue<EvaluatedRDFResourceTree> todoList;
@@ -124,7 +104,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private QueryTreeHeuristic heuristic;
 	
 	//Parameters
-	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	
 	private double coverageWeight = 0.8;
@@ -135,7 +115,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	// maximum execution time to compute a part of the solution
 	private double maxTreeComputationTimeInSeconds = 10;
 	
-	// how important it is not to cover negatives
+	@ConfigOption(defaultValue = "1", description = "how important it is not to cover negatives")
 	private double beta = 1;
 	
 	// minimum score a query tree must have to be part of the solution
@@ -231,8 +211,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			treeFactory = new QueryTreeFactoryBase();
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxTreeDepth);
-		
+
 		// set the used heuristic
 		if(heuristic == null){
 			heuristic = new QueryTreeHeuristicSimple();
@@ -280,9 +259,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		if(currentPosExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getPositiveExamples()) {
 				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
 //					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
 					tree2Individual.put(queryTree, ind);
 					currentPosExampleTrees.add(queryTree);
 					currentPosExamples.add(ind);
@@ -299,8 +278,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		if(currentNegExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getNegativeExamples()) {
 				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
 					tree2Individual.put(queryTree, ind);
 					currentNegExampleTrees.add(queryTree);
 					currentNegExamples.add(ind);
@@ -320,6 +299,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public void start() {
+
+		if(currentPosExampleTrees.isEmpty()) {
+			logger.info("No positive examples given!");
+			return;
+		}
+
 		printSetup();
 		logger.info("Running...");
 		
@@ -472,8 +457,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				
 				// compute the LGG
 				MonitorFactory.getTimeMonitor("lgg").start();
+				((LGGGeneratorSimple)lggGenerator).setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
 				RDFResourceTree lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				MonitorFactory.getTimeMonitor("lgg").stop();
+//				System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
 //				logger.info("LGG: "  + lgg.getStringRepresentation());
 				
 				// redundancy check
@@ -655,11 +642,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		double specifityScore = 0d;
 		if(useSpecifity){
 			specifityScore = Math.log(nrOfSpecificNodes);
+		} else {
+			specifityScore = 1 / (double) nrOfSpecificNodes;
 		}
-		
+
 		//3.compute the total score
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
-		
+
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
 				new TreeSet<>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
 				coveredNegExamples, new TreeSet<>(Sets.difference(currentNegExamples, coveredNegExamples)),
@@ -1048,7 +1037,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){
-		return maxTreeComputationTimeInSeconds > 0 && (System.currentTimeMillis() - partialSolutionStartTime) / 1000d >= maxTreeComputationTimeInSeconds;
+		return maxTreeComputationTimeInSeconds > 0 && getRemainingPartialSolutionTime() > 0;
+	}
+
+	private long getRemainingPartialSolutionTime() {
+		return (long) (maxTreeComputationTimeInSeconds  - (System.currentTimeMillis() - partialSolutionStartTime) / 1000);
 	}
 	
 	/**
@@ -1079,15 +1072,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @param maxExecutionTimeInSeconds the maximum execution time in seconds until the
-	 * algorithm will terminate gracefully
-	 */
-	@Override
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
-	
-	/**
 	 * Default value is 1. Lower values force importance of covering positive examples.
 	 * @param beta the beta to set
 	 */
@@ -1096,7 +1080,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @param maxTreeComputationTimeInSeconds the maxTreeComputationTimeInSeconds to set
+	 * Set the max. execution time for the computation of a partial solution. If this value isn't set, the
+	 * max. algorithm runtime will be used, thus, in worst case only one partial solution was computed.
+	 *
+	 * @param maxTreeComputationTimeInSeconds the max. computation for a partial solution tree
 	 */
 	public void setMaxTreeComputationTimeInSeconds(double maxTreeComputationTimeInSeconds) {
 		this.maxTreeComputationTimeInSeconds = maxTreeComputationTimeInSeconds;
@@ -1181,7 +1168,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @return the runtime until the best solution was found
+	 * @return the runtime in ms until the best solution was found
 	 */
 	public long getTimeBestSolutionFound() {
 		return timeBestSolutionFound;

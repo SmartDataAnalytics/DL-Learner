@@ -18,14 +18,6 @@
  */
 package org.dllearner.kb;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -37,6 +29,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * KB files are an internal convenience format used in DL-Learner. Their
@@ -52,14 +51,13 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
 
     private OWLOntology kb;
 
-    @ConfigOption(name = "url", description = "URL pointer to the KB file")
+    @ConfigOption(description = "URL pointer to the KB file")
     private String url;
     
-    @ConfigOption(name="baseDir",description="change the base directory (must be absolute)",defaultValue="directory of conf file")
+    @ConfigOption(description="change the base directory (must be absolute)",defaultValue="directory of conf file")
     private String baseDir;
-    @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
+    @ConfigOption(description = "relative or absolute path to KB file")
     private String fileName;
-
 
     /**
      * Default constructor (needed for reflection in ComponentManager).
@@ -77,21 +75,16 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
         this.kb = kb;
     }
 
-    public static String getName() {
-        return "KB file";
-    }
-
     @Override
     public void init() throws ComponentInitException {
     	try {
     		if (url == null) {
     			/* Copyied from OWLFile */
-    			Path path;
-    			if(fileName.startsWith("/")) {
-    				path = Paths.get(fileName);
-    			} else {// else relative to base directory
-    				path = Paths.get(baseDir, fileName);
-    			}
+				Path path = Paths.get(fileName);
+
+				if(!path.isAbsolute() && baseDir != null) {// else relative to base directory
+				    path = Paths.get(baseDir, fileName);
+				}
 
     			URI uri = path.normalize().toUri();
     			setUrl(uri.toURL().toString());
@@ -117,7 +110,6 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
     	return kb;
     }
-
 
     @Override
     public String toString() {

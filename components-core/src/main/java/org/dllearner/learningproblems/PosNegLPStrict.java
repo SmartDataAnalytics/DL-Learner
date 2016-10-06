@@ -43,16 +43,16 @@ public class PosNegLPStrict extends PosNegLP {
 
 	private Set<OWLIndividual> neutralExamples;
 
-	@ConfigOption(name="penaliseNeutralExamples", description = "if set to true neutral examples are penalised")
+	@ConfigOption(description = "if set to true neutral examples are penalised")
 	private boolean penaliseNeutralExamples = false;
 	
 	private static final double defaultAccuracyPenalty = 1;
 
-	@ConfigOption(name="accuracyPenalty", description = "penalty for pos/neg examples which are classified as neutral", defaultValue = "1.0")
+	@ConfigOption(description = "penalty for pos/neg examples which are classified as neutral", defaultValue = "1.0")
 	private double accuracyPenalty = defaultAccuracyPenalty;
 
 	private static final double defaultErrorPenalty = 3;
-	@ConfigOption(name="errorPenalty", description = "penalty for pos. examples classified as negative or vice versa", defaultValue = "3.0")
+	@ConfigOption(description = "penalty for pos. examples classified as negative or vice versa", defaultValue = "3.0")
 	private double errorPenalty = defaultErrorPenalty;
 	
 
@@ -73,14 +73,6 @@ public class PosNegLPStrict extends PosNegLP {
 	}
 
 	public PosNegLPStrict() { super(); }
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "three valued definition learning problem";
-	}
-
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()

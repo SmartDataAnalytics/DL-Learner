@@ -19,13 +19,16 @@
 package org.dllearner.algorithms.properties;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLProperty;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * A learning algorithm for property axioms. 
@@ -47,8 +50,16 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			"CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}");
 	
 	protected ParameterizedSparqlString COUNT_QUERY = TRIPLES_COUNT_QUERY;
-	
+
+	@ConfigOption(defaultValue = "true", description = "make SPARQL OWL queries a bit more strict (currently: also test " +
+			"if a class is an owl:Class in some cases)")
 	protected boolean strictOWLMode = true;
+
+	// a property domain axiom can formally be seen as a subclass axiom \exists r.\top \sqsubseteq \C
+	// so we have to focus more on accuracy, which we can regulate via the parameter beta
+	double beta = 3.0;
+
+	private boolean useSimpleScore = true;
 	
 	
 	/* (non-Javadoc)
@@ -73,6 +84,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		this.strictOWLMode = strictOWLMode;
 	}
 	
+	@Override
 	protected ParameterizedSparqlString getSampleQuery(){
 		return GET_SAMPLE_QUERY;
 	}
@@ -116,6 +128,27 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	protected int getCountValue(String query, Model model){
 		ResultSet rs = executeSelectQuery(query, model);
 		return rs.next().getLiteral("cnt").getInt();
+	}
+
+	protected AxiomScore computeScore(int cntA, int cntB, int cntAB) {
+		// precision (A AND B)/B
+		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+
+		// in the simplest case, the precision is our score
+		double score = precision;
+
+		// if enabled consider also recall and use F-score
+		if(!useSimpleScore ) {
+			// recall (A AND B)/A
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+
+			// F score
+			score = Heuristics.getFScore(recall, precision, beta);
+		}
+
+		int nrOfNegExamples = popularity - cntAB;
+
+		return new AxiomScore(score, score, cntAB, nrOfNegExamples, useSampling);
 	}
 	
 	protected abstract void run();

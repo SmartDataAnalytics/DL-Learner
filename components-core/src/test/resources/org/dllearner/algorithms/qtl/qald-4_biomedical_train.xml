@@ -112,7 +112,7 @@ WHERE {
 <question id="9">
 <string lang="en"><![CDATA[What are side effects of drugs used for asthma?]]></string>
 <query><![CDATA[
-SELECT DISTINCT ?v3 ?v1 
+SELECT DISTINCT ?v1
 WHERE { 
         <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/116> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?v2. 
         ?v0 <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?v1. 

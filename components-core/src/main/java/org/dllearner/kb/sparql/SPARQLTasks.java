@@ -40,12 +40,12 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.ResultSetRewindable;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.query.ResultSetRewindable;
 
 /**
  * Convenience class for SPARQL queries initialized
@@ -421,7 +421,7 @@ public class SPARQLTasks {
 		
 		rsw.reset();
 		} catch (Exception e) {
-			logger.info("ignoring (see log for details): Exception caught in SPARQLTasks, passing emtpy result: "+e.getMessage());
+			logger.info("ignoring (see log for details): Exception caught in SPARQLTasks, passing empty result: "+e.getMessage());
 		}
 		
 		return returnSet;

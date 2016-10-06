@@ -18,15 +18,13 @@
  */
 package org.dllearner.algorithms.qtl.heuristics;
 
-import java.util.List;
-import java.util.SortedSet;
-
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.QueryExecution;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.semanticweb.owlapi.model.OWLProperty;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.QueryExecution;
+import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author Lorenz Buehmann 

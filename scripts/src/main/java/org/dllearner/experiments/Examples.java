@@ -19,17 +19,16 @@
 
 package org.dllearner.experiments;
 
+import com.google.common.collect.Sets;
+import org.apache.log4j.Logger;
+import org.dllearner.utilities.URLencodeUTF8;
+
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
-import org.dllearner.utilities.URLencodeUTF8;
-
-import com.google.common.collect.Sets;
 
 /**
  * a container for examples used for operations like randomization
@@ -44,10 +43,10 @@ public class Examples {
 	public static DecimalFormat df3 = new DecimalFormat("00.###%");
 	private DecimalFormat myDf = df2;
 
-	private final SortedSet<String> posTrain = new TreeSet<String>();
-	private final SortedSet<String> negTrain = new TreeSet<String>();
-	private final SortedSet<String> posTest = new TreeSet<String>();
-	private final SortedSet<String> negTest = new TreeSet<String>();
+	private final SortedSet<String> posTrain = new TreeSet<>();
+	private final SortedSet<String> negTrain = new TreeSet<>();
+	private final SortedSet<String> posTest = new TreeSet<>();
+	private final SortedSet<String> negTest = new TreeSet<>();
 
 	/**
 	 * default constructor
@@ -93,7 +92,7 @@ public class Examples {
 		if (retrieved.size() == 0) {
 			return 0.0d;
 		}
-		SortedSet<String> retrievedClean = new TreeSet<String>(retrieved);
+		SortedSet<String> retrievedClean = new TreeSet<>(retrieved);
 		retrievedClean.removeAll(posTrain);
 		retrievedClean.removeAll(negTrain);
 
@@ -117,7 +116,7 @@ public class Examples {
 	}
 
 	private void _remove(String toBeRemoved) {
-		_removeAll(Arrays.asList(new String[] { toBeRemoved }));
+		_removeAll(Arrays.asList(toBeRemoved));
 	}
 
 	private void _removeAll(Collection<String> toBeRemoved) {
@@ -219,11 +218,11 @@ public class Examples {
 			buffer.append("\n\n\n\n\n");
 			for (String s : posTrain) {
 				a.write("import(\"" + URLencodeUTF8.encode(s) + "\");\n");
-				buffer.append("+\"" + s + "\"\n");
+				buffer.append("+\"").append(s).append("\"\n");
 			}
 			for (String s : negTrain) {
 				a.write("import(\"" + URLencodeUTF8.encode(s) + "\");\n");
-				buffer.append("-\"" + s + "\"\n");
+				buffer.append("-\"").append(s).append("\"\n");
 			}
 
 			a.write(buffer.toString());
@@ -260,35 +259,35 @@ public class Examples {
 	}
 
 	public SortedSet<String> getAllExamples() {
-		SortedSet<String> total = new TreeSet<String>();
+		SortedSet<String> total = new TreeSet<>();
 		total.addAll(getPositiveExamples());
 		total.addAll(getNegativeExamples());
 		return total;
 	}
 
 	public SortedSet<String> getPositiveExamples() {
-		SortedSet<String> total = new TreeSet<String>();
+		SortedSet<String> total = new TreeSet<>();
 		total.addAll(posTrain);
 		total.addAll(posTest);
 		return total;
 	}
 
 	public SortedSet<String> getNegativeExamples() {
-		SortedSet<String> total = new TreeSet<String>();
+		SortedSet<String> total = new TreeSet<>();
 		total.addAll(negTrain);
 		total.addAll(negTest);
 		return total;
 	}
 
 	public SortedSet<String> getTestExamples() {
-		SortedSet<String> total = new TreeSet<String>();
+		SortedSet<String> total = new TreeSet<>();
 		total.addAll(posTest);
 		total.addAll(negTest);
 		return total;
 	}
 
 	public SortedSet<String> getTrainExamples() {
-		SortedSet<String> total = new TreeSet<String>();
+		SortedSet<String> total = new TreeSet<>();
 		total.addAll(posTrain);
 		total.addAll(negTrain);
 		return total;

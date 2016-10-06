@@ -18,13 +18,19 @@
  */
 package org.dllearner.algorithms.pattern;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.kb.repository.LocalDirectoryOntologyRepository;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class OWLPatternDetectionTest {
 	
@@ -48,10 +54,13 @@ public class OWLPatternDetectionTest {
 		OWLAxiomPatternFinder patternFinder = new OWLAxiomPatternFinder(repository);
 		patternFinder.start();
 	}
-	
-	@Test
-	public void test(){
-		
+
+//	@Test
+	public void testLocalDir(){
+		OntologyRepository repository = new LocalDirectoryOntologyRepository(new File("/media/me/Work-Ext/datasets/owlxml_mowlcorp/files"));
+		repository.initialize();
+		OWLAxiomPatternFinder patternFinder = new OWLAxiomPatternFinder(repository);
+		patternFinder.start();
 	}
 
 }

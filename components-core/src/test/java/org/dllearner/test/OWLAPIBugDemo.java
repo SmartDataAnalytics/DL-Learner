@@ -18,7 +18,6 @@
  */
 package org.dllearner.test;
 
-
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -51,14 +50,14 @@ public class OWLAPIBugDemo {
             // create a set of two individuals
             OWLIndividual a = factory.getOWLNamedIndividual(IRI.create(ontologyURI + "#a"));
             OWLIndividual b = factory.getOWLNamedIndividual(IRI.create(ontologyURI + "#b"));
-            Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+            Set<OWLIndividual> inds = new HashSet<>();
             inds.add(a);
             inds.add(b);
             
             // create a set of two classes
             OWLClass c = factory.getOWLClass(IRI.create(ontologyURI + "#c"));
             OWLClass d = factory.getOWLClass(IRI.create(ontologyURI + "#d"));
-            Set<OWLClass> classes = new HashSet<OWLClass>();
+            Set<OWLClass> classes = new HashSet<>();
             classes.add(c);
             classes.add(d);            
             

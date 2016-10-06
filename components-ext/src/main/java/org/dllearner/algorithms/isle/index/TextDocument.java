@@ -74,7 +74,7 @@ public class TextDocument extends LinkedList<Token> implements Document {
      *          list might contain additional non-relevant (punctuation) tokens
      */
     public List<Token> getTokensStartingAtToken(Token start, int numberOfTokens, boolean ignorePunctuation) {
-        ArrayList<Token> tokens = new ArrayList<Token>();
+        ArrayList<Token> tokens = new ArrayList<>();
 
         int relevantTokens = 0;
         boolean found = false;
@@ -109,7 +109,7 @@ public class TextDocument extends LinkedList<Token> implements Document {
      *          list might contain additional non-relevant (punctuation) tokens
      */
     public List<Token> getTokensStartingAtToken(Token start, boolean ignorePunctuation) {
-        ArrayList<Token> tokens = new ArrayList<Token>();
+        ArrayList<Token> tokens = new ArrayList<>();
 
         int relevantTokens = 0;
         boolean found = false;

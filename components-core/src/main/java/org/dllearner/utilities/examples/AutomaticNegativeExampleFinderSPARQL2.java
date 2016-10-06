@@ -18,46 +18,25 @@
  */
 package org.dllearner.utilities.examples;
 
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.RANDOM;
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.*;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
-import org.dllearner.kb.SparqlEndpointKS;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.*;
 /**
  * 
  * Utility class for automatically retrieving negative examples from a 
@@ -83,40 +62,19 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	private String namespace;
 	private QueryExecutionFactory qef;
 	
-	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner) {
-		this(se, reasoner, null);
-	}
-	
-	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner, String namespace) {
-		this.sr = reasoner;
-		this.namespace = namespace;
-		
-		qef = new QueryExecutionFactoryHttp(se.getURL().toString(), se.getDefaultGraphURIs());
-	}
-	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se) {
-		this(se, (String) null);
+		this(new QueryExecutionFactoryHttp(se.getURL().toString(), se.getDefaultGraphURIs()));
 	}
-	
-	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, String namespace) {
-		this(se, new SPARQLReasoner(new SparqlEndpointKS(se)), namespace);
+
+	public AutomaticNegativeExampleFinderSPARQL2(QueryExecutionFactory qef) {
+		this(new SPARQLReasoner(qef));
 	}
-	
-	public AutomaticNegativeExampleFinderSPARQL2(SPARQLReasoner reasoner, String namespace) {
-		this.sr = reasoner;
-		this.namespace = namespace;
-	}
-	
+
 	public AutomaticNegativeExampleFinderSPARQL2(SPARQLReasoner reasoner) {
 		this.sr = reasoner;
-		this.qef = sr.getQueryExecutionFactory();
+		this.qef = reasoner.getQueryExecutionFactory();
 	}
-	
-	public AutomaticNegativeExampleFinderSPARQL2(QueryExecutionFactory qef) {
-		this.qef = qef;
-		this.sr = new SPARQLReasoner(qef);
-	}
-	
+
 	public SortedSet<OWLIndividual> getNegativeExamples(OWLClass classToDescribe, Set<OWLIndividual> positiveExamples, int limit) {
 		return getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SUPERCLASS, SIBLING, RANDOM), limit);
 	}
@@ -165,68 +123,27 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		keepMostSpecificClasses(types);
 		return computeNegativeExamples(null, types, strategiesWithWeight, maxNrOfReturnedInstances);
 	}
-	
-	private SortedSet<OWLIndividual> computeNegativeExamples(OWLClass classToDescribe, Multiset<OWLClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
+
+	private SortedSet<OWLIndividual> computeNegativeExamples(OWLClass classToDescribe,
+															 Multiset<OWLClass> positiveExamplesTypes,
+															 Map<Strategy, Double> strategiesWithWeight,
+															 int maxNrOfReturnedInstances) {
 		SortedSet<OWLIndividual> negativeExamples = new TreeSet<>();
 		
 		for (Entry<Strategy, Double> entry : strategiesWithWeight.entrySet()) {
 			Strategy strategy = entry.getKey();
 			Double weight = entry.getValue();
-			//the max number of instances returned by the current strategy
+
+			// the max number of instances returned by the current strategy
 			int strategyLimit = (int)(weight * maxNrOfReturnedInstances);
-			//the highest frequency value
+
+			// the highest frequency value
 			int maxFrequency = positiveExamplesTypes.entrySet().iterator().next().getCount();
 			
 			if(strategy == SIBLING){//get sibling class based examples
-				logger.info("Applying sibling classes strategy...");
-				SortedSet<OWLIndividual> siblingNegativeExamples = new TreeSet<>();
-				//for each type of the positive examples
-				for (OWLClass nc : positiveExamplesTypes.elementSet()) {
-					int frequency = positiveExamplesTypes.count(nc);
-					//get sibling classes
-					Set<OWLClass> siblingClasses = sr.getSiblingClasses(nc);
-					siblingClasses = filterByNamespace(siblingClasses);
-					logger.info("Sibling classes: " + siblingClasses);
-					
-					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / siblingClasses.size() * strategyLimit);
-					//get instances for each sibling class
-					for (OWLClass siblingClass : siblingClasses) {
-						SortedSet<OWLIndividual> individuals = sr.getIndividualsExcluding(siblingClass, nc, maxNrOfReturnedInstances);
-						individuals.removeAll(siblingNegativeExamples);
-						SetManipulation.stableShrink(individuals, limit);
-						siblingNegativeExamples.addAll(individuals);
-					}
-				}
-				siblingNegativeExamples = SetManipulation.stableShrink(siblingNegativeExamples, strategyLimit);
-				logger.info("Negative examples(" + siblingNegativeExamples.size() + "): " + siblingNegativeExamples);
-				negativeExamples.addAll(siblingNegativeExamples);
+				negativeExamples.addAll(negativeExamplesBySiblingClasses(positiveExamplesTypes, strategyLimit, maxNrOfReturnedInstances));
 			} else if(strategy == SUPERCLASS){//get super class based examples
-				logger.info("Applying super class strategy...");
-				SortedSet<OWLIndividual> superClassNegativeExamples = new TreeSet<>();
-				//for each type of the positive examples
-				for (OWLClass nc : positiveExamplesTypes.elementSet()) {
-					int frequency = positiveExamplesTypes.count(nc);
-					//get super classes
-					Set<OWLClassExpression> superClasses = sr.getSuperClasses(nc);
-					superClasses.remove(df.getOWLThing());
-//					superClasses.remove(Thing.instance);
-					superClasses.remove(df.getOWLClass(OWLRDFVocabulary.RDFS_RESOURCE.getIRI()));
-					superClasses = filterByNamespace(superClasses);
-					logger.info("Super classes: " + superClasses);
-					
-					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / superClasses.size() * strategyLimit);
-					//get instances for each super class
-					for (OWLClassExpression superClass : superClasses) {
-						SortedSet<OWLIndividual> individuals = sr.getIndividualsExcluding(superClass, nc, maxNrOfReturnedInstances);
-						individuals.removeAll(negativeExamples);
-						individuals.removeAll(superClassNegativeExamples);
-						SetManipulation.stableShrink(individuals, limit);
-						superClassNegativeExamples.addAll(individuals);
-					}
-				}
-				superClassNegativeExamples = SetManipulation.stableShrink(superClassNegativeExamples, strategyLimit);
-				logger.info("Negative examples(" + superClassNegativeExamples.size() + "): " + superClassNegativeExamples);
-				negativeExamples.addAll(superClassNegativeExamples);
+				negativeExamples.addAll(negativeExamplesBySuperClasses(positiveExamplesTypes, negativeExamples, strategyLimit, maxNrOfReturnedInstances));
 			} else if(strategy == RANDOM){//get some random examples
 				logger.info("Applying random strategy...");
 				SortedSet<OWLIndividual> randomNegativeExamples = new TreeSet<>();
@@ -256,25 +173,76 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		}
         return negativeExamples;
 	}
+
+	private SortedSet<OWLIndividual> negativeExamplesBySuperClasses(Multiset<OWLClass> positiveExamplesTypes,
+																	Set<OWLIndividual> negativeExamples,
+																	int cnt, int totalCnt) {
+		logger.info("Applying super class strategy...");
+		SortedSet<OWLIndividual> negExamples = new TreeSet<>();
+		//for each type of the positive examples
+		for (OWLClass nc : positiveExamplesTypes.elementSet()) {
+			int frequency = positiveExamplesTypes.count(nc);
+			//get super classes
+			Set<OWLClassExpression> superClasses = sr.getSuperClasses(nc);
+			superClasses.remove(df.getOWLThing());
+//					superClasses.remove(Thing.instance);
+			superClasses.remove(df.getOWLClass(OWLRDFVocabulary.RDFS_RESOURCE.getIRI()));
+			superClasses = filterByNamespace(superClasses);
+			logger.info("Super classes: " + superClasses);
+
+			int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / superClasses.size() * cnt);
+			//get instances for each super class
+			for (OWLClassExpression superClass : superClasses) {
+				SortedSet<OWLIndividual> individuals = sr.getIndividualsExcluding(superClass, nc, totalCnt);
+				individuals.removeAll(negativeExamples);
+				individuals.removeAll(negExamples);
+				SetManipulation.stableShrink(individuals, limit);
+				negExamples.addAll(individuals);
+			}
+		}
+		negExamples = SetManipulation.stableShrink(negExamples, cnt);
+		logger.info("Negative examples(" + negExamples.size() + "): " + negExamples);
+		return negExamples;
+	}
+
+	private SortedSet<OWLIndividual> negativeExamplesBySiblingClasses(Multiset<OWLClass> positiveExamplesTypes, int cnt, int totalCnt) {
+		logger.info("Applying sibling classes strategy...");
+		SortedSet<OWLIndividual> negExamples = new TreeSet<>();
+
+		// for each type of the positive examples
+		for (OWLClass nc : positiveExamplesTypes.elementSet()) {
+			int frequency = positiveExamplesTypes.count(nc);
+
+			// get sibling classes
+			Set<OWLClass> siblingClasses = sr.getSiblingClasses(nc);
+			siblingClasses = filterByNamespace(siblingClasses);
+			logger.info("Sibling classes: " + siblingClasses);
+
+			int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / siblingClasses.size() * cnt);
+
+			// get instances for each sibling class
+			for (OWLClass siblingClass : siblingClasses) {
+				SortedSet<OWLIndividual> individuals = sr.getIndividualsExcluding(siblingClass, nc, totalCnt);
+				individuals.removeAll(negExamples);
+				SetManipulation.stableShrink(individuals, limit);
+				negExamples.addAll(individuals);
+			}
+		}
+		negExamples = SetManipulation.stableShrink(negExamples, cnt);
+		logger.info("Negative examples(" + negExamples.size() + "): " + negExamples);
+		return negExamples;
+	}
 	
 	private <T extends OWLClassExpression> Set<T> filterByNamespace(Set<T> classes){
 		if(namespace != null){
-			return Sets.filter(classes, new Predicate<T>() {
-				public boolean apply(T input){
-					return input.toString().startsWith(namespace);
-				}
-			});
+			return Sets.filter(classes, input -> input.toString().startsWith(namespace));
 		}
 		return classes;
 	}
 	
 	private Multiset<OWLClass> filterByNamespace(Multiset<OWLClass> classes){
 		if(namespace != null){
-			return Multisets.filter(classes, new Predicate<OWLClass>() {
-				public boolean apply(OWLClass input){
-					return input.toStringID().startsWith(namespace);
-				}
-			});
+			return Multisets.filter(classes, input -> input.toStringID().startsWith(namespace));
 		}
 		return classes;
 	}
@@ -298,7 +266,5 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				}
 			}
 		}
-		
-		
 	}
 }

@@ -19,13 +19,10 @@
  */
 package org.dllearner.test;
 
-import java.util.List;
-
 import org.dllearner.configuration.spring.CustomPropertyEditorRegistrar;
-import org.dllearner.core.AxiomLearningAlgorithm;
-import org.dllearner.core.EvaluatedAxiom;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.dllearner.core.LearningAlgorithm;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -40,14 +37,13 @@ public class SpringTest {
 
 	public static void main(String[] args) {
 		Resource resource = new FileSystemResource("../test/spring/example.xml");
-		ConfigurableBeanFactory factory = new XmlBeanFactory(resource);
+		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
 		factory.addPropertyEditorRegistrar(new CustomPropertyEditorRegistrar());
-		
-		AxiomLearningAlgorithm alg = (AxiomLearningAlgorithm) factory.getBean("learner");
+		reader.loadBeanDefinitions(resource);
+
+		LearningAlgorithm alg = factory.getBean(LearningAlgorithm.class);
 		alg.start();
-		List<EvaluatedAxiom> axioms = alg.getCurrentlyBestEvaluatedAxioms(10);
-		for(EvaluatedAxiom axiom : axioms) {
-			System.out.println(axiom.toString());
-		}
+
 	}
 }

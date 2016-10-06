@@ -18,29 +18,13 @@
  */
 package org.dllearner.test.junit;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import junit.framework.TestCase;
-
-import org.aksw.commons.collections.diff.SetDiff;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
-import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.*;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -51,29 +35,15 @@ import org.dllearner.reasoning.SPARQLReasoner.PopularityType;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PropertyAxiomLearningTest {
 	
@@ -313,7 +283,7 @@ public class PropertyAxiomLearningTest {
 		reasoner.init();
 		reasoner.precomputePopularities(PopularityType.OBJECT_PROPERTY);
 		
-		List<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>> la = new ArrayList<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>>();
+		List<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>> la = new ArrayList<>();
 		la.add(DisjointObjectPropertyAxiomLearner.class);
 		la.add(SubObjectPropertyOfAxiomLearner.class);
 		la.add(EquivalentObjectPropertyAxiomLearner.class);
@@ -325,7 +295,7 @@ public class PropertyAxiomLearningTest {
 		for (Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>> cls : la) {
 			try {
 				Constructor<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>> constructor = cls.getConstructor(SparqlEndpointKS.class);
-				ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom> learner = (ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>) constructor.newInstance(ks);
+				ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom> learner = constructor.newInstance(ks);
 				learner.setEntityToDescribe(op);
 				learner.init();
 				learner.start();

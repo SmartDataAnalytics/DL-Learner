@@ -18,30 +18,8 @@
  */
 package org.dllearner.kb.dataset;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.io.Files;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -53,10 +31,17 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.google.common.io.Files;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
+public abstract class AbstractOWLOntologyDataset implements AnalyzedOWLOntologyDataset{
 	
 	protected Collection<OWLOntology> ontologies = new TreeSet<>();
 	protected Collection<OWLOntology> correctOntologies = new TreeSet<>();
@@ -80,7 +65,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	private static final int nrOfThreads = 1;
 	private boolean analyze = false;
 	
-	public AbstractOWLOntologyDataset(String name, boolean analyze) {
+	public AbstractOWLOntologyDataset(File datasetDirectory, String name, boolean analyze) {
 		this.name = name;
 		this.analyze = analyze;
 		//create file structure
@@ -100,8 +85,8 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 		initialize();
 	}
 	
-	public AbstractOWLOntologyDataset(String name) {
-		this(name, false);
+	public AbstractOWLOntologyDataset(File datasetDirectory, String name) {
+		this(datasetDirectory, name, false);
 	}
 	
 	private boolean analyzed(URL url){
@@ -253,8 +238,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 			File file = new File(parent, filename);
 			if(file.exists()){
 				try {
-					OWLOntology ontology = man.loadOntologyFromOntologyDocument(file);
-					return ontology;
+					return man.loadOntologyFromOntologyDocument(file);
 				} catch(Exception e){
 					e.printStackTrace();
 					File to = new File(errorSubdirectory, filename);

@@ -77,7 +77,7 @@ public class TableRowColumn implements Serializable{
 	}
 
 	public void deleteAll(){
-		for (int i = 0; i < monitors.length; i++) {
+		for (FinalizedMonitor monitor : monitors) {
 //			MonitorFactory.remove(monitors[i].getMonKey());
 		}
 	}

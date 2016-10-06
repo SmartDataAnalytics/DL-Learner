@@ -18,13 +18,12 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.util.Set;
-
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -84,7 +83,6 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 			triplesTemplate.append("}");
 		}
 
-
 		ParameterizedSparqlString query = new ParameterizedSparqlString("prefix : <http://dl-learner.org/ontology/> " + "CONSTRUCT{" + constructTemplate + "}" + " WHERE {" + triplesTemplate + "}");
 		query.setIri("s0", resourceURI);
 		System.out.println(query);
@@ -94,6 +92,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		return cbd;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 
@@ -102,13 +101,6 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	 */
 	@Override
 	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#setRecursionDepth(int)
-	 */
-	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
 	}
 
 	/* (non-Javadoc)

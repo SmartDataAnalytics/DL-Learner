@@ -1,23 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-	<bean class="org.dllearner.kb.SparqlEndpointKS" id="ks"
-		init-method="init">
-		<property name="url" value="http://dbpedia.org/sparql" />
-		<property name="defaultGraphURIs">
-			<list>
-				<value>http://dbpedia.org</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean
-		class="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"
-		id="learner" init-method="init">
-		<constructor-arg ref="ks" />
-		<property name="entityToDescribe" value="http://dbpedia.org/ontology/leader" />
-	</bean>
-
+  <bean class="org.dllearner.kb.KBFile" name="ks" init-method="init">
+    <property name="fileName" value="../../examples/family/father.kb"/>
+  </bean>
+  <bean class="org.dllearner.reasoning.OWLAPIReasoner" name="embeddedReasoner" init-method="init">
+    <property name="sources">
+      <set>
+        <ref bean="ks"/>
+      </set>
+    </property>
+  </bean>
+  <bean class="org.dllearner.reasoning.ClosedWorldReasoner" name="reasoner" init-method="init">
+    <property name="reasonerComponent" ref="embeddedReasoner"/>
+  </bean>
+  <bean class="org.dllearner.refinementoperators.RhoDRDown" name="op" init-method="init">
+    <property name="useCardinalityRestrictions" value="true" />
+    <property name="reasoner" ref="reasoner"/>
+  </bean>
+  <bean class="org.dllearner.learningproblems.PosNegLPStandard" name="lp" init-method="init">
+    <property name="positiveExamples">
+      <set>
+        <value>http://localhost/foo#markus</value>
+        <value>http://localhost/foo#stefan</value>
+        <value>http://localhost/foo#bernd</value>
+      </set>
+    </property>
+    <property name="negativeExamples">
+      <set>
+        <value>http://localhost/foo#gabi</value>
+        <value>http://localhost/foo#anna</value>
+        <value>http://localhost/foo#michelle</value>
+        <value>http://localhost/foo#heinz</value>
+      </set>
+    </property>
+    <property name="reasoner" ref="reasoner"/>
+  </bean>
+  <bean class="org.dllearner.algorithms.ocel.MultiHeuristic" name="h" init-method="init">
+    <property name="expansionPenaltyFactor" value="0.2" />
+  </bean>
+  <bean class="org.dllearner.algorithms.ocel.OCEL" name="alg" init-method="init">
+    <property name="learningProblem" ref="lp"/>
+    <property name="reasoner" ref="reasoner"/>
+    <property name="operator" ref="op"/>
+    <property name="heuristic" ref="h"/>
+    <property name="maxExecutionTimeInSeconds" value="15" />
+  </bean>
 </beans>

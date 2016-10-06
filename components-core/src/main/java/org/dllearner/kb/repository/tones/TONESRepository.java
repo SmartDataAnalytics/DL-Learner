@@ -47,7 +47,6 @@ public class TONESRepository implements OntologyRepository{
 
     private OWLOntologyIRIMapper iriMapper;
 
-
     public TONESRepository() {
         entries = new ArrayList<>();
         iriMapper = new RepositoryIRIMapper();
@@ -58,41 +57,39 @@ public class TONESRepository implements OntologyRepository{
     	refresh();
     }
 
-
+    @Override
     public String getName() {
         return repositoryName;
     }
 
-
+    @Override
     public String getLocation() {
         return repositoryLocation.toString();
     }
 
-
+    @Override
     public void refresh() {
         fillRepository();
     }
 
-
+    @Override
     public Collection<OntologyRepositoryEntry> getEntries() {
         List<OntologyRepositoryEntry> ret = new ArrayList<>();
         ret.addAll(entries);
         return ret;
     }
 
-
+    @Override
     public List<Object> getMetaDataKeys() {
         return Collections.emptyList();
     }
 
-
-    public void dispose() throws Exception {
+    public void dispose() {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //  Implementation details
-
 
     private void fillRepository() {
         try {
@@ -130,31 +127,31 @@ public class TONESRepository implements OntologyRepository{
             physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyIRI);
         }
 
-
+        @Override
         public String getOntologyShortName() {
             return shortName;
         }
 
-
+        @Override
         public URI getOntologyURI() {
             return ontologyURI;
         }
 
-
+        @Override
         public URI getPhysicalURI() {
             return physicalURI;
         }
 
-
+        @Override
         public String getMetaData(Object key) {
             return null;
         }
 
     }
 
-
     private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
 
+        @Override
         public IRI getDocumentIRI(IRI iri) {
             for(RepositoryEntry entry : entries) {
                 if(entry.getOntologyURI().equals(iri.toURI())) {

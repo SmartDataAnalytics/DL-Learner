@@ -1,12 +1,11 @@
 package org.dllearner.utilities;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.AccMethodApproximate;
 import org.dllearner.learningproblems.AccMethodThreeValued;
-import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
@@ -16,26 +15,45 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
- * Created by Simon Bin on 16-1-25.
+ * Extension of ReasoningUtils for ClassLearningProblem
  */
 public class ReasoningUtilsCLP extends ReasoningUtils {
 	final private ClassLearningProblem problem;
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+
+
+	/**
+	 * @param problem class learning problem
+	 * @param reasoner reasoner component
+	 */
 	public ReasoningUtilsCLP(ClassLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(reasoner);
 		this.problem = problem;
 	}
 
+	/**
+	 * specialisation to indicate that calculation needs to be interrupted
+	 * @return
+	 */
+	@Override
 	protected boolean interrupted() {
 		return problem.terminationTimeExpired();
 	}
 
-	public Coverage[] getCoverageCLP(OWLClassExpression description, Set<OWLIndividual> classInstances,
-	                             Set<OWLIndividual> superClassInstances) {
+	/**
+	 * get coverage result for class learning problem. currently this is specialised for SPARQL reasoner and uses generic getCoverage otherwise
+	 * @param description the description to test
+	 * @param classInstances instances of the target class
+	 * @param superClassInstances instaces of the superclass
+	 * @return array of coverage data
+	 */
+	public Coverage[] getCoverageCLP(OWLClassExpression description, Collection<OWLIndividual> classInstances,
+	                             Collection<OWLIndividual> superClassInstances) {
 		if (reasoner instanceof SPARQLReasoner) {
 			SPARQLReasoner reasoner2 = (SPARQLReasoner)reasoner;
 			Coverage[] ret = new Coverage[2];
@@ -68,48 +86,17 @@ public class ReasoningUtilsCLP extends ReasoningUtils {
 
 	}
 
-
-	public double getAccuracyCLP(AccMethodTwoValued accuracyMethod,
-	                             OWLClassExpression description, Set<OWLIndividual> classInstances,
-	                             Set<OWLIndividual> superClassInstances,
-	                             double noise
-			) {
-		/*
-		// computing R(A)
-		CoverageCount[] coveredInstanceCount = getCoverageCount(description, classInstances);
-		if (coveredInstanceCount == null) {
-			return 0;
-		}
-
-		// if even the optimal case (no additional instances covered) is not sufficient,
-		// the concept is too weak
-		if(coveredInstanceCount[0].trueCount / (double) classInstances.size() <= 1 - noise) {
-			return -1;
-		}
-
-		CoverageCount[] additionalInstanceCount = getCoverageCount(description, superClassInstances);
-		// computing R(C) restricted to relevant instances
-		if (additionalInstanceCount == null) {
-			return 0;
-		}
-
-		return accuracyMethod.getAccOrTooWeak2(coveredInstanceCount[0].trueCount,
-				coveredInstanceCount[0].falseCount,
-				additionalInstanceCount[0].trueCount,
-				additionalInstanceCount[0].falseCount,
-				noise);
-
-												*/
-
-		// computing R(A) and R(C)
-		CoverageCount[] cc = getCoverageCount(description, classInstances, superClassInstances);
-		if (cc == null) {
-			return 0;
-		}
-		return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
-	}
-
-	public double getAccuracyOrTooWeak3(AccMethodThreeValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> classInstances, Set<OWLIndividual> superClassInstances, Set<OWLIndividual> negatedClassInstances, double noise) {
+	/**
+	 * Implementations of accuracy calculation for generalised measures according to method in A Note on the Evaluation of Inductive Concept Classification Procedures
+	 * @param accuracyMethod method to use
+	 * @param description description to test
+	 * @param classInstances class instances. will be converted to set
+	 * @param superClassInstances superclass instances. will be converted to set
+	 * @param negatedClassInstances negated class instances. will be converted to set
+	 * @param noise problem noise
+	 * @return accuracy or -1
+	 */
+	public double getAccuracyOrTooWeak3(AccMethodThreeValued accuracyMethod, OWLClassExpression description, Collection<OWLIndividual> classInstances, Collection<OWLIndividual> superClassInstances, Collection<OWLIndividual> negatedClassInstances, double noise) {
 		if (accuracyMethod instanceof AccMethodApproximate) {
 			throw new RuntimeException();
 		} else {
@@ -117,6 +104,18 @@ public class ReasoningUtilsCLP extends ReasoningUtils {
 		}
 	}
 
+	/**
+	 * @see #getAccuracyOrTooWeak3(AccMethodThreeValued, OWLClassExpression, Collection, Collection, Collection, double)
+	 */
+	public double getAccuracyOrTooWeakExact3(AccMethodThreeValued accuracyMethod, OWLClassExpression description, Collection<OWLIndividual> classInstances, Collection<OWLIndividual> superClassInstances, Collection<OWLIndividual> negatedClassInstances, double noise) {
+		return getAccuracyOrTooWeakExact3(accuracyMethod, description,
+				makeSet(classInstances), makeSet(superClassInstances), makeSet(negatedClassInstances),
+				noise);
+	}
+
+	/**
+	 * @see #getAccuracyOrTooWeakExact3(AccMethodThreeValued, OWLClassExpression, Collection, Collection, Collection, double)
+	 */
 	public double getAccuracyOrTooWeakExact3(AccMethodThreeValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> classInstances, Set<OWLIndividual> superClassInstances, Set<OWLIndividual> negatedClassInstances, double noise) {
 		// implementation is based on:
 		// http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf

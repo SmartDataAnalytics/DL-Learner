@@ -19,10 +19,12 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.config.ConfigOption;
 
 @ComponentAnn(name = "FMeasure", shortName = "fmeasure", version = 0)
 public class AccMethodFMeasure implements AccMethodTwoValued, AccMethodWithBeta {
 
+	@ConfigOption(description = "beta factor (0 = do not use)", defaultValue = "0")
 	protected double beta = 0;
 
 	@Override

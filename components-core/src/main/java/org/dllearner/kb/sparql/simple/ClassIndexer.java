@@ -49,14 +49,13 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 
 /**
  * Indexes an Ontology
@@ -144,7 +143,6 @@ public class ClassIndexer {
         return false;
     }
 
-
     public boolean isCopyLabels() {
         return copyLabels;
     }
@@ -223,7 +221,6 @@ public class ClassIndexer {
  if (isRemove(originalClassUri) || isRemove(newClassUri)) {
  return;
  }
-
 
  // create initial classes
  OntClass toClass = toModel.createClass(newClassUri);

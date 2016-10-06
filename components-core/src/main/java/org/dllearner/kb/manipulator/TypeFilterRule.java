@@ -38,7 +38,6 @@ public class TypeFilterRule extends Rule{
 	private Nodes requiredNodeType;
 	public enum Nodes {CLASSNODE, INSTANCENODE, LITERALNODE}
 
-
 	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, Nodes requiredNodeType) {
 		super(month);
 		this.predicateFilter = predicateFilter;

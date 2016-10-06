@@ -25,11 +25,11 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 public class Hierarchy {
 	public static String subclassof = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
@@ -66,7 +66,7 @@ public class Hierarchy {
 		
 		
 		Model m = read(filename, format);
-		Map<String, SortedSet<String>>  hierarchy  = new HashMap<String, SortedSet<String>>();
+		Map<String, SortedSet<String>>  hierarchy  = new HashMap<>();
 		for(Object o : m.listStatements(null, m.getProperty(relationUri), (RDFNode)null).toList()){
 			Statement s = (Statement) o;
 			Resource sub = s.getSubject();
@@ -85,7 +85,7 @@ public class Hierarchy {
 	}
 	
 	public Map<String, SortedSet<String>> expandHierarchy(Map<String, SortedSet<String>>  hierarchy){
-		Map<String, SortedSet<String>>  expandedHierarchy  = new HashMap<String, SortedSet<String>>();
+		Map<String, SortedSet<String>>  expandedHierarchy  = new HashMap<>();
 		for(String key : hierarchy.keySet()){
 			boolean expanded = true;
 			SortedSet<String> current = hierarchy.get(key); 
@@ -94,7 +94,7 @@ public class Hierarchy {
 			}
 			while(expanded){
 				expanded = false;
-				SortedSet<String> tmp = new TreeSet<String>(current);
+				SortedSet<String> tmp = new TreeSet<>(current);
 				for(String currentObject: current){
 					SortedSet<String> toAddSet = hierarchy.get(currentObject);
 					if(toAddSet==null){
@@ -116,7 +116,7 @@ public class Hierarchy {
 	
 	private void put(Map<String, SortedSet<String>>  hierarchy, String key, String value){
 		if(hierarchy.get(key)==null){
-			hierarchy.put(key, new TreeSet<String>());
+			hierarchy.put(key, new TreeSet<>());
 		}
 		hierarchy.get(key).add(value);
 	}

@@ -3,7 +3,6 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class Annotation implements Serializable{
 
     public Annotation(Document referencedDocument, List<Token> tokens) {
 		this.referencedDocument = referencedDocument;
-        this.tokens = new ArrayList<Token>(tokens);
+        this.tokens = new ArrayList<>(tokens);
     }
 
 	public Document getReferencedDocument() {

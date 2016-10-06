@@ -19,29 +19,23 @@
 
 package org.dllearner.configuration.spring.editors;
 
-import java.beans.PropertyEditor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import com.google.common.collect.ObjectArrays;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
-import com.google.common.collect.ObjectArrays;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class ConfigHelper {
 	
-	public final static Map<Class<?>, Class<?>> map = new HashMap<Class<?>, Class<?>>();
+	public final static Map<Class<?>, Class<?>> map = new HashMap<>();
 	
 	static {
 		map.put(Boolean.class, boolean.class);
@@ -71,20 +65,10 @@ public class ConfigHelper {
 						editor.setAsText(configValue.toString());
 						Method method = component.getClass().getMethod("set" + Character.toUpperCase(f.getName().charAt(0)) + f.getName().substring(1), getClassForObject(editor.getValue()));
 						method.invoke(component, editor.getValue());
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
+					} catch (IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
 						e.printStackTrace();
 					}
-        		}
+		        }
         		
         	}
         }
@@ -106,23 +90,26 @@ public class ConfigHelper {
 	 * @return All config options of the component with their respective value.
 	 */
 	public static Map<Field,Object> getConfigOptionValues(Component component) {
-		Map<Field,Object> optionValues = new HashMap<Field,Object>();
+		Map<Field,Object> optionValues = new HashMap<>();
 		List<Field> fields = getAllFields(component);
 		for(Field field : fields) {
 			if(field.isAnnotationPresent(ConfigOption.class)) {
 				try {
 					// we invoke the public getter instead of accessing a private field (may cause problem with SecurityManagers)
 					// use Spring BeanUtils TODO: might be unnecessarily slow because we already have the field?
-					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.getName()).getReadMethod().invoke(component);
+					PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(
+							component.getClass(),
+							field.getName()
+					);
+					Method readMethod = propertyDescriptor.getReadMethod();
+					if(readMethod == null) {
+						throw new RuntimeException("Getter method is missing for field " + field + " in component " + component);
+					}
+					Object value = readMethod.invoke(component);
+
 					optionValues.put(field, value);
-				} catch (IllegalArgumentException e1) {
+				} catch (IllegalArgumentException | InvocationTargetException | BeansException | IllegalAccessException e1) {
 					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					e1.printStackTrace();
-				} catch (BeansException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -135,7 +122,7 @@ public class ConfigHelper {
 	 * @return
 	 */
 	public static List<ConfigOption> getConfigOptions(Class<? extends Component> component){
-		List<ConfigOption> options = new ArrayList<ConfigOption>();
+		List<ConfigOption> options = new ArrayList<>();
 		
 		Field[] fields = component.getDeclaredFields();
 		for(Field f : fields){
@@ -163,12 +150,8 @@ public class ConfigHelper {
 	 * @return
 	 */
 	public static Map<Field,Class<?>> getConfigOptionTypes(Class<?> component, boolean useSuperTypes){
-		Map<Field,Class<?>> optionTypes = new TreeMap<Field,Class<?>>(new Comparator<Field>() {
-
-			@Override
-			public int compare(Field o1, Field o2) {
-				return AnnComponentManager.getName(o1).compareTo(AnnComponentManager.getName(o2));
-			}
+		Map<Field,Class<?>> optionTypes = new TreeMap<>((o1, o2) -> {
+			return AnnComponentManager.getName(o1).compareTo(AnnComponentManager.getName(o2));
 		});
 		Field[] fields = component.getDeclaredFields();
 		if(useSuperTypes) {
@@ -188,7 +171,7 @@ public class ConfigHelper {
 	 * returns the declared fields for the class and its superclass.
 	 */
 	private static List<Field> getAllFields(Component component){
-		List<Field> fields = new ArrayList<Field>();
+		List<Field> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList(component.getClass().getDeclaredFields()));
 		//check also the fields of the super class if exists
 		if(component.getClass().getSuperclass() != null){

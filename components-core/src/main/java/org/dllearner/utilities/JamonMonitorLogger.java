@@ -76,9 +76,7 @@ public class JamonMonitorLogger {
 		List<Monitor> l= getMonitors();
 		SortedSet<String> sset = new TreeSet<>();
 		StringBuilder sbuf = new StringBuilder();
-		for (int i = 0; i < l.size(); i++) {
-			Monitor monitor = l.get(i);
-			
+		for (Monitor monitor : l) {
 			sset.add(monitor.toString());
 		}
 		for (String onemon : sset) {

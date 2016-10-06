@@ -1,0 +1,2235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_ASUS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_ASUS">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ASUS</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Acer">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Acer">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Acer</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Apple">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Apple">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Apple</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Belinea">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Belinea">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Belinea</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Dell">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Dell">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Dell</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Fujitsu">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Fujitsu">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Fujitsu</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_HP+Compaq">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_HP+Compaq">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">HP Compaq</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Lenovo+IBM">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Lenovo+IBM">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Lenovo IBM</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_MSI">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_MSI">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">MSI</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Panasonic">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Panasonic">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Panasonic</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Samsung">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Samsung">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Samsung</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Sonstige">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Sonstige">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Sonstige</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Sony">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Sony">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Sony</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Toshiba">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_525_Toshiba">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Toshiba</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">12.5&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">13&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">13.1&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">13.3&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">13.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">14&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">14.1&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">14.5&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">15&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">15.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">15.5&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">15.6&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">16&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">16.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unknown Display</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_4%3A3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_4%3A3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">4:3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_16%3A10">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_16%3A10">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">16:10</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_16%3A9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_16%3A9">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">16:9</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1024x768">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1024x768">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1024x768</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1280x800">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1280x800">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1280x800</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1366x768">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1366x768">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1366x768</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1440x900">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1440x900">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1440x900</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1600x900">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1600x900">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1600x900</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1680x945">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1680x945">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1680x945</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1680x1050">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1680x1050">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1680x1050</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1920x1080">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1920x1080">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1920x1080</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1920x1200">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_1920x1200">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1920x1200</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_9_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.180">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.180">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.180mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.190">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.190">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.190mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.200">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.200">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.200mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.210">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.210">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.210mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.220">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.220">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.220mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.230">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.230">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.230mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.240">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.240">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.240mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.260">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.260">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.260mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.280">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.280">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 0.280mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_sonstige">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_sonstige">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">&amp;uuml;ber 0.280mm</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_LCD+gl%E4nzend+(glare)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_LCD+gl%E4nzend+(glare)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">LCD gl&amp;auml;nzend (glare)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_LCD+matt+(non-glare)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_LCD+matt+(non-glare)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">LCD matt (non-glare)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_83_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Single-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Dual-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Triple-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Quad-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_27_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1000">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 1GHz</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1500">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 1.5GHz</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2000">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 2GHz</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2500">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 2.5GHz</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_3000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_3000">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 3GHz</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+A6-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+A6-">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD A6-</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+C-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+C-">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD C-</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+E-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+E-">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD E-</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+V">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+V">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD V</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+64">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+64">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Athlon 64</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+II">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Athlon II</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+X2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+X2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Athlon X2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Celeron</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron+Dual-Core">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron+Dual-Core">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Celeron Dual-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+2+Duo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+2+Duo">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core 2 Duo</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3-2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i3-2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i5</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5-2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i5-2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i7</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7-2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Core i7-2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+Dual-Core">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+Dual-Core">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Pentium Dual-Core</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+P">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+P">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Pentium P</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+SU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+SU">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Pentium SU</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+U">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+U">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Pentium U</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium-M">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium-M">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Pentium-M</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Phenom+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Phenom+II">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Phenom II</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Sempron">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Sempron">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Sempron</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+64">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+64">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Turion 64</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+II">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Turion II</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+X2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+X2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Turion X2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_512">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_512">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 512MB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_1024">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_1024">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 1GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_2048">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_2048">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 2GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_3072">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_3072">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 3GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_4096">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_4096">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 4GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_6144">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_6144">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 6GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_8192">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_8192">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 8GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">2x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">4x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_905_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_sonstige">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_sonstige">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unter 8GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_32">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_32">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 32GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_80">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_80">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 80GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_120">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_120">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 120GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_250">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_250">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 250GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_320">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_320">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 320GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_500">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 500GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_1000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_1000">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 1000GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_Flash">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_Flash">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Flash</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_HDD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_HDD">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">HDD</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_SSD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_82_SSD">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">SSD</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-R%2FRE)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-R%2FRE)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Blu-ray (BD-R/RE)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-R%2FRE%2FRW)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-R%2FRE%2FRW)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Blu-ray (BD-R/RE/RW)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-ROM)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_Blu-ray+(BD-ROM)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Blu-ray (BD-ROM)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD%2B%2F-RW">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD%2B%2F-RW">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">DVD+/-RW</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD-ROM">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD-ROM">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">DVD-ROM</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD%2FCD-RW+Combo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_DVD%2FCD-RW+Combo">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">DVD/CD-RW Combo</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_ohne">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_ohne">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">w/o Optical Drive</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_AMD+(dediziert)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_AMD+(dediziert)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD (dediziert)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_AMD+(IGP)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_AMD+(IGP)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">AMD (IGP)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_Intel+(IGP)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_Intel+(IGP)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel (IGP)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_NVIDIA+(dediziert)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_NVIDIA+(dediziert)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">NVIDIA (dediziert)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_NVIDIA+(IGP)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_NVIDIA+(IGP)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">NVIDIA (IGP)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_Sonstige+(IGP)">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_Sonstige+(IGP)">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Sonstige (IGP)</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_884_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_IGP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_IGP">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">IGP</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Radeon+Xpress">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Radeon+Xpress">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Radeon Xpress</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+FireGL">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+FireGL">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility FireGL</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+X1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+X1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility Radeon X1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility Radeon HD 2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility Radeon HD 3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility Radeon HD 4</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Mobility+Radeon+HD+5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Mobility Radeon HD 5</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Radeon+HD+6">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Radeon+HD+6">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Radeon HD 6</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA9">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel GMA9</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+X3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+X3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel GMA X3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+X4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+X4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel GMA X4</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+HD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Intel+GMA+HD">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Intel GMA HD</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce 3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+8">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+8">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce 8</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+9">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+9">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce 9</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce GT</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce GT2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce GT3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+GT4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce GT4</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce G1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce G2</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+G3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce G3</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+Go">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_GeForce+Go">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GeForce Go</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Quadro+FX">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_Quadro+FX">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Quadro FX</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_+Quadro+NVS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_883_+Quadro+NVS">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#"> Quadro NVS</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_USB">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_USB">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">USB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_FireWire">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_FireWire">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">FireWire</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Modem">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Modem">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Modem</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_LAN+10%2F100">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_LAN+10%2F100">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">LAN 10/100</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Gb+LAN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Gb+LAN">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Gb LAN</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_WLAN+802.11g">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_WLAN+802.11g">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">WLAN 802.11g</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_WLAN+802.11n">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_WLAN+802.11n">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">WLAN 802.11n</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Bluetooth">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_Bluetooth">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Bluetooth</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_eSATA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_eSATA">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">eSATA</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_DVI">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_DVI">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">DVI</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_HDMI">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_HDMI">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">HDMI</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_DisplayPort">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_DisplayPort">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">DisplayPort</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_PCMCIA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_PCMCIA">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">PCMCIA</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_ExpressCard">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_31_ExpressCard">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ExpressCard</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_sonstige">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_sonstige">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unter 2x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 2x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 3x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 4x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 5x</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_10in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_10in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">10in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_2in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_2in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">2in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_3in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_3in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">3in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_4in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_4in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">4in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_5in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_5in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">5in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_6in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_6in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">6in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_7in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_7in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">7in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_8in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_8in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">8in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_9in1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_9in1">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">9in1</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_Memory+Stick">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_Memory+Stick">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Memory Stick</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_SD-Card">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_SD-Card">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">SD-Card</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_219_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_ohne">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_ohne">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ohne</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_0.3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_0.3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">0.3 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_1.0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_1.0">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1.0 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_1.3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_1.3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">1.3 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">2 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_2.0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_2.0">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">2.0 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">3 Megapixel</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_904_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+7+Home+Premium">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+7+Home+Premium">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows 7 Home Premium</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+7+Professional">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+7+Professional">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows 7 Professional</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Home+Basic">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Home+Basic">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows Vista Home Basic</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Home+Premium">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Home+Premium">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows Vista Home Premium</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Business">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Business">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows Vista Business</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Ultimate">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+Vista+Ultimate">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows Vista Ultimate</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Home">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Home">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows XP Home</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Professional">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Professional">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows XP Professional</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Media+Center+Edition">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Windows+XP+Media+Center+Edition">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Windows XP Media Center Edition</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Linux">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_Linux">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Linux</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_FreeDOS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_FreeDOS">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">FreeDOS</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_ohne+Betriebssystem">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_26_ohne+Betriebssystem">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ohne Betriebssystem</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Li-Ionen">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Li-Ionen">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Li-Ionen</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Li-Polymer">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Li-Polymer">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Li-Polymer</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Prismatic">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_Prismatic">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Prismatic</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_191_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_1.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_1.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 1.5kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 2kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 2.5kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 3kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 4kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">bis 5kg</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Netbook">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Netbook">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Netbook</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_USB+3.0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_USB+3.0">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">USB 3.0</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_LED">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_LED">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">LED</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_3D-Ready">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_3D-Ready">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">3D-Ready</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Webcam">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Webcam">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Webcam</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_UMTS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_UMTS">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">UMTS</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_HSPA%2FHSDPA%2FHSUPA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_HSPA%2FHSDPA%2FHSUPA">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">HSPA/HSDPA/HSUPA</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_GPS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_GPS">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">GPS</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_FingerPrint+Reader">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_FingerPrint+Reader">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">FingerPrint Reader</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_TV-Tuner">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_TV-Tuner">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">TV-Tuner</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Multi-Touch+Touchscreen">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Multi-Touch+Touchscreen">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Multi-Touch Touchscreen</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Multi-Touch+Trackpad">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Multi-Touch+Trackpad">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Multi-Touch Trackpad</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Touchscreen">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Touchscreen">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Touchscreen</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Tablet">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Tablet">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Tablet</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Convertible">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Convertible">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Convertible</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Turbo+Memory">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Turbo+Memory">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Turbo Memory</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Schulaktion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_69_Schulaktion">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Schulaktion</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_12">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_12">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">12 Monate</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_24">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_24">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">24 Monate</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_24%2F12">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_24%2F12">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">24/12 Monate</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_36">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_36">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">36 Monate</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_478_unbekannt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_128">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 128GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_160">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 160GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_256">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 256GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_640">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab 640GB</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_3000">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_28_2500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_3000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2500">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_28_2000"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2000">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_28_1500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_2000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1500">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_28_1000"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_28_1000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_8192">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_6144"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_8192">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_6144">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_6144">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_4096"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_6144">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_4096">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_4096">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_3072"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_4096">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_3072">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_3072">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_2048"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_3072">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_2048">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_2048">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_1024"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_2048">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_1024">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_1024">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_12_512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_1024">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_12_512">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_1.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_10_2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_1.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_10_2.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_10_3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_2.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_10_4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_10_5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_10_5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_893_4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_893_3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_893_2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_893_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_1000">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_640"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_1000">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_640">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_640">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_640">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_500">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_320"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_320">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_320">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_256"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_320">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_256">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_256">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_250"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_256">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_250">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_250">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_160"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_250">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_160">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_160">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_128"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_160">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_128">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_128">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_120"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_128">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_120">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_120">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_80"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_120">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_80">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_80">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_11_32"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_80">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_11_32">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.180">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.190"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.180">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.190">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.190">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.200"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.190">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.200">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.200">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.210"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.200">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.210">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.210">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.220"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.210">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.220">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.220">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.230"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.220">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.230">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.230">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.240"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.230">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.240">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.240">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1581_0.260"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.240">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1581_0.260">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">12.5&amp;quot; till 13.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">85_15~85_15.4~85_15.5</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">15.6&amp;quot; till 16.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">12.5&amp;quot; till 16.4&amp;quot;</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_-+16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.1">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_12.5~85_13~85_13.3~85_13.3~85_13.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.1">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_14~85_14.1~85_14.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15~85_15.4~85_15.5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_15.6~85_16~85_16.4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+A6-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+A6-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+C-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+C-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+E-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+E-">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+V">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_AMD+V">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+64">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+64">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+X2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Athlon+X2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Sempron">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Sempron">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+64">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+64">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+X2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Turion+X2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_AMD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_unbekannt">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_unbekannt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_unbekannt">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron+Dual-Core">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Celeron+Dual-Core">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+2+Duo">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+2+Duo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i3-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i5-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Core+i7-2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+Dual-Core">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+Dual-Core">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+P">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+P">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+SU">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+SU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+U">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium+U">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium-M">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Pentium-M">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Phenom+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/geizhals/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_29_Phenom+II">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1482_Intel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

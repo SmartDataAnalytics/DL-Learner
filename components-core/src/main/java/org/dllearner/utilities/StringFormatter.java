@@ -23,7 +23,6 @@ import java.text.DecimalFormat;
 
 import org.dllearner.utilities.statistics.Stat;
 
-
 public class StringFormatter {
 
 	

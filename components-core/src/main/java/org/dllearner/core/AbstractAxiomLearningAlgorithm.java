@@ -18,24 +18,25 @@
  */
 package org.dllearner.core;
 
-import java.net.SocketTimeoutException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
+import org.apache.jena.sparql.resultset.ResultSetMem;
+import org.apache.jena.util.iterator.Filter;
+import org.apache.jena.vocabulary.OWL2;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -46,36 +47,18 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.OWL2;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import java.net.SocketTimeoutException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Bühmann
@@ -89,11 +72,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
+	@ConfigOption(defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
-	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="omit axioms already existing in the knowledge base")
+	@ConfigOption(defaultValue="false", description="omit axioms already existing in the knowledge base")
 	protected boolean returnOnlyNewAxioms;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
+	@ConfigOption(description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
 	@ConfigOption(description = "the sparql endpoint knowledge source")
@@ -137,7 +120,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected ParameterizedSparqlString existingAxiomsTemplate;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
-	
+
+	@NoConfigOption
 //	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
@@ -155,7 +139,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		logger = LoggerFactory.getLogger(this.getClass());
 	}
-	
+
+	@NoConfigOption
 	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
 		this.ksQef = qef;
 	}
@@ -279,7 +264,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		} else {
 			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
 			if(!currentlyBestAxioms.isEmpty()){
-				logger.info("Best axiom candidate is " + currentlyBestAxioms.first());
+				logger.info("Best axiom candidate is " + currentlyBestAxioms.last());
 			}
 		}
 	}
@@ -374,19 +359,17 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<T> bestAxioms = new ArrayList<>();
-		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
-			bestAxioms.add(evAx.getAxiom());
-		}
-		return bestAxioms;
+		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)
+				.stream()
+				.map(EvaluatedAxiom<T>::getAxiom)
+				.collect(Collectors.toList());
 	}
 	
 	public List<T> getCurrentlyBestAxioms(double accuracyThreshold) {
-		List<T> bestAxioms = new ArrayList<>();
-		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
-			bestAxioms.add(evAx.getAxiom());
-		}
-		return bestAxioms;
+		return getCurrentlyBestEvaluatedAxioms(accuracyThreshold)
+				.stream()
+				.map(EvaluatedAxiom<T>::getAxiom)
+				.collect(Collectors.toList());
 	}
 	
 	public EvaluatedAxiom<T> getCurrentlyBestEvaluatedAxiom() {
@@ -418,7 +401,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		//get the currently best evaluated axioms
 		List<EvaluatedAxiom<T>> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
-		
+
 		for(EvaluatedAxiom<T> evAx : currentlyBestEvAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
 				if(returnOnlyNewAxioms){
@@ -445,13 +428,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		if(ks.isRemote()){
 			return new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		} else {
-			Set<OWLClass> classes = new TreeSet<>();
-			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).filterDrop(new RDFSFilter()).filterDrop(new RDFFilter()).toList()){
-				if(!cls.isAnon()){
-					classes.add(df.getOWLClass(IRI.create(cls.getURI())));
-				}
-			}
-			return classes;
+			return ((LocalModelBasedSparqlEndpointKS) ks).getModel().listClasses()
+					.filterDrop(new OWLFilter())
+					.filterDrop(new RDFSFilter())
+					.filterDrop(new RDFFilter())
+					.toList().stream()
+					.filter(cls -> !cls.isAnon())
+					.map(cls -> df.getOWLClass(IRI.create(cls.getURI())))
+					.collect(Collectors.toCollection(TreeSet::new));
 		}
 		
 	}
@@ -505,8 +489,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		logger.trace("Sending query on local model\n{} ...", query);
 		QueryExecutionFactory qef = new QueryExecutionFactoryModel(model);
 		QueryExecution qexec = qef.createQueryExecution(query);
-		ResultSet rs = qexec.execSelect();
-		return rs;
+		return qexec.execSelect();
 	}
 	
 	protected boolean executeAskQuery(String query){
@@ -516,13 +499,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
 		List<Entry<K, V>> entries = new ArrayList<>(map.entrySet());
-        Collections.sort(entries, new Comparator<Entry<K, V>>() {
-
-			@Override
-			public int compare(Entry<K, V> o1, Entry<K, V> o2) {
-				return o2.getValue().compareTo(o1.getValue());
-			}
-		});
+        Collections.sort(entries, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         return entries;
 	}
 	
@@ -538,32 +515,28 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		List<Entry<OWLClassExpression, Integer>> entries = new ArrayList<>(map.entrySet());
 		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
 		
-        Collections.sort(entries, new Comparator<Entry<OWLClassExpression, Integer>>() {
-
-			@Override
-			public int compare(Entry<OWLClassExpression, Integer> o1, Entry<OWLClassExpression, Integer> o2) {
-				int ret = o2.getValue().compareTo(o1.getValue());
-				//if the score is the same, than we optionally also take into account the subsumption hierarchy
-				if(ret == 0 && useHierachy){
-					if(hierarchy != null){
-						if(hierarchy.contains(o1.getKey()) && hierarchy.contains(o2.getKey())){
-							if(hierarchy.isSubclassOf(o1.getKey(), o2.getKey())){
-								ret = -1;
-							} else if(hierarchy.isSubclassOf(o2.getKey(), o1.getKey())){
-								ret = 1;
-							} else {
-								//we use the depth in the class hierarchy as third ranking property
+        Collections.sort(entries, (o1, o2) -> {
+	        int ret = o2.getValue().compareTo(o1.getValue());
+	        //if the score is the same, than we optionally also take into account the subsumption hierarchy
+	        if(ret == 0 && useHierachy){
+		        if(hierarchy != null){
+			        if(hierarchy.contains(o1.getKey()) && hierarchy.contains(o2.getKey())){
+				        if(hierarchy.isSubclassOf(o1.getKey(), o2.getKey())){
+					        ret = -1;
+				        } else if(hierarchy.isSubclassOf(o2.getKey(), o1.getKey())){
+					        ret = 1;
+				        } else {
+					        //we use the depth in the class hierarchy as third ranking property
 //								int depth1 = hierarchy.getDepth2Root(o1.getKey());
 //								int depth2 = hierarchy.getDepth2Root(o2.getKey());
 //								ret = depth1 - depth2;
-							}
-						}
-					}
-				}
-				
-				return ret;
-			}
-		});
+				        }
+			        }
+		        }
+	        }
+
+	        return ret;
+        });
         return entries;
 	}
 	

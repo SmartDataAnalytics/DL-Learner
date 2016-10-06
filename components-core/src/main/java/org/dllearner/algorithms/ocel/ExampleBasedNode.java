@@ -18,16 +18,16 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractSearchTreeNode;
-import org.dllearner.learningproblems.AccMethodTwoValued;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.text.DecimalFormat;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -44,19 +44,12 @@ import java.util.TreeSet;
  */
 public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> implements SearchTreeNode, WeakSearchTreeNode {
 
-//	public static long exampleMemoryCounter = 0;
-	
-//	private OCELConfigurator configurator;
-	
 	private static DecimalFormat df = new DecimalFormat();
 	
 	// example based variables
 	private Set<OWLIndividual> coveredPositives;
 	private Set<OWLIndividual> coveredNegatives;
 
-//	private int coveredPositiveSize;
-//	private int coveredNegativeSize;
-	
 	// the method by which quality was evaluated in this node
 	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
 
@@ -70,30 +63,20 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	private boolean isTooWeak;
 	private boolean isQualityEvaluated;
 	private boolean isRedundant;
-	
-	private double negativeWeight;
-	private double startNodeBonus;
-	private double expansionPenaltyFactor;
-	private int negationPenalty;
-	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
-	
+
 	// apart from the child nodes, we also keep child concepts
 	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<>();
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 
-	private AccMethodTwoValued accuracyMethod;
+	private OCEL learningAlgorithm;
 	
-	public ExampleBasedNode(OWLClassExpression concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
-//		this.configurator = configurator;
+	public ExampleBasedNode(OWLClassExpression concept, AbstractCELA learningAlgorithm) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
-		this.negativeWeight = negativeWeight;
-		this.startNodeBonus = startNodeBonus;
-		this.expansionPenaltyFactor = expansionPenaltyFactor;
-		this.negationPenalty = negationPenalty;
+		this.learningAlgorithm = (OCEL) learningAlgorithm;
 	}
 
 	public void setHorizontalExpansion(int horizontalExpansion) {
@@ -125,8 +108,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		this.coveredPositives = coveredPositives;
 		this.coveredNegatives = coveredNegatives;
 		isQualityEvaluated = true;
-//		exampleMemoryCounter += coveredPositives.size() * 4;
-//		exampleMemoryCounter += coveredNegatives.size() * 4;
 	}
 
 	public int getQuality() {
@@ -135,7 +116,10 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 
 	@Override
 	public String toString() {
-//		System.out.println(concept);
+		return getShortDescription();
+	}
+
+	public String toSimpleString() {
 		String ret = concept.toString() + " [q:";
 		if(isTooWeak)
 			ret += "tw";
@@ -144,102 +128,25 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		ret += ", he:" + horizontalExpansion + ", children:" + children.size() + "]";
 		return ret;
 	}
-	
-	// returns the refinement chain leading to this node as string
-	public String getRefinementChainString() {
-		if(parent!=null) {
-			String ret = parent.getRefinementChainString();
-			ret += " => " + concept.toString();
-			return ret;
-		} else {
-			return concept.toString();
-		}
+
+	public String getShortDescription() {
+		return StringRenderer.getRenderer().render(concept) + getStats();
 	}
-	
-	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null, null).toString();
-	}
-	
-	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, null).toString();
-	}
-	
-	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String,String> prefixes) {
-		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, prefixes).toString();
-	}
-	
-	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI, Map<String,String> prefixes) {
-		StringBuilder treeString = new StringBuilder();
-		for(int i=0; i<depth-1; i++)
-			treeString.append("  ");
-		if(depth!=0)
-			// treeString.append("|-→ ");
-			treeString.append("|--> ");
-		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)).append("\n");
-		for(ExampleBasedNode child : children) {
-			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI, prefixes));
-		}
-		return treeString;
-	}
-	
-	public String getShortDescription(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String, String> prefixes) {
-		String ret = OWLAPIRenderers.toManchesterOWLSyntax(concept) + " [";
-		
-		if(isTooWeak)
-			ret += "q:tw";
-		else {
-			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
-			ret += "acc:" + df.format(accuracy) + "% ";
-			
-			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			ret += "h:" +df.format(heuristicScore) + " ";
-			
-			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
-			ret += "q:" + wrongPositives + "p-" + coveredNegatives.size() + "n";
-		}
-		
-		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
-		ret += " c:" + children.size() + "]";
-		
-		return ret;
-	}
-	
-	public String getShortDescriptionHTML(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		String ret = "<html><nobr> " + OWLAPIRenderers.toManchesterOWLSyntax(concept) + " <i>[";
-		
-		if(isTooWeak)
-			ret += "q:tw";
-		else {
-			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
-			ret += "<b>acc: " + df.format(accuracy) + "% </b>";
-			
-			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			ret += "h:" +df.format(heuristicScore) + " ";
-			
-			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
-			ret += "q:" + wrongPositives + "p-" + coveredNegatives.size() + "n";
-		}
-		
-		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
-		ret += " c:" + children.size() + "]";
-		
-		return ret + "</i></nobr></html>";
-	}
-	
-	//TODO integrate this method with the one above
-	public String getStats(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+
+	public String getStats() {
 		String ret = " [";
 		
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+			double accuracy = 100 * getAccuracy();
 			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+			//  learningAlgorithm.getHeuristic()
+			int nrOfPositiveExamples = ((PosNegLP) learningAlgorithm.getLearningProblem()).getPositiveExamples().size();
+			int nrOfNegativeExamples = ((PosNegLP) learningAlgorithm.getLearningProblem()).getNegativeExamples().size();
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, learningAlgorithm.getNegativeWeight(), learningAlgorithm.getStartNodeBonus(), learningAlgorithm.getExpansionPenaltyFactor(), learningAlgorithm.getNegationPenalty());
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
@@ -252,13 +159,13 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		return ret;
 	}
 	
-	public double getAccuracy(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+	public double getAccuracy() {
 		int tp = coveredPositives.size();
 		int fp = coveredNegatives.size();
-		int tn = nrOfNegativeExamples - fp;
-		int fn = nrOfPositiveExamples - tp;
+		int tn = ((PosNegLP)learningAlgorithm.getLearningProblem()).getNegativeExamples().size() - fp;
+		int fn = ((PosNegLP)learningAlgorithm.getLearningProblem()).getPositiveExamples().size() - tp;
 
-		double accuracy = this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+		double accuracy = ((PosNegLP)learningAlgorithm.getLearningProblem()).getAccuracyMethod().getAccOrTooWeak2(tp, fn, fp, tn, 1);
 		if (accuracy == -1 && !isTooWeak)
 			throw new RuntimeException("Accuracy says weak but node is not marked as such.");
 		return accuracy;
@@ -307,20 +214,9 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public boolean isRedundant() {
 		return isRedundant;
 	}
+	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
-	}
-
-	public boolean isPosOnlyCandidate() {
-		return isPosOnlyCandidate;
-	}
-
-	public void setPosOnlyCandidate(boolean isPosOnlyCandidate) {
-		this.isPosOnlyCandidate = isPosOnlyCandidate;
-	}
-
-	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
-		this.accuracyMethod = accuracyMethod;
 	}
 
 }

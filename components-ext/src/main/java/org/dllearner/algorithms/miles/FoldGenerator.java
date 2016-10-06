@@ -2,7 +2,6 @@ package org.dllearner.algorithms.miles;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -25,7 +24,7 @@ public class FoldGenerator<T> {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 
-		examples = new ArrayList<T>();
+		examples = new ArrayList<>();
 		examples.addAll(posExamples);
 		examples.addAll(negExamples);
 
@@ -51,7 +50,7 @@ public class FoldGenerator<T> {
 		} else {
 			offset = examples.size() % numFolds;
 		}
-		train = new ArrayList<T>(examples.size() - numInstForFold);
+		train = new ArrayList<>(examples.size() - numInstForFold);
 		first = numFold * (examples.size() / numFolds) + offset;
 		train.addAll(examples.subList(0, first));
 		int from = first + numInstForFold;
@@ -79,7 +78,7 @@ public class FoldGenerator<T> {
 		} else {
 			offset = examples.size() % numFolds;
 		}
-		test = new ArrayList<T>(numInstForFold);
+		test = new ArrayList<>(numInstForFold);
 		first = numFold * (examples.size() / numFolds) + offset;
 		test.addAll(examples.subList(first, first + numInstForFold));
 		return test;
@@ -97,13 +96,13 @@ public class FoldGenerator<T> {
 			negExamples.add("n" + i);
 		}
 		
-		FoldGenerator<String> foldGenerator = new FoldGenerator<String>(posExamples, negExamples);
+		FoldGenerator<String> foldGenerator = new FoldGenerator<>(posExamples, negExamples);
 		
 		int numFolds = 5;
 		
 		int numAttributes = 2;
 		int num = 9;
-		ArrayList<Attribute> attInfo = new ArrayList<Attribute>(numAttributes);
+		ArrayList<Attribute> attInfo = new ArrayList<>(numAttributes);
 		attInfo.add(new Attribute("C1"));
 		attInfo.add(new Attribute("t", Lists.newArrayList("0","1")));
 			

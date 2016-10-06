@@ -24,7 +24,6 @@ import java.util.List;
 import org.dllearner.core.Score;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 
-
 /**
  * A node in the search tree of an EL algorithm.
  * 

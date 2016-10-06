@@ -18,7 +18,7 @@
  */
 package org.dllearner.test;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -40,7 +40,6 @@ import java.util.SortedSet;
  *
  */
 public class SPARQLReasonerTest {
-
 
 	public static void main(String[] args) throws Exception{
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);

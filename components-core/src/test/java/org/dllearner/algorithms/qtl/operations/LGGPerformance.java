@@ -18,15 +18,13 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.util.Random;
-
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
-import org.junit.Test;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
+import java.util.Random;
 
 /**
  * A test class to analyze the performance of the application of different LGG

@@ -18,17 +18,7 @@
  */
 package org.dllearner.core;
 
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -47,23 +37,18 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -86,7 +71,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCELA.class);
-	
+
+	@NoConfigOption
 	protected OWLObjectRenderer renderer = StringRenderer.getRenderer();
 	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
@@ -95,10 +81,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	
-	protected static final OWLClass OWL_THING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_THING.getIRI());
-	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_NOTHING.getIRI());
+	protected static final OWLClass OWL_THING = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
 	protected boolean isRunning = false;
@@ -106,39 +90,42 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	protected OWLClassExpressionMinimizer minimizer;
 	
-	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
+	@ConfigOption(defaultValue="true", description="Specifies whether returned expressions should " +
+			"be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the " +
+			"shortest expression which is equivalent to the learned expression). Turning this feature off may improve " +
+			"performance.")
 	private boolean useMinimizer = true;
 	
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	protected int maxExecutionTimeInSeconds = 10;
+	@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
+	protected long maxExecutionTimeInSeconds = 10;
 
 	/**
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	@ConfigOption(name="learningProblem", description="The Learning Problem variable to use in this algorithm")
+	@ConfigOption(description="The Learning Problem variable to use in this algorithm")
 	protected AbstractClassExpressionLearningProblem<? extends Score> learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	@ConfigOption(name="reasoner", description="The reasoner variable to use for this learning problem")
+	@ConfigOption(description="The reasoner variable to use for this learning problem")
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
 	
-	@ConfigOption(name="allowedConcepts", description="List of classes that are allowed")
+	@ConfigOption(description="List of classes that are allowed")
 	protected Set<OWLClass> allowedConcepts = null;
-	@ConfigOption(name="ignoredConcepts", description="List of classes to ignore")
+	@ConfigOption(description="List of classes to ignore")
 	protected Set<OWLClass> ignoredConcepts = null;
-	@ConfigOption(name="allowedObjectProperties", description="List of object properties to allow")
+	@ConfigOption(description="List of object properties to allow")
 	protected Set<OWLObjectProperty> allowedObjectProperties = null;
-	@ConfigOption(name="ignoredObjectProperties", description="List of object properties to ignore")
+	@ConfigOption(description="List of object properties to ignore")
 	protected Set<OWLObjectProperty> ignoredObjectProperties = null;
-	@ConfigOption(name="allowedDataProperties", description="List of data properties to allow")
+	@ConfigOption(description="List of data properties to allow")
 	protected Set<OWLDataProperty> allowedDataProperties = null;
-	@ConfigOption(name="ignoredDataProperties", description="List of data properties to ignore")
+	@ConfigOption(description="List of data properties to ignore")
 	protected Set<OWLDataProperty> ignoredDataProperties = null;
 
     /**
@@ -156,9 +143,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractClassExpressionLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-//
-//		baseURI = reasoner.getBaseURI();
-//		prefixes = reasoner.getPrefixes();
 	}
 	
 	/**
@@ -195,16 +179,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
-		
-	/**
-	 * Every algorithm must be able to return the score of the
-	 * best solution found.
-	 * 
-	 * @return Best score.
-	 */
-//	@Deprecated
-//	public abstract Score getSolutionScore();
-	
 
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
@@ -298,7 +272,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-//			if(ed.getAccuracy() < accuracyThreshold) {
 			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
 			}
@@ -372,7 +345,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected String getSolutionString() {
 		int current = 1;
 		String str = "";
-		for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+		for(EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions().descendingSet()) {
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
 			String descriptionString = descriptionToString(description);
@@ -414,7 +387,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			logger.warn("Ignoring unsatisfiable check due to "+e.getStackTrace()[0]);
 		}
 		if(unsatisfiableClasses != null && !unsatisfiableClasses.isEmpty()) {
-			logger.warn("Ignoring unsatsifiable classes " + unsatisfiableClasses);
+			logger.warn("Ignoring unsatisfiable classes " + unsatisfiableClasses);
 			if(ignoredConcepts == null) {
 				ignoredConcepts = unsatisfiableClasses;
 			} else {
@@ -478,7 +451,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			usedProperties = Helper.computeEntities(reasoner, EntityType.DATA_PROPERTY);
 		}
-		
+
 		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
@@ -487,9 +460,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected boolean isTimeExpired() {
 		return getCurrentRuntimeInMilliSeconds() >= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds);
 	}
-	
+
 	protected long getCurrentRuntimeInMilliSeconds() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
+	}
+
+	protected long getRemainingRuntimeInMilliseconds() {
+		return Math.max(0, TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds) - getCurrentRuntimeInMilliSeconds());
 	}
 	
 	protected String getDurationAsString(long durationInMillis) {
@@ -643,12 +620,29 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		this.useMinimizer = useMinimizer;
 	}
 	
-	public int getMaxExecutionTimeInSeconds() {
+	public long getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
 
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+	/**
+	 * Set the max. execution time in seconds of the algorithm.  It's expected that the
+	 * algorithm will terminate gracefully.
+	 *
+	 * @param maxExecutionTimeInSeconds max. execution time in seconds
+	 */
+	public void setMaxExecutionTimeInSeconds(long maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	/**
+	 * Set the max. execution time of the algorithm. It's expected that the
+	 * algorithm will terminate gracefully.
+	 *
+	 * @param maxExecutionTime max. execution time
+	 * @param timeUnit the time unit
+	 */
+	public void setMaxExecutionTime(long maxExecutionTime, TimeUnit timeUnit) {
+		this.maxExecutionTimeInSeconds = timeUnit.toSeconds(maxExecutionTime);
 	}
 	
 	/**

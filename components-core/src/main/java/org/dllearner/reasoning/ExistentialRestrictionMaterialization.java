@@ -18,50 +18,23 @@
  */
 package org.dllearner.reasoning;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
-import org.semanticweb.owlapi.apibinding.OWLManager;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
 
-
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import java.io.ByteArrayInputStream;
+import java.util.*;
 
 /**
+ * Materialize the existential restrictions, i.e. for all instances x_i that belong to a concept \exists.r.C,
+ * we add facts r(x_i, _:newID), C(_:newID), and this recursively.
+ *
  * @author Lorenz Buehmann
  *
  */
@@ -90,8 +63,7 @@ public class ExistentialRestrictionMaterialization {
 	}
 	
 	public Set<OWLClassExpression> materialize(OWLClass cls){
-		Set<OWLClassExpression> superClasses = getSuperClasses(cls);
-		return superClasses;
+		return getSuperClasses(cls);
 	}
 	
 	class SuperClassFinder extends OWLClassExpressionVisitorAdapter{

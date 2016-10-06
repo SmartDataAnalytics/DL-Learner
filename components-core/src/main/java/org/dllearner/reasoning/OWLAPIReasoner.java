@@ -27,6 +27,8 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.annotations.NoConfigOption;
+import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
@@ -83,12 +85,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     SortedSet<OWLIndividual> individuals = new TreeSet<>();
 
     // namespaces
+	@OutVariable
     private Map<String, String> prefixes = new TreeMap<>();
+	@OutVariable
     private String baseURI;
 
     // references to OWL API ontologies
     private Set<OWLOntology> owlAPIOntologies = new HashSet<>();
-
 
     private OWLClassExpressionMinimizer minimizer;
 
@@ -96,13 +99,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     
     
  // default reasoner is Pellet
-    @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
+    @ConfigOption(defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
-    @ConfigOption(name = "useFallbackReasoner", defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
+    @ConfigOption(defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
     private boolean useFallbackReasoner = false;
 
-    @ConfigOption(name = "owlLinkURL", defaultValue="null", description="specifies the URL of the remote OWLLink server")
+    @ConfigOption(defaultValue="null", description="specifies the URL of the remote OWLLink server")
     private String owlLinkURL;
 
     public OWLAPIReasoner() {
@@ -121,10 +124,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         this.reasoner = reasoner;
         KnowledgeSource ks = new OWLAPIOntology(reasoner.getRootOntology());
         sources = Collections.singleton(ks);
-    }
-
-    public static String getName() {
-        return "OWL API reasoner";
     }
 
     @Override
@@ -168,12 +167,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             }
         }
 
+		manager.getOntologies().stream().map(OWLOntology::getOntologyID).forEach(System.out::println);
+
         //Now merge all of the knowledge sources into one ontology instance.
         try {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
-            ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<>(owlAPIOntologies));
-            //we have to add all import declarations manually here, because these are not OWL axioms
+            ontology = manager.createOntology(IRI.generateDocumentIRI(), new HashSet<>(owlAPIOntologies));
+
+			//we have to add all import declarations manually here, because these are not OWL axioms
             List<OWLOntologyChange> addImports = new ArrayList<>();
             for (OWLOntology ont : owlAPIOntologies) {
             	for (OWLImportsDeclaration importDeclaration : ont.getImportsDeclarations()) {
@@ -181,6 +183,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				}
             }
             manager.applyChanges(addImports);
+            // free some memory. It is useless to keep two copies of the same 
+            // ontology
+            for (OWLOntology toRemove : owlAPIOntologies) {
+                manager.removeOntology(toRemove);
+            }
+            owlAPIOntologies = new HashSet<>();
         } catch (OWLOntologyCreationException e1) {
             e1.printStackTrace();
         }
@@ -217,7 +225,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
 
-
         // remove classes that are built-in entities
 		Iterator<OWLClass> it = atomicConcepts.iterator();
 		while (it.hasNext()) {
@@ -234,7 +241,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private void initDatatypes() {
 	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
 	    for (OWLDataProperty dataProperty : datatypeProperties) {
-		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+//		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, ontology);
 		    Iterator<OWLDataRange> it = ranges.iterator();
 		    if (it.hasNext()) {
 			    OWLDataRange range = it.next();
@@ -961,7 +969,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		return map;
 	}
 
-
     // OWL API returns a set of nodes of classes, where each node
     // consists of equivalent classes; this method picks one class
     // from each node to flatten the set of nodes
@@ -1088,9 +1095,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         reasoner.dispose();
     }
 
-    public Set<OWLOntology> getOWLAPIOntologies() {
-        return owlAPIOntologies;
-    }
+//    public Set<OWLOntology> getOWLAPIOntologies() {
+//        return owlAPIOntologies;
+//    }
 
     /*public void setReasonerType(String type){
          configurator.setReasonerType(type);
@@ -1244,6 +1251,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		this.useFallbackReasoner = useFallbackReasoner;
 	}
 	
+	@Override
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		return dataproperty2datatype.get(dp);
 	}
@@ -1251,7 +1259,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
 			reasoner = new ThreadSafeOWLReasoner(reasoner);

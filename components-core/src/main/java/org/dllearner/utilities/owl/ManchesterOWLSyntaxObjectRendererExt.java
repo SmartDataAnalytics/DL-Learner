@@ -18,7 +18,6 @@
  */
 package org.dllearner.utilities.owl;
 
-
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.manchestersyntax.renderer.AbstractRenderer;
 import org.semanticweb.owlapi.model.*;
@@ -111,9 +110,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     protected void write(@Nonnull Set<? extends OWLClassExpression> objects,
                          boolean newline) {
         boolean first = true;
-        for (Iterator<? extends OWLObject> it = sort(objects).iterator(); it
-                .hasNext();) {
-            OWLObject desc = it.next();
+        for (OWLClassExpression desc : sort(objects)) {
             if (!first) {
                 if (newline && isUseWrapping()) {
                     writeNewLine();
@@ -204,9 +201,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     @Override
     public void visit(@Nonnull OWLObjectUnionOf ce) {
         boolean first = true;
-        for (Iterator<? extends OWLClassExpression> it = sortOptionally(ce.getOperands())
-                .iterator(); it.hasNext();) {
-            OWLClassExpression op = it.next();
+        for (OWLClassExpression op : sortOptionally(ce.getOperands())) {
             if (!first) {
                 write(" ", OR, " ");
             }

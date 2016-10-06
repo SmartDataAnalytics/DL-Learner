@@ -33,6 +33,8 @@ import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +42,15 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 
-
 public class OWLAxiomPatternFinder {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(OWLAxiomPatternFinder.class);
 	
 	private static Queue<String> classVarQueue = new LinkedList<>();
 	private static Queue<String> propertyVarQueue = new LinkedList<>();
@@ -100,6 +107,87 @@ public class OWLAxiomPatternFinder {
 		
 		prepare();
 	}
+
+	/**
+	 * Start the pattern detection.
+	 */
+	public void start() {
+		final ExecutorService tp = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+
+		Collection<OntologyRepositoryEntry> entries = repository.getEntries();
+		if(randomOrder){
+			List<OntologyRepositoryEntry> entryList = new ArrayList<>(repository.getEntries());
+			Collections.shuffle(entryList);
+			entries = entryList;
+		}
+
+		final Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
+
+		AtomicInteger i = new AtomicInteger(1);
+
+		manager = OWLManager.createConcurrentOWLOntologyManager();
+
+		for (OntologyRepositoryEntry entry : entries) {
+			tp.execute(new Runnable() {
+				@Override
+				public void run() {
+					OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
+
+					System.out.print(i.incrementAndGet() + ": ");
+					URI uri = entry.getPhysicalURI();
+//					if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
+					if (!ontologyProcessed(uri)) {//if(entry.getOntologyShortName().equals("00698"))continue;
+						LOGGER.info("Loading \"" + entry.getOntologyShortName() + "\" from " + uri);
+						try {
+
+							OWLOntology ontology = manager.loadOntology(IRI.create(uri));
+							Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
+							Set<OWLAxiom> logicalAxioms = new HashSet<>();
+							for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
+								if (type.isLogical()) {
+									logicalAxioms.addAll(ontology.getAxioms(type, Imports.INCLUDED));
+								}
+							}
+							LOGGER.info(" (" + logicalAxioms.size() + " axioms)");
+							for (OWLAxiom axiom : logicalAxioms) {
+								OWLAxiom renamedAxiom = renamer.rename(axiom);
+								axiomPatterns.add(renamedAxiom);
+							}
+//							allAxiomPatterns.addAll(axiomPatterns);
+							addOntologyPatterns(uri, ontology, axiomPatterns);
+//							for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
+//								System.out.println(owlAxiom + ": " + allAxiomPatterns.count(owlAxiom));
+//							}
+							manager.removeOntology(ontology);
+						} catch (OWLOntologyAlreadyExistsException e) {
+							e.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
+							addOntologyError(uri, e);
+						}
+					} else {
+						LOGGER.info("Already processed.");
+					}
+				}
+			});
+		}
+
+		tp.shutdown();
+		try {
+			// Wait a while for existing tasks to terminate
+			if (!tp.awaitTermination(60, TimeUnit.MINUTES)) {
+				tp.shutdownNow(); // Cancel currently executing tasks
+				// Wait a while for tasks to respond to being cancelled
+				if (!tp.awaitTermination(60, TimeUnit.SECONDS))
+					System.err.println("Pool did not terminate");
+			}
+		} catch (InterruptedException ie) {
+			// (Re-)Cancel if current thread also interrupted
+			tp.shutdownNow();
+			// Preserve interrupt status
+			Thread.currentThread().interrupt();
+		}
+	}
 	
 	private void prepare(){
 		createTables();
@@ -133,7 +221,7 @@ public class OWLAxiomPatternFinder {
 	
 	private void initDBConnection() {
 		try {
-			InputStream is = this.getClass().getClassLoader().getResourceAsStream("db_settings.ini");
+			InputStream is = this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/pattern/db_settings.ini");
 			Preferences prefs = new IniPreferences(is);
 			String dbServer = prefs.node("database").get("server", null);
 			String dbName = prefs.node("database").get("name", null);
@@ -158,11 +246,11 @@ public class OWLAxiomPatternFinder {
 					+ "pattern_pretty TEXT NOT NULL,"
 					+ "axiom_type VARCHAR(15) NOT NULL,"
 					+ "PRIMARY KEY(id),"
-					+ "INDEX(pattern(8000))) DEFAULT CHARSET=utf8");
+					+ "INDEX(pattern(1000))) DEFAULT CHARSET=utf8");
 			
 			statement.execute("CREATE TABLE IF NOT EXISTS Ontology (" 
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
-					+ "url VARCHAR(2000) NOT NULL,"
+					+ "url VARCHAR(1000) NOT NULL,"
 					+ "iri VARCHAR(2000) NOT NULL,"
 					+ "repository VARCHAR(200) NOT NULL,"
 					+ "logical_axioms MEDIUMINT DEFAULT 0,"
@@ -240,7 +328,7 @@ public class OWLAxiomPatternFinder {
 		return s;
 	}
 	
-	private boolean ontologyProcessed(URI uri){
+	private synchronized boolean ontologyProcessed(URI uri){
 		//check if ontology was already processed
 		try {
 			selectOntologyIdPs.setString(1, uri.toString());
@@ -252,7 +340,7 @@ public class OWLAxiomPatternFinder {
 		return false;
 	}
 	
-	private void addOntologyError(URI physicalURI, Exception ex){
+	private synchronized void addOntologyError(URI physicalURI, Exception ex){
 		String url = physicalURI.toString();
 		//add ontology loading/parsing/... error entry
 		try {
@@ -272,7 +360,7 @@ public class OWLAxiomPatternFinder {
 		}
 	}
 	
-	private int addOntology(URI physicalURI, OWLOntology ontology){
+	private synchronized int addOntology(URI physicalURI, OWLOntology ontology){
 		String url = physicalURI.toString();
 		String ontologyIRI = "Anonymous";
 		if(!ontology.getOntologyID().isAnonymous()){
@@ -322,7 +410,7 @@ public class OWLAxiomPatternFinder {
 		return -1;
 	}
 	
-	private void addOntologyPatterns(URI physicalURI, OWLOntology ontology, Multiset<OWLAxiom> patterns){
+	private synchronized void addOntologyPatterns(URI physicalURI, OWLOntology ontology, Multiset<OWLAxiom> patterns){
 		int ontologyId = addOntology(physicalURI, ontology);
 		for (OWLAxiom pattern : patterns.elementSet()) {
 			try {
@@ -337,57 +425,7 @@ public class OWLAxiomPatternFinder {
 			}
 		}
 	}
-	
-	public void start() {
-		OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
-		Collection<OntologyRepositoryEntry> entries = repository.getEntries();
-		if(randomOrder){
-			List<OntologyRepositoryEntry> entryList = new ArrayList<>(repository.getEntries());
-			Collections.shuffle(entryList);
-			entries = entryList;
-		}
-		Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
-		int i = 1;
-		for (OntologyRepositoryEntry entry : entries) {
-			System.out.print(i++ + ": ");
-			URI uri = entry.getPhysicalURI();
-//			if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
-			if (!ontologyProcessed(uri)) {//if(entry.getOntologyShortName().equals("00698"))continue;
-				System.out.print("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
-				try {
-					manager = OWLManager.createOWLOntologyManager();
-					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
-					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
-					Set<OWLAxiom> logicalAxioms = new HashSet<>();
-					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
-						if(type.isLogical()){
-							logicalAxioms.addAll(ontology.getAxioms(type, Imports.INCLUDED));
-						}
-					}
-					System.out.println(" (" + logicalAxioms.size() + " axioms)");
-					for (OWLAxiom axiom : logicalAxioms) {
-						OWLAxiom renamedAxiom = renamer.rename(axiom);
-						axiomPatterns.add(renamedAxiom);
-					}
-					allAxiomPatterns.addAll(axiomPatterns);
-					addOntologyPatterns(uri, ontology, axiomPatterns);
-//					for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
-//						System.out.println(owlAxiom + ": " + allAxiomPatterns.count(owlAxiom));
-//					}
-					manager.removeOntology(ontology);
-				} catch (OWLOntologyAlreadyExistsException e) {
-					e.printStackTrace();
-				} catch (Exception e){
-					e.printStackTrace();
-					addOntologyError(uri, e);
-				}
-			} else {
-				System.out.println("Already processed.");
-			}
 
-		}
-	}
-	
 	public static void main(String[] args) throws Exception {
 		
 		String ontologyURL = "ontologyURL";

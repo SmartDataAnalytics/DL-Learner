@@ -29,6 +29,7 @@ public class TestBean implements Component{
     private boolean initialized = false;
 
 
+    @Override
     public void init(){
         initialized = true;
     }

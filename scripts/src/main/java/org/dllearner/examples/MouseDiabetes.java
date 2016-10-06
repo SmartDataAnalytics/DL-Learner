@@ -1,54 +1,32 @@
 package org.dllearner.examples;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.*;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.scripts.MouseDiabetesCBD;
-import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MouseDiabetes {
 	
@@ -76,8 +54,8 @@ public class MouseDiabetes {
         Set<OWLIndividual> posExamples = readExamples(posExamplesFilePath);
         Set<OWLIndividual> negExamples = readExamples(negExamplesFilePath);
         if(useCBD){
-        	posExamples = new HashSet<OWLIndividual>(new ArrayList<OWLIndividual>(posExamples).subList(0, MouseDiabetesCBD.nrOfPosExamples));
-        	negExamples = new HashSet<OWLIndividual>(new ArrayList<OWLIndividual>(negExamples).subList(0, MouseDiabetesCBD.nrOfNegExamples));
+        	posExamples = new HashSet<>(new ArrayList<>(posExamples).subList(0, MouseDiabetesCBD.nrOfPosExamples));
+        	negExamples = new HashSet<>(new ArrayList<>(negExamples).subList(0, MouseDiabetesCBD.nrOfNegExamples));
         }
         logger.debug("finished reading examples");
         
@@ -169,17 +147,15 @@ public class MouseDiabetes {
     }
     
     public static Set<OWLIndividual> loadPosExamples() throws IOException {
-        Set<OWLIndividual> indivs = readExamples(posExamplesFilePath);
-        return indivs;
+	    return readExamples(posExamplesFilePath);
     }
     
     public static Set<OWLIndividual> loadNegExamples() throws IOException {
-        Set<OWLIndividual> indivs = readExamples(negExamplesFilePath);
-        return indivs;
+	    return readExamples(negExamplesFilePath);
     }
     
     public static Set<OWLIndividual> readExamples(String filePath) throws IOException {
-        Set<OWLIndividual> indivs = new TreeSet<OWLIndividual>();
+        Set<OWLIndividual> indivs = new TreeSet<>();
         try(BufferedReader buffRead = new BufferedReader(new FileReader(new File(filePath)))){
 	        String line;
 	        while ((line = buffRead.readLine()) != null) {
@@ -207,15 +183,13 @@ public class MouseDiabetes {
 	        }
 	        
 	        return ontology;
-        } catch (IOException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
+        } catch (IOException | OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
-        return null;
+	    return null;
     }
 
-    public static OWLOntology readDumpFiles() throws OWLOntologyCreationException, IOException {
+    public static OWLOntology readDumpFiles() throws IOException {
         Model model = ModelFactory.createDefaultModel();
 
 		logger.debug("reading main knowledge base (" + kbFilePath + ")...");

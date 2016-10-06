@@ -85,20 +85,20 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private TreeSet<ELDescriptionTree> trees;
 	private double noise;
 	
-	@ConfigOption(name = "treeSearchTimeSeconds", defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
+	@ConfigOption(defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
 	private double treeSearchTimeSeconds = 1.0;
 	
-	@ConfigOption(name = "tryFullCoverage", defaultValue = "false", description="If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.")
+	@ConfigOption(defaultValue = "false", description="If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.")
 	private boolean tryFullCoverage = false;
 	
-	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	@ConfigOption(defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
 	private boolean stopOnFirstDefinition = false;
 	
-	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	
 	// the class with which we start the refinement process
-	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	@ConfigOption(defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private OWLClassExpression startClass;
 	
 //	private double noise = 0;
@@ -116,7 +116,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1;
 
-	@ConfigOption(name="instanceBasedDisjoints", description="whether to do real disjoint tests or check that two named classes do not have common instances")
+	@ConfigOption(description="whether to do real disjoint tests or check that two named classes do not have common instances")
 	private boolean instanceBasedDisjoints;
 
 	private DecimalFormat decFormat = new DecimalFormat("0.00"); 
@@ -126,11 +126,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	public ELLearningAlgorithmDisjunctive(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
-	
-	public static String getName() {
-		return "disjunctive EL learning algorithm";
-	}	
-	
+
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
 		problems.add(PosNegLP.class);

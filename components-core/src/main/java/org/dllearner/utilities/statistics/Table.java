@@ -28,7 +28,6 @@ import java.util.List;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.StringFormatter;
 
-
 /**
  * Class to collect results and output them as a latex table or other formats.
  * 
@@ -244,16 +243,13 @@ public class Table implements Serializable{
 		}
     }
 
-
 	public List<TableColumn> getColumns() {
 		return columns;
 	}
 
-
 	public String getTableName() {
 		return tableName;
 	}
-
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;

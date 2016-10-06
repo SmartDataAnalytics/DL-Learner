@@ -19,30 +19,9 @@
  */
 package org.dllearner.cli;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.jsp.SkipPageException;
-
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -56,9 +35,15 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Enriches all of the LOD cloud.
@@ -121,7 +106,7 @@ public class GlobalEnrichment {
 		Logger.getRootLogger().addAppender(consoleAppender);		
 		
 		// get all SPARQL endpoints and their graphs - the key is a name-identifier
-		Map<String,SparqlEndpoint> endpoints = new TreeMap<String,SparqlEndpoint>();
+		Map<String,SparqlEndpoint> endpoints = new TreeMap<>();
 		
 		String query = "";
 		query += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
@@ -154,7 +139,7 @@ public class GlobalEnrichment {
 		}
 		System.out.println(endpoints.size() + " endpoints detected.");
 		
-		TreeSet<String> blacklist = new TreeSet<String>();
+		TreeSet<String> blacklist = new TreeSet<>();
 		blacklist.add("rkb-explorer-crime"); // computation never completes
 		
 		//remove endpoints which failed in a run before
@@ -174,7 +159,7 @@ public class GlobalEnrichment {
 			}
 		}
 		
-		ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(endpoints.size());
+		ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(endpoints.size());
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue);
 		
 		
@@ -248,7 +233,7 @@ public class GlobalEnrichment {
 					if(success) {
 						SparqlEndpointKS ks = new SparqlEndpointKS(se);
 						List<AlgorithmRun> runs = e.getAlgorithmRuns();
-						List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+						List<OWLAxiom> axioms = new LinkedList<>();
 						int axiomCnt = 0;
 						for(AlgorithmRun run : runs) {
 							axiomCnt += e.getGeneratedOntology().getLogicalAxiomCount();
@@ -280,7 +265,7 @@ public class GlobalEnrichment {
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file, true);
-			fw.append(endpoint.getURL().toString() + "\n");
+			fw.append(endpoint.getURL().toString()).append("\n");
 			fw.flush();
 			fw.close();
 		} catch (Exception ex) {
@@ -289,7 +274,7 @@ public class GlobalEnrichment {
 	}
 	
 	public static List<String> getErrorList(){
-		List<String> errorNames = new ArrayList<String>();
+		List<String> errorNames = new ArrayList<>();
 		File dir = new File(baseDir + "/failed/");
 		dir.mkdirs();
 		for(File file : dir.listFiles()){
@@ -299,7 +284,7 @@ public class GlobalEnrichment {
 	}
 	
 	public static List<String> getEmptyList(){
-		List<String> errorNames = new ArrayList<String>();
+		List<String> errorNames = new ArrayList<>();
 		File dir = new File(baseDir + "/success/empty/");
 		dir.mkdirs();
 		for(File file : dir.listFiles()){
@@ -309,7 +294,7 @@ public class GlobalEnrichment {
 	}
 	
 	public static List<String> getSuccessList(){
-		List<String> errorNames = new ArrayList<String>();
+		List<String> errorNames = new ArrayList<>();
 		File dir = new File(baseDir + "/success/");
 		dir.mkdirs();
 		for(File file : dir.listFiles()){

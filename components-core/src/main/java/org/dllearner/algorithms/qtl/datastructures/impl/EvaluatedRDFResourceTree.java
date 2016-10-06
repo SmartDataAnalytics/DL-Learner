@@ -19,12 +19,7 @@
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
 import com.google.common.collect.ComparisonChain;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
+
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -33,7 +28,6 @@ import org.dllearner.core.Score;
 import org.dllearner.learningproblems.QueryTreeScore;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import gnu.trove.set.TIntSet;

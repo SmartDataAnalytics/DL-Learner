@@ -59,7 +59,7 @@ public class OWLVocabulary {
 	public static final String OWL_ON_PROPERTY = 	"http://www.w3.org/2002/07/owl#onProperty";
 	
 	public static final String OWL_ALL_VALUES_FROM =  "http://www.w3.org/2002/07/owl#allValuesFrom";
-	public static final String OWL_SOME_VALUES_FROM =  "http://www.w3.org/2002/07/owl#allValuesFrom";
+	public static final String OWL_SOME_VALUES_FROM =  "http://www.w3.org/2002/07/owl#someValuesFrom";
 	public static final String OWL_HAS_VALUE =  "http://www.w3.org/2002/07/owl#hasValue";
 	
 	public static final String OWL_maxCardinality  = 	"http://www.w3.org/2002/07/owl#maxCardinality";
@@ -75,7 +75,6 @@ public class OWLVocabulary {
 	
 	public static final String OWL_equivalentProperty = "http://www.w3.org/2002/07/owl#equivalentProperty";
 	public static final String OWL_inverseOf = "http://www.w3.org/2002/07/owl#inverseOf";
-
 
 	
 	public static final String OWL_THING = "http://www.w3.org/2002/07/owl#Thing";

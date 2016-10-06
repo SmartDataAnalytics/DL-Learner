@@ -12,9 +12,23 @@
     <parent>
         <groupId>org.dllearner</groupId>
         <artifactId>dllearner-parent</artifactId>
-        <version>1.2</version>
+        <version>1.3.0</version>
     </parent>
     <dependencies>
+        
+        <!-- EDGE dependency -->
+        <dependency>
+            <groupId>unife</groupId>
+            <artifactId>edge</artifactId>
+            <version>3.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>manpageGenerator-maven-plugin</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>components-core</artifactId>
@@ -29,33 +43,33 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    <!--
+        <!--
+            <dependency>
+                <groupId>com.jamonapi</groupId>
+                <artifactId>jamon</artifactId>
+            </dependency>
+        -->
+
         <dependency>
-            <groupId>com.jamonapi</groupId>
-            <artifactId>jamon</artifactId>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>1.3.4</version>
         </dependency>
-    -->
+
+        <!--
+            <dependency>
+                            <groupId>edu.stanford.nlp</groupId>
+                            <artifactId>stanford-corenlp</artifactId>
+                            <version>1.3.4</version>
+                            <classifier>models</classifier>
+                    </dependency>
+        -->
 
         <dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>1.3.4</version>
-		</dependency>
-
-    <!--
-        <dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>1.3.4</version>
-			<classifier>models</classifier>
-		</dependency>
-    -->
-
-	<dependency>
-		<groupId>net.didion.jwnl</groupId>
-		<artifactId>jwnl</artifactId>
-		<version>1.4.1.RC2</version>
-	</dependency>
+            <groupId>net.didion.jwnl</groupId>
+            <artifactId>jwnl</artifactId>
+            <version>1.4.1.RC2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.solr</groupId>
@@ -68,21 +82,21 @@
             <version>2009-04-30</version>
         </dependency>
 
-    <!--
+        <!--
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+            </dependency>
+        -->
+
         <dependency>
             <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
+            <artifactId>lucene-analyzers-common</artifactId>
         </dependency>
-    -->
-
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-		</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queryparser</artifactId>
-			</dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+        </dependency>
         <!--BEGIN Logging Dependencies-->
 
         <!--This is the api jar, it's needed at compile time-->
@@ -90,121 +104,129 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
         </dependency>
 
         <dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-        
-    <!--
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-    -->
-        <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-        <!-- dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.11</version>
-            <scope>runtime</scope>
-        </dependency-->
-
-        <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
-    <!--
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-    -->
-        <!-- dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.5.11</version>
-            <scope>runtime</scope>
-        </dependency-->
-        <!--END Logging Dependencies-->
-
-    <!--
-        <dependency>
-            <groupId>lbj</groupId>
-            <artifactId>library</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>lbj</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>lbj</groupId>
-            <artifactId>ner</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>jaws</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>stax</groupId>
-            <artifactId>stax-api</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+
+        <!--        <dependency>
+            <groupId>openMPI</groupId>
+            <artifactId>openmpi-java-binding</artifactId>
+            <version>1.8.6</version>
+        </dependency>-->
+        
+        
         <dependency>
-            <groupId>org.ini4j</groupId>
-            <artifactId>ini4j</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
+        
+        <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
+        <!--        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.11</version>
+            <scope>runtime</scope>
+        </dependency>-->
+
+        <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
+        
         <dependency>
-        	<groupId>org.xerial</groupId>
-        	<artifactId>sqlite-jdbc</artifactId>
-        	<version>3.7.2</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
-    -->
+        
+        <!--         <dependency>
+           <groupId>org.slf4j</groupId>
+           <artifactId>jcl-over-slf4j</artifactId>
+           <version>1.5.11</version>
+           <scope>runtime</scope>
+        </dependency>-->
+        <!--END Logging Dependencies-->
+
+        <!--
+            <dependency>
+                <groupId>lbj</groupId>
+                <artifactId>library</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>lbj</groupId>
+                <artifactId>core</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>lbj</groupId>
+                <artifactId>ner</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>jaws</groupId>
+                <artifactId>core</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>stax</groupId>
+                <artifactId>stax-api</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ini4j</groupId>
+                <artifactId>ini4j</artifactId>
+            </dependency>
+            <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.7.2</version>
+            </dependency>
+        -->
     </dependencies>
     <build>
         <plugins>
        
-         <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-                                <version>2.9.1</version>
-                                <configuration>
-                                        <failOnError>false</failOnError>
-					<show>public</show>
-					<nohelp>true</nohelp>
-					<destDir>doc/javadoc</destDir>
-					<doctitle>DL-Learner Javadoc</doctitle>
-					<author>true</author>
-					<nodeprecated>false</nodeprecated>
-					<nodeprecatedlist>false</nodeprecatedlist>
-					<noindex>false</noindex>
-					<nonavbar>false</nonavbar>
-					<notree>false</notree>
-					<overview>src/etc/overview.html</overview>
-					<source>1.6</source>
-					<sourcepath>src/main/java</sourcepath>
-					<splitindex>true</splitindex>
-					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
-					<use>true</use>
-					<version>true</version>
-					<linksource>true</linksource>
-					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
-					<encoding>ISO-8859-1</encoding>
-					<windowtitle>DL-Learner Javadoc</windowtitle>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <show>public</show>
+                    <nohelp>true</nohelp>
+                    <destDir>doc/javadoc</destDir>
+                    <doctitle>DL-Learner Javadoc</doctitle>
+                    <author>true</author>
+                    <nodeprecated>false</nodeprecated>
+                    <nodeprecatedlist>false</nodeprecatedlist>
+                    <noindex>false</noindex>
+                    <nonavbar>false</nonavbar>
+                    <notree>false</notree>
+                    <overview>src/etc/overview.html</overview>
+                    <source>1.6</source>
+                    <sourcepath>src/main/java</sourcepath>
+                    <splitindex>true</splitindex>
+                    <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+                    <use>true</use>
+                    <version>true</version>
+                    <linksource>true</linksource>
+                    <bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
+                    <encoding>ISO-8859-1</encoding>
+                    <windowtitle>DL-Learner Javadoc</windowtitle>
+                </configuration>
+            </plugin>
       
             <!--
             <plugin>
@@ -230,6 +252,7 @@
                         <exclude>org/dllearner/algorithm/tbsl/*</exclude>
                         <exclude>org/dllearner/algorithm/qtl/*</exclude>
                     </excludes>
+                    <argLine>-Dlog4j.configuration=log4j.properties -Dlog4j.debug</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -253,4 +276,34 @@
             </plugin>
         </plugins>
     </build>
+    
+    <repositories>
+        <repository>
+            <id>ml-unife-maven-repository</id>
+            <name>ML@UniFe Maven Repository</name>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/releases</url>
+        </repository>
+        <repository>
+            <id>ml-unife-maven-repositorysnapshots</id>
+            <name>ML@UniFe Maven Repository</name>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/snapshots</url>
+        </repository>
+    </repositories>
+    
 </project>

@@ -18,40 +18,22 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.collect.ComparisonChain;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
-import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.sparql.core.TriplePath;
-import com.hp.hpl.jena.sparql.expr.E_Equals;
-import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
-import com.hp.hpl.jena.sparql.expr.E_Str;
-import com.hp.hpl.jena.sparql.expr.Expr;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.NodeValue;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.sparql.syntax.ElementWalker;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
+import org.apache.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.expr.*;
+import org.apache.jena.sparql.syntax.*;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class VirtuosoUtils {
 	
@@ -73,13 +55,11 @@ public class VirtuosoUtils {
 			
 			@Override
 			public void visit(ElementTriplesBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
-					@Override
-					public int compare(Triple o1, Triple o2) {
-						return ComparisonChain.start().compare(o1.getSubject().toString(), o2.getSubject().toString())
-								.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-								.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-					}
+				Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+					return ComparisonChain.start()
+							.compare(o1.getSubject().toString(), o2.getSubject().toString())
+							.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
+							.compare(o1.getObject().toString(), o2.getObject().toString()).result();
 				});
 
 				Iterator<Triple> iterator = el.patternElts();
@@ -122,13 +102,11 @@ public class VirtuosoUtils {
 			
 			@Override
 			public void visit(ElementPathBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
-					@Override
-					public int compare(Triple o1, Triple o2) {
-						return ComparisonChain.start().compare(o1.getSubject().toString(), o2.getSubject().toString())
-								.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-								.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-					}
+				Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+					return ComparisonChain.start()
+							.compare(o1.getSubject().toString(), o2.getSubject().toString())
+							.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
+							.compare(o1.getObject().toString(), o2.getObject().toString()).result();
 				});
 
 				Iterator<TriplePath> iterator = el.patternElts();

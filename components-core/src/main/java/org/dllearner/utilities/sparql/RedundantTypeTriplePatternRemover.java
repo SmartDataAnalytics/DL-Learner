@@ -25,28 +25,28 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.core.TriplePath;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementOptional;
+import org.apache.jena.sparql.syntax.ElementPathBlock;
+import org.apache.jena.sparql.syntax.ElementTriplesBlock;
+import org.apache.jena.sparql.syntax.ElementUnion;
+import org.apache.jena.sparql.syntax.ElementVisitorBase;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * @author Lorenz Buehmann
@@ -94,8 +94,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	@Override
 	public void visit(ElementGroup el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}
@@ -187,8 +186,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 
 	@Override
 	public void visit(ElementUnion el) {
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}

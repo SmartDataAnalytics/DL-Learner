@@ -18,12 +18,12 @@
  */
 package org.dllearner.algorithms.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
@@ -33,22 +33,14 @@ import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
-
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
 import org.semanticweb.owlapi.profiles.Profiles;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -91,8 +83,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	
 	public AbstractSchemaGenerator(Model model) {
 		// enable reasoning on model
-		OntModel infModel = ModelFactory.createOntologyModel(reasoningProfile, model);
-		this.model = infModel;
+		this.model = ModelFactory.createOntologyModel(reasoningProfile, model);
 		this.qef = new QueryExecutionFactoryModel(this.model);
 		this.reasoner = new SPARQLReasoner(qef);
 	}
@@ -154,6 +145,23 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		}
 		return entities;
 	}
+
+	/**
+	 * Return the entities contained in the current knowledge base for the given entity type.
+	 *
+	 * @param entityType the entity type
+	 */
+	protected <T extends OWLEntity> SortedSet<T> getEntities(EntityType<T> entityType) {
+		SortedSet<T> entitiesForType = new TreeSet<>();
+		for (OWLEntity entity : getEntities()) {
+			if (entity.isType(entityType)) {
+				entitiesForType.add((T) entity);
+			}
+		}
+		return entitiesForType;
+//		Stream<T> s = entities.stream().filter(e -> e.isType(entityType)).map(e -> (T) e);
+//		return s.collect(Collectors.toList());
+	}
 	
 	/**
 	 * @param accuracyThreshold the accuracyThreshold to set
@@ -162,7 +170,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		this.accuracyThreshold = accuracyThreshold;
 	}
 	
-	protected List<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
+	protected Set<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
 		// get the algorithm class
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		
@@ -188,7 +196,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 			learner.start();
 			
 			// return the result
-			return learner.getCurrentlyBestAxioms(accuracyThreshold);
+			return new TreeSet<>(learner.getCurrentlyBestAxioms(accuracyThreshold));
 		} catch (Exception e) {
 			throw new Exception("Generation of " + axiomType.getName() + " axioms failed.", e);
 		}

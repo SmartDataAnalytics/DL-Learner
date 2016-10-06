@@ -46,14 +46,12 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<>();
 	protected Set<OWLIndividual> allExamples = new TreeSet<>();
 
-    @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
+	@ConfigOption(description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
-    @org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
+    @ConfigOption(description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
     private double percentPerLengthUnit = 0.05;
 
-	@ConfigOption(
-			name = "accuracyMethod",
-			description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
 			defaultValue = "PRED_ACC")
 	protected AccMethodTwoValued accuracyMethod;
 
@@ -156,4 +154,5 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
 	    this.accuracyMethod = accuracyMethod;
 	}
+
 }

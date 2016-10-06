@@ -18,9 +18,8 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -33,23 +32,14 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
-import com.hp.hpl.jena.util.iterator.Filter;
+import java.io.ByteArrayInputStream;
+import java.util.function.Predicate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Lorenz Buehmann
@@ -57,7 +47,7 @@ import static org.junit.Assert.*;
  */
 public class LGGTest {
 	
-private static final String baseIRI = "http://test.org/";
+	private static final String baseIRI = "http://test.org/";
 	
 	private static QueryTreeFactory treeFactory;
 	private static Model model;
@@ -74,8 +64,8 @@ private static final String baseIRI = "http://test.org/";
 				+ ":a2 :s :A . "
 				+ ":a3 :r :C . :C :p :E ."
 				+ ":a4 :s :D . :D :p :F ."
-				+ "<_:lgg1_2> :r :A ."
-				+ "<_:lgg3_4> :r _:D . _:D :p _:F ."
+				+ "<_:lgg1_2> :s :A ."
+				+ "<_:lgg3_4> :s _:D . _:D :p _:F ."
 				+ ":r rdfs:subPropertyOf :s ."
 				+ ":a5 a :A ."
 				+ ":a6 a :B ."
@@ -88,12 +78,11 @@ private static final String baseIRI = "http://test.org/";
 		
 		treeFactory = new QueryTreeFactoryBase();
 		
-		StmtIterator statements = model.listStatements();
-		while (statements.hasNext()) {
-			Statement st = statements.next();
-			System.out.println(st);
-			
-		}
+//		StmtIterator statements = model.listStatements();
+//		while (statements.hasNext()) {
+//			Statement st = statements.next();
+//			System.out.println(st);
+//		}
 		
 		reasoner = new SPARQLReasoner(model);
 		reasoner.setPrecomputeObjectPropertyHierarchy(false);
@@ -103,7 +92,7 @@ private static final String baseIRI = "http://test.org/";
 		lggGenSimple = new LGGGeneratorSimple();
 		lggGenRDFS = new LGGGeneratorRDFS(reasoner);
 	}
-	
+
 	@Test
 	public void testPropertyEntailment() {
 		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/a1", model);
@@ -151,7 +140,7 @@ private static final String baseIRI = "http://test.org/";
 		RDFResourceTree lggSimple = lggGenSimple.getLGG(tree1, tree2);
 		System.out.println("LGG_simple(T1,T2)\n" + lggSimple.getStringRepresentation());
 
-		assertTrue(lggSimple.isLeaf());
+//		assertTrue(lggSimple.isLeaf());
 
 		RDFResourceTree targetLGG = treeFactory.getQueryTree(new ResourceImpl(AnonId.create("lgg5_6")), model);
 		System.out.println("Target LGG\n" + targetLGG.getStringRepresentation());
@@ -192,8 +181,8 @@ private static final String baseIRI = "http://test.org/";
 //	@Test
 	public void correctness() {
 		treeFactory.setMaxDepth(2);
-		java.util.List<Filter<Statement>> var = new DBpediaEvaluationDataset(new File("/tmp/lggtest"), SparqlEndpoint.getEndpointDBpedia()).getQueryTreeFilters();
-		treeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
+		java.util.List<Predicate<Statement>> var = DBpediaEvaluationDataset.queryTreeFilters();
+		treeFactory.addDropFilters((Predicate<Statement>[]) var.toArray(new Predicate[var.size()]));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(

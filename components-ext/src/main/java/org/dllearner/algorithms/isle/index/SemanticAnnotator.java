@@ -1,11 +1,11 @@
 package org.dllearner.algorithms.isle.index;
 
+import org.dllearner.algorithms.isle.EntityCandidateGenerator;
+import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
 
 /**
  * Provides methods to annotate documents.
@@ -38,7 +38,7 @@ public class SemanticAnnotator {
      */
     public AnnotatedDocument processDocument(TextDocument document){
     	Set<Annotation> annotations = linguisticAnnotator.annotate(document);
-    	Set<SemanticAnnotation> semanticAnnotations = new HashSet<SemanticAnnotation>();
+    	Set<SemanticAnnotation> semanticAnnotations = new HashSet<>();
     	HashMap<Annotation, Set<EntityScorePair>> candidatesMap = entityCandidateGenerator.getCandidatesMap(annotations);
     	for (Annotation annotation : candidatesMap.keySet()) {
     		Set<EntityScorePair> candidateEntities = candidatesMap.get(annotation);

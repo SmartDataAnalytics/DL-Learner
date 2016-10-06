@@ -22,6 +22,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -31,7 +32,6 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -107,8 +109,11 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private List<OWLObjectProperty> atomicRolesList;
 
 	// hierarchies (they are computed the first time they are needed)
+	@NoConfigOption
 	protected ClassHierarchy subsumptionHierarchy = null;
+	@NoConfigOption
 	protected ObjectPropertyHierarchy roleHierarchy = null;
+	@NoConfigOption
 	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 
 	@ConfigOption(description = "if class hierarchy should be precomputed", defaultValue = "true")
@@ -123,12 +128,19 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Multimap<OWLDatatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<>();
 
+	@ConfigOption(description = "if property domains should be precomputed", defaultValue = "true")
+	protected boolean precomputePropertyDomains = true;
+	protected Map<OWLProperty, OWLClassExpression> propertyDomains = new HashMap<>();
+
+	@ConfigOption(description = "if object property ranges should be precomputed", defaultValue = "true")
+	protected boolean precomputeObjectPropertyRanges = true;
+	protected Map<OWLObjectProperty, OWLClassExpression> objectPropertyRanges = new HashMap<>();
+
 	/**
 	 * The underlying knowledge sources.
 	 */
 	@ConfigOption(description = "the underlying knowledge sources", required = true)
 	protected Set<KnowledgeSource> sources;
-
 
     public AbstractReasonerComponent(){
 
@@ -211,6 +223,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * should be invalidaded. TODO Currently, nothing is done to behave
 	 * correctly after updates.
 	 */
+	@NoConfigOption
 	public void setUpdated() {
 		// TODO currently, nothing is done to behave correctly after updates
 	}
@@ -367,11 +380,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected Set<OWLClassExpression> isSuperClassOfImpl(Set<OWLClassExpression> superConcepts,
 			OWLClassExpression subConcept) throws ReasoningMethodUnsupportedException {
-		Set<OWLClassExpression> returnSet = new HashSet<>();
-		for (OWLClassExpression superConcept : superConcepts) {
-			if (isSuperClassOf(superConcept, subConcept))
-				returnSet.add(superConcept);
-		}
+		Set<OWLClassExpression> returnSet = superConcepts.stream()
+				.filter(superConcept -> isSuperClassOf(superConcept, subConcept))
+				.collect(Collectors.toSet());
 		return returnSet;
 	}
 
@@ -486,13 +497,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals)
-			throws ReasoningMethodUnsupportedException {
-		SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-		for (OWLIndividual individual : individuals) {
-			if (hasType(concept, individual))
-				returnSet.add(individual);
-		}
+	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals) throws ReasoningMethodUnsupportedException {
+		SortedSet<OWLIndividual> returnSet = individuals.stream()
+				.filter(individual -> hasType(concept, individual))
+				.collect(Collectors.toCollection(TreeSet::new));
 		return returnSet;
 	}
 
@@ -681,12 +689,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		Map<OWLIndividual, SortedSet<Double>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<Double> valuesDouble = new TreeSet<>();
-			for (OWLLiteral lit : values) {
-				if(OWLAPIUtils.floatDatatypes.contains(lit.getDatatype())){
-					valuesDouble.add(Double.parseDouble(lit.getLiteral()));
-				}
-			}
+			SortedSet<Double> valuesDouble = values.stream()
+					.filter(lit -> OWLAPIUtils.floatDatatypes.contains(lit.getDatatype()))
+					.map(lit -> Double.parseDouble(lit.getLiteral()))
+					.collect(Collectors.toCollection(TreeSet::new));
 			ret.put(e.getKey(), valuesDouble);
 		}
 		return ret;
@@ -785,12 +791,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		Map<OWLIndividual, SortedSet<Integer>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<Integer> valuesInt = new TreeSet<>();
-			for (OWLLiteral lit : values) {
-				if(OWLAPIUtils.isIntegerDatatype(lit)){
-					valuesInt.add(lit.parseInteger());
-				}
-			}
+			SortedSet<Integer> valuesInt = values.stream()
+					.filter(lit -> OWLAPIUtils.isIntegerDatatype(lit))
+					.map((Function<OWLLiteral, Integer>) OWLLiteral::parseInteger)
+					.collect(Collectors.toCollection(TreeSet::new));
 			ret.put(e.getKey(), valuesInt);
 		}
 		return ret;
@@ -903,10 +907,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		Map<OWLIndividual, SortedSet<String>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<String> valuesString = new TreeSet<>();
-			for (OWLLiteral c : values) {
-				valuesString.add(c.getLiteral());				
-			}
+			SortedSet<String> valuesString = values.stream()
+					.map(OWLLiteral::getLiteral)
+					.collect(Collectors.toCollection(TreeSet::new));
 			ret.put(e.getKey(), valuesString);
 		}
 		return ret;
@@ -1170,6 +1173,28 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 		throw new ReasoningMethodUnsupportedException();
 	}
+
+	protected <T extends OWLProperty> OWLClassExpression getDomain(T role) {
+		if(precomputePropertyDomains) {
+			return propertyDomains.get(role);
+		} else {
+			try {
+				return getDomainImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		throw null;
+	}
+
+	protected <T extends OWLProperty> OWLClassExpression getDomainImpl(T role) throws ReasoningMethodUnsupportedException {
+		if(OWLObjectProperty.class.isInstance(role)) {
+			return getDomainImpl((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role)) {
+			return getDomainImpl((OWLDataProperty) role);
+		}
+		throw new ReasoningMethodUnsupportedException();
+	}
 	
 	
 	@Override
@@ -1270,13 +1295,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 		// parents/children of top ...
 		SortedSet<OWLClassExpression> tmp = getSubClassesImpl(df.getOWLThing());
-		subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
+		subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<>());
 		subsumptionHierarchyDown.put(df.getOWLThing(), tmp);
 
 		// ... bottom ...
 		tmp = getSuperClassesImpl(df.getOWLNothing());
 		subsumptionHierarchyUp.put(df.getOWLNothing(), tmp);
-		subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
+		subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<>());
 		
 		// ... and named classes
 		Set<OWLClass> atomicConcepts = getClasses();
@@ -1341,7 +1366,6 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	@Override
 	public final ObjectPropertyHierarchy getObjectPropertyHierarchy() {
-
 		try {
 			if (roleHierarchy == null) {
 				roleHierarchy = prepareObjectPropertyHierarchy();

@@ -18,6 +18,9 @@
  */
 package org.dllearner.core;
 
+import org.dllearner.core.annotations.NoConfigOption;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.ExampleLoader;
 import org.dllearner.utilities.ReasoningUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -33,11 +36,14 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
 
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+	@ConfigOption(description = "load examples via class expression selector")
+	protected ExampleLoader exampleLoaderHelper = null;
 
 	public AbstractClassExpressionLearningProblem(){
 
     }
 
+	@NoConfigOption
 	protected ReasoningUtils reasoningUtil;
 	protected static Class reasoningUtilsClass = ReasoningUtils.class;
 	
@@ -91,5 +97,14 @@ public abstract class AbstractClassExpressionLearningProblem<T extends Score>  e
 
 	public void setReasoningUtil(ReasoningUtils reasoningUtil) {
 		this.reasoningUtil = reasoningUtil;
+	}
+
+	public ExampleLoader getExampleLoaderHelper() {
+		return exampleLoaderHelper;
+	}
+
+	@Autowired(required = false)
+	public void setExampleLoaderHelper(ExampleLoader exampleLoaderHelper) {
+		this.exampleLoaderHelper = exampleLoaderHelper;
 	}
 }

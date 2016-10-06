@@ -18,29 +18,16 @@
  */
 package org.dllearner.algorithms.properties;
 
+import org.apache.jena.query.*;
+import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
+import org.semanticweb.owlapi.model.*;
+
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 
 /**
  * A learning algorithm for object property hierarchy axioms.
@@ -71,8 +58,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
+	@ConfigOption(defaultValue = "false")
 	protected boolean strictMode = false;
 
+	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
 	protected double beta = 1.0;
 	
 	public ObjectPropertyHierarchyAxiomLearner(SparqlEndpointKS ks) {
@@ -101,6 +90,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		return SAMPLE_QUERY;
 	}
 	
+	@Override
 	protected void run() {
 		
 		// get the candidates
@@ -109,6 +99,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		// check for each candidate if an overlap exist
 		int i = 1;
 		for (OWLObjectProperty p : candidates) {
+			logger.debug("processing candidate property {}...", p);
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			// get the popularity of the candidate
@@ -125,16 +116,9 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
 			
-			int nrOfPosExamples = overlap;
-			
-			int nrOfNegExamples = popularity - nrOfPosExamples;
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, p),
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, p), score));
 		}
 	}
 	
@@ -176,32 +160,12 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int overlap = qs.getLiteral("overlap").getInt();
 			
 			// compute the score
-			double score = computeScore(candidatePopularity, popularity, overlap);
+			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
 
-			int nrOfPosExamples = overlap;
-			
-			int nrOfNegExamples = popularity - nrOfPosExamples;
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							getAxiom(entityToDescribe, candidate),
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, candidate), score));
 		}
 	}
-	
-	public double computeScore(int candidatePopularity, int popularity, int overlap){
-		// compute the estimated precision
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
 
-		// compute the estimated recall
-		double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-		// compute the final score
-		double score = Heuristics.getFScore(recall, precision, beta);
-		
-		return score;
-	}
-	
 	public abstract T getAxiom(OWLObjectProperty property, OWLObjectProperty otherProperty);
 	
 	/**
@@ -309,8 +273,15 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	/**
 	 * @param strictMode the strictMode to set
 	 */
-	public void setUseStrictMode(boolean strictMode) {
+	public void setStrictMode(boolean strictMode) {
 		this.strictMode = strictMode;
 	}
 
+	public boolean isStrictMode() {
+		return strictMode;
+	}
+
+	public double getBeta() {
+		return beta;
+	}
 }

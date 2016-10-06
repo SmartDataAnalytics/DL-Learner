@@ -23,14 +23,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 
 import com.google.common.base.Charsets;

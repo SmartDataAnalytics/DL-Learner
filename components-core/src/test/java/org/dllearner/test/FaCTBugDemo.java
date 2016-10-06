@@ -18,7 +18,6 @@
  */
 package org.dllearner.test;
 
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +61,7 @@ public class FaCTBugDemo {
             OWLClass male = factory.getOWLClass(IRI.create("http://example.com/father#male"));
             OWLObjectProperty hasChild = factory.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild"));
             OWLObjectSomeValuesFrom hasSomeChild = factory.getOWLObjectSomeValuesFrom(hasChild, factory.getOWLThing());
-            Set<OWLClassExpression> set = new HashSet<OWLClassExpression>();
+            Set<OWLClassExpression> set = new HashSet<>();
             set.add(male);
             set.add(hasSomeChild);
             OWLClassExpression father = factory.getOWLObjectIntersectionOf(set);

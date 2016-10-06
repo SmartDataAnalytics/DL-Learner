@@ -43,7 +43,7 @@ public class QuickStart {
  
 //	static HashMap<String, ArrayList<String>> hm = null;
 	static String pm = "..";// pathmodifier
-	static List<String> conffiles = new ArrayList<String>();
+	static List<String> conffiles = new ArrayList<>();
 
 	public static void main(String[] args) {
 		
@@ -52,10 +52,10 @@ public class QuickStart {
 		String lastused = readit();
 		String tab = "	";
 		int the_Number = 0;
-		ArrayList<String> finalSelection = new ArrayList<String>();
+		ArrayList<String> finalSelection = new ArrayList<>();
 		finalSelection.add("na");
 
-		HashMap<String, ArrayList<String>> hm = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> hm = new HashMap<>();
 		String path = pm + File.separator + "examples";
 		File f = new File(path);
 		getAllConfs(f, path, hm);
@@ -70,10 +70,8 @@ public class QuickStart {
 		Object s;
 		String s1 = "";
 		// String tmp="";
-		for (int aa = 0; aa < sort.length; aa++)
-		// while (i.hasNext())
-		{
-			s = sort[aa];
+		for (Object aSort : sort) {
+			s = aSort;
 			s1 = (String) s;
 			if (s1.startsWith(pm + "\\examples\\") || s1.startsWith(pm + "/examples/"))
 				System.out.println(s1.substring(10).toUpperCase());
@@ -86,10 +84,10 @@ public class QuickStart {
 				files[j] = al.get(j);
 			}
 			Arrays.sort(files);
-			for (int j = 0; j < files.length; j++) {
+			for (String file : files) {
 				the_Number++;
-				finalSelection.add(the_Number, s + files[j] + ".conf");// tmp=the_Number+":"+tab+files[j];
-				System.out.println("  " + the_Number + ":" + tab + files[j] + "");
+				finalSelection.add(the_Number, s + file + ".conf");// tmp=the_Number+":"+tab+files[j];
+				System.out.println("  " + the_Number + ":" + tab + file + "");
 
 			}
 			// System.out.println(FinalSelection.get(1));
@@ -106,7 +104,7 @@ public class QuickStart {
 			while (true) {
 				String cmd = br.readLine();
 				if(cmd.equalsIgnoreCase("q")|| cmd.equalsIgnoreCase("query"))  {
-					query = (query)?false:true ;
+					query = !query;
 					System.out.println("Query mode switched. Now: "+query);
 					continue;
 				}else if(cmd.equalsIgnoreCase("exit") || cmd.equalsIgnoreCase("quit")) {
@@ -153,7 +151,6 @@ public class QuickStart {
 				} catch (Exception e) {
 					System.out.println("number does not exist");
 				}
-				;
 				writeit(selected);
 				System.out.println(selected);
 			} else if (!number) {
@@ -178,19 +175,19 @@ public class QuickStart {
 		path = path + File.separator;
 		// System.out.println(path);
 		String[] act = f.list();System.out.println(f);
-		for (int i = 0; i < act.length; i++) {
+		for (String anAct : act) {
 			// System.out.println(act[i]);
 
-			if (new File(path + act[i]).isDirectory()) {
+			if (new File(path + anAct).isDirectory()) {
 
-				getAllConfs(new File(path + act[i]), path + act[i], confs);
+				getAllConfs(new File(path + anAct), path + anAct, confs);
 				// al.add(new File(act[i]));
-			} else if (act[i].endsWith(".conf")) {
+			} else if (anAct.endsWith(".conf")) {
 				if (confs.get(path) == null) {
-					confs.put(path, new ArrayList<String>());
+					confs.put(path, new ArrayList<>());
 				}
-				confs.get(path).add(act[i].substring(0, act[i].length() - 5));
-				conffiles.add(path+act[i]);
+				confs.get(path).add(anAct.substring(0, anAct.length() - 5));
+				conffiles.add(path + anAct);
 				// System.out.println(act[i].substring(0,act[i].length()-5));
 				// System.out.println(hm.get(path).size());
 				// hm.put(new

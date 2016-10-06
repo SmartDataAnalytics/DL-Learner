@@ -36,10 +36,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.*;
-import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.OWLAPIUtils;
-import org.dllearner.utilities.TreeUtils;
+import org.dllearner.utilities.*;
 import org.dllearner.utilities.datastructures.SearchTree;
 import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -54,6 +51,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -80,12 +78,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private LengthLimitedRefinementOperator operator;
 
 	private SearchTree<OENode> searchTree;
-	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
+	@ConfigOption(defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
 	// the class with which we start the refinement process
-	@ConfigOption(
-			name = "startClass",
-			defaultValue = "owl:Thing",
+	@ConfigOption(defaultValue = "owl:Thing",
 			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
 			exampleValue = "ex:Male or http://example.org/ontology/Female")
 	private OWLClassExpression startClass;
@@ -96,7 +92,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
-	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
+	@ConfigOption(defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
 	private OWLClassExpression bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
@@ -135,43 +131,43 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
-	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	@ConfigOption(defaultValue="false", description="specifies whether to write a search tree")
 	private boolean writeSearchTree = false;
 
-	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	@ConfigOption(defaultValue="log/searchTree.txt", description="file to use for the search tree")
 	private String searchTreeFile = "log/searchTree.txt";
 
-	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	@ConfigOption(defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 	private boolean replaceSearchTree = false;
 	
-	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
+	@ConfigOption(defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 	private int maxNrOfResults = 10;
 
-	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 
-	@ConfigOption(name = "filterDescriptionsFollowingFromKB", defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
+	@ConfigOption(defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
 	private boolean filterDescriptionsFollowingFromKB = false;
 
-	@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
+	@ConfigOption(defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 	private boolean reuseExistingDescription = false;
 
-	@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	@ConfigOption(defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTests = 0;
 
-	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	@ConfigOption(defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTestsAfterImprovement = 0;
 	
-	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "0", description = "maximum execution of the algorithm in seconds after last improvement")
 	private int maxExecutionTimeInSecondsAfterImprovement = 0;
 	
-	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
+	@ConfigOption(defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = false;
 	
-	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
+	@ConfigOption(defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
 
-	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	@ConfigOption(defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
 	private boolean stopOnFirstDefinition = false;
 	
 	private int expressionTestCountLastImprovement;
@@ -182,7 +178,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 	private boolean expandAccuracy100Nodes = false;
 	private double currentHighestAccuracy;
-	
+
+	// option to keep track of best score during algorithm run
+	private boolean keepTrackOfBestScore = false;
+	private SortedMap<Long, Double> runtimeVsBestScore = new TreeMap<>();
+
 	
 	public CELOE() {}
 	
@@ -240,10 +240,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return problems;
 	}
 	
-	public static String getName() {
-		return "CELOE";
-	}
-
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();
@@ -275,18 +271,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		// start at owl:Thing by default
-		if (startClass == null) {
-			startClass = computeStartClass();
-		} else {
-			try {
-				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
-			} catch (Exception e) {
-				logger.warn("Error parsing start class.", e);
-				logger.warn("Using owl:Thing instead.");
-				this.startClass = dataFactory.getOWLThing();
-			}
-		}
-		
+		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, this::computeStartClass, logger);
+
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
@@ -318,13 +304,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			operator = new RhoDRDown();
 			((CustomStartRefinementOperator) operator).setStartClass(startClass);
 			((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
-			operator.init();
 		}
 		if (operator instanceof CustomHierarchyRefinementOperator) {
 			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
+		operator.init();
 	}
 	
 	@Override
@@ -770,6 +756,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		descriptions = new TreeSet<>();
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
+		runtimeVsBestScore.clear();
 	}
 	
 	private void printAlgorithmRunStats() {
@@ -789,6 +776,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			timeLastImprovement = System.nanoTime();
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
+
+			// track new best accuracy if enabled
+			if(keepTrackOfBestScore) {
+				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
+			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 		}
 	}
@@ -801,7 +793,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -1051,10 +1043,62 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
 		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
+
+	/**
+	 * Whether to keep track of the best score during the algorithm run.
+	 *
+	 * @param keepTrackOfBestScore
 	 */
+	public void setKeepTrackOfBestScore(boolean keepTrackOfBestScore) {
+		this.keepTrackOfBestScore = keepTrackOfBestScore;
+	}
+
+	/**
+	 * @return a map containing time points at which a hypothesis with a better score than before has been found
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore() {
+		return runtimeVsBestScore;
+	}
+
+	/**
+	 * Return a map that contains
+	 * <ol>
+	 *     <li>entries with time points at which a hypothesis with a better score than before has been found</li>
+	 *     <li>entries with the current best score for each defined interval time point</li>
+	 * </ol>
+	 *
+	 * @param ticksIntervalTimeValue at which time point the current best score is tracked periodically
+	 * @param ticksIntervalTimeUnit the time unit of the periodic time point values
+	 *
+	 * @return the map
+	 *
+	 */
+	public SortedMap<Long, Double> getRuntimeVsBestScore(long ticksIntervalTimeValue, TimeUnit ticksIntervalTimeUnit) {
+		SortedMap<Long, Double> map = new TreeMap<>(runtimeVsBestScore);
+
+		// add entries for fixed time points if enabled
+		if(ticksIntervalTimeValue > 0) {
+			long ticksIntervalInMs = TimeUnit.MILLISECONDS.convert(ticksIntervalTimeValue, ticksIntervalTimeUnit);
+
+			// add  t = 0 -> 0
+			map.put(0L, 0d);
+
+			for(long t = ticksIntervalInMs; t <= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds); t += ticksIntervalInMs) {
+				// add value of last entry before this time point
+				map.put(t, map.get(runtimeVsBestScore.headMap(t).lastKey()));
+			}
+
+			// add  entry for t = totalRuntime
+			long totalRuntimeMs = Math.min(TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds), TimeUnit.NANOSECONDS.toMillis(totalRuntimeNs));
+			map.put(totalRuntimeMs, map.get(map.lastKey()));
+		}
+
+		return map;
+	}
+
+	/* (non-Javadoc)
+			 * @see java.lang.Object#clone()
+			 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return new CELOE(this);
@@ -1123,9 +1167,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		alg.setSearchTreeFile("log/search-tree.log");
 		alg.setReplaceSearchTree(true);
 		alg.init();
+		alg.setKeepTrackOfBestScore(true);
 		
 		alg.start();
-		
+
+		SortedMap<Long, Double> map = alg.getRuntimeVsBestScore(1, TimeUnit.SECONDS);
+		System.out.println(MapUtils.asTSV(map, "runtime", "best_score"));
+
 	}
 	
 }

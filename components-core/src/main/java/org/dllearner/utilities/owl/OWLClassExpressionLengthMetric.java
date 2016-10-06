@@ -2,32 +2,54 @@ package org.dllearner.utilities.owl;
 
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.config.ConfigOption;
 
 /**
- * Created by Simon Bin on 16-1-28.
+ * Generic configurable length metric for class expression length calculation
  */
 @ComponentAnn(name = "OWL Class Expression Length Metric", shortName = "cel_metric", version = 0.1)
 public class OWLClassExpressionLengthMetric extends AbstractComponent {
+	@ConfigOption(defaultValue = "1", description = "Class: \"C\"")
 	public int classLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Intersection: A\"⨅\"B")
 	public int objectIntersectionLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Union: A\"⨆\"B")
 	public int objectUnionLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Complement: \"¬\"C")
 	public int objectComplementLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Obj. Some Values: \"∃\" r.C")
 	public int objectSomeValuesLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Obj. All Values: \"∀\" r.C")
 	public int objectAllValuesLength = 1;
+	@ConfigOption(defaultValue = "2", description = "Obj. Has Value: \"∃\" r.\"{I}\"")
 	public int objectHasValueLength = 2;
+	@ConfigOption(defaultValue = "2", description = "Obj. Cardinaltiy restriction: \"≤n\" r.C")
 	public int objectCardinalityLength = 2;
+	@ConfigOption(defaultValue = "1", description = "Obj. One of: ∃ r.\"{X,Y,Z}\"")
 	public int objectOneOfLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data Some Values: \"∃\" p.t")
 	public int dataSomeValuesLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data All Values: \"∀\" p.t")
 	public int dataAllValuesLength = 1;
+	@ConfigOption(defaultValue = "2", description = "Data Has Value: \"∃\" p.\"{V}\"")
 	public int dataHasValueLength = 2;
+	@ConfigOption(defaultValue = "2", description = "Data Cardinaltiy restriction: \"≤n\" r.t")
 	public int dataCardinalityLength = 2;
+	@ConfigOption(defaultValue = "1", description = "Obj. Property: ∃ \"r\".C")
 	public int objectProperyLength = 1;
+	@ConfigOption(defaultValue = "2", description = "Inverse property: ∃ \"r⁻\".C")
 	public int objectInverseLength = 2;
+	@ConfigOption(defaultValue = "1", description = "Data Property: ∃ \"p\".t")
 	public int dataProperyLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Datatype: \"^^datatype\"")
 	public int datatypeLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data One of: ∃ p.\"{U,V,W}\"")
 	public int dataOneOfLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data Complement: \"¬\"datatype")
 	public int dataComplementLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data Intersection: datatype\"⨅\"datatype")
 	public int dataIntersectionLength = 1;
+	@ConfigOption(defaultValue = "1", description = "Data Union: datatype\"<u>⨆</u>\"datatype")
 	public int dataUnionLength = 1;
 
 	public static OWLClassExpressionLengthMetric getDefaultMetric() {

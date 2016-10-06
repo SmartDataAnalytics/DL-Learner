@@ -18,15 +18,19 @@
  */
 package org.dllearner.utilities.owl;
 
-import com.hp.hpl.jena.vocabulary.OWL;
+import com.google.common.collect.Maps;
+import org.apache.jena.vocabulary.OWL;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,12 +39,24 @@ import java.util.Set;
  */
 public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+	private static OWLDataFactory df = new OWLDataFactoryImpl();
 	private AbstractReasonerComponent rc;
 	
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	
 	private boolean allowShortForm = false;
+
+	static Map<String, OWLDatatype> datatypeNames = Maps.newHashMap();
+	static {
+		datatypeNames.put("double", df.getDoubleOWLDatatype());
+		datatypeNames.put("int", df.getIntegerOWLDatatype());
+		datatypeNames.put("integer", df.getIntegerOWLDatatype());
+		datatypeNames.put("date", df.getOWLDatatype(XSDVocabulary.DATE.getIRI()));
+		for (OWL2Datatype o2d : OWL2Datatype.values()) {
+			if (!o2d.getShortForm().toUpperCase().equals(o2d.getShortForm()))
+				datatypeNames.put(o2d.getShortForm(), o2d.getDatatype(df));
+		}
+	}
 
 	public SimpleOWLEntityChecker(AbstractReasonerComponent rc) {
 		this.rc = rc;
@@ -104,7 +120,7 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	 */
 	@Override
 	public OWLDatatype getOWLDatatype(String name) {
-		return null;
+		return datatypeNames.get(name);
 	}
 
 	/* (non-Javadoc)

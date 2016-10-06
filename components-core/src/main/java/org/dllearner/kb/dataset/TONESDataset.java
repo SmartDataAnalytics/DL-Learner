@@ -18,6 +18,7 @@
  */
 package org.dllearner.kb.dataset;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -29,8 +30,8 @@ public class TONESDataset extends AbstractOWLOntologyDataset{
 	
 	private static final String name = "TONES";
 
-	public TONESDataset() {
-		super(name);
+	public TONESDataset(File datasetDirectory) {
+		super(datasetDirectory, name);
 	}
 	
 	@Override
@@ -46,7 +47,4 @@ public class TONESDataset extends AbstractOWLOntologyDataset{
 			}
 		}
 	}
-
-	
-
 }

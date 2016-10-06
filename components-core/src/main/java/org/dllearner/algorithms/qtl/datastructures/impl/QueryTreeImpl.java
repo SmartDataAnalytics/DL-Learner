@@ -19,24 +19,24 @@
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.sparql.core.TriplePath;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.Syntax;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementPathBlock;
+import org.apache.jena.sparql.syntax.ElementTriplesBlock;
+import org.apache.jena.sparql.syntax.ElementVisitorBase;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
@@ -137,6 +137,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         child2EdgeMap = new HashMap<>();
         edge2ChildrenMap = new HashMap<>();
         toStringRenderer = new NodeRenderer<N>() {
+            @Override
             public String render(QueryTree<N> object) {
             	String label = object.toString() + "(" + object.getId() + ")";
             	if(object.isLiteralNode()){
@@ -172,6 +173,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         child2EdgeMap = new HashMap<>();
         edge2ChildrenMap = new HashMap<>();
         toStringRenderer = new NodeRenderer<N>() {
+            @Override
             public String render(QueryTree<N> object) {
             	String label = object.toString() + "(" + object.getId() + ")";
             	if(object.isLiteralNode()){
@@ -241,16 +243,19 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	addLiterals(tree.getLiterals());
     }
     
+    @Override
     public boolean sameType(QueryTree<N> tree){
     	return (isResourceNode && tree.isResourceNode()) ||
     		(isVarNode() && tree.isVarNode()) ||
     		(isLiteralNode && tree.isLiteralNode());
     }
 
+    @Override
     public N getUserObject() {
         return userObject;
     }
     
+    @Override
     public void setUserObject(N userObject) {
         this.userObject = userObject;
     }
@@ -265,6 +270,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return id;
     }
     
+	@Override
 	public NodeType getNodeType() {
 		return nodeType;
 	}
@@ -274,6 +280,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return this.children.isEmpty();
     }
     
+    @Override
     public QueryTree<N> getNodeById(int nodeId){
     	QueryTree<N> node = null;
     	if(this.id == nodeId){
@@ -328,7 +335,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	isResourceNode = false;
     }
 
-
     public void setParent(QueryTreeImpl<N> parent) {
         if (this.parent != null) {
             this.parent.children.remove(this);
@@ -345,6 +351,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 		setParent((QueryTreeImpl<N>)parent);
 	}
 
+    @Override
     public void addChild(QueryTreeImpl<N> child) {
         children.add(child);
         child.parent = this;
@@ -369,6 +376,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         child.parent = this;
     }
 
+    @Override
     public void addChild(QueryTreeImpl<N> child, Object edge) {
         addChild(child);
         child2EdgeMap.put(child, edge);
@@ -395,7 +403,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	
     }
 
-
+    @Override
     public int removeChild(QueryTreeImpl<N> child) {
     	int pos = children.indexOf(child);
         children.remove(child);
@@ -414,6 +422,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     /**
      * Removes all children connected by the given edge.
      */
+    @Override
     public void removeChildren(Object edge) {
     	List<QueryTree<N>> children = edge2ChildrenMap.remove(edge);
     	if(children != null){
@@ -434,20 +443,20 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 //    	edge2ChildrenMap.put("http://dl-learner.org/carcinogenesis#hasAtom", list);
     }
 
-
+    @Override
     public Object getEdge(QueryTree<N> child) {
         return child2EdgeMap.get(child);
     }
     
+    @Override
     public Set<Object> getEdges(){
     	return new TreeSet<>(child2EdgeMap.values());
     }
 
-
+    @Override
     public void sortChildren(Comparator<QueryTree<N>> comparator) {
         Collections.sort(children, comparator);
     }
-
 
     public void clearChildren() {
         for (QueryTreeImpl<N> child : new ArrayList<>(children)) {
@@ -455,16 +464,17 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
 
-
+    @Override
     public QueryTree<N> getParent() {
         return parent;
     }
 
-
+    @Override
     public List<QueryTree<N>> getChildren() {
-        return new ArrayList<QueryTree<N>>(children);
+        return new ArrayList<>(children);
     }
     
+    @Override
     public List<QueryTree<N>> getChildren(Object edge) {
 //    	List<QueryTree<N>> children = new ArrayList<QueryTree<N>>();
 //    	for(Entry<QueryTree<N>, Object> entry : child2EdgeMap.entrySet()){
@@ -480,16 +490,17 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return new ArrayList<>(children);
     }
     
+    @Override
     public int getChildCount() {
         return children.size();
     }
 
-
+    @Override
     public boolean isRoot() {
         return parent == null;
     }
 
-
+    @Override
     public boolean isLeaf() {
         return children.isEmpty();
     }
@@ -528,6 +539,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 //    	return isSubsumedBy(tree, LiteralNodeSubsumptionStrategy.OFF);
     }
     
+    @Override
     public boolean isSubsumedBy(QueryTree<N> tree, LiteralNodeSubsumptionStrategy strategy) {
 //    	System.out.println("++++++++++++++++++++++++++++");
 //    	System.out.println(tree + "-" + this.userObject);
@@ -701,15 +713,17 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return true;
     }
     
+    @Override
     public void tag(){
     	tagged = true;
     }
     
+    @Override
     public boolean isTagged(){
     	return tagged;
     }
 
-
+    @Override
     public QueryTree<N> getRoot() {
         if (parent == null) {
             return this;
@@ -717,6 +731,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return parent.getRoot();
     }
     
+    @Override
     public List<QueryTree<N>> getLeafs(){
     	List<QueryTree<N>> leafs = new LinkedList<>();
     	if(isLeaf()){
@@ -729,7 +744,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return leafs;
     }
 
-
+    @Override
     public List<QueryTree<N>> getPathToRoot() {
         List<QueryTree<N>> path = new ArrayList<>();
         path.add(0, this);
@@ -743,7 +758,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
    
 
-
+    @Override
     public List<N> getUserObjectPathToRoot() {
         List<N> path = new ArrayList<>();
         path.add(0, this.getUserObject());
@@ -755,6 +770,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return path;
     }
     
+    @Override
     public List<QueryTree<N>> getChildrenClosure() {
         List<QueryTree<N>> children = new ArrayList<>();
         getChildrenClosure(this, children);
@@ -768,13 +784,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
 
-
+    @Override
     public Set<N> getUserObjectClosure() {
         Set<N> objects = new HashSet<>();
         getUserObjectClosure(this, objects);
         return objects;
     }
     
+    @Override
     public int getTriplePatternCount(){
     	return countTriplePattern(this);
     }
@@ -825,6 +842,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
     
+    @Override
     public String getStringRepresentation(){
     	return getStringRepresentation(false);
     }
@@ -834,6 +852,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
      * @param stopIfChildIsResourceNode whether to stop if child is resource
      * @return the query tree string
      */
+    @Override
     public String getStringRepresentation(boolean stopIfChildIsResourceNode){
     	int depth = getPathToRoot().size();
         StringBuilder sb = new StringBuilder();
@@ -883,14 +902,17 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return sb.toString();
     }
     
+    @Override
     public void dump() {
         dump(new PrintWriter(System.out), 0);
     }
 
+    @Override
     public void dump(PrintWriter writer) {
         dump(writer, 0);
     }
 
+    @Override
     public void dump(PrintWriter writer, int indent) {
         int depth = getPathToRoot().size();
         StringBuilder sb = new StringBuilder();
@@ -955,6 +977,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return false;
     }
 
+    @Override
     public List<N> fillDepthFirst() {
         List<N> results = new ArrayList<>();
         fillDepthFirst(this, results);
@@ -985,13 +1008,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
 
-
     public int getSize() {
         return getUserObjectClosure().size();
     }
 
-
-
+    @Override
     public int getMaxDepth() {
         return getMaxDepth(this);
     }
@@ -1048,6 +1069,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 //    	return true;
 //    }
     
+    @Override
     public boolean isSameTreeAs(QueryTree<N> tree){
     	if(!this.userObject.equals(tree.getUserObject())){
     		return false;
@@ -1091,6 +1113,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return sb.toString();
     }
     
+    @Override
     public String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters) {
     	return toSPARQLQueryString(filterMeaninglessProperties, useNumericalFilters, Collections.<String, String>emptyMap());
     }
@@ -1368,6 +1391,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return max;
     }
     
+    @Override
     public Query toQuery(){
     	Query query = QueryFactory.make();
     	query.setQuerySelectType();
@@ -1438,6 +1462,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	literals.add(l);
     }
     
+    @Override
     public Set<Literal> getLiterals() {
 		return literals;
 	}
@@ -1446,6 +1471,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	this.literals.addAll(literals);
 	}
     
+    @Override
     public RDFDatatype getDatatype(){
     	if(isLiteralNode){
     		if(!literals.isEmpty()){
@@ -1462,6 +1488,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
      * Converts the query tree in a corresponding OWL class expression. Literal nodes
      * are transformed into existential restrictions.
      */
+    @Override
     public OWLClassExpression asOWLClassExpression(){
     	return asOWLClassExpression(LiteralNodeConversionStrategy.DATATYPE);
     }
@@ -1470,6 +1497,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
      * Converts the query tree in a corresponding OWL class expression. Literal nodes
      * are transformed following the given strategy.
      */
+    @Override
     public OWLClassExpression asOWLClassExpression(LiteralNodeConversionStrategy literalNodeConversionStrategy){
     	OWLDataFactory df = new OWLDataFactoryImpl();
     	QueryTree<N> root = getRoot();
@@ -1707,12 +1735,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			}
 		};
 
-		VertexNameProvider<Vertex> vertexNameProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return vertex.getLabel();
-			}
-		};
+		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
 		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
 			@Override
@@ -1721,12 +1744,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			}
 		};
 
-		EdgeNameProvider<Edge> edgeLabelProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return edge.getLabel();
-			}
-		};
+		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
                 vertexNameProvider, edgeIDProvider, edgeLabelProvider);
 		try {

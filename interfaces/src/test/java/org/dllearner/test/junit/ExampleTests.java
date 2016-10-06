@@ -19,25 +19,6 @@
  */
 package org.dllearner.test.junit;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,12 +26,21 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests related to learning problems in the examples directory.
@@ -95,13 +85,13 @@ public class ExampleTests {
 		logger.setLevel(Level.WARN);
 
 		// map containing a list of conf files for each path
-		Map<String, ArrayList<String>> confFiles = new TreeMap<String, ArrayList<String>>();
+		Map<String, ArrayList<String>> confFiles = new TreeMap<>();
 		String exampleDir = ".." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
 
 		// put all examples in a flat list
-		List<String> examples = new LinkedList<String>();
+		List<String> examples = new LinkedList<>();
 		for(Map.Entry<String,ArrayList<String>> entry : confFiles.entrySet()) {
 			for(String file : entry.getValue()) {
 				examples.add(entry.getKey() + file + ".conf");
@@ -119,7 +109,7 @@ public class ExampleTests {
 		// ignore list (examples which are temporarily not working due
 		// to server downtime, lack of features etc., but should still
 		// remain in the example directory
-		Set<String> ignore = new TreeSet<String>();
+		Set<String> ignore = new TreeSet<>();
 		
 		// "standard" ignores (no problem to keep those)
 		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated
@@ -195,7 +185,7 @@ public class ExampleTests {
 								}
 //								start.getReasonerComponent().releaseKB();
 								success = true;		
-								successful.append(conf + "\n");
+								successful.append(conf).append("\n");
 							} else {
 								System.out.println("Test skipped, because of GP or SPARQL settings.");
 							}
@@ -205,7 +195,7 @@ public class ExampleTests {
 							assert ( false );
 							failedCounter.incrementAndGet();
 							failed.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-							failed.append(conf + "\n");
+							failed.append(conf).append("\n");
 							StringWriter writer = new StringWriter();
 							PrintWriter printWriter = new PrintWriter( writer );
 							e.printStackTrace(printWriter);

@@ -19,7 +19,6 @@
  */
 package org.dllearner.cli;
 
-
 import org.dllearner.configuration.IConfigurationProperty;
 
 /**

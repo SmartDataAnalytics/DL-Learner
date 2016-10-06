@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -36,10 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * {@inheritDoc}
@@ -95,7 +91,7 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 				for (AxiomType<? extends OWLAxiom> axiomType : applicableAxiomTypes) {
 					// apply the appropriate learning algorithm
 					try {
-						List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
+						Set<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
 						generatedAxioms.addAll(axioms);
 					} catch (Exception e) {
 						LOGGER.error("Exception occured for axiom type "

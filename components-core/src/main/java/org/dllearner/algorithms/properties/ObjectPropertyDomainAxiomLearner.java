@@ -18,30 +18,18 @@
  */
 package org.dllearner.algorithms.properties;
 
-import java.util.Set;
-
+import org.apache.jena.query.*;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.*;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.util.Set;
 
 @ComponentAnn(name="object property domain axiom learner", shortName="opldomain", version=0.1, description="A learning algorithm for object property domain axioms.")
 public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
@@ -54,12 +42,6 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type . ?type a owl:Class .} GROUP BY ?type");
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type . ?type a owl:Class .} GROUP BY ?type");
-	
-	// a property domain axiom can formally be seen as a subclass axiom \exists r.\top \sqsubseteq \C 
-	// so we have to focus more on accuracy, which we can regulate via the parameter beta
-	double beta = 3.0;
-	
-	private boolean useSimpleScore = false;
 	
 	public ObjectPropertyDomainAxiomLearner(){
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
@@ -90,9 +72,10 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
-	
+
+	@Deprecated
 	public void setPropertyToDescribe(OWLObjectProperty entityToDescribe) {
-		super.setEntityToDescribe(entityToDescribe);
+		setEntityToDescribe(entityToDescribe);
 	}
 	
 	/* (non-Javadoc)
@@ -138,6 +121,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	 * A = \exists r.\top
 	 * B = C
 	 */
+	@Override
 	protected void run(){
 		// get the candidates
 		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();
@@ -174,30 +158,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 			logger.debug(candidate + " analyzed in " + mon.getLastValue());
 		}
 	}
-	
-	private AxiomScore computeScore(int cntA, int cntB, int cntAB) {
-		// precision (A AND B)/B
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
-		
-		// in the simplest case, the precision is our score
-		double score = precision;
-		
-		// if enabled consider also recall and use F-score
-		if(!useSimpleScore) {
-			// recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			// F score
-			score = Heuristics.getFScore(recall, precision, beta);
-		}
-		
-		int nrOfPosExamples = cntAB;
-		
-		int nrOfNegExamples = popularity - cntAB;
-		
-		return new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling);
-	}
-	
+
 	/**
 	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
 	 */

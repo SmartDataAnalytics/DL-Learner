@@ -18,48 +18,46 @@
  */
 package org.dllearner.algorithms.qtl;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
-import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
-import org.dllearner.algorithms.qtl.util.StopURIsOWL;
-import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
+import org.dllearner.algorithms.qtl.util.*;
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
+import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.TreeBasedConciseBoundedDescriptionGenerator;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class QTLTest {
 	String cacheDirectory = "cache";
@@ -123,9 +121,12 @@ public class QTLTest {
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		qef = CacheUtilsH2.createQueryExecutionFactory(qef, "/tmp/sparql", false, TimeUnit.DAYS.toMillis(30));
-		qef = new QueryExecutionFactoryPaginated(qef);
+		QueryExecutionFactory qef = ks.getQueryExecutionFactory();
+
+		TreeBasedConciseBoundedDescriptionGenerator cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
+
+		QueryTreeFactory queryTreeFactory = new QueryTreeFactoryBaseInv();
+		queryTreeFactory.setMaxDepth(maxTreeDepth);
 		
 		PosNegLPStandard lp = new PosNegLPStandard();
 		Set<OWLIndividual> posExamples = Sets.newTreeSet();
@@ -165,6 +166,15 @@ public class QTLTest {
 //				+ "http://dbpedia.org/resource/L._M._Shaw";
 		
 		posExStr = "http://dbpedia.org/resource/Super_Robot_Wars_D, http://dbpedia.org/resource/Cosmic_Soldier_(video_game), http://dbpedia.org/resource/Reel_Fishing:_Angler's_Dream, http://dbpedia.org/resource/CR_Parodius_Da!, http://dbpedia.org/resource/Jikandia:_The_Timeless_Land, http://dbpedia.org/resource/Rainbow_Islands_Evolution, http://dbpedia.org/resource/Mega_Man_Battle_Chip_Challenge, http://dbpedia.org/resource/Case_Closed:_The_Mirapolis_Investigation, http://dbpedia.org/resource/Mist_of_Chaos, http://dbpedia.org/resource/Super_Robot_Wars_64, http://dbpedia.org/resource/Panorama_Cotton, http://dbpedia.org/resource/Mad_Stalker:_Full_Metal_Force_(1997_video_game), http://dbpedia.org/resource/Karous, http://dbpedia.org/resource/Gadget_Trial, http://dbpedia.org/resource/Battle_Arena_Toshinden_3, http://dbpedia.org/resource/Record_of_Agarest_War, http://dbpedia.org/resource/Metal_Gear_Solid_2:_Sons_of_Liberty, http://dbpedia.org/resource/Memories_Off:_Yubikiri_no_Kioku, http://dbpedia.org/resource/Harvest_Moon:_Hero_of_Leaf_Valley, http://dbpedia.org/resource/Harvest_Moon:_Back_to_Nature, http://dbpedia.org/resource/Harvest_Moon:_Tree_of_Tranquility, http://dbpedia.org/resource/Ultimate_Shooting_Collection, http://dbpedia.org/resource/Shantae:_Half-Genie_Hero, http://dbpedia.org/resource/Apocalypse:_Desire_Next, http://dbpedia.org/resource/Katekyo_Hitman_Reborn!_Dream_Hyper_Battle!, http://dbpedia.org/resource/Harvest_Moon_DS:_Grand_Bazaar, http://dbpedia.org/resource/Chaos_Field, http://dbpedia.org/resource/Charinko_Hero, http://dbpedia.org/resource/Blue_Flow, http://dbpedia.org/resource/Generation_of_Chaos";
+		posExStr = "http://dbpedia.org/resource/Experimental_music, " +
+				"http://dbpedia.org/resource/Proto-punk, " +
+				"http://dbpedia.org/resource/Rock_music";
+		CBDStructureTree cbdStructure = CBDStructureTree.fromTreeString("root:[in:[in:[]]]");
+
+//		posExStr = "http://dbpedia.org/resource/Doug_Magallon,_Greg_Strom, " +
+//				"http://dbpedia.org/resource/Kevin_Feige, " +
+//				"http://dbpedia.org/resource/Scott_Steindorff";
+//		CBDStructureTree  cbdStructure = CBDStructureTree.fromTreeString("root:[in:[out:[]]]");
 		for (String uri : Splitter.on(", ").trimResults().split(posExStr)) {
 			posExamples.add(new OWLNamedIndividualImpl(IRI.create(uri)));
 		}
@@ -175,11 +185,23 @@ public class QTLTest {
 		reasoner.setPrecomputeObjectPropertyHierarchy(true);
 		reasoner.setPrecomputeDataPropertyHierarchy(true);
 		reasoner.init();
+
+
+		Map<OWLIndividual, RDFResourceTree> posTreeMapping = new HashMap<>();
+		posExamples.forEach(ex -> {
+			try {
+				posTreeMapping.put(ex,
+                        getQueryTree(ex.toStringID(), cbdStructure, cbdGen, queryTreeFactory, maxTreeDepth));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 		
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 		la.setReasoner(reasoner);
 		la.setTreeFactory(qtf);
 		la.setEntailment(Entailment.SIMPLE);
+		la.setPositiveExampleTrees(posTreeMapping);
 		la.setMaxTreeDepth(maxTreeDepth);
 		la.init();
 		
@@ -193,10 +215,41 @@ public class QTLTest {
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(bestSolution));
 		
 		PredicateExistenceFilterDBpedia filter = new PredicateExistenceFilterDBpedia(null);
-		System.out.println(filter.filter(bestSolution).getStringRepresentation());
-		System.out.println(QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution)));
+		System.out.println(filter.apply(bestSolution).getStringRepresentation());
+		System.out.println(QueryTreeUtils.toSPARQLQueryString(filter.apply(bestSolution)));
 		
 		QueryTreeUtils.asGraph(bestSolution, null, PrefixCCPrefixMapping.Full, new File("/tmp/tree.graphml"));
+	}
+
+	private static RDFResourceTree getQueryTree(String resource, CBDStructureTree cbdStructure,
+												TreeBasedConciseBoundedDescriptionGenerator cbdGen,
+												QueryTreeFactory qtf, int maxDepth) throws Exception {
+		// get CBD
+		System.out.println("loading data for " + resource);
+		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
+		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
+		mon.stop();
+
+		// rewrite NAN to NaN to avoid parse exception
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+			cbd.write(baos, "N-TRIPLES", null);
+			String modelAsString = new String(baos.toByteArray());
+			modelAsString = modelAsString.replace("NAN", "NaN");
+			Model newModel = ModelFactory.createDefaultModel();
+			newModel.read(new StringReader(modelAsString), null, "TURTLE");
+			cbd = newModel;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println(cbd.size());
+
+		// generate tree
+		System.out.println("generating query tree ...");
+		mon = MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
+		RDFResourceTree tree = qtf.getQueryTree(resource, cbd, maxDepth);
+		mon.stop();
+//		System.out.println(tree.getStringRepresentation());
+		return tree;
 	}
 
 }

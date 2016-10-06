@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.math3.genetics.NPointCrossover;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
@@ -66,7 +65,7 @@ public class ClassAsInstanceLearningProblemTest {
 		
 		// n_p positive examples
 		int n_p = 5;
-		Set<OWLClass> posExamples = new HashSet<OWLClass>();
+		Set<OWLClass> posExamples = new HashSet<>();
 		for(int i = 0; i < n_p; i++) {
 			posExamples.add(df.getOWLClass(IRI.create("A" + i)));
 		}

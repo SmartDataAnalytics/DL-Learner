@@ -202,7 +202,6 @@ public class SemKernel extends AbstractComponent {
                 model.param.ontology_file = ontologyFilePath;
                 svm.initSimilarityEngine(ontologyFilePath);
 
-
                 if(predictProbability) {
                     if(svm.svm_check_probability_model(model)==0) {
                         final String msg =

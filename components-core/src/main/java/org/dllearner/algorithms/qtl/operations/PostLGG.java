@@ -18,17 +18,12 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
-import org.dllearner.algorithms.qtl.util.TreeHelper;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+
+import java.util.*;
 
 /**
  * This class can be used to simplify a query tree. In general we use it after the LGG is computed, 

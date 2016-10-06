@@ -18,24 +18,23 @@
  */
 package org.dllearner.algorithms.qtl.util.filters;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.util.NodeComparator;
+import org.dllearner.kb.SparqlEndpointKS;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.dllearner.kb.SparqlEndpointKS;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.util.NodeComparator;
 
 /**
  * @author Lorenz Buehmann

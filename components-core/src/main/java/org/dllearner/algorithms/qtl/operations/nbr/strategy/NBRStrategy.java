@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-
 /**
  * A strategy used to apply negative-based reduction on query trees.
  * @author Lorenz Bühmann

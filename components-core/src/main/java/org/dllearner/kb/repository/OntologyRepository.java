@@ -35,7 +35,6 @@ public interface OntologyRepository {
      */
     String getLocation();
 
-
     /**
      * Ensures the repository is up to date
      */

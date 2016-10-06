@@ -114,7 +114,7 @@ public class SyntheticDataGenerator {
 	 * Add n fresh individuals to given class.
 	 */
 	private List<OWLIndividual> addIndividuals(OWLClass cls, int n){
-		List<OWLIndividual> individuals = new ArrayList<OWLIndividual>();
+		List<OWLIndividual> individuals = new ArrayList<>();
 		
 		for (int i = 0; i < n; i++) {
 			OWLIndividual ind = df.getOWLNamedIndividual(sfp.getShortForm(cls.getIRI()).toLowerCase() + i, pm);

@@ -19,7 +19,7 @@
 package org.dllearner.algorithms.schema;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.StringRenderer;

@@ -148,8 +148,7 @@ public class Function extends Term {
 	@Override
 	public Term getInstance(Variable variable, Term term) {
 		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
-		for (int i = 0; i < arguments.size(); i++) {
-			Term argument = arguments.get(i);
+		for (Term argument : arguments) {
 			newArgs.add(argument.getInstance(variable, term));
 		}
 		return new Function(name, this.type, newArgs);

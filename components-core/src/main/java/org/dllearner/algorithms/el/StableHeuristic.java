@@ -22,7 +22,6 @@ import com.google.common.collect.ComparisonChain;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
-
 /**
  * A stable comparator for search tree nodes. Stable means that the order
  * of nodes will not change during the run of the learning algorithm. In

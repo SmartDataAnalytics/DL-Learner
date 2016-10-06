@@ -24,75 +24,70 @@
  */
 
 options {
-  JDK_VERSION = "1.6";
+  JDK_VERSION = "1.8";
   STATIC = false; 
   UNICODE_INPUT=true;
 }
 
 PARSER_BEGIN(ConfParser)
-package org.dllearner.confparser3; 
+package org.dllearner.confparser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.dllearner.cli.ConfFileOption2;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.parser.KBParser;
-import org.dllearner.utilities.datastructures.StringTuple;
+
+import java.io.*;
+import java.util.*;
 
 public class ConfParser {
 	
 	// special directives (those without a property name)
-	private Map<String,ConfFileOption2> specialOptions = new HashMap<String,ConfFileOption2>();
-	
+	private Map<String, ConfFileOption> specialOptions = new HashMap<String, ConfFileOption>();
+
 	// conf file options
-	private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
-	private Map<String,ConfFileOption2> confOptionsByProperty = new HashMap<String,ConfFileOption2>();
-	private Map<String,List<ConfFileOption2>> confOptionsByBean = new HashMap<String,List<ConfFileOption2>>();
-	
-	private void addConfOption(ConfFileOption2 confOption) {
+	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
+	private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<String, ConfFileOption>();
+	private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<String, List<ConfFileOption>>();
+
+	private void addConfOption(ConfFileOption confOption) {
 		confOptions.add(confOption);
 		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
 		String beanName = confOption.getBeanName();
-		if(confOptionsByBean.containsKey(beanName))
+		if (confOptionsByBean.containsKey(beanName))
 			confOptionsByBean.get(beanName).add(confOption);
 		else {
-			LinkedList<ConfFileOption2> optionList = new LinkedList<ConfFileOption2>();
+			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
 			optionList.add(confOption);
-			confOptionsByBean.put(beanName,optionList);
+			confOptionsByBean.put(beanName, optionList);
 		}
 	}
-	
-	public List<ConfFileOption2> getConfOptions() {
+
+	public List<ConfFileOption> getConfOptions() {
 		return confOptions;
 	}
-	
-	public Map<String,ConfFileOption2> getConfOptionsByProperty() {
+
+	public Map<String, ConfFileOption> getConfOptionsByProperty() {
 		return confOptionsByProperty;
 	}
 
-	public ConfFileOption2 getConfOptionsByProperty(String propertyName) {
-		return confOptionsByProperty.get(propertyName);
+	public ConfFileOption getConfOptionsByProperty(String propertyName) {
+		ConfFileOption confOption = confOptionsByProperty.get(propertyName);
+		if (confOption == null) {
+			confOption = specialOptions.get(propertyName);
+		}
+		return confOption;
 	}
-	
-	public Map<String,List<ConfFileOption2>> getConfOptionsByBean() {
+
+	public Map<String, List<ConfFileOption>> getConfOptionsByBean() {
 		return confOptionsByBean;
 	}
-	
-	public List<ConfFileOption2> getConfOptionsByBean(String beanName) {
+
+	public List<ConfFileOption> getConfOptionsByBean(String beanName) {
 		return confOptionsByBean.get(beanName);
 	}
-	
-	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException, UnsupportedEncodingException {
-		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename),"UTF-8"));
+
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException,
+			UnsupportedEncodingException {
+		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
 		parser.Start();
 		return parser;
 	}
@@ -123,7 +118,7 @@ TOKEN :
 
 void Start() : 
 {
-	ConfFileOption2 confOption;
+	ConfFileOption confOption;
 }
 {
   (		confOption = ConfOption()  		  
@@ -139,7 +134,7 @@ void Start() :
     pp.applyAll(); }
 }
 
-ConfFileOption2 ConfOption() : 
+ConfFileOption ConfOption() :
 {
 	boolean containsSubOption=false;
 	String value="", value1="", value2="", tmp="", tmp2=""; 
@@ -147,7 +142,7 @@ ConfFileOption2 ConfOption() :
 	Map<String,String> tuples = new HashMap<String,String>();
 	Map<String,Double> tuplesD = new HashMap<String,Double>();
 	
-	ConfFileOption2 option = new ConfFileOption2();
+	ConfFileOption option = new ConfFileOption();
 	boolean isBeanRef = false;
 	boolean isBeanCollection = false;
 	String beanName;
@@ -284,6 +279,11 @@ String String() :
     // enclosing "" are removed
     s = t.image;
     s = s.substring(1, s.length() - 1);
+    try {
+      s = java.net.URLDecoder.decode(s,"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    } catch (IllegalArgumentException e) {
+    }
     return s;
   }
 }

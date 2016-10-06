@@ -32,8 +32,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Chris Shellenbarger

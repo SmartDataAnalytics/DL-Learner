@@ -26,6 +26,6 @@ public interface ApplicationContextBuilder {
      * @return An Application Context
      * @throws IOException If there's a problem reading any of the files.
      */
-    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<Resource> springConfigurationLocations) throws IOException;
+    ApplicationContext buildApplicationContext(IConfiguration configuration, List<Resource> springConfigurationLocations) throws IOException;
 
 }

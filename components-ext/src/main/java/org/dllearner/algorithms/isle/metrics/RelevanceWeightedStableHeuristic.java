@@ -29,7 +29,6 @@ import org.dllearner.core.ComponentInitException;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-
 /**
  * A stable comparator for search tree nodes. Stable means that the order
  * of nodes will not change during the run of the learning algorithm. In

@@ -87,7 +87,7 @@ public class LearningProblemTest {
 		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(ks);
 		reasoner.init();		
 		
-		SortedSet<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>(Sets.newHashSet(ind[0], ind[1], ind[2], ind[3], ind[4]));
+		SortedSet<OWLIndividual> positiveExamples = new TreeSet<>(Sets.newHashSet(ind[0], ind[1], ind[2], ind[3], ind[4]));
 		PosOnlyLP lp = new PosOnlyLP(reasoner);
 		lp.setPositiveExamples(positiveExamples);
 		

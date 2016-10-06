@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.index.Annotation;
 import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -70,7 +69,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	}
 	
 	private Set<String> getLabels(OWLEntity entity){
-		Set<String> labels = new HashSet<String>();
+		Set<String> labels = new HashSet<>();
 		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(entity.getIRI());
 		for (OWLAnnotationAssertionAxiom annotation : axioms) {
 			if(annotation.getProperty().equals(annotationProperty)){
@@ -85,7 +84,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	
 	private Set<String> getRelatedWordPhrases(OWLEntity entity){
 		//add the labels if exist
-		Set<String> relatedWordPhrases = new HashSet<String>();
+		Set<String> relatedWordPhrases = new HashSet<>();
 		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(entity.getIRI());
 		for (OWLAnnotationAssertionAxiom annotation : axioms) {
 			if(annotation.getProperty().equals(annotationProperty)){

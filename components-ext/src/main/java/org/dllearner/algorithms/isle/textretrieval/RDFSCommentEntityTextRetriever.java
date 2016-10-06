@@ -9,7 +9,6 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-
 /**
  * @author Lorenz Buehmann
  *

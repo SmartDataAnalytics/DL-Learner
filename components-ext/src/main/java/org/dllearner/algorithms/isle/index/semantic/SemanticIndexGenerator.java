@@ -101,11 +101,11 @@ public abstract class SemanticIndexGenerator {
     }
     
     public static SemanticIndex generateIndex(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String language, boolean useWordNormalization){
-    	Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+    	Set<OWLEntity> schemaEntities = new HashSet<>();
         schemaEntities.addAll(ontology.getClassesInSignature());
         schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
         schemaEntities.addAll(ontology.getDataPropertiesInSignature());
-        Set<String> documents = new HashSet<String>();
+        Set<String> documents = new HashSet<>();
         for (OWLEntity entity : schemaEntities) {
             String label = null;
             Collection<OWLAnnotation> annotations = ontology.getAnnotations();
@@ -146,7 +146,7 @@ public abstract class SemanticIndexGenerator {
             for (OWLEntity entity : annotatedDocument.getContainedEntities()) {
                 Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
                 if (existingAnnotatedDocuments == null) {
-                    existingAnnotatedDocuments = new HashSet<AnnotatedDocument>();
+                    existingAnnotatedDocuments = new HashSet<>();
                     index.put(entity, existingAnnotatedDocuments);
                 }
                 existingAnnotatedDocuments.add(annotatedDocument);

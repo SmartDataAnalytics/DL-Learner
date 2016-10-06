@@ -32,6 +32,7 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
  */
 public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
 
+	@Override
 	public int compare(ExampleBasedNode n1, ExampleBasedNode n2) {
 		
 		// make sure quality has been evaluated

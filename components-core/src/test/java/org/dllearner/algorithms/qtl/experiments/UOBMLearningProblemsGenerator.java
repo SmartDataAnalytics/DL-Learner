@@ -24,7 +24,6 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -63,6 +62,6 @@ public class UOBMLearningProblemsGenerator extends SPARQLLearningProblemsGenerat
 		UOBMLearningProblemsGenerator generator = new UOBMLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
 		generator.generateBenchmark(nrOfSPARQLQueries, minDepth, maxDepth, minNrOfExamples);
 	}
-	
+
 
 }

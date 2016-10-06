@@ -103,10 +103,10 @@ public class SparqlExtractionTest {
 		
 			String example = "http://dbpedia.org/resource/Angela_Merkel";
 			
-			Set<String> startingInstances = new TreeSet<String>();
+			Set<String> startingInstances = new TreeSet<>();
 			startingInstances.add(example);
 			
-			List<Node> seedNodes=new ArrayList<Node>();
+			List<Node> seedNodes= new ArrayList<>();
 			
 			//if(!threaded){
 			seedNodes = m.extract(startingInstances);

@@ -18,15 +18,12 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import java.util.function.Predicate;
 
 /**
  * 
@@ -62,23 +59,7 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(String example, Model model) {
-		return delegatee.getQueryTree(example, model);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model)
-	 */
-	@Override
-	public RDFResourceTree getQueryTree(Resource resource, Model model) {
-		return delegatee.getQueryTree(resource, model);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model, int)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, org.apache.jena.rdf.model.Model, int)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(String example, Model model, int maxDepth) {
@@ -86,7 +67,7 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model, int)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(org.apache.jena.rdf.model.Resource, org.apache.jena.rdf.model.Model, int)
 	 */
 	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth) {
@@ -94,10 +75,10 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(com.hp.hpl.jena.util.iterator.Filter)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
 	@Override
-	public void addDropFilters(Filter<Statement>... dropFilters) {
+	public void addDropFilters(Predicate<Statement>... dropFilters) {
 		delegatee.addDropFilters(dropFilters);
 	}
 }

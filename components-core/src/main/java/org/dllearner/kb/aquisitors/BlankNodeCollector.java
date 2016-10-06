@@ -18,18 +18,12 @@
  */
 package org.dllearner.kb.aquisitors;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.RDFNode;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import java.util.*;
 
 public class BlankNodeCollector {
 
@@ -44,7 +38,7 @@ public class BlankNodeCollector {
 	
 	public static void addBlankNode(int id, RDFNodeTuple t){
 		if(blankNodes.get(id)==null){
-			blankNodes.put(id, new TreeSet<RDFNodeTuple>());
+			blankNodes.put(id, new TreeSet<>());
 			}
 		blankNodes.get(id).add(t);
 		//System.out.println("added: "+id+" "+t);

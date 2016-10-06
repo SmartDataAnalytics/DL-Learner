@@ -91,6 +91,7 @@ public class SynchronizedRefinementOperator implements LengthLimitedRefinementOp
 		}
 	}
 
+	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() {
 		synchronized (delegate) {
 			return delegate.getLengthMetric();

@@ -18,15 +18,15 @@
  */
 package org.dllearner.algorithms.properties;
 
-import java.util.SortedSet;
-
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import java.util.SortedSet;
 
 @ComponentAnn(name = "disjoint data properties axiom learner", shortName = "dpldisjoint", version = 0.1, description="A learning algorithm for disjoint data properties axioms.")
 public class DisjointDataPropertyAxiomLearner extends DataPropertyHierarchyAxiomLearner<OWLDisjointDataPropertiesAxiom> {
@@ -71,7 +71,16 @@ public class DisjointDataPropertyAxiomLearner extends DataPropertyHierarchyAxiom
 	 * @see org.dllearner.algorithms.properties.DataPropertyHierarchyAxiomLearner#computeScore(int, int, int)
 	 */
 	@Override
-	public double computeScore(int candidatePopularity, int popularity, int overlap) {
-		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
+	public AxiomScore computeScore(int candidatePopularity, int popularity, int overlap) {
+		AxiomScore score = super.computeScore(candidatePopularity, popularity, overlap);
+
+		// we need to invert the value
+		AxiomScore invertedScore = new AxiomScore(
+				1 - score.getAccuracy(),
+				1 - score.getConfidence(),
+				score.getNrOfPositiveExamples(), score.getNrOfNegativeExamples(),
+				score.isSampleBased());
+
+		return invertedScore;
 	}
 }

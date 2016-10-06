@@ -18,13 +18,13 @@
  */
 package org.dllearner.core.ref;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorExAdapter;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Lorenz Buehmann
@@ -37,7 +37,7 @@ public abstract class ClassExpressionRefinementOperatorBase extends
 	protected OWLDataFactory dataFactory;
 
 	public ClassExpressionRefinementOperatorBase(OWLReasoner reasoner, OWLDataFactory dataFactory) {
-		super(new TreeSet<OWLClassExpression>());
+		super(new TreeSet<>());
 		this.reasoner = reasoner;
 		this.dataFactory = dataFactory;
 	}
@@ -47,8 +47,7 @@ public abstract class ClassExpressionRefinementOperatorBase extends
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> refineNode(OWLClassExpression ce) {
-		SortedSet<OWLClassExpression> refinements = ce.accept(this);
-		return refinements;
+		return ce.accept(this);
 	}
 
 }

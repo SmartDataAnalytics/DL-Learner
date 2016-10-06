@@ -87,11 +87,10 @@ public class SemKernelExample {
     // get it at http://aber-owl.net/aber-owl/diseasephenotypes/data/mousephenotypes.txt
     private static String mgi2mpClsMappingsFilePath = workingDirPath + "mousephenotypes_new.txt";
 
-
     /* URI constants */
     private static final String oboPrefix = "http://purl.obolibrary.org/obo/";
 
-    public static void main(String[] args) throws OWLOntologyCreationException, Exception {
+    public static void main(String[] args) throws Exception {
         initExample();
         prepareTrainingData();
 
@@ -106,7 +105,7 @@ public class SemKernelExample {
         logger.setLevel(Level.DEBUG);
 
         factory = OWLManager.getOWLDataFactory();
-        allClsUriStrs = new TreeSet<String>();
+        allClsUriStrs = new TreeSet<>();
 
         logger.info(String.format("Loading samples ontology file %s ...", samplesKbFilePath));
         samplesKb = readKb(samplesKbFilePath);
@@ -123,7 +122,7 @@ public class SemKernelExample {
         logger.info(String.format(
                 "Reading MGI ID to GO class mappings from %s ...",
                 mgi2goClsMappingsFilePath));
-        mgi2go = new HashMap<String, Set<String>>();
+        mgi2go = new HashMap<>();
         BufferedReader buffReader = new BufferedReader(
                 new FileReader(mgi2goClsMappingsFilePath));
 
@@ -144,7 +143,7 @@ public class SemKernelExample {
                 String goUriStr = oboPrefix + goId.replace(":", "_");
 
                 if (!mgi2go.containsKey(mgiId)) {
-                    mgi2go.put(mgiId, new TreeSet<String>());
+                    mgi2go.put(mgiId, new TreeSet<>());
                 }
                 mgi2go.get(mgiId).add(goUriStr);
                 allClsUriStrs.add(goUriStr);
@@ -158,7 +157,7 @@ public class SemKernelExample {
         logger.info(String.format(
                 "Reading MGI ID to MP class mappings from %s ...",
                 mgi2mpClsMappingsFilePath));
-        mgi2mp = new HashMap<String, Set<String>>();
+        mgi2mp = new HashMap<>();
         buffReader = new BufferedReader(new FileReader(mgi2mpClsMappingsFilePath));
 
         while ((line = buffReader.readLine()) != null) {
@@ -174,7 +173,7 @@ public class SemKernelExample {
                 String mpUriStr = oboPrefix + mpId.replace(":", "_");
 
                 if (!mgi2mp.containsKey(mgiId)) {
-                    mgi2mp.put(mgiId, new TreeSet<String>());
+                    mgi2mp.put(mgiId, new TreeSet<>());
                 }
                 mgi2mp.get(mgiId).add(mpUriStr);
             }
@@ -227,7 +226,7 @@ public class SemKernelExample {
 //            OWLClass searchCls = new OWLClassImpl(IRI.create(searchClassUriStr));
             OWLClass searchCls = factory.getOWLClass(IRI.create(searchClassUriStr));
 
-            Set<String> classifierFor = new TreeSet<String>();
+            Set<String> classifierFor = new TreeSet<>();
             classifierFor.add(searchClassUriStr);
 
             Set<OWLClass> subClasses =
@@ -238,8 +237,8 @@ public class SemKernelExample {
                 classifierFor.add(uriStr);
             }
 
-            List<String> negatives = new ArrayList<String>();
-            List<String> positives = new ArrayList<String>();
+            List<String> negatives = new ArrayList<>();
+            List<String> positives = new ArrayList<>();
 
             // build lines to write to file (SVM light format)
             for (String mgiId : mgi2mp.keySet()) {
@@ -304,7 +303,7 @@ public class SemKernelExample {
 //            }
 //            buffWriter.newLine();
 
-            Set<String> classifierFor = new TreeSet<String>();
+            Set<String> classifierFor = new TreeSet<>();
             classifierFor.add(predClsUriStr);
 
             OWLClass predCls = factory.getOWLClass(IRI.create(predClsUriStr));
@@ -316,8 +315,8 @@ public class SemKernelExample {
                 classifierFor.add(uriStr);
             }
 
-            List<String> negatives = new ArrayList<String>();
-            List<String> positives = new ArrayList<String>();
+            List<String> negatives = new ArrayList<>();
+            List<String> positives = new ArrayList<>();
 
             // build lines to write to file (SVM light format)
             for (String mgiId : mgi2mp.keySet()) {

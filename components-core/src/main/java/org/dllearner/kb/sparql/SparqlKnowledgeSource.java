@@ -18,17 +18,8 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.ProgressMonitor;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -52,8 +43,10 @@ import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.swing.*;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Represents the SPARQL Endpoint Component.
@@ -72,7 +65,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
     private byte[] ontologyBytes;
     private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
 
-
 	public SparqlKnowledgeSource() {}
 
 	public SparqlKnowledgeSource(URL url, Set<String> instances) {
@@ -87,11 +79,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private URL ontologyFragmentURL;
 
-
-
 	private Manipulator manipulator = null;
-
-
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -150,14 +138,8 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private List<StringTuple> replaceObject  = new LinkedList<>();
 
-
-	public static String getName() {
-		return "SPARQL Endpoint";
-	}
-
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);
-
 
 	/*
 	 * (non-Javadoc)
@@ -236,7 +218,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 			nrOfExtractedAxioms = configuration.getOwlAPIOntologyCollector().getNrOfExtractedAxioms();
 
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -272,8 +253,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 			this.uri = uri;
 		}
 
-
-
 		public Node call(){
 			System.out.println("funky");
 			return m.extractOneURI(uri);
@@ -302,11 +281,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	}
 
-
 	public SparqlQuery sparqlQuery(String query) {
 		return new SparqlQuery(query, getSparqlEndpoint());
 	}
-
 
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {

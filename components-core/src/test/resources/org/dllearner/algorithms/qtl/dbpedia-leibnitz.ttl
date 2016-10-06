@@ -1,0 +1,42 @@
+@prefix dbo:	<http://dbpedia.org/ontology/> .
+@prefix dbpedia:	<http://dbpedia.org/resource/> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+dbpedia:Gottfried_Wilhelm_Leibniz	dbo:birthDate	"1646-07-01+01:00"^^xsd:date ;
+	dbo:birthPlace	dbpedia:Germany ,
+		dbpedia:Electorate_of_Saxony ,
+		dbpedia:Leipzig ,
+		dbpedia:Holy_Roman_Empire ;
+	dbo:era	dbpedia:Age_of_Enlightenment ,
+		<http://dbpedia.org/resource/17th-century_philosophy> ;
+	dbo:influenced	dbpedia:Charles_Bonnet ,
+		dbpedia:Gilles_Deleuze ,
+		dbpedia:Nicholas_Rescher ,
+		<http://dbpedia.org/resource/F%C3%A9lix_Ravaisson-Mollien> ,
+		<http://dbpedia.org/resource/%C3%89milie_du_Ch%C3%A2telet> ,
+		dbpedia:Bertrand_Russell ,
+		dbpedia:Louis_Gabriel_Ambroise_de_Bonald ,
+		<http://dbpedia.org/resource/Kurt_G%C3%B6del> ,
+		dbpedia:Henri_Bergson ,
+		dbpedia:George_Holmes_Howison ,
+		dbpedia:David_Hume ,
+		dbpedia:Gabriel_Wagner ,
+		<http://dbpedia.org/resource/Theodor_W._Adorno> ,
+		dbpedia:Johannes_Nikolaus_Tetens ,
+		dbpedia:Ernst_Platner ,
+		dbpedia:Edmund_Husserl ,
+		dbpedia:Bernardino_Varisco ,
+		dbpedia:Gregory_Chaitin ,
+		dbpedia:Denis_Diderot ,
+		dbpedia:Lyndon_LaRouche ,
+		<http://dbpedia.org/resource/Christian_Wolff_(philosopher)> ,
+		dbpedia:Friedrich_Nietzsche ,
+		dbpedia:Immanuel_Kant ,
+		dbpedia:Pierre_Louis_Maupertuis ,
+		dbpedia:Gabriel_Tarde ,
+		dbpedia:Martin_Heidegger ,
+		dbpedia:Giambattista_Vico ,
+		dbpedia:Roger_Joseph_Boscovich ,
+		dbpedia:Ferdinand_Georg_Frobenius .
+dbpedia:Leipzig	dbo:leaderParty	dbpedia:Social_Democratic_Party_of_Germany ;
+	dbo:populationTotal	539348 .
+dbpedia:Germany	dbo:populationTotal	80209997 .

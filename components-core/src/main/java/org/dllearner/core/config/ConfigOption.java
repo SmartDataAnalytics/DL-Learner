@@ -34,13 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigOption {
-
-    /**
-     * The name of this config option.
-     * @return The name of this config option.
-     */
-    String name() default "ZZZZZZZZ";
-
     /**
      * The description of this config option
      * @return The description of this config option

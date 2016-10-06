@@ -22,6 +22,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.utilities.CoverageAdapter;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -76,15 +77,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public void init() throws ComponentInitException {
 		super.init();
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "pos neg learning problem";
-	}
 
 	/**
 	 * Computes score of a given concept using the reasoner.
@@ -100,11 +92,12 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 
 		// TODO: this computes accuracy twice - more elegant method should be implemented
 		double accuracy = reasoningUtil.getAccuracyOrTooWeakExact2(accuracyMethod, cc, noise);
+		CoverageAdapter.CoverageAdapter2 c2 = new CoverageAdapter.CoverageAdapter2(cc);
 
 		return new ScoreTwoValued(
 				OWLClassExpressionUtils.getLength(concept),
 				getPercentPerLengthUnit(),
-				cc[0].trueSet, cc[0].falseSet, cc[1].trueSet, cc[1].falseSet,
+				c2.posAsPos(), c2.posAsNeg(), c2.negAsPos(), c2.negAsNeg(),
 				accuracy);
 
 	}

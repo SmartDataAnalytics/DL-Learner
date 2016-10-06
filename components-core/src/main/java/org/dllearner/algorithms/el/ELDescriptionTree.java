@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -108,7 +107,7 @@ public class ELDescriptionTree implements Cloneable {
 			node.extendLabel(description.asOWLClass());
 		} else if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLObjectProperty op = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
-			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<OWLClass>());
+			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<>());
 			constructTree(((OWLObjectSomeValuesFrom) description).getFiller(), newNode);
 		} else if (description instanceof OWLDataSomeValuesFrom) {
 			OWLDataProperty op = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
@@ -121,7 +120,7 @@ public class ELDescriptionTree implements Cloneable {
 				} else if (child instanceof OWLObjectSomeValuesFrom) {
 					OWLObjectProperty op = ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty();
 					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
-							new TreeSet<OWLClass>());
+							new TreeSet<>());
 					constructTree(((OWLObjectSomeValuesFrom) child).getFiller(), newNode);
 				} else {
 					throw new UnsupportedLanguageException(description + " specifically " + child,

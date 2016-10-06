@@ -31,9 +31,11 @@ import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassEx
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
+import org.slf4j.Logger;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * A collection of utility methods for the OWL API.
@@ -89,8 +91,8 @@ public class OWLAPIUtils {
     
     public final static Set<OWLDatatype> periodDatatypes = Sets.newTreeSet(Arrays.asList(
     		XSD.DURATION,
-    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
-    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration"))
+    		new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
+    		new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "dayTimeDuration"))
         ));
 	
 	public static final Set<OWLDatatype> numericDatatypes = Sets.union(intDatatypes, floatDatatypes);
@@ -153,7 +155,7 @@ public class OWLAPIUtils {
 	public static final Map<OWLDatatype, PeriodFormatter> periodFormatters = new HashMap<>();
 	static {
 		periodFormatters.put(XSD.DURATION, ISOPeriodFormat.standard());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration")),
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "dayTimeDuration")),
 				new PeriodFormatterBuilder()//PnDTnHnMnS
         .appendLiteral("P")
         .appendDays()
@@ -166,7 +168,7 @@ public class OWLAPIUtils {
         .appendSecondsWithOptionalMillis()
         .appendSuffix("S")
         .toFormatter());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(org.apache.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
 				new PeriodFormatterBuilder()//PnYnM
         .appendLiteral("P")
         .appendYears()
@@ -212,13 +214,12 @@ public class OWLAPIUtils {
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
 
-
 	
-	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, boolean sfp) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				return fromManchester(s, reasoner, dataFactory);
+				return fromManchester(s, reasoner, dataFactory, sfp);
 			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
@@ -227,6 +228,9 @@ public class OWLAPIUtils {
 			return startClass;
 		}
 
+	}
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		return classExpressionPropertyExpander(startClass, reasoner, dataFactory, false);
 	}
 
 	@NotNull
@@ -283,5 +287,31 @@ public class OWLAPIUtils {
 		}
 		
 		return false;
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, final OWLDataFactory df, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, df::getOWLThing, logger);
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger, boolean sfp) {
+		if(startClass == null) {
+			if (defaultClass != null)
+				startClass = defaultClass.get();
+		} else {
+			try {
+				startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df, sfp);
+			} catch (ManchesterOWLSyntaxParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				startClass = defaultClass.get();
+				logger.warn("Using "+ startClass +" instead.");
+			}
+		}
+		return startClass;
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, defaultClass, logger, false);
+	}
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, boolean sfp, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, null, logger, sfp);
 	}
 }

@@ -18,26 +18,15 @@
  */
 package org.dllearner.algorithms.properties;
 
-import java.util.Set;
-
+import org.apache.jena.query.*;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.*;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
+import java.util.Set;
 
 @ComponentAnn(name="object property range learner", shortName="oplrange", version=0.1, description="A learning algorithm for object property range axioms.")
 public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyRangeAxiom> {
@@ -54,12 +43,6 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o a ?type . ?type a owl:Class .} GROUP BY ?type");
 	private static final ParameterizedSparqlString OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o rdf:type/rdfs:subClassOf* ?type . ?type a owl:Class .} GROUP BY ?type");
-	
-	// a property range axiom can formally be seen as a subclass axiom \top \sqsubseteq \forall r.C 
-	// so we have to focus more on accuracy, which we can regulate via the parameter beta
-	double beta = 3.0;
-
-	private boolean useSimpleScore = true;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -136,7 +119,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			logger.debug("Candidate:" + candidate);
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
-			//get total number of instances of B
+			// get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
 			logger.debug("Popularity:" + cntB);
 			
@@ -145,44 +128,19 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 				continue;
 			}
 			
-			//get number of instances of (A AND B)
+			// get number of instances of (A AND B)
 			OBJECTS_OF_TYPE_COUNT_QUERY.setIri("type", candidate.toStringID());
 			int cntAB = executeSelectQuery(OBJECTS_OF_TYPE_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
 			logger.debug("Candidate:" + candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 			
 			// compute score
 			AxiomScore score = computeScore(popularity, cntB, cntAB);
-						
+
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<>(
-							df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate),
-							score));
+					new EvaluatedAxiom<>(df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), score));
 		}
 	}
 
-	private AxiomScore computeScore(int cntA, int cntB, int cntAB) {
-		// precision (A AND B)/B
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
-		
-		// in the simplest case, the precision is our score
-		double score = precision;
-		
-		// if enabled consider also recall and use F-score
-		if(!useSimpleScore ) {
-			// recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			// F score
-			score = Heuristics.getFScore(recall, precision, beta);
-		}
-		
-		int nrOfPosExamples = cntAB;
-		
-		int nrOfNegExamples = popularity - cntAB;
-		
-		return new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling);
-	}
-	
 	/**
 	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
 	 */

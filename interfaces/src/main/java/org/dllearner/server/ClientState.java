@@ -46,11 +46,11 @@ public class ClientState {
 	// stores the mapping between component IDs and component
 	// (note that this allows us to keep all references to components even
 	// if they are not used anymore e.g. a deleted knowledge source)
-	private Map<Integer,AbstractComponent> componentIDs = new HashMap<Integer,AbstractComponent>(); 
+	private Map<Integer,AbstractComponent> componentIDs = new HashMap<>();
 	
-	private Set<AbstractKnowledgeSource> knowledgeSources = new HashSet<AbstractKnowledgeSource>();
+	private Set<AbstractKnowledgeSource> knowledgeSources = new HashSet<>();
 	
-	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
+	private Map<Integer, SparqlQuery> queryIDs = new HashMap<>();
 	
 	private AbstractClassExpressionLearningProblem learningProblem;
 	

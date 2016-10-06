@@ -42,5 +42,4 @@ public interface Component {
 	 */
 	@PostConstruct
 	void init() throws ComponentInitException;
-	
 }

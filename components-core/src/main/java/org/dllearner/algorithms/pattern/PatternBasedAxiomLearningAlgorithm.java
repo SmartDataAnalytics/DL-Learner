@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Score;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -54,21 +55,22 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * @author Lorenz Buehmann
  *
  */
+@ComponentAnn(name = "pattern-based learner", shortName = "patla", version = 0.1, description = "Pattern-based algorithm uses OWL axioms as pattern.")
 public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm<OWLAxiom, OWLObject, OWLEntity>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(PatternBasedAxiomLearningAlgorithm.class);
@@ -82,7 +84,6 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	
 	private OWLAnnotationProperty confidenceProperty = dataFactory.getOWLAnnotationProperty(IRI.create("http://dl-learner.org/pattern/confidence"));
-
 
 	private double threshold = 0.4;
 	
@@ -178,7 +179,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		Query query = converter.asQuery("?x", dataFactory.getOWLObjectIntersectionOf(cls, patternSuperClass), signature);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
-		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
+		org.apache.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
 		Set<String> resources = new HashSet<>();
 		Multiset<OWLAxiom> instantiations = HashMultiset.create();

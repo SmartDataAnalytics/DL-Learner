@@ -27,15 +27,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.util.iterator.Filter;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.Filter;
 
 public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	
@@ -93,7 +92,7 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 			if(v >= threshold){statement2TokenMap.put(st, word);resource2TokenMap.put(s, word);
 				return true;
 			} else {
-				values.add(Double.valueOf(v));
+				values.add(v);
 			}
 		} 
 		double sum = 0;
@@ -171,10 +170,10 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 			} else {
 				String predicate = getFragment(s.getPredicate().getURI());
 				if (isSimiliar2QuestionWord(predicate, s)){
-					cache.put(s.getPredicate(), Boolean.valueOf(true));
+					cache.put(s.getPredicate(), true);
 					return true;
 				} else {
-					cache.put(s.getPredicate(), Boolean.valueOf(false));
+					cache.put(s.getPredicate(), false);
 					return false;
 				}
 			}
@@ -187,14 +186,14 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 					object = s.getObject().asLiteral().getLexicalForm();
 				}
 				if(isSimiliar2QuestionWord(object, s)){
-					cache.put(s.getObject(), Boolean.valueOf(true));
+					cache.put(s.getObject(), true);
 					String token = resource2TokenMap.get(object);
 					if( token != null){
 						statement2TokenMap.put(s, token);
 					}
 					return true;
 				} else {
-					cache.put(s.getObject(), Boolean.valueOf(false));
+					cache.put(s.getObject(), false);
 				}
 				
 				String token = resource2TokenMap.get(getFragment(s.getPredicate().getURI()));
@@ -210,10 +209,10 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 					object = s.getObject().asLiteral().getLexicalForm();
 				}
 				if(isSimiliar2QuestionWord(object, s)){
-					cache.put(s.getObject(), Boolean.valueOf(true));
+					cache.put(s.getObject(), true);
 					return true;
 				} else {
-					cache.put(s.getObject(), Boolean.valueOf(false));
+					cache.put(s.getObject(), false);
 					return false;
 				}
 			}
@@ -225,18 +224,18 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 				object = s.getObject().asLiteral().getLexicalForm();
 			}
 			if(isSimiliar2QuestionWord(object, s)){
-				cache.put(s.getObject(), Boolean.valueOf(true));
+				cache.put(s.getObject(), true);
 				return true;
 			} else {
-				cache.put(s.getObject(), Boolean.valueOf(false));
+				cache.put(s.getObject(), false);
 			}
 			
 			String predicate = getFragment(s.getPredicate().getURI());
 			if (isSimiliar2QuestionWord(predicate, s)){
-				cache.put(s.getPredicate(), Boolean.valueOf(true));
+				cache.put(s.getPredicate(), true);
 				return true;
 			} else {
-				cache.put(s.getPredicate(), Boolean.valueOf(false));
+				cache.put(s.getPredicate(), false);
 			}
 			return false;
 		}

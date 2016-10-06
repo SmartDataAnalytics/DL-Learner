@@ -18,14 +18,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
@@ -37,6 +29,8 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import java.util.*;
 
 public class BlankNode extends Node {
 	private static Logger logger = Logger
@@ -189,21 +183,24 @@ public class BlankNode extends Node {
 					
 				}
 			}//end while
-			
-			if(inboundEdge.equals(OWLVocabulary.OWL_intersectionOf)){
-				return factory.getOWLObjectIntersectionOf(target);
-			}else if(inboundEdge.equals(OWLVocabulary.OWL_unionOf)){
-				return factory.getOWLObjectUnionOf(target);
-			}else if(inboundEdge.equals(OWLVocabulary.OWL_complementOf)){
-				if(target.size()>1) {
-					tail("more than one complement"+target);
-					
-				}else{
-					return factory.getOWLObjectComplementOf(new ArrayList<>(target).remove(0));
-				}
-			}else{
-				printAll();
-				tail("bnode: wrong type: " +inboundEdge+ this);
+
+			switch (inboundEdge) {
+				case OWLVocabulary.OWL_intersectionOf:
+					return factory.getOWLObjectIntersectionOf(target);
+				case OWLVocabulary.OWL_unionOf:
+					return factory.getOWLObjectUnionOf(target);
+				case OWLVocabulary.OWL_complementOf:
+					if (target.size() > 1) {
+						tail("more than one complement" + target);
+
+					} else {
+						return factory.getOWLObjectComplementOf(new ArrayList<>(target).remove(0));
+					}
+					break;
+				default:
+					printAll();
+					tail("bnode: wrong type: " + inboundEdge + this);
+					break;
 			}
 		}
 		
@@ -266,14 +263,16 @@ public class BlankNode extends Node {
 		if(!datatypeProperties.isEmpty()){
 			DatatypePropertyNode d = datatypeProperties.get(0);
 			String p = d.getURIString();
-			if( p.equals(OWLVocabulary.OWL_cardinality)){
-				return factory.getOWLObjectExactCardinality(d.getBPart().getLiteral().getInt(), property);
-			}else if(p.equals(OWLVocabulary.OWL_maxCardinality)){
-				return factory.getOWLObjectMaxCardinality(d.getBPart().getLiteral().getInt(), property);
-			}else if(p.equals(OWLVocabulary.OWL_minCardinality)){
-				return factory.getOWLObjectMinCardinality(d.getBPart().getLiteral().getInt(), property);
-			}else {
-				tail(p+d+" in "+this);
+			switch (p) {
+				case OWLVocabulary.OWL_cardinality:
+					return factory.getOWLObjectExactCardinality(d.getBPart().getLiteral().getInt(), property);
+				case OWLVocabulary.OWL_maxCardinality:
+					return factory.getOWLObjectMaxCardinality(d.getBPart().getLiteral().getInt(), property);
+				case OWLVocabulary.OWL_minCardinality:
+					return factory.getOWLObjectMinCardinality(d.getBPart().getLiteral().getInt(), property);
+				default:
+					tail(p + d + " in " + this);
+					break;
 			}
 		}
 		
@@ -295,13 +294,14 @@ public class BlankNode extends Node {
 		
 		for(StringTuple n : otherNodes) {
 			String p = n.a;
-			if(p.equals(OWLVocabulary.OWL_ALL_VALUES_FROM)){
-				return factory.getOWLObjectAllValuesFrom(property, concept);
-			}else if(p.equals(OWLVocabulary.OWL_SOME_VALUES_FROM)){
-				return factory.getOWLObjectSomeValuesFrom(property, concept);
-			}else if(p.equals(OWLVocabulary.OWL_HAS_VALUE)){
-				logger.warn("OWL_hasValue not implemented yet");
-				return dummy;
+			switch (p) {
+				case OWLVocabulary.OWL_ALL_VALUES_FROM:
+					return factory.getOWLObjectAllValuesFrom(property, concept);
+				case OWLVocabulary.OWL_SOME_VALUES_FROM:
+					return factory.getOWLObjectSomeValuesFrom(property, concept);
+				case OWLVocabulary.OWL_HAS_VALUE:
+					logger.warn("OWL_hasValue not implemented yet");
+					return dummy;
 			}
 		}
 		return dummy;

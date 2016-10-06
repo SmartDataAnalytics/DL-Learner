@@ -18,32 +18,16 @@
  */
 package org.dllearner.algorithms;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.ClassExpressionLearningAlgorithm;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.dllearner.core.*;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.*;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Learns sub classes using SPARQL queries.
@@ -60,6 +44,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	public SimpleSubclassLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
+
+		axiomType = AxiomType.SUBCLASS_OF;
 	}
 
 	@Override
@@ -114,7 +100,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 */
 	@Override
 	protected ParameterizedSparqlString getSampleQuery() {
-		return new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+		return new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 . }");
 	}
 
 	/*
@@ -147,6 +133,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 				existingAxioms.add(df.getOWLSubClassOfAxiom(entityToDescribe, sup));
 			}
 		}
+
 	}
 
 	/*
@@ -163,8 +150,10 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		int total = reasoner.getPopularity(entityToDescribe);
 
 		if (total > 0) {
-			String query = String
-					.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <%s>. ?s a ?type} GROUP BY ?type ORDER BY DESC(?cnt)",
+			String query = String.format(
+							"SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {" +
+							"?s a <%s>. ?s a ?type . FILTER(?type != <http://www.w3.org/2002/07/owl#NamedIndividual>)} " +
+							"GROUP BY ?type ORDER BY DESC(?cnt)",
 							entityToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
@@ -180,6 +169,11 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 				}
 			}
 		}
+
+		currentlyBestEvaluatedDescriptions.forEach(
+				ed -> currentlyBestAxioms.add(
+						new EvaluatedAxiom<>(df.getOWLSubClassOfAxiom(entityToDescribe, ed.getDescription()),
+											 new AxiomScore(ed.getAccuracy()))));
 	}
 
 	public OWLClass getentityToDescribe() {
@@ -239,9 +233,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			for (OWLClassExpression nc : entry.getValue()) {
 				Integer cnt = result.get(nc);
 				if (cnt == null) {
-					cnt = Integer.valueOf(1);
+					cnt = 1;
 				} else {
-					cnt = Integer.valueOf(cnt + 1);
+					cnt = cnt + 1;
 				}
 				result.put(nc, cnt);
 			}

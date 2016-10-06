@@ -25,13 +25,12 @@ import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
-import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
 
 public class PredicateReplacementRule extends Rule{
 	
 	String oldPredicate;
 	String newPredicate;
-
 
 	public PredicateReplacementRule(Months month, String oldPredicate, String newPredicate) {
 		super(month);

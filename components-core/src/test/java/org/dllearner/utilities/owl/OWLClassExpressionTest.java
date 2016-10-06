@@ -11,7 +11,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import java.util.Collections;
 
 /**
- * Created by Simon Bin on 16-1-27.
+ * Test OWL Class Expresssions
  */
 public class OWLClassExpressionTest {
 

@@ -31,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
-
 /**
  * General class translating from OWL 2 into some fuzzy OWLClassExpression Logic language.
  * Subclasses of Owl2ToFuzzyDescriptionLogic translate it into specific
@@ -155,7 +154,6 @@ public class FuzzyOwl2
 	 */
 	protected static PrintStream out = System.out;
 
-
 	/**
 	 * Constructor.
 	 * @param input Path of the input ontology.
@@ -229,7 +227,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	/**
 	 * Prints an error message in the standard output and finishes the execution.
 	 * @param s An error message.
@@ -240,22 +237,13 @@ public class FuzzyOwl2
 		System.exit(0);
 	}
 
-
 	/**
 	 * Prints a string in the desired PrintStream, unless it contains a null value.
 	 */
 	protected static void print(String s)
 	{
-		try
-		{
-			if (!s.contains(" null"))
-				out.println(s);
-		}
-		catch (NullPointerException ex)
-		{
-
-		}
-
+		if (s != null && !s.contains(" null"))
+			out.println(s);
 	}
 
 	/**
@@ -267,7 +255,6 @@ public class FuzzyOwl2
 		System.err.println(s);
 	}
 
-
 	/**
 	 * @param args Two arguments: the input OWL 2 ontology, and the output fuzzy ontology in fuzzyDL syntax.
 	 */
@@ -277,7 +264,6 @@ public class FuzzyOwl2
 		FuzzyOwl2 f = new FuzzyOwl2(returnValue[0], returnValue[1]);
 		f.translateOwl2Ontology();
 	}
-
 
 	/**
 	 * Translates an OWL 2 ontology into a fuzzy one, processing the OWL 2 annotations.
@@ -290,7 +276,6 @@ public class FuzzyOwl2
 		processPropertyAnnotations();
 		processOntologyAxioms();
 	}
-
 
 	/**
 	 * Write annotations on the ontology.
@@ -312,7 +297,6 @@ public class FuzzyOwl2
 			}
 		}
 	}
-
 
 	// We annotate left, right, triangular, and trapezoidal functions.
 	private void writeType1Datatypes(Object o, String name)
@@ -364,7 +348,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	// We annotate linear and triangular modifiers.
 	private void writeType2Datatypes(Object o, String name)
 	{
@@ -382,7 +365,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	// We annotate modified functions.
 	private void writeType3Datatypes(Object o, String name)
 	{
@@ -393,7 +375,6 @@ public class FuzzyOwl2
 			writeModifiedFunctionDefinition(name, dat);
 		}
 	}
-
 
 	/**
 	 * Write fuzzy datatypes and modifiers definitions, defined with OWL 2 concept annotations.
@@ -473,7 +454,6 @@ public class FuzzyOwl2
 			}
 		}
 	}
-
 
 	/**
 	 * Write fuzzy concept definitions, defined with OWL 2 concept annotations.
@@ -632,7 +612,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	/**
 	 * Write fuzzy property definitions, defined with OWL 2 concept annotations.
 	 */
@@ -680,7 +659,6 @@ public class FuzzyOwl2
 			}
 		}
 	}
-
 
 	/**
 	 * Write the axioms of the OWL 2 ontology. They can have annotations or not.
@@ -937,7 +915,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	/**
 	 * Gets a String representation of an OWL 2 class.
 	 *
@@ -1089,7 +1066,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	/**
 	 * Gets a String representation of an OWL 2 object property.
 	 *
@@ -1106,7 +1082,6 @@ public class FuzzyOwl2
 			return getAtomicObjectPropertyName(p.asOWLObjectProperty());
 	}
 
-
 	/**
 	 * Gets a String representation of an OWL 2 data property.
 	 *
@@ -1122,7 +1097,6 @@ public class FuzzyOwl2
 		else
 			return getAtomicDataPropertyName(p.asOWLDataProperty());
 	}
-
 
 	/**
 	 * Returns the degree in the annotation of an axiom.
@@ -1143,13 +1117,11 @@ public class FuzzyOwl2
 			return Parser.getDegree(annotations.iterator().next().getValue().toString());
 	}
 
-
 	private void setK1AndK2(FuzzyDatatype dat, double[] k)
 	{
 		dat.setMinValue(k[0]);
 		dat.setMaxValue(k[1]);
 	}
-
 
 	private void getK1AndK2(String name, double[] k)
 	{
@@ -1209,7 +1181,6 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	protected static String[] processParameters(String[] args)
 	{
 		boolean versionRequested = false;
@@ -1244,7 +1215,6 @@ public class FuzzyOwl2
 		return returnValue;
 	}
 
-
 	// ******************************************************
 	// Methods that should be overwritten by the subclasses.
 	// ******************************************************
@@ -1258,7 +1228,6 @@ public class FuzzyOwl2
 	{
 		return pm.getShortForm(e);
 	}
-
 
 	/**
 	 * Gets a String representation of an OWL 2 individual.
@@ -1281,20 +1250,17 @@ public class FuzzyOwl2
 		}
 	}
 
-
 	protected String getTopConceptName()
 	{
 		print("Print Top concept");
 		return "";
 	}
 
-
 	protected String getBottomConceptName()
 	{
 		print("Print Bottom concept");
 		return "";
 	}
-
 
 	protected String getAtomicConceptName(OWLClass c)
 	{
@@ -1303,13 +1269,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectIntersectionOfName(Set<OWLClassExpression> operands)
 	{
 		print("Print ObjectIntersectionOf" + operands);
 		return "";
 	}
-
 
 	protected String getObjectUnionOfName(Set<OWLClassExpression> operands)
 	{
@@ -1317,13 +1281,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectSomeValuesFromName(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		print("Print ObjectSomeValuesFrom(" + p + " " + c + ")");
 		return "";
 	}
-
 
 	protected String getObjectAllValuesFromName(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
@@ -1331,13 +1293,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getDataSomeValuesFromName(OWLDataPropertyExpression p, OWLDataRange range)
 	{
 		print("Print DataSomeValuesFrom(" + p + " " + range + ")");
 		return "";
 	}
-
 
 	protected String getDataAllValuesFromName(OWLDataPropertyExpression p, OWLDataRange range)
 	{
@@ -1345,13 +1305,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectComplementOfName(OWLClassExpression c)
 	{
 		print("Print ObjectComplement(" + c + ")");
 		return "";
 	}
-
 
 	protected String getObjectHasSelfName(OWLObjectPropertyExpression p)
 	{
@@ -1359,13 +1317,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectOneOfName(Set<OWLIndividual> set)
 	{
 		print("Print ObjectOneOf(" + set + ")");
 		return "";
 	}
-
 
 	protected String getObjectHasValueName(OWLObjectPropertyExpression p, OWLIndividual i)
 	{
@@ -1373,13 +1329,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getDataHasValueName(OWLDataPropertyExpression p, OWLLiteral lit)
 	{
 		print("Print DataHasValue(" + p + " " + lit + ")");
 		return "";
 	}
-
 
 	protected String getObjectMinCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
@@ -1387,13 +1341,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectMinCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
 	{
 		print("Print ObjectMinCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getObjectMaxCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
@@ -1401,13 +1353,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectMaxCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
 	{
 		print("Print ObjectMaxCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getObjectExactCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
@@ -1415,13 +1365,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getObjectExactCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
 	{
 		print("Print ObjectExactCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getDataMinCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
@@ -1429,13 +1377,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getDataMinCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
 	{
 		print("Print DataMinCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getDataMaxCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
@@ -1443,13 +1389,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getDataMaxCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
 	{
 		print("Print DataMaxCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getDataExactCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
@@ -1457,13 +1401,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getDataExactCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
 	{
 		print("Print DataExactCardinalityRestriction(" + card + " " + p + " " + ")");
 		return "";
 	}
-
 
 	protected String getTopObjectPropertyName()
 	{
@@ -1471,13 +1413,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getBottomObjectPropertyName()
 	{
 		print("Write bottom object property");
 		return "";
 	}
-
 
 	protected String getAtomicObjectPropertyName(OWLObjectProperty p)
 	{
@@ -1485,13 +1425,11 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getTopDataPropertyName()
 	{
 		print("Write top object property");
 		return "";
 	}
-
 
 	protected String getBottomDataPropertyName()
 	{
@@ -1499,55 +1437,46 @@ public class FuzzyOwl2
 		return "";
 	}
 
-
 	protected String getAtomicDataPropertyName(OWLDataProperty p)
 	{
 		print("Write object property + " + getShortName(p) );
 		return "";
 	}
 
-
 	protected void writeFuzzyLogic(FuzzyLogic logic)
 	{
 		print("Write fuzzy logic " + logic);
 	}
-
 
 	protected void writeConceptDeclaration(OWLClassExpression c)
 	{
 		print("Write declaration " + c);
 	}
 
-
 	protected void writeDataPropertyDeclaration(OWLDataPropertyExpression dp)
 	{
 		print("Write declaration " + dp);
 	}
-
 
 	protected void writeObjectPropertyDeclaration(OWLObjectPropertyExpression op)
 	{
 		print("Write declaration " + op);
 	}
 
-
 	protected void writeConceptAssertionAxiom(OWLIndividual i, OWLClassExpression c, double d)
 	{
 		print("Write axiom " + i + " : " + c + " >= " + d);
 	}
-
 
 	protected void writeObjectPropertyAssertionAxiom(OWLIndividual i1, OWLIndividual i2, OWLObjectPropertyExpression p, double d)
 	{
 		print("Write axiom (" + i1 + " , " + i2 + ") : " + p + " >= " + d);
 	}
 
-
 	protected void writeDataPropertyAssertionAxiom(OWLIndividual i1, OWLLiteral i2, OWLDataPropertyExpression p, double d)
 	{
 		print("Write axiom (" + i1 + " , " + i2 + ") : " + p + " >= " + d);
 	}
-
 
 	protected void writeNegativeObjectPropertyAssertionAxiom(OWLIndividual i1, OWLIndividual i2, OWLObjectPropertyExpression p, double d)
 	{
@@ -1559,276 +1488,230 @@ public class FuzzyOwl2
 		print("Write axiom (" + i1 + " , " + i2 + ") : NOT " + p + " >= " + d);
 	}
 
-
 	protected void writeSameIndividualAxiom(Set<OWLIndividual> set)
 	{
 		print("Write axiom SameIndividual(" + set + ")");
 	}
-
 
 	protected void writeDifferentIndividualsAxiom(Set<OWLIndividual> set)
 	{
 		print("Write axiom DifferentIndividuals(" + set + ")");
 	}
 
-
 	protected void writeDisjointClassesAxiom(Set<OWLClassExpression> set)
 	{
 		print("Write axiom DisjointClasses(" + set + ")");
 	}
-
 
 	protected void writeDisjointUnionAxiom(Set<OWLClassExpression> set)
 	{
 		print("Write axiom DisjointUnion(" + set + ")");
 	}
 
-
 	protected void writeSubclassOfAxiom(OWLClassExpression subclass, OWLClassExpression superclass, double d)
 	{
 		print("Write axiom SubClassOf(" + subclass + " is subclass of " + superclass + " >= " + d + ")");
 	}
-
 
 	protected void writeEquivalentClassesAxiom(Set<OWLClassExpression> set)
 	{
 		print("Write axiom EquivalentClasses(" + set + ")");
 	}
 
-
 	protected void writeSubObjectPropertyOfAxiom(OWLObjectPropertyExpression subProperty, OWLObjectPropertyExpression superProperty, double d)
 	{
 		print("Write axiom SubObjectPropertyOf(" + subProperty + " is subclass of " + superProperty + " >= " + d + ")");
 	}
-
 
 	protected void writeSubPropertyChainOfAxiom(List<OWLObjectPropertyExpression> chain, OWLObjectPropertyExpression superProperty, double d)
 	{
 		print("Write axiom SubPropertyChainOf(" + chain + " is subclass of " + superProperty + " >= " + d + ")");
 	}
 
-
 	protected void writeSubDataPropertyOfAxiom(OWLDataPropertyExpression subProperty, OWLDataPropertyExpression superProperty, double d)
 	{
 		print("Write axiom SubDataPropertyOf(" + subProperty + " is subclass of " + superProperty + " >= " + d + ")");
 	}
-
 
 	protected void writeEquivalentObjectPropertiesAxiom(Set<OWLObjectPropertyExpression> set)
 	{
 		print("Write axiom EquivalentObjectProperties(" + set + ")");
 	}
 
-
 	protected void writeEquivalentDataPropertiesAxiom(Set<OWLDataPropertyExpression> set)
 	{
 		print("Write axiom EquivalentDataProperties(" + set + ")");
 	}
-
 
 	protected void writeTransitiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom TransitiveObjectProperty(" + p + ")");
 	}
 
-
 	protected void writeSymmetricObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom SymmetricObjectProperty(" + p + ")");
 	}
-
 
 	protected void writeAsymmetricObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom AsymmetricObjectProperty(" + p + ")");
 	}
 
-
 	protected void writeReflexiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom ReflexiveObjectProperty(" + p + ")");
 	}
-
 
 	protected void writeIrreflexiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom IrreflexiveObjectProperty(" + p + ")");
 	}
 
-
 	protected void writeFunctionalObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom FunctionalObjectProperty(" + p + ")");
 	}
-
 
 	protected void writeFunctionalDataPropertyAxiom(OWLDataPropertyExpression p)
 	{
 		print("Write axiom FunctionalDataProperty(" + p + ")");
 	}
 
-
 	protected void writeInverseObjectPropertiesAxiom(OWLObjectPropertyExpression p1, OWLObjectPropertyExpression p2)
 	{
 		print("Write axiom (" + p1 + " inverse of " + p2 + ")");
 	}
-
 
 	protected void writeInverseFunctionalObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("Write axiom InverseFunctionalObjectProperty(" + p + ")");
 	}
 
-
 	protected void writeObjectPropertyDomainAxiom(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		print("Write axiom domain (" + c + " of object property" + p + ")");
 	}
-
 
 	protected void writeObjectPropertyRangeAxiom(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		print("Write axiom range (" + c + " of object property" + p + ")");
 	}
 
-
 	protected void writeDataPropertyDomainAxiom(OWLDataPropertyExpression p, OWLClassExpression c)
 	{
 		print("Write axiom domain (" + c + " of data property" + p + ")");
 	}
-
 
 	protected void writeDataPropertyRangeAxiom(OWLDataPropertyExpression p, OWLDataRange c)
 	{
 		print("Write axiom range (" + c + " of data property" + p + ")");
 	}
 
-
 	protected void writeDisjointObjectPropertiesAxiom(Set<OWLObjectPropertyExpression> set)
 	{
 		print("Write axiom (" + set + ")");
 	}
-
 
 	protected void writeDisjointDataPropertiesAxiom(Set<OWLDataPropertyExpression> set)
 	{
 		print("Write axiom (" + set + ")");
 	}
 
-
 	protected void writeTriangularModifierDefinition(String name, TriangularModifier mod)
 	{
 		print("Write definition " + name + " = " + mod);
 	}
-
 
 	protected void writeLinearModifierDefinition(String name, LinearModifier mod)
 	{
 		print("Write definition " + name + " = " + mod);
 	}
 
-
 	protected void writeLeftShoulderFunctionDefinition(String name, LeftShoulderFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
-
 
 	protected void writeRightShoulderFunctionDefinition(String name, RightShoulderFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
 
-
 	protected void writeLinearFunctionDefinition(String name, LinearFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
-
 
 	protected void writeTriangularFunctionDefinition(String name, TriangularFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
 
-
 	protected void writeTrapezoidalFunctionDefinition(String name, TrapezoidalFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
-
 
 	protected void writeModifiedFunctionDefinition(String name, ModifiedFunction dat)
 	{
 		print("Write definition " + name + " = " + dat);
 	}
 
-
 	protected void writeModifiedPropertyDefinition(String name, ModifiedProperty c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeModifiedConceptDefinition(String name, ModifiedConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
 
-
 	protected void writeFuzzyNominalConceptDefinition(String name, FuzzyNominalConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeWeightedConceptDefinition(String name, WeightedConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
 
-
 	protected void writeWeightedMaxConceptDefinition(String name, WeightedMaxConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeWeightedMinConceptDefinition(String name, WeightedMinConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
 
-
 	protected void writeWeightedSumConceptDefinition(String name, WeightedSumConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeOwaConceptDefinition(String name, OwaConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
 
-
 	protected void writeChoquetConceptDefinition(String name, ChoquetConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeSugenoConceptDefinition(String name, SugenoConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
 
-
 	protected void writeQuasiSugenoConceptDefinition(String name, QuasiSugenoConcept c)
 	{
 		print("Write definition " + name + " = " + c);
 	}
-
 
 	protected void writeQowaConceptDefinition(String name, QowaConcept c)
 	{

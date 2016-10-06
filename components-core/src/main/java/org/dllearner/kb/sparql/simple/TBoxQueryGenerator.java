@@ -24,8 +24,8 @@ package org.dllearner.kb.sparql.simple;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -60,7 +60,6 @@ public class TBoxQueryGenerator {
         TBoxQueryGenerator generator = new TBoxQueryGenerator();
         OntModel model = ModelFactory.createOntologyModel();
         Set<String> individuals = new HashSet<>();
-
 
         individuals.add("http://dbpedia.org/resource/JB_Carlson");
         individuals.add("http://dbpedia.org/resource/Martin_Alabaster");

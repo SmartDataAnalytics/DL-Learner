@@ -29,10 +29,10 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Can execute different queries.
@@ -115,7 +115,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 		if(resultsetcount>999) {
 			logger.warn("SparqlTupelAquisitor retrieved more than 1000 results, there might some be missing");
 		}
-		return ((cachedSet=resources.get(uri))==null)?new TreeSet<RDFNodeTuple>():cachedSet;
+		return ((cachedSet=resources.get(uri))==null)? new TreeSet<>():cachedSet;
 	}
 	
 	@Override

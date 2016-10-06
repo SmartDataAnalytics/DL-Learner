@@ -19,28 +19,16 @@
  */
 package org.dllearner.confparser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import joptsimple.internal.Strings;
-
 import org.apache.commons.collections15.CollectionUtils;
-import org.apache.commons.collections15.Transformer;
 import org.dllearner.cli.ConfFileOption;
 
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Performs post processing of conf files based on special parsing directives.
@@ -70,22 +58,8 @@ public class PostProcessor {
 	
 	private static String replaceAllMap (String pre, Map<String,String> repMap, String post, String in) {
 		List<String> keys = new ArrayList<>(repMap.keySet());
-		Collections.sort(keys, new Comparator<String>() {
-
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.length() - o2.length();
-			}
-			
-		});
-		CollectionUtils.transform(keys, new Transformer<String,String>(){
-
-			@Override
-			public String transform(String input) {
-				return Pattern.quote(input);
-			}
-
-		});
+		Collections.sort(keys, (o1, o2) -> o1.length() - o2.length());
+		CollectionUtils.transform(keys, input -> Pattern.quote(input));
 		Matcher m = Pattern.compile(pre + "(" + Strings.join(keys, "|") + ")" + post).matcher(in);
 		m.reset();
 		if (m.find()) {
@@ -141,7 +115,6 @@ public class PostProcessor {
 		}
     }
 
-
     private Map processStringMap(Map<String, String> prefixes, Map inputMap) {
 
         Map newMap = new HashMap();
@@ -168,16 +141,11 @@ public class PostProcessor {
 
     @SuppressWarnings("unchecked")
 	private void processStringCollection(final Map<String, String> prefixes, Collection valueObject) {
-        CollectionUtils.transform(valueObject, new Transformer<Object,Object>(){
-
-			@Override
-			public Object transform(Object input) {
-				if (input instanceof String) {
-					return replaceAllMap("", prefixes, ":", (String) input);
-				}
-				return input;
-			}
-        	
+        CollectionUtils.transform(valueObject, input -> {
+	        if (input instanceof String) {
+		        return replaceAllMap("", prefixes, ":", (String) input);
+	        }
+	        return input;
         });
     }
 }

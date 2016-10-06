@@ -24,12 +24,6 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 
-
-
-
-
-
-
 //import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -49,13 +43,12 @@ import org.dllearner.algorithms.decisiontrees.utils.Split;
 import org.dllearner.learningproblems.PosNegUndLP;
 //import evaluation.Parameters;
 //import knowledgeBasesHandler.KnowledgeBase;
-@ComponentAnn(name="tdt", shortName="tdt", version=1.0, description="A Terminological Decision Tree")
+@ComponentAnn(name="TDT", shortName="tdt", version=1.0, description="A Terminological Decision Tree")
 
 public class TDTClassifier extends AbstractTDTClassifier {
 	private static Logger logger = LoggerFactory.getLogger(TDTClassifier.class);
 	private DLTree currentmodel;
 	
-
 
  //private RefinementOperator op;
 
@@ -79,6 +72,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 		super(problem, reasoner,op);
 	}
 	
+	@Override
 	public void init() throws ComponentInitException{
 		
 		super.init();
@@ -94,7 +88,8 @@ public class TDTClassifier extends AbstractTDTClassifier {
 	}
 	
 	
-	public DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, SortedSet<OWLIndividual> undExs) {		
+	@Override
+	public DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, SortedSet<OWLIndividual> undExs) {
 		logger.info("Learning problem\t p:"+posExs.size()+"\t n:"+negExs.size()+"\t u:"+undExs.size()+"\t prPos:"+prPos+"\t prNeg:"+prNeg+"\n");
 		//ArrayList<OWLIndividual> truePos= posExs;
 		//ArrayList<OWLIndividual> trueNeg= negExs;
@@ -228,14 +223,15 @@ public OWLClassExpression deriveDefinition(DLTree model){
 }
 	
 
+@Override
 public void start() {
 
 	// TODO Auto-generated method stub
 	
 	PosNegUndLP posNegUndLP = (PosNegUndLP)learningProblem;
-	SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)(posNegUndLP.getPositiveExample());
-	SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)posNegUndLP.getNegativeExample();
-	SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)posNegUndLP.getUncertainExample();								
+	SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)(posNegUndLP.getPositiveExamples());
+	SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)posNegUndLP.getNegativeExamples();
+	SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)posNegUndLP.getUncertainExamples();
 
 	System.out.println(posExs.size());
 	System.out.println(negExs.size());
@@ -254,7 +250,6 @@ public void start() {
 	OWLIndividual[] trainingExs= allExamples.toArray(new OWLIndividual[allExamples.size()]);
 	Split.splitting(dataFactory, reasoner, trainingExs, posExs, negExs, undExs, classToDescribe, binaryClassification);
 	}
-
 
 	prPos = (double)posExs.size()/(posExs.size()+ negExs.size()+ undExs.size());
 	prNeg = (double)negExs.size()/(posExs.size()+ negExs.size()+ undExs.size());
@@ -288,7 +283,6 @@ public void start() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	public DLTree getCurrentmodel() {
 		// TODO Auto-generated method stub

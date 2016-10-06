@@ -20,7 +20,6 @@ package org.dllearner.prolog;
 
 import java.util.ArrayList;
 
-
 /**
  * 
  * @author Sebastian Bader

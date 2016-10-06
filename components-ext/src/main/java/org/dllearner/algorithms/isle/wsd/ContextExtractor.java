@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.dllearner.algorithms.isle.index.Annotation;
 
-
 /**
  * @author Lorenz Buehmann
  *

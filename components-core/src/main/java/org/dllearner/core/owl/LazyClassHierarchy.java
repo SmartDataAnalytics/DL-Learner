@@ -40,7 +40,7 @@ public class LazyClassHierarchy extends ClassHierarchy {
 	private AbstractReasonerComponent rc;
 	
 	public LazyClassHierarchy(AbstractReasonerComponent rc) {
-		super(new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(), new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>());
+		super(new TreeMap<>(), new TreeMap<>());
 		this.rc = rc;
 	}
 

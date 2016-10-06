@@ -3,25 +3,20 @@
  */
 package org.dllearner.server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URLDecoder;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * @author didier
@@ -138,19 +133,12 @@ public class ConfGeneratorServlet extends HttpServlet {
             tmp=tmp.replace("<INSTANCES>", instances.toString());
             tmp=tmp.replace("<POSITIVES>", posStr.toString());
             tmp=tmp.replace("<NEGATIVES>", negStr.toString());
-            Map<String, String[]> additionalParams = new HashMap<String, String[]>();
+            Map<String, String[]> additionalParams = new HashMap<>();
             additionalParams.put("conf", new String[]{tmp});
             System.out.println(tmp);
             ModifiableWrappedRequest request = new ModifiableWrappedRequest(req, additionalParams);
             request.getRequestDispatcher("/rest").forward(request, resp);
-        } catch (ServletException e) {
-            logger.error("", ExceptionUtils.getRootCause(e));
-            try {
-                resp.sendError(500, ExceptionUtils.getRootCause(e).toString());
-            } catch (IOException e1) {
-                logger.error("", ExceptionUtils.getRootCause(e1));
-            }
-        } catch (IOException e) {
+        } catch (ServletException | IOException e) {
             logger.error("", ExceptionUtils.getRootCause(e));
             try {
                 resp.sendError(500, ExceptionUtils.getRootCause(e).toString());
@@ -177,7 +165,7 @@ public class ConfGeneratorServlet extends HttpServlet {
                                                         final Map<String, String[]> additionalParams)
         {
             super(request);
-            modifiableParameters = new TreeMap<String, String[]>();
+            modifiableParameters = new TreeMap<>();
             modifiableParameters.putAll(additionalParams);
         }
 
@@ -197,7 +185,7 @@ public class ConfGeneratorServlet extends HttpServlet {
         {
             if (allParameters == null)
             {
-                allParameters = new TreeMap<String, String[]>();
+                allParameters = new TreeMap<>();
                 allParameters.putAll(super.getParameterMap());
                 allParameters.putAll(modifiableParameters);
             }

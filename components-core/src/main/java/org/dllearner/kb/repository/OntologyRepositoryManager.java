@@ -39,7 +39,6 @@ public class OntologyRepositoryManager {
         return instance;
     }
 
-
     public void addRepository(OntologyRepository repository) {
         repositories.add(repository);
     }

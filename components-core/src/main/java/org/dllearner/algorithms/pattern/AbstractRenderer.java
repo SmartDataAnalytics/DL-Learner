@@ -57,7 +57,6 @@ package org.dllearner.algorithms.pattern;
  * limitations under the License.
  */
 
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -99,31 +98,25 @@ public class AbstractRenderer {
         pushTab(0);
     }
 
-
     public void setUseTabbing(boolean useTabbing) {
         this.useTabbing = useTabbing;
     }
-
 
     public void setUseWrapping(boolean useWrapping) {
         this.useWrapping = useWrapping;
     }
 
-
     public boolean isUseWrapping() {
         return useWrapping;
     }
-
 
     public boolean isUseTabbing() {
         return useTabbing;
     }
 
-
 //    public void setShortFormProvider(ShortFormProvider shortFormProvider) {
 //        this.shortFormProvider = shortFormProvider;
 //    }
-
 
     public void flush() throws OWLRendererException {
         try {
@@ -160,7 +153,6 @@ public class AbstractRenderer {
     protected int getIndent() {
         return currentPos - lastNewLinePos - 2;
     }
-
 
     protected void write(String s) {
         if(s == null) {

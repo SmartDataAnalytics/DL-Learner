@@ -12,11 +12,11 @@ public abstract class GlobalDoc {
 	// Implemented in: 
 	Class<PostProcessor> prefixesImpl = PostProcessor.class;
 	
-	@ConfigOption(name = "prefixes", description = "Mapping of prefixes to replace inside other configuration file entries", exampleValue = "[ (\"ex\",\"http://example.com/father#\") ]")
+	@ConfigOption(description = "Mapping of prefixes to replace inside other configuration file entries", exampleValue = "[ (\"ex\",\"http://example.com/father#\") ]")
 	Map<String,String> prefixes;
 	
 	// Implemented in:
 	Class<ConfParserConfiguration> renderingImpl = ConfParserConfiguration.class;
-	@ConfigOption(name = "rendering", description = "The string renderer for any OWL expression output, can be \"dlsyntax\" or \"manchester\"", defaultValue = "manchester", exampleValue = "dlsyntax")
+	@ConfigOption(description = "The string renderer for any OWL expression output, can be \"dlsyntax\" or \"manchester\"", defaultValue = "manchester", exampleValue = "dlsyntax")
 	String rendering;
 }

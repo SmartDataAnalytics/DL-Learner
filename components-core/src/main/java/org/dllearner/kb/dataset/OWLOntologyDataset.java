@@ -18,17 +18,16 @@
  */
 package org.dllearner.kb.dataset;
 
-import java.io.File;
-import java.util.Collection;
-
 import org.semanticweb.owlapi.model.OWLOntology;
 
-public interface OWLOntologyDataset {
-	
-	File datasetDirectory = new File("dataset");
-	
-	Collection<OWLOntology> loadOntologies();
-	Collection<OWLOntology> loadIncoherentOntologies();
-	Collection<OWLOntology> loadInconsistentOntologies();
+import java.util.Collection;
 
+/**
+ * A collection of OWL ontologies.
+ */
+public interface OWLOntologyDataset {
+	/**
+	 * @return the collection of OWL ontologies
+	 */
+	Collection<OWLOntology> loadOntologies();
 }

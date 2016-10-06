@@ -19,7 +19,6 @@
 
 package org.dllearner.experiments;
 
-
 public class Jamon {
 	
 //	public static final String MS = "ms.";

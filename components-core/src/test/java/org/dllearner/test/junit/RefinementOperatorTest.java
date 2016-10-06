@@ -100,9 +100,7 @@ public class RefinementOperatorTest {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}
 			assertTrue(results.size()==desiredResultSize);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -111,7 +109,6 @@ public class RefinementOperatorTest {
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
-		reasoner.init();
 		baseURI = reasoner.getBaseURI();
 		
 		RhoDRDown op = new RhoDRDown();
@@ -145,7 +142,7 @@ public class RefinementOperatorTest {
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
 		OCEL la = new OCEL(lp, reasoner);
 		
-		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
+		Set<OWLClass> ignoredConcepts = new TreeSet<>();
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ZERO")));
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ONE")));
 		Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
@@ -220,8 +217,7 @@ public class RefinementOperatorTest {
 	@Test
 	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.SWORE);
-		reasoner.init();
-		
+
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
 		op.setSubHierarchy(reasoner.getClassHierarchy());
@@ -274,9 +270,7 @@ public class RefinementOperatorTest {
 				System.out.println(tooLong + " refinements were longer than " + maxLength);
 			}
 			assertTrue(tooLong==0);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -311,9 +305,7 @@ public class RefinementOperatorTest {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}
 			assertTrue(results.size()==desiredResultSize);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -321,8 +313,7 @@ public class RefinementOperatorTest {
 	@Test
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
-		reasoner.init();
-		
+
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
 		op.setSubHierarchy(reasoner.getClassHierarchy());

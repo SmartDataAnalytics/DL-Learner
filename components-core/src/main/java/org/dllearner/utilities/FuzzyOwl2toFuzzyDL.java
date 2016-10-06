@@ -65,7 +65,6 @@ import fuzzyowl2.WeightedMaxConcept;
 import fuzzyowl2.WeightedMinConcept;
 import fuzzyowl2.WeightedSumConcept;
 
-
 /**
  * Class translating from OWL 2 into fuzzyDL syntax.
  *
@@ -82,14 +81,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 	private Set<String> numericalDatatypes;
 	private Set<String> stringDatatypes;
 
-
 	public FuzzyOwl2toFuzzyDL(String input, String output)
 	{
 		super(input, output);
 		numericalDatatypes = new HashSet<>();
 		stringDatatypes = new HashSet<>();
 	}
-
 
 	@Override
 	public String getIndividualName(OWLIndividual i)
@@ -103,13 +100,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			return( getShortName( i.asOWLNamedIndividual() )) ;
 	}
 
-
 	@Override
 	protected String getTopConceptName()
 	{
 		return Concept.CONCEPT_TOP.toString();//("*top*");
 	}
-
 
 	@Override
 	protected String getBottomConceptName()
@@ -117,13 +112,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return("*bottom*");
 	}
 
-
 	@Override
 	protected String getAtomicConceptName(OWLClass c)
 	{
 		return getShortName(c);
 	}
-
 
 	@Override
 	protected String getObjectIntersectionOfName(Set<OWLClassExpression> operands)
@@ -135,7 +128,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return s;
 	}
 
-
 	@Override
 	protected String getObjectUnionOfName(Set<OWLClassExpression> operands)
 	{
@@ -146,20 +138,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return s;
 	}
 
-
 	@Override
 	protected String getObjectSomeValuesFromName(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		return "(some " + getObjectPropertyName(p) + " " + getClassName(c) + ")";
 	}
 
-
 	@Override
 	protected String getObjectAllValuesFromName(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		return "(all " + getObjectPropertyName(p) + " " + getClassName(c) + " )";
 	}
-
 
 	@Override
 	protected String getDataSomeValuesFromName(OWLDataPropertyExpression p, OWLDataRange range)
@@ -185,7 +174,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getDataAllValuesFromName(OWLDataPropertyExpression p, OWLDataRange range)
 	{
@@ -200,20 +188,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getObjectComplementOfName(OWLClassExpression c)
 	{
 		return "(not " + getClassName(c) + " )";
 	}
 
-
 	@Override
 	protected String getObjectHasSelfName(OWLObjectPropertyExpression p)
 	{
 		return "(self " + getObjectPropertyName(p) + ")";
 	}
-
 
 	@Override
 	protected String getObjectOneOfName(Set<OWLIndividual> set)
@@ -222,14 +207,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getObjectHasValueName(OWLObjectPropertyExpression p, OWLIndividual i)
 	{
 		printError("Object has value concept not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getDataHasValueName(OWLDataPropertyExpression p, OWLLiteral lit)
@@ -238,14 +221,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getObjectMinCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		printError("Object min cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getObjectMinCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
@@ -254,14 +235,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getObjectMaxCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		printError("Object max cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getObjectMaxCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
@@ -270,14 +249,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getObjectExactCardinalityRestrictionName(int card, OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		printError("Object exact cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getObjectExactCardinalityRestrictionName(int card, OWLObjectPropertyExpression p)
@@ -286,14 +263,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getDataMinCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
 		printError("Data min cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getDataMinCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
@@ -302,14 +277,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getDataMaxCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
 		printError("Data max cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getDataMaxCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
@@ -318,14 +291,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getDataExactCardinalityRestrictionName(int card, OWLDataPropertyExpression p, OWLDataRange range)
 	{
 		printError("Data exact cardinality restriction not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getDataExactCardinalityRestrictionName(int card, OWLDataPropertyExpression p)
@@ -334,14 +305,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getTopObjectPropertyName()
 	{
 		printError("Top object property not supported");
 		return null;
 	}
-
 
 	@Override
 	protected String getBottomObjectPropertyName()
@@ -350,13 +319,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getAtomicObjectPropertyName(OWLObjectProperty p)
 	{
 		return getShortName(p);
 	}
-
 
 	@Override
 	protected String getTopDataPropertyName()
@@ -365,7 +332,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getBottomDataPropertyName()
 	{
@@ -373,13 +339,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		return null;
 	}
 
-
 	@Override
 	protected String getAtomicDataPropertyName(OWLDataProperty p)
 	{
 		return getShortName(p);
 	}
-
 
 	@Override
 	protected void writeFuzzyLogic(FuzzyLogic logic)
@@ -387,13 +351,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(define-fuzzy-logic " + logic + ")");
 	}
 
-
 	@Override
 	protected void writeConceptDeclaration(OWLClassExpression c)
 	{
 		print("(define-primitive-concept " + getClassName(c) + " " + getTopConceptName() + " )");
 	}
-
 
 	@Override
 	protected void writeDataPropertyDeclaration(OWLDataPropertyExpression dp)
@@ -402,13 +364,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(range " + getDataPropertyName(dp) + " *string* )");
 	}
 
-
 	@Override
 	protected void writeObjectPropertyDeclaration(OWLObjectPropertyExpression op)
 	{
 
 	}
-
 
 	@Override
 	protected void writeTriangularModifierDefinition(String name, TriangularModifier mod)
@@ -419,14 +379,12 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(define-modifier " + name + " triangular-modifier(" + a + ", " + b + ", " + c + ") )");
 	}
 
-
 	@Override
 	protected void writeLinearModifierDefinition(String name, LinearModifier mod)
 	{
 		double c = mod.getC();
 		print("(define-modifier " + name + " linear-modifier(" + c + ") )");
 	}
-
 
 	@Override
 	protected void writeLeftShoulderFunctionDefinition(String name, LeftShoulderFunction f)
@@ -439,7 +397,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			k1 + ", " + k2 + ", " + a + ", " + b + ") )");
 	}
 
-
 	@Override
 	protected void writeRightShoulderFunctionDefinition(String name, RightShoulderFunction f)
 	{
@@ -450,7 +407,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(define-fuzzy-concept " + name + " right-shoulder(" +
 			k1 + ", " + k2 + ", " + a + ", " + b + ") )");
 	}
-
 
 	@Override
 	protected void writeLinearFunctionDefinition(String name, LinearFunction f)
@@ -463,7 +419,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			k1 + ", " + k2 + ", " + a + ", " + b + ") )");
 	}
 
-
 	@Override
 	protected void writeTriangularFunctionDefinition(String name, TriangularFunction f)
 	{
@@ -475,7 +430,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(define-fuzzy-concept " + name + " triangular(" +
 			k1 + ", " + k2 + ", " + a + ", " + b + ", " + c + ") )");
 	}
-
 
 	@Override
 	protected void writeTrapezoidalFunctionDefinition(String name, TrapezoidalFunction f)
@@ -490,20 +444,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			k1 + ", " + k2 + ", " + a + ", " + b + ", " + c + ", " + d + ") )");
 	}
 
-
 	@Override
 	protected void writeModifiedFunctionDefinition(String name, ModifiedFunction dat)
 	{
 		print("(define-concept " + name + " ( " + dat.getMod() + " " + dat.getD() + " ) )");
 	}
 
-
 	@Override
 	protected void writeModifiedPropertyDefinition(String name, ModifiedProperty c)
 	{
 		printError("Modified property not supported");
 	}
-
 
 	@Override
 	protected void writeModifiedConceptDefinition(String name, ModifiedConcept c)
@@ -512,13 +463,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			c.getFuzzyConcept() + ") )");
 	}
 
-
 	@Override
 	protected void writeFuzzyNominalConceptDefinition(String name, FuzzyNominalConcept c)
 	{
 		printError("Fuzzy nominal not supported");
 	}
-
 
 	@Override
 	protected void writeWeightedConceptDefinition(String name, WeightedConcept c)
@@ -526,7 +475,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(define-concept " + name + " (" + c.getWeight() + " " +
 			c.getFuzzyConcept() + ") )");
 	}
-
 
 	@Override
 	protected void writeWeightedMaxConceptDefinition(String name, WeightedMaxConcept c)
@@ -545,7 +493,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print(s);
 	}
 
-
 	@Override
 	protected void writeWeightedMinConceptDefinition(String name, WeightedMinConcept c)
 	{
@@ -562,7 +509,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		s += " ) )";
 		print(s);
 	}
-
 
 	@Override
 	protected void writeWeightedSumConceptDefinition(String name, WeightedSumConcept c)
@@ -581,7 +527,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print(s);
 	}
 
-
 	@Override
 	protected void writeOwaConceptDefinition(String name, OwaConcept c)
 	{
@@ -598,7 +543,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		s += ") ) )";
 		print(s);
 	}
-
 
 	@Override
 	protected void writeChoquetConceptDefinition(String name, ChoquetConcept c)
@@ -617,7 +561,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print(s);
 	}
 
-
 	@Override
 	protected void writeSugenoConceptDefinition(String name, SugenoConcept c)
 	{
@@ -634,7 +577,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		s += ") ) )";
 		print(s);
 	}
-
 
 	@Override
 	protected void writeQuasiSugenoConceptDefinition(String name, QuasiSugenoConcept c)
@@ -653,7 +595,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print(s);
 	}
 
-
 	@Override
 	protected void writeQowaConceptDefinition(String name, QowaConcept c)
 	{
@@ -666,20 +607,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print(s);
 	}
 
-
 	@Override
 	protected void writeConceptAssertionAxiom(OWLIndividual i, OWLClassExpression c, double d)
 	{
 		print("(instance " + getIndividualName(i) + " " + getClassName(c) + " " + d + ")");
 	}
 
-
 	@Override
 	protected void writeObjectPropertyAssertionAxiom(OWLIndividual i1, OWLIndividual i2, OWLObjectPropertyExpression p, double d)
 	{
 		print("(related " + getIndividualName(i1) + " " + getIndividualName(i2) + " " + getObjectPropertyName(p) + " " + d + ")");
 	}
-
 
 	@Override
 	protected void writeDataPropertyAssertionAxiom(OWLIndividual i1, OWLLiteral i2, OWLDataPropertyExpression p, double d)
@@ -740,13 +678,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeNegativeObjectPropertyAssertionAxiom(OWLIndividual i1, OWLIndividual i2, OWLObjectPropertyExpression p, double d)
 	{
 		printError("Negative object property assertion not supported");
 	}
-
 
 	@Override
 	protected void writeNegativeDataPropertyAssertionAxiom(OWLIndividual i1, OWLLiteral i2, OWLDataPropertyExpression p, double d)
@@ -754,20 +690,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		printError("Negative data property assertion not supported");
 	}
 
-
 	@Override
 	protected void writeSameIndividualAxiom(Set<OWLIndividual> set)
 	{
 		printError("Same individual axiom not supported");
 	}
 
-
 	@Override
 	protected void writeDifferentIndividualsAxiom(Set<OWLIndividual> set)
 	{
 		printError("Different individuals axiom not supported");
 	}
-
 
 	@Override
 	protected void writeDisjointClassesAxiom(Set<OWLClassExpression> set)
@@ -791,7 +724,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeDisjointUnionAxiom(Set<OWLClassExpression> set)
 	{
@@ -811,7 +743,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeSubclassOfAxiom(OWLClassExpression subclass, OWLClassExpression superclass, double d)
 	{
@@ -824,7 +755,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 				print("(implies " + getClassName(subclass) + " " + getClassName(superclass) + " " + d + ")");
 		}
 	}
-
 
 	@Override
 	protected void writeEquivalentClassesAxiom(Set<OWLClassExpression> set)
@@ -847,7 +777,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 				print("(define-concept " + name + " " + getClassName(c) + " )");
 	}
 
-
 	@Override
 	protected void writeSubObjectPropertyOfAxiom(OWLObjectPropertyExpression subProperty, OWLObjectPropertyExpression superProperty, double d)
 	{
@@ -855,13 +784,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 			print("(implies-role " + getObjectPropertyName(subProperty) + " " + getObjectPropertyName(superProperty) + " " + d + ")");
 	}
 
-
 	@Override
 	protected void writeSubPropertyChainOfAxiom(List<OWLObjectPropertyExpression> chain, OWLObjectPropertyExpression superProperty, double d)
 	{
 		printError("Subproperty chain axiom not supported");
 	}
-
 
 	@Override
 	protected void writeSubDataPropertyOfAxiom(OWLDataPropertyExpression subProperty, OWLDataPropertyExpression superProperty, double d)
@@ -869,7 +796,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 //		if (superProperty.isOWLTopDataProperty() == false)
 			print("(implies-role " + getDataPropertyName(subProperty) + " " + getDataPropertyName(superProperty) + " " + d + ")");
 	}
-
 
 	@Override
 	protected void writeEquivalentObjectPropertiesAxiom(Set<OWLObjectPropertyExpression> set)
@@ -884,7 +810,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeEquivalentDataPropertiesAxiom(Set<OWLDataPropertyExpression> set)
 	{
@@ -898,13 +823,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeTransitiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("(transitive " + getObjectPropertyName(p) + ")");
 	}
-
 
 	@Override
 	protected void writeSymmetricObjectPropertyAxiom(OWLObjectPropertyExpression p)
@@ -912,13 +835,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(symmetric " + getObjectPropertyName(p) + ")");
 	}
 
-
 	@Override
 	protected void writeAsymmetricObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		printError("Asymmetric object property axiom not supported");
 	}
-
 
 	@Override
 	protected void writeReflexiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
@@ -926,13 +847,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(reflexive " + getObjectPropertyName(p) + ")");
 	}
 
-
 	@Override
 	protected void writeIrreflexiveObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		printError("Irreflexive object property axiom not supported");
 	}
-
 
 	@Override
 	protected void writeFunctionalObjectPropertyAxiom(OWLObjectPropertyExpression p)
@@ -940,13 +859,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(functional " + getObjectPropertyName(p) + ")");
 	}
 
-
 	@Override
 	protected void writeFunctionalDataPropertyAxiom(OWLDataPropertyExpression p)
 	{
 		print("(functional " + getDataPropertyName(p) + ")");
 	}
-
 
 	@Override
 	protected void writeInverseObjectPropertiesAxiom(OWLObjectPropertyExpression p1, OWLObjectPropertyExpression p2)
@@ -954,13 +871,11 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(inverse " + getObjectPropertyName(p1) + " " + getObjectPropertyName(p2) + ")");
 	}
 
-
 	@Override
 	protected void writeInverseFunctionalObjectPropertyAxiom(OWLObjectPropertyExpression p)
 	{
 		print("(inverse-functional " + getObjectPropertyName(p) + ")");
 	}
-
 
 	@Override
 	protected void writeObjectPropertyDomainAxiom(OWLObjectPropertyExpression p, OWLClassExpression c)
@@ -968,20 +883,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		print("(domain " + getObjectPropertyName(p) + " " + getClassName(c) + " )");
 	}
 
-
 	@Override
 	protected void writeObjectPropertyRangeAxiom(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
 		print("(range " + getObjectPropertyName(p) + " " + getClassName(c) + " )");
 	}
 
-
 	@Override
 	protected void writeDataPropertyDomainAxiom(OWLDataPropertyExpression p, OWLClassExpression c)
 	{
 		print("(domain " + getDataPropertyName(p) + " " + getClassName(c) + " )");
 	}
-
 
 	@Override
 	protected void writeDataPropertyRangeAxiom(OWLDataPropertyExpression p, OWLDataRange range)
@@ -1075,20 +987,17 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		}
 	}
 
-
 	@Override
 	protected void writeDisjointObjectPropertiesAxiom(Set<OWLObjectPropertyExpression> set)
 	{
 		printError("Disjoint object properties axiom not supported");
 	}
 
-
 	@Override
 	protected void writeDisjointDataPropertiesAxiom(Set<OWLDataPropertyExpression> set)
 	{
 		printError("Disjoint data properties axiom not supported");
 	}
-
 
 	/**
 	 * @param args Two arguments: the input OWL 2 ontology, and the output fuzzy ontology in fuzzyDL syntax.
@@ -1132,7 +1041,6 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 	    }
 	}
 
-
 	@Override
 	public String getShortName(OWLEntity e)
 	{
@@ -1142,6 +1050,5 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		else
 			return aux;
 	}
-
 
 }

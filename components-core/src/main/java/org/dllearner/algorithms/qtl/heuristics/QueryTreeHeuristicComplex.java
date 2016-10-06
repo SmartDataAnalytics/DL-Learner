@@ -28,14 +28,14 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.QueryTreeScore;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-@ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic_complex", version = 0.1)
+@ComponentAnn(name = "QueryTreeHeuristicC", shortName = "qtree_heuristic_complex", version = 0.1)
 public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 	
 	

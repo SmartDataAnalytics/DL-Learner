@@ -21,9 +21,9 @@ package org.dllearner.algorithms.qtl.experiments;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.core.Var;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.core.Var;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -49,6 +49,7 @@ public class SPARQLLearningProblemsGenerator {
 	SparqlEndpointKS ks;
 	SPARQLReasoner reasoner;
 	File dataDir;
+	private int maxPathsPerClassAndDepth = 2;
 
 	public SPARQLLearningProblemsGenerator(SparqlEndpoint endpoint, File benchmarkDirectory, int threadCount) throws ComponentInitException {
 		this.benchmarkDirectory = benchmarkDirectory;
@@ -65,7 +66,6 @@ public class SPARQLLearningProblemsGenerator {
 		// the directory where instance data is stored
 		dataDir = new File(benchmarkDirectory, "data/dbpedia/");
 		dataDir.mkdirs();
-
 
 		schema = ModelFactory.createDefaultModel();
 
@@ -86,15 +86,19 @@ public class SPARQLLearningProblemsGenerator {
 		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
 		Collections.shuffle(classesList, new Random(123));
 		classes = classesList;
+//		classes = Sets.newHashSet(new OWLClassImpl(IRI.create("http://semantics.crl.ibm.com/univ-bench-dl.owl#TennisFan")));
 
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
-		List<Future<Path>> futures = new ArrayList<>();
 		List<Path> allPaths = new ArrayList<>();
 
-		ThreadPoolExecutor tp = new CustomFutureReturningExecutor(
-				threadCount, threadCount,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(classes.size(), true));
+//		ThreadPoolExecutor tp = new CustomFutureReturningExecutor(
+//				threadCount, threadCount,
+//                5000L, TimeUnit.MILLISECONDS,
+//                new ArrayBlockingQueue<Runnable>(classes.size(), true));
+
+		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
+
+		CompletionService<List<Path>> ecs = new ExecutorCompletionService<List<Path>>(tp);
 
 		JDKRandomGenerator rndGen = new JDKRandomGenerator();
 		rndGen.setSeed(123);
@@ -102,35 +106,63 @@ public class SPARQLLearningProblemsGenerator {
 		int nrOfQueriesPerDepth = nrOfSPARQLQueries / (maxDepth - minDepth + 1);
 
 		// for each depth <= maxDepth
-		for(int depth = minDepth; depth <= maxDepth; depth++) {
+		for (int depth = minDepth; depth <= maxDepth; depth++) {
 			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
 
 			Iterator<OWLClass> iterator = classes.iterator();
 
 			// generate paths of depths <= maxDepth
-			List<Path> paths = new ArrayList<>();
+			List<Path> pathsForDepth = new ArrayList<>();
 
-			while(paths.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
+			while (pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
 
-				// pick next class
-				OWLClass cls = iterator.next();
+				Collection<Future<List<Path>>> futures = new ArrayList<>();
 
-//				int depth = rndGen.nextInt(maxDepth) + 1;
-
-				Future<Path> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
-//				futures.add(future);
 				try {
-					 Path path = future.get();
-			    	  if(path != null) {
-			    		  paths.add(path);
-			    	  }
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
+					int cnt = 0;
+					while (iterator.hasNext() && (pathsForDepth.size() + ++cnt < nrOfQueriesPerDepth)) {
+						// pick next class
+						OWLClass cls = iterator.next();
+
+						//				int depth = rndGen.nextInt(maxDepth) + 1;
+
+						Future<List<Path>> future = ecs.submit(
+								new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
+						futures.add(future);
+					}
+
+					int n = futures.size();
+					try {
+						for (int i = 0; i < n; ++i) {
+							Future<List<Path>> f = ecs.take();
+							if(!f.isCancelled()) {
+								List<Path> paths = f.get();
+
+								if (paths != null) {
+									for(int j = 0; j < Math.min(paths.size(), maxPathsPerClassAndDepth); j++) {
+										pathsForDepth.add(paths.get(j));
+									}
+								}
+//								System.out.println("#Paths: " + paths.size());
+//								paths.forEach(p -> System.out.println(p));
+
+								if (pathsForDepth.size() >= nrOfQueriesPerDepth) {
+									break;
+								}
+							}
+						}
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+				} finally {
+					for (Future<List<Path>> f : futures) {
+						f.cancel(true);
+					}
 				}
 			}
-			allPaths.addAll(paths);
-		}
 
+			allPaths.addAll(pathsForDepth);
+		}
 
 //		for (Future<Path> future : futures) {
 //		      try {

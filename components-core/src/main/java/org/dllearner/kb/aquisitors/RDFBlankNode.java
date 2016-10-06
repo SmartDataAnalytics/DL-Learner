@@ -18,12 +18,12 @@
  */
 package org.dllearner.kb.aquisitors;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFVisitor;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.graph.Node;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.RDFVisitor;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * This class is used to save disambiguated information for a blankNode in an RDF
@@ -68,36 +68,43 @@ public class RDFBlankNode implements RDFNode {
 		return blankNode.canAs(view);
 	}
 
+	@Override
 	public RDFNode inModel(Model m) {
 		
 		return blankNode.inModel(m);
 	}
 
+	@Override
 	public boolean isAnon() {
 		
 		return blankNode.isAnon();
 	}
 
+	@Override
 	public boolean isLiteral() {
 		
 		return blankNode.isLiteral();
 	}
 
+	@Override
 	public boolean isResource() {
 		
 		return blankNode.isResource();
 	}
 
+	@Override
 	public boolean isURIResource() {
 		
 		return blankNode.isURIResource();
 	}
 
+	@Override
 	public Object visitWith(RDFVisitor rv) {
 		
 		return blankNode.visitWith(rv);
 	}
 
+	@Override
 	public Node asNode() {
 		
 		return blankNode.asNode();

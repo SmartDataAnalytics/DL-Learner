@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://dl-learner/all"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://dl-learner/prob_father">
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="http://example.com/father#father"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://example.com/father#female"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://example.com/father#male"/>
+    </Declaration>
+    <Declaration>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://example.com/father#person"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#martin"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#heinz"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#anna"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="https://sites.google.com/a/unife.it/ml/disponte/learnedClass"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#michelle"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#markus"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="http://example.com/father#stefan"/>
+    </Declaration>
+    <SubClassOf>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.73098</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#father"/>
+        <Class IRI="http://example.com/father#male"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.24054</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#female"/>
+        <Class IRI="http://example.com/father#person"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.63742</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#male"/>
+        <Class IRI="http://example.com/father#person"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">1.00000</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#male"/>
+        <Class IRI="https://sites.google.com/a/unife.it/ml/disponte/learnedClass"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.59755</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#person"/>
+        <Class abbreviatedIRI="owl:Thing"/>
+    </SubClassOf>
+    <DisjointClasses>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.33322</Literal>
+        </Annotation>
+        <Class IRI="http://example.com/father#female"/>
+        <Class IRI="http://example.com/father#male"/>
+    </DisjointClasses>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#female"/>
+        <NamedIndividual IRI="http://example.com/father#anna"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#male"/>
+        <NamedIndividual IRI="http://example.com/father#heinz"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#father"/>
+        <NamedIndividual IRI="http://example.com/father#markus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#male"/>
+        <NamedIndividual IRI="http://example.com/father#markus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#father"/>
+        <NamedIndividual IRI="http://example.com/father#martin"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#male"/>
+        <NamedIndividual IRI="http://example.com/father#martin"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#female"/>
+        <NamedIndividual IRI="http://example.com/father#michelle"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#father"/>
+        <NamedIndividual IRI="http://example.com/father#stefan"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://example.com/father#male"/>
+        <NamedIndividual IRI="http://example.com/father#stefan"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <NamedIndividual IRI="http://example.com/father#anna"/>
+        <NamedIndividual IRI="http://example.com/father#heinz"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <NamedIndividual IRI="http://example.com/father#markus"/>
+        <NamedIndividual IRI="http://example.com/father#anna"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <NamedIndividual IRI="http://example.com/father#martin"/>
+        <NamedIndividual IRI="http://example.com/father#heinz"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <NamedIndividual IRI="http://example.com/father#stefan"/>
+        <NamedIndividual IRI="http://example.com/father#markus"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyDomain>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.38519</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <Class IRI="http://example.com/father#person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <Annotation>
+            <AnnotationProperty IRI="https://sites.google.com/a/unife.it/ml/disponte#probability"/>
+            <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">0.98484</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://example.com/father#hasChild"/>
+        <Class IRI="http://example.com/father#person"/>
+    </ObjectPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 4.1.4.20160202-2327) https://github.com/owlcs/owlapi -->
+

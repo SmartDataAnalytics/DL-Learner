@@ -22,17 +22,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import org.dllearner.exceptions.LCSException;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 
 /**
  * Computes the Least Common Subsumer for given rooted RDF graphs. 
@@ -43,7 +39,7 @@ public class LCS {
 	
 	private Map<Set<Node>, RootedRDFGraph> cache = new HashMap<>();
 	
-	public RootedRDFGraph computeLCS(RootedRDFGraph g1, RootedRDFGraph g2) throws LCSException{
+	public RootedRDFGraph computeLCS(RootedRDFGraph g1, RootedRDFGraph g2) {
 		
 		Set<Node> pair = Sets.newHashSet(g1.getRoot(), g2.getRoot());
 		

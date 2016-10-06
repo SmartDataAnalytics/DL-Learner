@@ -18,29 +18,17 @@
  */
 package org.dllearner.algorithms.properties;
 
-import java.util.Set;
-
+import org.apache.jena.query.*;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
+import java.util.Set;
 
 @ComponentAnn(name="data property domain axiom learner", shortName="dpldomain", version=0.1, description="A learning algorithm for data property domain axioms.")
 public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyDomainAxiom> {
@@ -56,12 +44,6 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?p ?o; a ?cls . ?cls a owl:Class .} "
 			+ "WHERE {?s ?p ?o . OPTIONAL {?s a ?cls . ?cls a owl:Class .}}");
-	
-	// a property domain axiom can formally be seen as a subclass axiom \exists r.\top \sqsubseteq \C 
-	// so we have to focus more on accuracy, which we can regulate via the parameter beta
-	double beta = 3.0;
-	
-	private boolean useSimpleScore = true;
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -117,6 +99,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	 * A = \exists r.\top
 	 * B = C
 	 */
+	@Override
 	protected void run(){
 		// get the candidates
 		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();
@@ -148,31 +131,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 							score));
 		}
 	}
-	
 
-	private AxiomScore computeScore(int cntA, int cntB, int cntAB) {
-		// precision (A AND B)/B
-		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
-		
-		// in the simplest case, the precision is our score
-		double score = precision;
-		
-		// if enabled consider also recall and use F-score
-		if(!useSimpleScore ) {
-			// recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			// F score
-			score = Heuristics.getFScore(recall, precision, beta);
-		}
-		
-		int nrOfPosExamples = cntAB;
-		
-		int nrOfNegExamples = popularity - cntAB;
-		
-		return new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling);
-	}
-	
 	/**
 	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
 	 */

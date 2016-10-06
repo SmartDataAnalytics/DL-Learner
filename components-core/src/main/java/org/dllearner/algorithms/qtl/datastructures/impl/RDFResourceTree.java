@@ -33,24 +33,25 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
+import org.dllearner.algorithms.qtl.util.NodeComparatorInv;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Node_URI;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.serializer.SerializationContext;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
-import com.hp.hpl.jena.sparql.util.NodeComparator;
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.serializer.SerializationContext;
+import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.sparql.util.NodeComparator;
 
 /**
  * @author Lorenz Buehmann
@@ -65,16 +66,26 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private final int id;
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
-	private static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("");
+	public static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
 	
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
-    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator());
+    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparatorInv());
+
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
-    
+
+
+	public static RDFResourceTree newVarNode() {
+		return new RDFResourceTree();
+	}
+
+	public static RDFResourceTree newLiteralNode() {
+		return new RDFResourceTree(DEFAULT_LITERAL_NODE);
+	}
+
     
     /**
      * Creates an empty resource tree with a default variable as label.
@@ -209,9 +220,30 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public List<RDFResourceTree> getChildren(Node edge) {
 		return edge2Children.get(edge);
 	}
-	
+
+
+	/**
+	 * Returns the edge from the current node to the given child node.
+	 *
+	 * @param child the child node
+	 * @return the edge
+	 */
 	public Node getEdgeToChild(RDFResourceTree child) { 
 		return child2Edge.get(child);
+	}
+
+	/**
+	 * Returns the edge from the parent node to the current node. If the current node is the root node, i.e.
+	 * there is no parent, it will return <code>null</code> instead.
+	 *
+	 * @return the edge from the parent
+	 */
+	public Node getEdgeToParent() {
+		RDFResourceTree parent = getParent();
+		if(parent != null) {
+			return parent.getEdgeToChild(this);
+		}
+		return null;
 	}
 	
 	/**
@@ -254,6 +286,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public boolean isResourceNode() {
     	return data.isURI();
     }
+
+    public boolean isClassNode() {
+    	return !isRoot() && getEdgeToParent().equals(RDF.type.asNode());
+	}
 	
 	public boolean isLiteralNode() {
 		return data.isLiteral();
@@ -386,7 +422,12 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 					if (edge != null) {
 //						sb.append("  ");
 						sb.append(FmtUtils.stringForNode(edge, context));
-						sb.append(" ---> ");
+						if(edge instanceof NodeInv) {
+							sb.append(" <--- ");
+						} else {
+							sb.append(" ---> ");
+						}
+
 					}
 					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context);
 				}

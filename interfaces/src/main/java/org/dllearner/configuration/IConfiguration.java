@@ -43,7 +43,7 @@ public interface IConfiguration {
      *
      * @return a collection of all the bean names defined in the configuration.
      */
-    public Collection<String> getBeanNames();
+    Collection<String> getBeanNames();
 
     /**
      * Get the class for the given bean.
@@ -51,14 +51,14 @@ public interface IConfiguration {
      * @param beanName The name of the bean to get the class for.
      * @return The class for the given bean.
      */
-    public Class getClass(String beanName);
+    Class getClass(String beanName);
 
     /**
      * Get the Base Directory where this configuration should be running out of.
      *
      * @return The Base Directory where this configuration should be running out of.
      */
-    public String getBaseDir();
+    String getBaseDir();
 
     /**
      * Get the configuration properties for the specified bean.
@@ -66,5 +66,5 @@ public interface IConfiguration {
      * @param beanName The bean to get properties for.
      * @return A collection of properties
      */
-    public Collection<IConfigurationProperty> getConfigurationProperties(String beanName);
+    Collection<IConfigurationProperty> getConfigurationProperties(String beanName);
 }

@@ -69,10 +69,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		this.positiveExamples = positiveExamples;
 	}
 
-	public static String getName() {
-		return "pos only learning problem";
-	}
-
 	@Override
 	public void init() {
 

@@ -19,24 +19,19 @@
  */
 package org.dllearner.cli;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
-import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
-import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.confparser.ParseException;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RefinementOperator;
-import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
@@ -56,8 +51,6 @@ import java.util.Map.Entry;
 
 //import org.dllearner.algorithms.qtl.QTL2;
 
-
-
 /**
  * 
  * New commandline interface.
@@ -66,31 +59,18 @@ import java.util.Map.Entry;
  *
  */
 @ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
-public class CLI {
-	static {
-		if (System.getProperty("log4j.configuration") == null)
-			System.setProperty("log4j.configuration", "log4j.properties");
-	}
+public class CLI extends CLIBase2 {
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
 
-	private ApplicationContext context;
-	private IConfiguration configuration;
-	private File confFile;
-	
 	private LearningAlgorithm algorithm;
 	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
-	@ConfigOption(name = "writeSpringConfiguration", defaultValue = "false", description = "Write the Spring XML configuration to disk corresponding to the .conf file")
-	private boolean writeSpringConfiguration = false;
-	@ConfigOption(name = "performCrossValidation", defaultValue = "false", description = "Run in Cross-Validation mode")
+	@ConfigOption(defaultValue = "false", description = "Run in Cross-Validation mode")
 	private boolean performCrossValidation = false;
-	@ConfigOption(name = "nrOfFolds", defaultValue = "10", description = "Number of folds in Cross-Validation mode")
+	@ConfigOption(defaultValue = "10", description = "Number of folds in Cross-Validation mode")
 	private int nrOfFolds = 10;
-	@ConfigOption(name = "logLevel", defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
-			+ "Note, to see results, at least \"INFO\" is required.")
-	private String logLevel = "INFO";
 
 	private AbstractClassExpressionLearningProblem lp;
 
@@ -110,15 +90,10 @@ public class CLI {
 	
 	// separate init methods, because some scripts may want to just get the application
 	// context from a conf file without actually running it
+	@Override
 	public void init() throws IOException {
     	if(context == null) {
-
-    		Resource confFileR = new FileSystemResource(confFile);
-    		List<Resource> springConfigResources = new ArrayList<Resource>();
-            configuration = new ConfParserConfiguration(confFileR);
-            
-            ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-            context =  builder.buildApplicationContext(configuration,springConfigResources);
+		    super.init();
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
             rs = getMainReasonerComponent();
@@ -127,32 +102,14 @@ public class CLI {
     	}
 	}
 	
-    public void run() throws IOException {
+    @Override
+    public void run() {
     	try {
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.toLevel(logLevel.toUpperCase()));
 		} catch (Exception e) {
 			logger.warn("Error setting log level to " + logLevel);
 		}
-    	
-		if (writeSpringConfiguration) {
-        	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
-        	XmlObject xml;
-        	if(configuration == null) {
-        		Resource confFileR = new FileSystemResource(confFile);
-        		configuration = new ConfParserConfiguration(confFileR);
-        		xml = converter.convert(configuration);
-        	} else {
-        		xml = converter.convert(configuration);
-        	}
-        	String springFilename = confFile.getCanonicalPath().replace(".conf", ".xml");
-        	File springFile = new File(springFilename);
-        	if(springFile.exists()) {
-        		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
-        	} else {
-        		Files.createFile(springFile, xml.toString());
-        	}
-		}
-		
+
 		rs = getMainReasonerComponent();
 		
 		
@@ -167,10 +124,10 @@ public class CLI {
 					
 					//TODO:  verify if the quality of the code can be improved
 					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
-					ArrayList<OWLClass> concepts = new ArrayList<OWLClass>(rs.getClasses());
+					ArrayList<OWLClass> concepts = new ArrayList<>(rs.getClasses());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					
-					ArrayList<OWLObjectProperty> roles = new ArrayList<OWLObjectProperty>(rs.getAtomicRolesList());
+					ArrayList<OWLObjectProperty> roles = new ArrayList<>(rs.getAtomicRolesList());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					((DLTreesRefinementOperator) op).setAllRoles(roles);
 					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
@@ -199,37 +156,7 @@ public class CLI {
 				}
 			}
     }
-    
-    private AbstractReasonerComponent getMainReasonerComponent() {
-    	AbstractReasonerComponent rc = null;
-    	// there can be 2 reasoner beans
-		Map<String, AbstractReasonerComponent> reasonerBeans = context.getBeansOfType(AbstractReasonerComponent.class);
 
-		if (reasonerBeans.size() > 1) {
-			for (Entry<String, AbstractReasonerComponent> entry : reasonerBeans.entrySet()) {
-				String key = entry.getKey();
-				AbstractReasonerComponent value = entry.getValue();
-
-				if (value instanceof ClosedWorldReasoner) {
-					rc = value;
-				}
-
-			}
-		} else {
-			rc = context.getBean(AbstractReasonerComponent.class);
-		}
-		
-		return rc;
-    }
-
-    public boolean isWriteSpringConfiguration() {
-		return writeSpringConfiguration;
-	}
-
-	public void setWriteSpringConfiguration(boolean writeSpringConfiguration) {
-		this.writeSpringConfiguration = writeSpringConfiguration;
-	}
-	
 	/**
 	 * @return the lp
 	 */
@@ -277,7 +204,7 @@ public class CLI {
 		
 		Resource confFile = new FileSystemResource(file);
 		
-		List<Resource> springConfigResources = new ArrayList<Resource>();
+		List<Resource> springConfigResources = new ArrayList<>();
 
         try {
             //DL-Learner Configuration Object
@@ -289,9 +216,9 @@ public class CLI {
             // TODO: later we could check which command line interface is specified in the conf file
             // for now we just use the default one
 
-            CLI cli;
+            CLIBase2 cli;
             if(context.containsBean("cli")) {
-                cli = (CLI) context.getBean("cli");
+                cli = (CLIBase2) context.getBean("cli");
             } else {
                 cli = new CLI();
             }
@@ -319,60 +246,6 @@ public class CLI {
         }
     }
 
-    private static boolean createIfNotExists(File f) {
-        if (f.exists()) return true;
-
-        File p = f.getParentFile();
-        if (p != null && !p.exists()) p.mkdirs();
-
-        try {
-            f.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Find the primary cause of the specified exception.
-     *
-     * @param e The exception to analyze
-     * @return The primary cause of the exception.
-     */
-	private static Throwable findPrimaryCause(Exception e) {
-        // The throwables from the stack of the exception
-        Throwable[] throwables = ExceptionUtils.getThrowables(e);
-
-        //Look For a Component Init Exception and use that as the primary cause of failure, if we find it
-        int componentInitExceptionIndex = ExceptionUtils.indexOfThrowable(e, ComponentInitException.class);
-
-        Throwable primaryCause;
-        if(componentInitExceptionIndex > -1) {
-            primaryCause = throwables[componentInitExceptionIndex];
-        }else {
-            //No Component Init Exception on the Stack Trace, so we'll use the root as the primary cause.
-            primaryCause = ExceptionUtils.getRootCause(e);
-        }
-        return primaryCause;
-    }
-
-    public void setContext(ApplicationContext context) {
-		this.context = context;
-	}
-
-	public ApplicationContext getContext() {
-		return context;
-	}
-
-	public File getConfFile() {
-		return confFile;
-	}
-
-	public void setConfFile(File confFile) {
-		this.confFile = confFile;
-	}
-
 	public boolean isPerformCrossValidation() {
 		return performCrossValidation;
 	}
@@ -388,16 +261,8 @@ public class CLI {
 	public void setNrOfFolds(int nrOfFolds) {
 		this.nrOfFolds = nrOfFolds;
 	}
-	
-	public void setLogLevel(String logLevel) {
-		this.logLevel = logLevel;
-	}
-	
-	public String getLogLevel() {
-		return logLevel;
-	}
-	
-//	public LearningAlgorithm getLearningAlgorithm() {
+
+	//	public LearningAlgorithm getLearningAlgorithm() {
 //		return algorithm;
 //	}
 	

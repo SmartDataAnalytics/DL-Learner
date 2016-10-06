@@ -22,12 +22,12 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 
 	public AbstractRelevanceMetric(Index index) {
 		this.index = index;
-		
+
 		name = getClass().getSimpleName().replace("RelevanceMetric", "");
 	}
 
 	public static Map<OWLEntity, Double> normalizeMinMax(Map<OWLEntity, Double> hmEntity2Score) {
-		Map<OWLEntity, Double> hmEntity2Norm = new HashMap<OWLEntity, Double>();
+		Map<OWLEntity, Double> hmEntity2Norm = new HashMap<>();
 
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
@@ -62,7 +62,8 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 	public String getName() {
 		return name;
 	}
-	
+
+	@Override
 	public double getRelevance(OWLEntity entity, OWLClassExpression desc){
 		Set<OWLEntity> entities = desc.getSignature();
 		double score = 0;

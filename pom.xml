@@ -4,28 +4,29 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.2</version>
+	<version>1.3.0</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<compiler.version>1.7</compiler.version>
+		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.6.4</slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <log4j.version>1.2.17</log4j.version>
         <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.1.4</owlapi.version>
-        <spring.version>4.2.4.RELEASE</spring.version>
-        <jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
-		<pellet.version>2.4.0-dllearner</pellet.version>
+        <owlapi.version>4.2.4</owlapi.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
+        <jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
+		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
 	<modules>
 		<module>components-core</module>
 		<module>components-ext</module>
 		<module>interfaces</module>
+                <module>interfaces-ext</module>
 		<module>scripts</module>
 	</modules>
 
@@ -36,7 +37,7 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-		<tag>1.2</tag>
+		<tag>1.3</tag>
 	</scm>
 
 	<licenses>
@@ -91,10 +92,11 @@
 		<developer>
 			<id>jens</id>
 			<name>Jens Lehmann</name>
-			<email>lehmann@informatik.uni-leipzig.de</email>
-			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
-			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<email>jens.lehmann@cs.uni-bonn.de</email>
+			<organization>SDA, Computer Science Institute, University of Bonn</organization>
+			<organizationUrl>http://sda.cs.uni-bonn.de/</organizationUrl>
 			<roles>
+				<role>principle maintainer</role>
 				<role>developer</role>
 			</roles>
 			<timezone>0</timezone>
@@ -112,19 +114,19 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.19</version>
+					<version>2.19.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
+					<version>3.5.1</version>
 					<configuration>
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<compilerArgs>
-							<arg>-Xlint:all,-options,-path</arg>
+							<!--<arg>-Xlint:all,-options,-path</arg>-->
 						</compilerArgs>
 					</configuration>
 				</plugin>
@@ -135,7 +137,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.0.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -165,12 +167,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.0.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>2.10.4</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>
@@ -178,7 +180,7 @@
 			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>2.11</version>
+				<version>3.0</version>
 				<configuration>
 				<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
 					<header>license_header.txt</header>
@@ -213,7 +215,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
+				<version>3.0.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
@@ -239,7 +241,7 @@
 	<plugin>
 	<groupId>com.amashchenko.maven.plugin</groupId>
 	<artifactId>gitflow-maven-plugin</artifactId>
-	<version>1.0.8</version>
+	<version>1.2.3</version>
 	<configuration>
 		<installProject>false</installProject>
 		<verbose>true</verbose>
@@ -258,7 +260,7 @@
 				<plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.4</version>
+                    <version>3.5.1</version>
                 	<configuration>
 						<!--<skipDeploy>true</skipDeploy>-->
 					</configuration>
@@ -266,9 +268,61 @@
 						<dependency><!-- add support for ssh/scp -->
 							<groupId>org.apache.maven.wagon</groupId>
 							<artifactId>wagon-ssh</artifactId>
-							<version>2.0</version>
+							<version>2.10</version>
 						</dependency>
 					</dependencies>
+				</plugin>
+
+				<plugin>
+					<!-- the plugin to generate changelog and release announcements -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changes-plugin</artifactId>
+					<version>2.12</version>
+					<configuration>
+						<developmentTeam>DL-Learner team</developmentTeam>
+						<!-- the changes filtered source changes file -->
+						<xmlPath>${basedir}/etc/changes.xml</xmlPath>
+						<templateDirectory>etc/templates</templateDirectory>
+						<issueManagementSystems>
+							<issueManagementSystem>changes.xml</issueManagementSystem>
+						</issueManagementSystems>
+					</configuration>
+					<executions>
+						<execution>
+							<!-- checking if the changes file is well-formed -->
+							<id>check-changes</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>changes-check</goal>
+							</goals>
+						</execution>
+						<execution>
+							<!-- generating of the Changes.txt file -->
+							<id>generate-changes-file</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>Changes.txt</announcementFile>
+								<template>changes.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- generation of the e-mail announcement message announcement.txt -->
+							<id>generate-email-announcement</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>announcement.txt</announcementFile>
+								<template>announcement.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -327,7 +381,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
-				<version>3.5</version>
+				<version>3.6.1</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
@@ -467,7 +521,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20151123</version>
+				<version>20160810</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->
@@ -480,7 +534,7 @@
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
-				<version>4.9</version>
+				<version>5.0.3</version>
 			</dependency>
 
 			<dependency>
@@ -590,19 +644,19 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.190</version>
+				<version>1.4.192</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.38</version>
+				<version>6.0.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.4-1206-jdbc42</version>
+				<version>9.4.1211</version>
 			</dependency>
 
 			<dependency>
@@ -737,7 +791,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.9.1</version>
+				<version>2.9.4</version>
 			</dependency>
 			<dependency>
 				<groupId>edu.berkeley.compbio</groupId>
@@ -780,12 +834,12 @@
 
 	<distributionManagement>
 		<repository>
-			<id>archiva.internal</id>
+			<id>maven.aksw.internal</id>
 			<name>AKSW Internal Release Repository</name>
 			<url>http://maven.aksw.org/archiva/repository/internal</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.snapshots</id>
+			<id>maven.aksw.snapshots</id>
 			<name>AKSW Snapshot Repository</name>
 			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
@@ -803,7 +857,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>2.9</version>
 				<configuration>
 					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
 				</configuration>
@@ -816,7 +870,7 @@
 					<show>public</show>
 					<!--aggregate>true</aggregate -->
 					<links>
-						<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+						<link>https://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
 					<maxmemory>2g</maxmemory>
 					<minmemory>128m</minmemory>
@@ -844,11 +898,23 @@
 						src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
 						border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
 						under the terms of the GNU General Public License.&lt;br
-						/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+						/&gt;Copyright &amp;#169; 2007-2016 Jens Lehmann</bottom>
 					<encoding>ISO-8859-1</encoding>
 					<windowtitle>DL-Learner Javadoc</windowtitle>
 					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.12</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>github-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -919,7 +985,7 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<links>
-								<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+								<link>https://docs.oracle.com/javase/8/docs/api/</link>
 							</links>
 						</configuration>
 						<executions>

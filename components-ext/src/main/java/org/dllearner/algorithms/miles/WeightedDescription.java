@@ -5,7 +5,6 @@ package org.dllearner.algorithms.miles;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-
 /**
  * A description/concept that has a weight.
  * @author Lorenz Buehmann

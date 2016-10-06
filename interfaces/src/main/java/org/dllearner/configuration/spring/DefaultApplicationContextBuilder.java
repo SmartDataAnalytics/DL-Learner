@@ -35,7 +35,7 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
 
         //These files need to be loaded first
-        List<Resource> allSpringConfigFiles = new ArrayList<Resource>();
+        List<Resource> allSpringConfigFiles = new ArrayList<>();
         allSpringConfigFiles.add(new ClassPathResource("/org/dllearner/configuration/spring/bean-post-processor-configuration.xml"));
         allSpringConfigFiles.addAll(springConfigurationLocations);
 

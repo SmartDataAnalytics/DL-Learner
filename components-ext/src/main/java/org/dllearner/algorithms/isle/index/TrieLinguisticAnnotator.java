@@ -28,7 +28,7 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
      */
     @Override
     public Set<Annotation> annotate(TextDocument document) {
-        Set<Annotation> annotations = new HashSet<Annotation>();
+        Set<Annotation> annotations = new HashSet<>();
         
         List<Token> matchedTokens;
         for (Token token : document) {

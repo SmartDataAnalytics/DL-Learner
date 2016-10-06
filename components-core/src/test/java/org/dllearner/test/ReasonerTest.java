@@ -91,9 +91,7 @@ public class ReasonerTest {
 				la.init();
 				
 				la.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} catch (Error e) {
+			} catch (Exception | Error e) {
 				e.printStackTrace();
 			}
 		}

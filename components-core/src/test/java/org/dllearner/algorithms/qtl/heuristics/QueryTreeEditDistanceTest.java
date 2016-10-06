@@ -20,13 +20,10 @@ package org.dllearner.algorithms.qtl.heuristics;
 
 import static org.junit.Assert.assertEquals;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.junit.Test;
 
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import org.apache.jena.graph.NodeFactory;
 
 public class QueryTreeEditDistanceTest {
 
@@ -260,7 +257,6 @@ public class QueryTreeEditDistanceTest {
         System.out.println("d(t1,t2) = " + distance1_2);
         System.out.println("d(t1,t3) = " + distance1_3);
         System.out.println("d(t2,t3) = " + distance2_3);
-
 
         boolean moreSimilar = distance1_2 < distance1_3;
 

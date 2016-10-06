@@ -19,11 +19,10 @@
 package org.dllearner.kb.sparql;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 
 public class CachingConciseBoundedDescriptionGenerator implements ConciseBoundedDescriptionGenerator{
 	
@@ -35,6 +34,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		cache = new HashMap<>();
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
@@ -44,6 +44,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		return cbd;
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
@@ -67,11 +68,8 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	}
 	
 	@Override
-	public void setRecursionDepth(int maxRecursionDepth) {
-		delegatee.setRecursionDepth(maxRecursionDepth);
-	}
-	
 	public void addPropertiesToIgnore(Set<String> properties) {
+		delegatee.addPropertiesToIgnore(properties);
 	}
 
 	/* (non-Javadoc)

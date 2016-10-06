@@ -18,25 +18,10 @@
  */
 package org.dllearner.algorithms.el;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLProperty;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.graph.compose.Intersection;
+import java.util.*;
 
 /**
  * Represents an EL OWLClassExpression tree, which corresponds to a
@@ -94,7 +79,7 @@ public class ELDescriptionNode {
 	 * Constructs an EL OWLClassExpression tree with empty root label.
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree) {
-		this(tree, new TreeSet<OWLClass>());
+		this(tree, new TreeSet<>());
 	}	
 	
 	// convenience constructor

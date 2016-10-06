@@ -19,17 +19,11 @@
 
 package org.dllearner.scripts.analyse;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.scripts.analyse.CountInstances.Count;
 import org.dllearner.utilities.Files;
+
+import java.io.File;
+import java.util.*;
 
 public class ScriptDoAll {
 	
@@ -44,7 +38,7 @@ public class ScriptDoAll {
 	public static String dbns = "http://dbpedia.org/ontology/";
 	public static String yagons = "http://dbpedia.org/class/yago/";
 	
-	static CountInstances c = new CountInstances("http://db0.aksw.org:8893/sparql", Arrays.asList(new String[]{"http://dbpedia.org/ontology"}));
+	static CountInstances c = new CountInstances("http://db0.aksw.org:8893/sparql", Arrays.asList("http://dbpedia.org/ontology"));
 	
 	public static void main(String[] args) {
 		
@@ -83,9 +77,9 @@ public class ScriptDoAll {
 	public static Map<String, SortedSet<String>>  purge(List<Count> count, Map<String, SortedSet<String>> hierarchy){
 		Map<String, Integer> map = toMap(count);
 //		System.out.println(hierarchy.size());
-		Map<String, SortedSet<String>> ret = new HashMap<String, SortedSet<String>>();
+		Map<String, SortedSet<String>> ret = new HashMap<>();
 		for(String key: hierarchy.keySet()){
-			SortedSet<String> tmp = new TreeSet<String>();
+			SortedSet<String> tmp = new TreeSet<>();
 			for(String s : hierarchy.get(key)){
 				if(map.get(s)!=null){
 					tmp.add(s);
@@ -102,8 +96,8 @@ public class ScriptDoAll {
 	
 	public static List<Count> expand(List<Count> count, Map<String, SortedSet<String>> hierarchy){
 		Map<String, Integer> classNrOfInstances = toMap(count);
-		SortedSet<Count> ret = new TreeSet<Count>();
-		SortedSet<String> allClasses = new TreeSet<String>();
+		SortedSet<Count> ret = new TreeSet<>();
+		SortedSet<String> allClasses = new TreeSet<>();
 		allClasses.addAll(classNrOfInstances.keySet());
 		allClasses.addAll(hierarchy.keySet());
 		
@@ -129,13 +123,13 @@ public class ScriptDoAll {
 			}
 			
 		}
-		return new ArrayList<Count>(ret);
+		return new ArrayList<>(ret);
 	}
 	
 	public static Map<String, Integer> toMap(List<Count> c){
-		Map<String, Integer> ret = new HashMap<String, Integer>();
+		Map<String, Integer> ret = new HashMap<>();
 		for(Count count: c){
-			ret.put(count.uri, new Integer(count.count));
+			ret.put(count.uri, count.count);
 		}
 		return ret;
 	}
@@ -143,7 +137,7 @@ public class ScriptDoAll {
 	public static void toFile(List<Count> c, String filename){
 		StringBuffer buf = new StringBuffer();
 		for (Count count : c) {
-			buf.append(count.toString()+"\n");
+			buf.append(count.toString()).append("\n");
 		}
 		
 		Files.createFile(new File(filename), buf.toString());

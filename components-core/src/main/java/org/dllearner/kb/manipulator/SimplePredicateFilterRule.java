@@ -29,7 +29,6 @@ public class SimplePredicateFilterRule extends Rule{
 	
 	String predicateFilter;
 
-
 	public SimplePredicateFilterRule(Months month, String predicateFilter) {
 		super(month);
 		this.predicateFilter = predicateFilter;

@@ -31,6 +31,7 @@ import java.util.Collection;
 public class AccMethodFMeasureApprox extends AccMethodFMeasure implements AccMethodTwoValuedApproximate, AccMethodWithBeta {
 	@ConfigOption(description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
+	@ConfigOption(description = "reasoner component (configured  by learning problem)")
 	private Reasoner reasoner;
 
 	public AccMethodFMeasureApprox(boolean init, AbstractReasonerComponent reasoner) {

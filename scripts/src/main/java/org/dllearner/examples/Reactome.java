@@ -22,7 +22,6 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.dllearner.core.StringRenderer;
@@ -34,11 +33,10 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
-
 public class Reactome {
     private static final Logger logger = Logger.getLogger(Reactome.class);
     private static final String kbPathStr = "/tmp/tr.owl";
-    private static final List<String> posExampleUris = new ArrayList<String>(Arrays.asList(
+    private static final List<String> posExampleUris = new ArrayList<>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1861",
@@ -715,8 +713,8 @@ public class Reactome {
             "http://www.reactome.org/biopax/48887#BiochemicalReaction3247",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction5334",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2525"
-        ));
-    private static final List<String> negExampleUris = new ArrayList<String>(Arrays.asList(
+    ));
+    private static final List<String> negExampleUris = new ArrayList<>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2588",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2582",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2580",
@@ -3159,7 +3157,7 @@ public class Reactome {
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2384",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction2380",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1273"
-        ));
+    ));
 
     public static void main(String[] args) throws Exception {
         setUp();
@@ -3258,7 +3256,7 @@ public class Reactome {
     }
     
     private static Set<OWLIndividual> makeIndividuals(List<String> uris) {
-        Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
+        Set<OWLIndividual> individuals = new HashSet<>();
         for (String uri : uris) {
             individuals.add(new OWLNamedIndividualImpl(IRI.create(uri)));
         }

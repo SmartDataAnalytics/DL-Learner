@@ -67,7 +67,7 @@ public class WordNet {
 
     public List<String> getBestSynonyms(POS pos, String s) {
 
-        List<String> synonyms = new ArrayList<String>();
+        List<String> synonyms = new ArrayList<>();
 
         try {
             IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
@@ -100,7 +100,7 @@ public class WordNet {
      */
     public List<String> getTopSynonyms(POS pos, String s, int n) {
 
-        List<String> synonyms = new ArrayList<String>();
+        List<String> synonyms = new ArrayList<>();
 
         try {
             IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
@@ -125,7 +125,7 @@ public class WordNet {
     }
 
     public List<String> getAllSynonyms(POS pos, String s) {
-        List<String> synonyms = new ArrayList<String>();
+        List<String> synonyms = new ArrayList<>();
         try {
             IndexWord iw = dict.getIndexWord(pos, s);
             if (iw != null) {
@@ -148,7 +148,7 @@ public class WordNet {
     }
 
     public List<String> getSisterTerms(POS pos, String s) {
-        List<String> sisterTerms = new ArrayList<String>();
+        List<String> sisterTerms = new ArrayList<>();
 
         try {
             IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
@@ -168,7 +168,7 @@ public class WordNet {
 
     public List<String> getAttributes(String s) {
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         try {
             IndexWord iw = dict.getIndexWord(POS.ADJECTIVE, s);
@@ -236,8 +236,8 @@ public class WordNet {
             }
             PointerTargetNodeList target = PointerUtils.getInstance().getDirectHypernyms(sense);
             while (target != null && !target.isEmpty()) {
-                for (int i = 0; i < target.size(); i++) {
-                    Synset s = ((PointerTargetNode) target.get(i)).getSynset();
+                for (Object aTarget : target) {
+                    Synset s = ((PointerTargetNode) aTarget).getSynset();
                     for (Word w : sense.getWords()) {
                         result.add(w.getLemma());
                     }
@@ -332,7 +332,7 @@ public class WordNet {
      * @throws JWNLException
      */
     public List<String> getRelatedNouns(String s) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         IndexWord word = null;
         Synset sense = null;
         try {
@@ -395,7 +395,6 @@ public class WordNet {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
 
         return result;
     }

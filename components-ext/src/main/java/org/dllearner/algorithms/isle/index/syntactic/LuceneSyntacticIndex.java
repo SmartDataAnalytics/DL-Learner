@@ -47,7 +47,7 @@ public class LuceneSyntacticIndex implements Index {
 	
 	AnnotationEntityTextRetriever textRetriever;
 
-	public LuceneSyntacticIndex(OWLOntology ontology, IndexReader indexReader, String searchField) throws Exception {
+	public LuceneSyntacticIndex(OWLOntology ontology, IndexReader indexReader, String searchField) {
 		this.indexReader = indexReader;
 		this.searchField = searchField;
 		searcher = new IndexSearcher(indexReader);
@@ -70,7 +70,7 @@ public class LuceneSyntacticIndex implements Index {
 	 */
 	@Override
 	public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
-		Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
+		Set<AnnotatedDocument> documents = new HashSet<>();
 		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
@@ -80,15 +80,13 @@ public class LuceneSyntacticIndex implements Index {
 				try {
 					Query query = parser.parse(token.getRawForm());
 					ScoreDoc[] result = searcher.search(query, indexReader.numDocs()).scoreDocs;
-					for (int i = 0; i < result.length; i++) {
-						Document doc = searcher.doc(result[i].doc);
+					for (ScoreDoc aResult : result) {
+						Document doc = searcher.doc(aResult.doc);
 						documents.add(new AnnotatedTextDocument(
-								TextDocumentGenerator.getInstance().generateDocument(doc.get(searchField)), 
+								TextDocumentGenerator.getInstance().generateDocument(doc.get(searchField)),
 								Collections.EMPTY_SET));
 					}
-				} catch (ParseException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (ParseException | IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -106,7 +104,7 @@ public class LuceneSyntacticIndex implements Index {
 	}
 	
 	public Set<TextDocument> getAllDocuments(){
-		Set<TextDocument> documents = new HashSet<TextDocument>(indexReader.numDocs());
+		Set<TextDocument> documents = new HashSet<>(indexReader.numDocs());
 		for (int i = 0; i < indexReader.numDocs(); i++) {
 			try {
 				Document doc = indexReader.document(i);
@@ -134,6 +132,5 @@ public class LuceneSyntacticIndex implements Index {
 	public long getNumberOfDocumentsFor(OWLEntity... entities) {
 		return 0;
 	}
-
 
 }

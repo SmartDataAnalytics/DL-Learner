@@ -18,18 +18,15 @@
  */
 package org.dllearner.utilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.TreeMultimap;
-import org.aksw.commons.collections.multimaps.MultimapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Utility class for operations on maps.
@@ -96,5 +93,30 @@ public class MapUtils {
 			multimap.putAll(entry.getKey(), entry.getValue());
 		}
 		return multimap;
+	}
+
+	/**
+	 * Return map in TSV format.
+	 * @param map the map
+	 * @param <K>
+	 * @param <V>
+	 * @return TSV formatted String
+	 */
+	public static <K, V> String asTSV(Map<K, V> map) {
+		return Joiner.on("\n").withKeyValueSeparator("\t").join(map);
+	}
+
+	/**
+	 * Return map in TSV format.
+	 * @param map the map
+	 * @param keyHeader header for key column
+	 * @param valueHeader header for value column
+	 * @param <K>
+	 * @param <V>
+	 *
+	 * @return TSV formatted String
+	 */
+	public static <K, V> String asTSV(Map<K, V> map, String keyHeader, String valueHeader) {
+		return Strings.nullToEmpty(keyHeader) + "\t" + Strings.nullToEmpty(valueHeader) + "\n" + Joiner.on("\n").withKeyValueSeparator("\t").join(map);
 	}
 }

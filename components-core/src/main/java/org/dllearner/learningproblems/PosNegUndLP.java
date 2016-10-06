@@ -42,38 +42,28 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	@ConfigOption(description = "the uncertain examples", required = true)
 	private Set<OWLIndividual> uncertainExamples;
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "pos neg und learning problem";
-	}
-
-	
 	// getter and setters
-	public Set<OWLIndividual> getPositiveExample() {
+	public Set<OWLIndividual> getPositiveExamples() {
 		return new TreeSet<>(super.getPositiveExamples());
 	}
 
-	public void setPositiveExample(SortedSet<OWLIndividual> positiveExample) {
+	public void setPositiveExamples(SortedSet<OWLIndividual> positiveExample) {
 		this.positiveExamples = positiveExample;
 	}
 
-	public Set<OWLIndividual> getNegativeExample() {
+	public Set<OWLIndividual> getNegativeExamples() {
 		return new TreeSet<>(super.getNegativeExamples());//negativeExamples;
 	}
 
-	public void setNegativeExample(Set<OWLIndividual> negativeExample) {
+	public void setNegativeExamples(Set<OWLIndividual> negativeExample) {
 		this.negativeExamples = negativeExample;
 	}
 
-	public Set<OWLIndividual> getUncertainExample() {
+	public Set<OWLIndividual> getUncertainExamples() {
 		return new TreeSet<>(uncertainExamples);
 	}
 
-	public void setUncertainExample(Set<OWLIndividual> uncertainExample) {
+	public void setUncertainExamples(Set<OWLIndividual> uncertainExample) {
 		this.uncertainExamples = uncertainExample;
 	}
 
@@ -128,10 +118,10 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	 */
 	public PosNegLP getPosNegLP(){
 		PosNegLPStandard  binaryProblem= new PosNegLPStandard(getReasoner());
-		binaryProblem.setPositiveExamples(getPositiveExample());
+		binaryProblem.setPositiveExamples(getPositiveExamples());
 	    SortedSet<OWLIndividual> therestOfWorld= new TreeSet<>();
 	    //positive vs. the rest  of world
-	    therestOfWorld.addAll(getNegativeExample());
+	    therestOfWorld.addAll(getNegativeExamples());
 	    therestOfWorld.addAll(uncertainExamples);
 	    binaryProblem.setNegativeExamples(therestOfWorld);
 //	    System.out.println(getPositiveExamples().size()+"    "+therestOfWorld.size());

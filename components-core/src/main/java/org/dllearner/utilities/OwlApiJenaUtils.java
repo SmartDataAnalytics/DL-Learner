@@ -18,18 +18,18 @@
  */
 package org.dllearner.utilities;
 
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.impl.LiteralLabel;
-import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.impl.LiteralLabel;
+import org.apache.jena.graph.impl.LiteralLabelFactory;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.impl.LiteralImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.*;
@@ -50,6 +50,10 @@ public class OwlApiJenaUtils {
 	
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
+	private static final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+
+	private static int ONT_COUNTER = 0;
+
 	/**
 	 * Converts a JENA API model into an OWL API ontology.
 	 * @param model the JENA API model
@@ -61,6 +65,7 @@ public class OwlApiJenaUtils {
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					model.write(os, "TURTLE", null);
 					try {
@@ -87,6 +92,7 @@ public class OwlApiJenaUtils {
 
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
@@ -158,7 +164,11 @@ public class OwlApiJenaUtils {
 		} else {
 			datatype = new BaseDatatype(lit.getDatatype().toStringID());
 		}
-		return LiteralLabelFactory.create(lit.getLiteral(), lit.getLang(), datatype);
+		if(lit.hasLang()) {
+			return LiteralLabelFactory.create(lit.getLiteral(), lit.getLang());
+		} else {
+			return LiteralLabelFactory.create(lit.getLiteral(), datatype);
+		}
 	}
 	
 	/**
@@ -168,7 +178,7 @@ public class OwlApiJenaUtils {
 	 */
 	public static Set<Statement> asStatements(Set<OWLAxiom> axioms) {
 		try {
-			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(axioms);
+			OWLOntology ontology = man.createOntology(axioms, IRI.create("http://dllearner.org/converter" + ONT_COUNTER++));
 			Model model = getModel(ontology);
 			return model.listStatements().toSet();
 		} catch (OWLOntologyCreationException e) {

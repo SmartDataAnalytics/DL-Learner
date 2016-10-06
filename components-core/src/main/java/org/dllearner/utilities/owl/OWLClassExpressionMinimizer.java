@@ -185,13 +185,13 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 	@Override
 	public OWLClassExpression visit(OWLObjectComplementOf ce) {
 		OWLClassExpression operand = ce.getOperand();
-		OWLClassExpression shortendedOperand = operand.accept(this);
-		if(shortendedOperand.isOWLThing()){// \neg \top \equiv \bot
+		OWLClassExpression shortenedOperand = operand.accept(this);
+		if(shortenedOperand.isOWLThing()){// \neg \top \equiv \bot
 			return df.getOWLNothing();
-		} else if(shortendedOperand.isOWLNothing()){// \neg \bot \equiv \top
+		} else if(shortenedOperand.isOWLNothing()){// \neg \bot \equiv \top
 			return df.getOWLThing();
-		} else if(operand != shortendedOperand){
-			return df.getOWLObjectComplementOf(shortendedOperand);
+		} else if(operand != shortenedOperand){
+			return df.getOWLObjectComplementOf(shortenedOperand);
 		}
 		return ce;
 	}

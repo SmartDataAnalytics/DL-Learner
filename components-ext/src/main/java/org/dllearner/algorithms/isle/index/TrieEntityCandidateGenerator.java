@@ -27,6 +27,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		this.candidatesTrie = candidatesTrie;
 	}
 	
+	@Override
 	public Set<EntityScorePair> getCandidates(Annotation annotation) {
         Set<EntityScorePair> candidateEntities = candidatesTrie.getCandidateEntities(annotation.getTokens());
         System.out.println(annotation + " --> " + candidateEntities);
@@ -41,7 +42,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
      */
     public void postProcess(HashMap<Annotation,Set<EntityScorePair>> candidatesMap, int window, StopWordFilter stopWordFilter) {
     	Set<Annotation> annotations = candidatesMap.keySet();
-    	List<Annotation> sortedAnnotations = new ArrayList<Annotation>(annotations);
+    	List<Annotation> sortedAnnotations = new ArrayList<>(annotations);
     	//TODO refactoring
     	/**
     	  

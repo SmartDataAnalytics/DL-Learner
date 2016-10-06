@@ -21,7 +21,6 @@ package org.dllearner.algorithms.qtl.operations.nbr;
 import java.util.Collections;
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.nbr.strategy.BruteForceNBRStrategy;
 import org.dllearner.algorithms.qtl.operations.nbr.strategy.NBRStrategy;

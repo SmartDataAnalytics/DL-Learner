@@ -42,6 +42,7 @@ public class StringTuple implements Comparable<StringTuple>{
 		return ((b.equals(t.b)) && (a.equals(t.a)));
 	}
 	
+	@Override
 	public int compareTo(StringTuple t){
 		int comp = a.compareTo(t.a);
 		if( comp == 0 ){

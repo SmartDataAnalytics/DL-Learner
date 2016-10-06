@@ -76,8 +76,8 @@ public class MILES {
 	public void start(){
 		// if enabled, we split the data into a train and a test set
 		if(performInternalCV){
-			List<OWLIndividual> posExamples = new ArrayList<OWLIndividual>(lp.getPositiveExamples());
-			List<OWLIndividual> negExamples = new ArrayList<OWLIndividual>(lp.getNegativeExamples());
+			List<OWLIndividual> posExamples = new ArrayList<>(lp.getPositiveExamples());
+			List<OWLIndividual> negExamples = new ArrayList<>(lp.getNegativeExamples());
 			
 			// pos example subsets
 			int trainSizePos = (int) (0.9 * posExamples.size());
@@ -89,8 +89,8 @@ public class MILES {
 			List<OWLIndividual> negExamplesTrain = negExamples.subList(0, trainSizeNeg);
 			List<OWLIndividual> negExamplesTest = negExamples.subList(trainSizeNeg, negExamples.size());
 			
-			lp.setPositiveExamples(new HashSet<OWLIndividual>(posExamplesTrain));
-			lp.setNegativeExamples(new HashSet<OWLIndividual>(negExamplesTrain));
+			lp.setPositiveExamples(new HashSet<>(posExamplesTrain));
+			lp.setNegativeExamples(new HashSet<>(negExamplesTrain));
 			
 			// TODO replace by 	
 						//FoldGenerator<OWLIndividual> foldGenerator = new FoldGenerator<OWLIndividual>(lp.getPositiveExamples(), lp.getNegativeExamples());
@@ -136,6 +136,7 @@ public class MILES {
 			classifier = new DescriptionLinearClassifier(lp, rc);
 		}
 		
+		@Override
 		public void run() {
 			logger.debug("Computing linear combination...");
 			long start = System.currentTimeMillis();

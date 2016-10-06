@@ -25,14 +25,14 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class DBpediaExample {
 	static QueryTreeFactory factory = new QueryTreeFactoryBase();
 	
 	public static List<RDFResourceTree> getPosExampleTrees(){
-		List<RDFResourceTree> posExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> posExampleTrees = new ArrayList<>();
 		
 		posExampleTrees.add(factory.getQueryTree("Leibnitz", getLeibnitzExampleModel()));
 		posExampleTrees.add(factory.getQueryTree("MaxImmelmann", getMaxImmelmannExampleModel()));
@@ -53,7 +53,7 @@ public class DBpediaExample {
 	}
 	
 	public static List<RDFResourceTree> getNegExampleTrees(){
-		List<RDFResourceTree> negExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> negExampleTrees = new ArrayList<>();
 		
 		negExampleTrees.add(factory.getQueryTree("CharlesGarnier", getCharlesGarnierExampleModel()));
 		
@@ -134,7 +134,7 @@ public class DBpediaExample {
 		Resource sp = model.createResource("SP");
 		Resource france = model.createResource("France");
 		Resource person = model.createResource("Person");
-		Resource architekt = model.createResource("Architekt");
+		Resource architekt = model.createResource("Architect");
 		
 		Property birthPlace = model.createProperty("birthPlace");
 		Property leaderParty = model.createProperty("leaderParty");

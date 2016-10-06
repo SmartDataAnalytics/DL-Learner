@@ -22,11 +22,12 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 
 @ComponentAnn(name = "disjoint object properties axiom learner", shortName = "opldisjoint", version = 0.1, description="A learning algorithm for disjoint object properties axioms.")
 public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLDisjointObjectPropertiesAxiom> {
@@ -67,7 +68,17 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 		return df.getOWLDisjointObjectPropertiesAxiom(property, otherProperty);
 	}
 	
-	public double computeScore(int candidatePopularity, int popularity, int overlap) {
-		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
+	@Override
+	public AxiomScore computeScore(int candidatePopularity, int popularity, int overlap) {
+		AxiomScore score = super.computeScore(candidatePopularity, popularity, overlap);
+
+		// we need to invert the value
+		AxiomScore invertedScore = new AxiomScore(
+				1 - score.getAccuracy(),
+				1 - score.getConfidence(),
+				score.getNrOfPositiveExamples(), score.getNrOfNegativeExamples(),
+				score.isSampleBased());
+
+		return invertedScore;
 	}
 }

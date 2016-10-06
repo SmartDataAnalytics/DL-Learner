@@ -1,0 +1,130 @@
+<!--
+This file is to record the changes in the DL-Learner project that will be reported
+in the release history and release announcements. It is reasonable to keep
+changes relatively high level to be understandable by the users but still
+reflect the main changes made in the project.
+Please refer to the following link regarding the format of this file:
+http://maven.apache.org/plugins/maven-changes-plugin/changes.html
+Please avoid making line breaks and tabulation in the description as those
+will appear in the produced result.
+-->
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+    <properties>
+        <title>DL-Learner Project</title>
+    </properties>
+    <body>
+        <release version="${release.version}" date="${buildDate}" description="">
+        </release>
+        <release version="1.3" date="2016-10-05" description="Fourth stable release">
+            <action dev="lorenz" type="add">
+Terminological Decision Tree and Evidence-based Terminological Decision Tree Learning Algorithms
+            </action>
+            <action dev="guiseppe" type="add">
+Addition of the LEAP and EDGE systems and BUNDLE reasoner for Probabilistic OWL
+            </action>
+            <action dev="lorenz" type="add">
+Addition of Disjunctive CELA meta-algorithm
+            </action>
+            <action dev="lorenz" type="update">
+Query Tree Learning support for incoming edges
+            </action>
+            <action dev="lorenz" type="update">
+Further QTL improvements
+            </action>
+            <action dev="lorenz" type="add">
+RDFS Schema Generator implementation
+            </action>
+            <action dev="lorenz" type="add">
+New Tree Based Concise Bounded Description Generator
+            </action>
+            <action dev="simon" type="modify">
+Rho refinement operator now respects classes ignored in the learning algorithm
+            </action>
+            <action dev="simon" type="modify">
+For PosNegLP, positive and negative examples can be describes with a class expression
+            </action>
+            <action dev="simon" type="modify">
+Class Learning Problem support for pluggable accuracy methods
+            </action>
+            <action dev="simon" type="add">
+New Class Expression Length Metric to further tune the refinement
+            </action>
+            <action dev="simon" type="add">
+New Expression Validation client to calculate test coverage for PosNeg learning problems
+            </action>
+            <action dev="lorenz" type="modify">
+Framework updates
+            </action>
+            <action dev="lorenz" type="modify">
+Update to Java 8
+            </action>
+            <action dev="lorenz" type="modify">
+Update to Jena 3
+            </action>
+            <action dev="simon" type="add">
+Windows drive letters are now supported in OWLFile loader
+            </action>
+            <action dev="patrick" type="add">
+An updated review of the DL-Learner framework has been published in the Journal of Web Semantics: DL-Learner—A framework for inductive learning on the Semantic Web. Please refer to that publication when citing DL-Learner
+            </action>
+            <action dev="lorenz" type="update">
+Bug fixes
+            </action>
+        </release>
+        <release version="1.2" date="2016-02-09" description="Third stable release">
+            <action dev="lorenz" type="update">
+                Switch to the OWL API version 4. Dropping support for OWL API 3 and Protege 4.
+            </action>
+            <action dev="lorenz" type="update">
+                Switch to the Spring version 4.
+            </action>
+            <action dev="lorenz" type="add">
+                Support for inverse properties in learned class expressions.
+            </action>
+            <action dev="lorenz" type="add">
+                Extended Query Tree Learning (QTL) algorithm by using entailment.
+            </action>
+            <action dev="simon" type="add">
+                Direct (without reasoner) SPARQL based learning.
+            </action>
+        </release>
+        <release version="1.1" date="2015-03-03" description="Second stable release">
+            <action dev="simon" type="add">
+                Support for date literals.
+            </action>
+            <action dev="simon" type="add">
+                Optional DL syntax output instead of Manchester OWL Syntax.
+            </action>
+            <action dev="patrick" type="update">
+                Improved documentation.
+            </action>
+        </release>
+        <release version="1.0" date="2013-08-15" description="First major stable release">
+            <action dev="lorenz" type="update">
+                All internal data structures migrated to OWL API.
+            </action>
+            <action dev="lorenz" type="removed">
+                Protégé plugin moved to a separate project.
+            </action>
+        </release>
+
+        <!-- Template -->
+        <!--<release version="1.0" date="2013-08-15" description="First maintenance relase after the fourth public release">
+            <action dev="developerId" type="add">
+                some text
+            </action>
+            <action dev="developerId" type="update">
+                some text
+            </action>
+            <action dev="developerId" type="removed">
+                some text
+            </action>
+            <action dev="developerId" type="fix" issue="4">
+                some text
+            </action>
+        </release>-->
+
+    </body>
+</document>

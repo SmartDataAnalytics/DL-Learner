@@ -69,7 +69,7 @@ import org.semanticweb.owlapi.model.OWLObject;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ParameterizedSparqlString;
 
 /**
  * A utility class that holds links between entity type, axiom types and axiom algorithms.
@@ -144,18 +144,18 @@ public class AxiomAlgorithms {
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_OBJECT_PROPERTY, EQUIVALENT_OBJECT_PROPERTIES, DISJOINT_OBJECT_PROPERTIES),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> .} "
-						+ "WHERE {?s ?entity ?o . OPTIONAL{?s ?p1 ?o . FILTER(!sameTerm(?entity, ?p1))} }"));
+				new ParameterizedSparqlString("PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?entity ?o . ?s ?p1 ?o . ?p1 a owl:ObjectProperty .} "
+						+ "WHERE {?s ?entity ?o . OPTIONAL{?s ?p1 ?o . ?p1 a owl:ObjectProperty . FILTER(?entity !=?p1)} }"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_CHARACTERISTICS_WITHOUT_TRANSITIVITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SYMMETRIC_OBJECT_PROPERTY, ASYMMETRIC_OBJECT_PROPERTY,
 						FUNCTIONAL_OBJECT_PROPERTY, INVERSE_FUNCTIONAL_OBJECT_PROPERTY, REFLEXIVE_OBJECT_PROPERTY, IRREFLEXIVE_OBJECT_PROPERTY),
 				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o.} WHERE {?s ?entity ?o}"));
 		
-		public static final AxiomTypeCluster OBJECT_PROPERTY_TRANSITITVITY_CLUSTER = new AxiomTypeCluster(
+		public static final AxiomTypeCluster OBJECT_PROPERTY_TRANSITIVITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(TRANSITIVE_OBJECT_PROPERTY),
 				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?o ?entity ?o1 . ?s ?entity ?o1 .} "
-						+ "WHERE {?s ?entity ?o . ?o ?entity ?o1 . OPTIONAL {?s ?entity ?o1 .}}"));
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?o ?entity ?o1 . ?s ?entity ?o1 .}}"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_DOMAIN),
@@ -224,7 +224,7 @@ public class AxiomAlgorithms {
 						AxiomTypeCluster.OBJECT_PROPERTY_CHARACTERISTICS_WITHOUT_TRANSITIVITY_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_DOMAIN_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_RANGE_CLUSTER,
-						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITITVITY_CLUSTER,
+						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITIVITY_CLUSTER,
 						AxiomTypeCluster.INVERSE_OBJECT_PROPERTIES_CLUSTER));
 		
 		// data properties
@@ -241,7 +241,7 @@ public class AxiomAlgorithms {
 						AxiomTypeCluster.OBJECT_PROPERTY_CHARACTERISTICS_WITHOUT_TRANSITIVITY_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_DOMAIN_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_RANGE_CLUSTER,
-						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITITVITY_CLUSTER));
+						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITIVITY_CLUSTER));
 	}
 	
 	private static HashBiMap<AxiomType<? extends OWLAxiom>, Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>>> axiomType2Class = 

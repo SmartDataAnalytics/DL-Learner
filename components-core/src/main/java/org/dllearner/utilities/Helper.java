@@ -18,27 +18,16 @@
  */
 package org.dllearner.utilities;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * TODO: JavaDoc
@@ -109,12 +98,10 @@ public class Helper {
 	}
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
-		SortedSet<OWLIndividual> ret = new TreeSet<>();
-		for (String s : individuals) {
-			ret.add(df.getOWLNamedIndividual(IRI.create(s)));
-		}
-		return ret;
+	public static SortedSet<OWLIndividual> getIndividualSet(Collection<String> individuals) {
+		return individuals.stream()
+				.map(s -> df.getOWLNamedIndividual(IRI.create(s)))
+				.collect(Collectors.toCollection(TreeSet::new));
 	}
 
 	public static SortedSetTuple<OWLIndividual> getIndividualTuple(SortedSetTuple<String> tuple) {
@@ -128,12 +115,10 @@ public class Helper {
 	}
 
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<String> getStringSet(Set<OWLIndividual> individuals) {
-		SortedSet<String> ret = new TreeSet<>();
-		for (OWLIndividual i : individuals) {
-			ret.add(i.toStringID());
-		}
-		return ret;
+	public static SortedSet<String> getStringSet(Collection<OWLIndividual> individuals) {
+		return individuals.stream().
+				map(OWLIndividual::toStringID).
+				collect(Collectors.toCollection(TreeSet::new));
 	}
 
 	public static Map<String, SortedSet<String>> getStringMap(

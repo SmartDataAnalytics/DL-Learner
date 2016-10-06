@@ -27,11 +27,11 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
 
 public class CountInstances {
 	
@@ -40,7 +40,7 @@ public class CountInstances {
 		public CountInstances( String url , List<String> defaultGraphs){
 			try{
 			 t = new SPARQLTasks(Cache.getDefaultCache(), 
-					 new SparqlEndpoint(new URL(url), defaultGraphs, new ArrayList<String>()));
+					 new SparqlEndpoint(new URL(url), defaultGraphs, new ArrayList<>()));
 			}catch (Exception e) {
 				e.printStackTrace();	
 			}
@@ -76,7 +76,7 @@ public class CountInstances {
 
 		@SuppressWarnings("unchecked")
 		public List<Count> countProperties() {
-			List<Count> ret = new ArrayList<Count>();
+			List<Count> ret = new ArrayList<>();
 			String query = "SELECT ?p count(?p) as ?count {" + 
 						"?s ?p ?o" +
 						"} GROUP BY ?p " +
@@ -94,7 +94,7 @@ public class CountInstances {
 		
 		@SuppressWarnings("unchecked")
 		public List<Count> countInstances(String property, String namespace) {
-			List<Count> ret = new ArrayList<Count>();
+			List<Count> ret = new ArrayList<>();
 			String query = 	"SELECT ?class count(?instance) as ?count {" 
 				+ "?instance <"+property+"> ?class ." +
 				"FILTER (?class LIKE <"+namespace+"%>) " 
@@ -113,5 +113,4 @@ public class CountInstances {
 			return ret;
 		}
 	}
-
 

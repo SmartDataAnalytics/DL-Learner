@@ -18,6 +18,7 @@
  */
 package org.dllearner.utilities;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
@@ -28,9 +29,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Common utilities for using a reasoner in learning problems
@@ -46,6 +45,9 @@ public class ReasoningUtils implements Component {
 		public int total;
 	}
 
+	/**
+	 * binary counter to divide a set in 2 partitions and an additional counter for unkown individuals
+	 */
 	public class Coverage3Count extends CoverageCount {
 		public int unknownCount;
 	}
@@ -58,6 +60,9 @@ public class ReasoningUtils implements Component {
 		public SortedSet<OWLIndividual> falseSet = new TreeSet<>();
 	}
 
+	/**
+	 * binary set to divide a set in 2 partitions, and an additonal for unknown individuals
+	 */
 	public class Coverage3 extends Coverage3Count {
 		public SortedSet<OWLIndividual> trueSet = new TreeSet<>();
 		public SortedSet<OWLIndividual> falseSet = new TreeSet<>();
@@ -80,6 +85,21 @@ public class ReasoningUtils implements Component {
 	 */
 	protected boolean interrupted() { return false; }
 
+
+	/**
+	 * binary partition a list of sets into true and false, depending on whether they satisfy concept. wrapper to convert collections to sets
+	 * @param concept the concept for partitioning
+	 * @param collections list of collections to partition. they will be converted to sets first
+	 * @return array of coverage data
+	 */
+	public final Coverage[] getCoverage(OWLClassExpression concept,
+	                                    Collection<OWLIndividual>... collections) {
+		Set[] sets = new Set [ collections.length ];
+		for (int i = 0; i < collections.length; ++i) {
+			sets[i] = makeSet(collections[i]);
+		}
+		return getCoverage(concept, sets);
+	}
 
 	/**
 	 * binary partition a list of sets into true and false, depending on whether they satisfy concept
@@ -142,6 +162,22 @@ public class ReasoningUtils implements Component {
 		return rv;
 	}
 
+
+	/**
+	 * count the numbers of individuals satisfying a concept. wrapper converting collections to set
+	 * @param concept the OWL concept used for counting
+	 * @param collections list of collections of individuals to count on. will be converted to sets first
+	 * @return an array of Coverage counts, one entry for each input set
+	 */
+	public final CoverageCount[] getCoverageCount(OWLClassExpression concept,
+	                                              Collection<OWLIndividual>... collections) {
+		Set[] sets = new Set [ collections.length ];
+		for (int i = 0; i < collections.length; ++i) {
+			sets[i] = makeSet(collections[i]);
+		}
+		return getCoverageCount(concept, sets);
+	}
+
 	/**
 	 * count the numbers of individuals satisfying a concept
 	 * @param concept the OWL concept used for counting
@@ -197,7 +233,7 @@ public class ReasoningUtils implements Component {
 	}
 
 	/**
-	 * partition a list of sets into true, false and unknown, depending on whether they satisfy concept A or B
+	 * partition an array of sets into true, false and unknown, depending on whether they satisfy concept A or B
 	 * @param trueConcept the OWL concept used for true partition
 	 * @param falseConcept the OWL concept used for false partition
 	 * @param sets list of sets to partition
@@ -275,8 +311,8 @@ public class ReasoningUtils implements Component {
 	 * @param noise noise level of the data
 	 * @return -1 when the concept is too weak or the accuracy value as calculated by the accuracy method
 	 */
-	public double getAccuracyOrTooWeak2(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> positiveExamples,
-			Set<OWLIndividual> negativeExamples, double noise) {
+	public double getAccuracyOrTooWeak2(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Collection<OWLIndividual> positiveExamples,
+			Collection<OWLIndividual> negativeExamples, double noise) {
 		if (accuracyMethod instanceof AccMethodApproximate) {
 			return ((AccMethodTwoValuedApproximate) accuracyMethod).getAccApprox2(description, positiveExamples, negativeExamples, noise);
 		} else {
@@ -285,9 +321,17 @@ public class ReasoningUtils implements Component {
 		}
 	}
 
+
+	/**
+	 * wrapper to call accuracy method with coverage count
+	 * @param accuracyMethod method to use
+	 * @param cc already calculated coverage count
+	 * @param noise noise level
+	 * @return @{AccMethodTwoValued.getAccOrTooWeak2}
+	 */
 	public double getAccuracyOrTooWeakExact2(AccMethodTwoValued accuracyMethod, CoverageCount[] cc, double noise) {
 //		return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
-		CoverageAdapter.CoverageAdapter2 c2 = new CoverageAdapter.CoverageAdapter2(cc);
+		CoverageAdapter.CoverageCountAdapter2 c2 = new CoverageAdapter.CoverageCountAdapter2(cc);
 		return accuracyMethod.getAccOrTooWeak2(c2.tp(), c2.fn(), c2.fp(), c2.tn(), noise);
 	}
 
@@ -301,6 +345,16 @@ public class ReasoningUtils implements Component {
 
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
+	}
+
+	/**
+	 * helper method to create a set from a collection
+	 * @param collection
+	 * @param <T>
+	 * @return set (or hashset)
+	 */
+	protected <T> Set<T> makeSet(Collection<T> collection) {
+		return collection instanceof Set ? (Set)collection : ImmutableSet.copyOf(collection);
 	}
 
 }

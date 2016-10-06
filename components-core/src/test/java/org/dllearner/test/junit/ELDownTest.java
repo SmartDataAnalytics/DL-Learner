@@ -111,7 +111,7 @@ public class ELDownTest {
 		operator.init();
 		
 		// desired refinements as strings
-		Set<String> desiredString = new TreeSet<String>();
+		Set<String> desiredString = new TreeSet<>();
 		desiredString.add("(human AND EXISTS hasPet.animal)");
 		desiredString.add("(human AND EXISTS has.bird)");
 		desiredString.add("(human AND EXISTS has.cat)");
@@ -122,7 +122,7 @@ public class ELDownTest {
 		desiredString.add("((human AND EXISTS has.EXISTS has.TOP) AND EXISTS has.animal)");
 		desiredString.add("(human AND EXISTS has.(animal AND EXISTS has.TOP))");
 		
-		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> desired = new TreeSet<>();
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			// eliminate conjunctions nested in other conjunctions
@@ -194,7 +194,7 @@ public class ELDownTest {
 		OWLClassExpression input = KBParser.parseConcept("(human AND EXISTS hasPet.bird)");
 		ConceptTransformation.cleanConcept(input);
 		
-		Set<String> desiredString = new TreeSet<String>();
+		Set<String> desiredString = new TreeSet<>();
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.human))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.cat))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.EXISTS has.TOP))");
@@ -209,7 +209,7 @@ public class ELDownTest {
 		desiredString.add("(human AND (EXISTS has.(bird AND EXISTS has.TOP) AND EXISTS hasPet.bird))");
 		desiredString.add("(human AND EXISTS hasPet.(bird AND EXISTS has.TOP))"); 
 		
-		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> desired = new TreeSet<>();
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			ConceptTransformation.cleanConcept(tmp);
@@ -248,7 +248,7 @@ public class ELDownTest {
 		OWLClassExpression input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
 		input = ConceptTransformation.cleanConcept(input);
 		
-		Set<String> desiredString = new TreeSet<String>();
+		Set<String> desiredString = new TreeSet<>();
 		desiredString.add("(human AND (animal AND (EXISTS hasChild.human AND EXISTS has.animal)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND human)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.bird))");
@@ -258,7 +258,7 @@ public class ELDownTest {
 		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND EXISTS has.TOP)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.animal AND EXISTS has.EXISTS has.TOP)))");
 		
-		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> desired = new TreeSet<>();
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			tmp = ConceptTransformation.cleanConcept(tmp);
