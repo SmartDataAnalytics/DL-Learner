@@ -139,13 +139,7 @@ The first part of the output (line 1-5) tells you which components are used (mor
 
 \section{DL-Learner Architecture}
 
-DL-Learner (see also~\cite{dllearner_jmlr}) consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts. The general structure is illustrated in Figure \ref{fig:structure}.
-
-\begin{figure}
- \includegraphics[width=\textwidth]{../../../../images/structure_print.pdf}
- \caption{Overall structure of the DL-Learner software.}
- \label{fig:structure}
-\end{figure}
+DL-Learner (see also~\cite{dllearner_jmlr}) consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts.
 
 To be flexible in integrating new learning algorithms, new kinds of learning problems, new knowledge bases, and new reasoner implementations, DL-Learner uses a component based model. Adding a component can be done by implementing the appropriate Java interface and adding appropriate annotations (more on that in Section \ref{sec:developing}).
 
@@ -155,7 +149,7 @@ There are five common types of components (knowledge source, reasoning service, 
   \centering
   %\includegraphics[width=\textwidth]{../../../../images/components_print.pdf}
   \includegraphics[width=.70\textwidth]{../../../../images/components.pdf}
-  \caption{The architecture of DL-Learner is based on four component types, which can each have their own configuration options. DL-Learner uses a component manager to organise all components.}
+  \caption{The architecture of DL-Learner is based on different component types, which can each have their own configuration options.}
   \label{fig:components}
 \end{figure}
 
