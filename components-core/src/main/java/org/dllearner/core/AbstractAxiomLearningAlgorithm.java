@@ -19,10 +19,7 @@
 package org.dllearner.core;
 
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -572,32 +569,21 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
-		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		Set<OWLObject> posExamples = new TreeSet<>();
-		
-		RDFNode node;
-		while(rs.hasNext()){
-			node = rs.next().get("s");
-			if(node.isResource()){
-				posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
-			} else if(node.isLiteral()){
-				posExamples.add(convertLiteral(node.asLiteral()));
-			}
-		}
-		
-		return (Set<S>) posExamples;
-//		throw new UnsupportedOperationException("Getting positive examples is not possible.");
-		
+	public Set<S> getPositiveExamples(EvaluatedAxiom<T> evAxiom) {
+		return getExamples(posExamplesQueryTemplate, evAxiom);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public Set<S> getNegativeExamples(EvaluatedAxiom<T> axiom){
-		
-		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		
+	public Set<S> getNegativeExamples(EvaluatedAxiom<T> evAxiom) {
+		return getExamples(negExamplesQueryTemplate, evAxiom);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Set<S> getExamples(ParameterizedSparqlString queryTemplate, EvaluatedAxiom<T> evAxiom) {
+		ResultSet rs = executeSelectQuery(queryTemplate.toString());
+
 		Set<OWLObject> negExamples = new TreeSet<>();
-		
+
 		while(rs.hasNext()){
 			RDFNode node = rs.next().get("s");
 			if(node.isResource()){
@@ -607,7 +593,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			}
 		}
 		return (Set<S>) negExamples;
-//		throw new UnsupportedOperationException("Getting negative examples is not possible.");
 	}
 	
 	public void explainScore(EvaluatedAxiom<T> evAxiom){

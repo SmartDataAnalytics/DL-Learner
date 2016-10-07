@@ -167,8 +167,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             }
         }
 
-		manager.getOntologies().stream().map(OWLOntology::getOntologyID).forEach(System.out::println);
-
         //Now merge all of the knowledge sources into one ontology instance.
         try {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
