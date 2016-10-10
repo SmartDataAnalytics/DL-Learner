@@ -131,6 +131,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		Monitor mon = MonitorFactory.getTimeMonitor("dom-class-time");
 		for (OWLClass candidate : candidates) {
 			mon.start();
+			logger.debug("Candidate:" + candidate);
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			// get total number of instances of B
