@@ -225,24 +225,31 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		startTime = System.currentTimeMillis();
 		
 		currentlyBestAxioms = new TreeSet<>();
-		
+
+		// check whether the knowledge base contains information about the entity, if not terminate
 		popularity = reasoner.getPopularity(entityToDescribe);
 		if(popularity == 0){
 			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID());
 			return;
 		}
-		
+
+		// if enabled, we check for existing axioms that will filtered out in the final result
 		if(returnOnlyNewAxioms){
 			getExistingAxioms();
 		}
-		
+
+		// if enabled, we generated a sample of the knowledge base and do the rest of the compuatation locally
 		if(useSampling){
 			generateSample();
 		} else {
 			qef = ksQef;
 			reasoner = ksReasoner;
 		}
-		
+
+		// compute the axiom type specific popularity of the entity to describe
+		popularity = getPopularity();
+
+		// start the real learning algorithm
 		progressMonitor.learningStarted(axiomType);
 		try {
 			learnAxioms();
@@ -255,7 +262,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		logger.info("...finished learning of " + axiomType.getName()
 				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
-				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
+				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis() - startTime));
 		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
 			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
 		} else {
@@ -264,6 +271,15 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 				logger.info("Best axiom candidate is " + currentlyBestAxioms.last());
 			}
 		}
+	}
+
+	/**
+	 * Compute the popularity of the entity to describe. This depends on the axiom type, thus, the mehtod might
+	 * be overwritten in the corresponding algorithm classes.
+	 * @return the populairty of the entity to describe
+	 */
+	protected int getPopularity() {
+		return reasoner.getPopularity(entityToDescribe);
 	}
 	
 	private void generateSample(){
@@ -370,16 +386,20 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public EvaluatedAxiom<T> getCurrentlyBestEvaluatedAxiom() {
-		List<EvaluatedAxiom<T>> currentlyBestEvaluatedAxioms = getCurrentlyBestEvaluatedAxioms(1);
-		if(currentlyBestEvaluatedAxioms.isEmpty()){
+		if(currentlyBestAxioms.isEmpty()) {
 			return null;
 		}
-		return currentlyBestEvaluatedAxioms.get(0);
+		return currentlyBestAxioms.last();
 	}
 	
 	@Override
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
-		return new ArrayList<>(currentlyBestAxioms);
+		ArrayList<EvaluatedAxiom<T>> axioms = new ArrayList<>(currentlyBestAxioms);
+
+		// revert because highest element in tree set is last
+		Collections.reverse(axioms);
+
+		return axioms;
 	}
 
 	@Override

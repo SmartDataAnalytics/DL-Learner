@@ -76,6 +76,15 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
 		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
+
+	/**
+	 * Declare the property for which axiom(s) will be computed.
+	 *
+	 * @param property the property
+	 */
+	public void setPropertyToDescribe(S property) {
+		setEntityToDescribe(property);
+	}
 	
 	/**
 	 * @param strictOWLMode the strictOWLMode to set
@@ -130,6 +139,14 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		return rs.next().getLiteral("cnt").getInt();
 	}
 
+	/**
+	 * Compute the score of the axiom:
+	 *
+	 * @param cntA |A|
+	 * @param cntB |B|
+	 * @param cntAB |A AND B|
+	 * @return
+	 */
 	protected AxiomScore computeScore(int cntA, int cntB, int cntAB) {
 		// precision (A AND B)/B
 		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
@@ -140,17 +157,26 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		// if enabled consider also recall and use F-score
 		if(!useSimpleScore ) {
 			// recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(cntA, cntAB);
 
 			// F score
 			score = Heuristics.getFScore(recall, precision, beta);
 		}
 
-		int nrOfNegExamples = popularity - cntAB;
+		int nrOfNegExamples = cntA - cntAB;
 
 		return new AxiomScore(score, score, cntAB, nrOfNegExamples, useSampling);
 	}
-	
+
+	/**
+	 * Whether to use only Precision or F-Measure.
+	 *
+	 * @param usePrecisionOnly
+	 */
+	public void setUsePrecisionOnly(boolean usePrecisionOnly) {
+		this.useSimpleScore = usePrecisionOnly;
+	}
+
 	protected abstract void run();
 
 }

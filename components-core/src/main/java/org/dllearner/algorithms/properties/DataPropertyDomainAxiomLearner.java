@@ -20,21 +20,32 @@ package org.dllearner.algorithms.properties;
 
 import org.apache.jena.query.*;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 @ComponentAnn(name="data property domain axiom learner", shortName="dpldomain", version=0.1, description="A learning algorithm for data property domain axioms.")
 public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyDomainAxiom> {
-	
+
+	private static final ParameterizedSparqlString POPULARITY_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o .}");
+
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type .}");
+
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type .}");
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
@@ -44,13 +55,20 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?p ?o; a ?cls . ?cls a owl:Class .} "
 			+ "WHERE {?s ?p ?o . OPTIONAL {?s a ?cls . ?cls a owl:Class .}}");
+
+	@ConfigOption(defaultValue = "false", description = "compute everything in a single SPARQL query")
+	protected boolean batchMode = false;
+
+	public DataPropertyDomainAxiomLearner(){
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s ?o WHERE {?s ?p ?o. ?s a ?type}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
+
+		axiomType = AxiomType.DATA_PROPERTY_DOMAIN;
+	}
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
+		this();
 		this.ks = ks;
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
-		
-		axiomType = AxiomType.DATA_PROPERTY_DOMAIN;
 	}
 	
 	/* (non-Javadoc)
@@ -72,6 +90,14 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			}
 		}
 	}
+
+	protected int getPopularity() {
+		POPULARITY_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		String query = POPULARITY_COUNT_QUERY.toString();
+		ResultSet rs = executeSelectQuery(query);
+		int popularity = rs.next().getLiteral("cnt").getInt();
+		return popularity;
+	}
 	
 	@Override
 	public void setEntityToDescribe(OWLDataProperty entityToDescribe) {
@@ -92,15 +118,23 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	protected ParameterizedSparqlString getSampleQuery() {
 		return SAMPLE_QUERY;
 	}
-	
+
+	@Override
+	protected void run(){
+		if(batchMode) {
+			runBatched();
+		} else {
+			runIterative();
+		}
+	}
+
 	/**
 	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
 	 * 
 	 * A = \exists r.\top
 	 * B = C
 	 */
-	@Override
-	protected void run(){
+	private void runIterative(){
 		// get the candidates
 		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();
 		
@@ -175,32 +209,55 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			}
 		}
 	}
-	
+
 	@Override
-	public Set<OWLDataPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
+	protected Set<OWLDataPropertyAssertionAxiom> getExamples(ParameterizedSparqlString queryTemplate,
+															   EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
 		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
-		return super.getPositiveExamples(evAxiom);
+		queryTemplate.setIri("p", entityToDescribe.toStringID());
+		queryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
+
+		Set<OWLDataPropertyAssertionAxiom> examples = new TreeSet<>();
+
+		ResultSet rs = executeSelectQuery(queryTemplate.toString());
+
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			OWLLiteral object = OwlApiJenaUtils.getOWLLiteral(qs.getLiteral("o"));
+			examples.add(df.getOWLDataPropertyAssertionAxiom(entityToDescribe, subject, object));
+		}
+
+		return examples;
 	}
-	
-	@Override
-	public Set<OWLDataPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
-		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
-		return super.getNegativeExamples(evAxiom);
+
+	public void setBatchMode(boolean batchMode) {
+		this.batchMode = batchMode;
+	}
+
+	public boolean isBatchMode() {
+		return batchMode;
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
-		
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		ks.init();
+
 		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(ks);
-		l.setEntityToDescribe(new OWLDataPropertyImpl(IRI.create("http://dbpedia.org/ontology/AutomobileEngine/height")));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.addFilterNamespace("http://dbpedia.org/ontology/");
-//		l.setReturnOnlyNewAxioms(true);
+		l.setEntityToDescribe(new OWLDataPropertyImpl(IRI.create("http://dbpedia.org/ontology/birthDate")));
+		l.setUseSampling(false);
+		l.setBatchMode(true);
+		l.setUsePrecisionOnly(false);
+		l.setProgressMonitor(new ConsoleAxiomLearningProgressMonitor());
 		l.init();
+
 		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
+
+		l.getCurrentlyBestEvaluatedAxioms(0.3).forEach(ax -> {
+			System.out.println("---------------\n" + ax);
+			l.getPositiveExamples(ax).stream().limit(5).forEach(System.out::println);
+		});
 	}
 
 	
