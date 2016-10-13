@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import java.math.RoundingMode;
 import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -263,12 +264,40 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		logger.info("...finished learning of " + axiomType.getName()
 				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
 				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis() - startTime));
+
+		showResult();
+
+	}
+
+	protected void showResult() {
+		DecimalFormat format = new DecimalFormat("0.0000");
+		format.setRoundingMode(RoundingMode.DOWN);
 		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
 			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
 		} else {
-			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
+			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates. " +
+								(returnOnlyNewAxioms
+										? currentlyBestAxioms.size() - existingAxioms.size() +
+										" out of them do not already exists in the knowledge base."
+										: ""));
 			if(!currentlyBestAxioms.isEmpty()){
-				logger.info("Best axiom candidate is " + currentlyBestAxioms.last());
+				EvaluatedAxiom<T> bestAxiom = currentlyBestAxioms.last();
+				String s = "Best axiom candidate is " + bestAxiom.hypothesis + " with an accuracy of " +
+						format.format(bestAxiom.getAccuracy());
+				if(returnOnlyNewAxioms) {
+					if(existingAxioms.contains(bestAxiom.hypothesis)) {
+						s += ", but it's already contained in the knowledge base.";
+						if(existingAxioms.size() != currentlyBestAxioms.size()) {
+							Optional<EvaluatedAxiom<T>> bestNewAxiom = currentlyBestAxioms.stream().filter(
+									ax -> !existingAxioms.contains(ax.hypothesis)).findFirst();
+							if(bestNewAxiom.isPresent()) {
+								s += " The best new one is " + bestNewAxiom.get().hypothesis + " with an accuracy of " +
+										format.format(bestNewAxiom.get().getAccuracy());
+							}
+						}
+					}
+				}
+				logger.info(s);
 			}
 		}
 	}

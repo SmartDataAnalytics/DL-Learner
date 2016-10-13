@@ -1,20 +1,20 @@
-/**
- * Copyright (C) 2007 - 2016, Jens Lehmann
- *
- * This file is part of DL-Learner.
- *
- * DL-Learner is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * DL-Learner is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/*
+  Copyright (C) 2007 - 2016, Jens Lehmann
+
+  This file is part of DL-Learner.
+
+  DL-Learner is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+
+  DL-Learner is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms;
 
@@ -27,6 +27,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.ClassScore;
+import org.dllearner.learningproblems.ScoreSimple;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -34,10 +36,11 @@ import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * Learns sub classes using SPARQL queries.
+ * Learns subclass-relationships for a given class by using SPARQL queries.
  * 
  * @author Lorenz Bühmann
  * @author Jens Lehmann
@@ -71,10 +74,10 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 
 	@ConfigOption(defaultValue = "false", description = "compute everything in a single SPARQL query")
-	protected boolean batchMode = false;
+	private boolean batchMode = false;
 
 	@ConfigOption(defaultValue = "false")
-	protected boolean strictOWLMode = false;
+	private boolean strictOWLMode = false;
 
 	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 
@@ -98,11 +101,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
-		List<OWLClassExpression> bestDescriptions = new ArrayList<>();
-		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
-			bestDescriptions.add(evDesc.getDescription());
-		}
-		return bestDescriptions;
+		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions).stream()
+				.map(EvaluatedHypothesis::getDescription)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -113,13 +114,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<OWLSubClassOfAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<OWLSubClassOfAxiom> bestAxioms = new ArrayList<>();
-
-		for (EvaluatedAxiom<OWLSubClassOfAxiom> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)) {
-			bestAxioms.add(evAx.getAxiom());
-		}
-
-		return bestAxioms;
+		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms).stream()
+												.map(EvaluatedAxiom::getAxiom)
+												.collect(Collectors.toList());
 	}
 
 	@Override
@@ -154,29 +151,14 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		//get existing super classes
-		SortedSet<OWLClassExpression> existingSuperClasses = reasoner.getSuperClasses(entityToDescribe);
-		if (!existingSuperClasses.isEmpty()) {
-			SortedSet<OWLClassExpression> inferredSuperClasses = new TreeSet<>();
-			for (OWLClassExpression assertedSup : existingSuperClasses) {
-				if (reasoner.isPrepared()) {
-					if (reasoner.getClassHierarchy().contains(assertedSup)) {
-						for (OWLClassExpression inferredSup : reasoner.getClassHierarchy().getSuperClasses(assertedSup,
-								false)) {
-							inferredSuperClasses.add(inferredSup);
-						}
-					}
-				} else {
-					inferredSuperClasses.add(assertedSup);
-				}
-			}
-			existingSuperClasses.addAll(inferredSuperClasses);
-			logger.info("Existing super classes: " + existingSuperClasses);
-			for (OWLClassExpression sup : existingSuperClasses) {
-				existingAxioms.add(df.getOWLSubClassOfAxiom(entityToDescribe, sup));
-			}
-		}
+		// get existing super classes
+		SortedSet<OWLClassExpression> existingSuperClasses = reasoner.getSuperClasses(entityToDescribe, false);
+		existingSuperClasses.remove(df.getOWLThing());
+		logger.info("Existing super classes: " + existingSuperClasses);
 
+		existingAxioms.addAll(existingSuperClasses.stream()
+								.map(sup -> df.getOWLSubClassOfAxiom(entityToDescribe, sup))
+								.collect(Collectors.toList()));
 	}
 
 	/*
@@ -198,7 +180,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 											 new AxiomScore(ed.getAccuracy()))));
 	}
 
-	protected void runIterative() {
+	private void runIterative() {
 		CLASS_OVERLAP_QUERY.setIri("cls", entityToDescribe.toStringID());
 
 		// get the candidates
@@ -224,7 +206,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			int overlap = rs.next().getLiteral("cnt").getInt();
 
 			// compute the score
-			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, computeScore(popularity, overlap)));
+			AxiomScore score = computeScore(popularity, overlap);
+
+			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, new ScoreSimple(score.getAccuracy())));
 		}
 	}
 
@@ -232,7 +216,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 * Returns the candidate properties for comparison.
 	 * @return  the candidate properties
 	 */
-	protected SortedSet<OWLClass> getCandidates(){
+	private SortedSet<OWLClass> getCandidates(){
 		// get the candidates
 		SortedSet<OWLClass> candidates = strictOWLMode ? reasoner.getOWLClasses() : reasoner.getClasses();
 
@@ -246,7 +230,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		ParameterizedSparqlString template = strictOWLMode ? CLASS_OVERLAP_BATCH_QUERY_STRICT_OWL : CLASS_OVERLAP_BATCH_QUERY;
 
 		template.setIri("cls", entityToDescribe.toStringID());
-		System.out.println(template.asQuery());
 
 		ResultSet rs = executeSelectQuery(template.toString());
 
@@ -309,8 +292,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		SimpleSubclassLearner la = new SimpleSubclassLearner(ks);
 		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
 		la.setUseSampling(false);
-		la.setBatchMode(false);
+		la.setBatchMode(true);
 		la.setStrictOWLMode(true);
+		la.setReturnOnlyNewAxioms(true);
 		la.setProgressMonitor(new ConsoleAxiomLearningProgressMonitor());
 		la.init();
 

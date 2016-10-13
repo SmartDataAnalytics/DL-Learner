@@ -2014,7 +2014,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sup").getURI())));
 		}
 		superClasses.remove(description);
-		System.out.println("Sup(" + description + "):" + superClasses);
+
 		return superClasses;
 	}
 
