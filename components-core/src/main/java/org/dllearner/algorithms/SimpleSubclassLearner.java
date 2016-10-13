@@ -21,10 +21,17 @@ package org.dllearner.algorithms;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.RDFNode;
 import org.dllearner.core.*;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -37,15 +44,51 @@ import java.util.Map.Entry;
  *
  */
 @ComponentAnn(name = "simple subclass learner", shortName = "clsub", version = 0.1)
-public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLIndividual, OWLClass> implements
-		ClassExpressionLearningAlgorithm {
+public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLClassAssertionAxiom, OWLClass>
+		implements ClassExpressionLearningAlgorithm {
+
+	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 . }}");
+
+	private static final ParameterizedSparqlString CLASS_OVERLAP_BATCH_QUERY = new ParameterizedSparqlString(
+			"SELECT ?cls_other (COUNT(DISTINCT ?s) AS ?cnt) WHERE {" +
+					"?s a ?cls . ?s a ?cls_other . " +
+					"FILTER(?cls_other != ?cls) " +
+					"FILTER(?cls_other != <http://www.w3.org/2002/07/owl#NamedIndividual>) " +
+					"} GROUP BY ?cls_other");
+
+	private static final ParameterizedSparqlString CLASS_OVERLAP_BATCH_QUERY_STRICT_OWL = new ParameterizedSparqlString(
+			"SELECT ?cls_other (COUNT(DISTINCT ?s) AS ?cnt) WHERE {" +
+					"?s a ?cls . ?s a ?cls_other . " +
+					"?cls_other a <http://www.w3.org/2002/07/owl#Class> . " +
+					"FILTER(?cls_other != ?cls) " +
+					"FILTER(?cls_other != <http://www.w3.org/2002/07/owl#NamedIndividual>) " +
+					"} GROUP BY ?cls_other");
+
+	private static final ParameterizedSparqlString CLASS_OVERLAP_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {" +
+					"?s a ?cls . ?s a ?cls_other . }");
+
+
+	@ConfigOption(defaultValue = "false", description = "compute everything in a single SPARQL query")
+	protected boolean batchMode = false;
+
+	@ConfigOption(defaultValue = "false")
+	protected boolean strictOWLMode = false;
 
 	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 
-	public SimpleSubclassLearner(SparqlEndpointKS ks) {
-		this.ks = ks;
+	public SimpleSubclassLearner() {
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s a ?cls1 . ?s a ?cls2}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s a ?cls1 . FILTER NOT EXISTS{?s a ?cls2}}");
 
 		axiomType = AxiomType.SUBCLASS_OF;
+	}
+
+	public SimpleSubclassLearner(SparqlEndpointKS ks) {
+		this();
+
+		this.ks = ks;
 	}
 
 	@Override
@@ -100,7 +143,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 */
 	@Override
 	protected ParameterizedSparqlString getSampleQuery() {
-		return new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 . }}");
+		return SAMPLE_QUERY;
 	}
 
 	/*
@@ -143,31 +186,10 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 */
 	@Override
 	protected void learnAxioms() {
-		runSingleQueryMode();
-	}
-
-	private void runSingleQueryMode() {
-		int total = reasoner.getPopularity(entityToDescribe);
-
-		if (total > 0) {
-			String query = String.format(
-							"SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {" +
-							"?s a <%s>. ?s a ?type . FILTER(?type != <http://www.w3.org/2002/07/owl#NamedIndividual>)} " +
-							"GROUP BY ?type ORDER BY DESC(?cnt)",
-							entityToDescribe.toStringID());
-			ResultSet rs = executeSelectQuery(query);
-			QuerySolution qs;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				if (!qs.get("type").isAnon()) {
-					OWLClass sup = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-					int overlap = qs.get("cnt").asLiteral().getInt();
-					if (!sup.isOWLThing() && !entityToDescribe.equals(sup)) {//omit owl:Thing and the class to describe itself
-						currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(sup, computeScore(total,
-								overlap)));
-					}
-				}
-			}
+		if(batchMode) {
+			runBatched();
+		} else {
+			runIterative();
 		}
 
 		currentlyBestEvaluatedDescriptions.forEach(
@@ -176,81 +198,127 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 											 new AxiomScore(ed.getAccuracy()))));
 	}
 
-	public OWLClass getentityToDescribe() {
-		return entityToDescribe;
-	}
+	protected void runIterative() {
+		CLASS_OVERLAP_QUERY.setIri("cls", entityToDescribe.toStringID());
 
-	public void setentityToDescribe(OWLClass entityToDescribe) {
-		this.entityToDescribe = entityToDescribe;
-	}
+		// get the candidates
+		SortedSet<OWLClass> candidates = getCandidates();
 
-	private boolean addIndividualsWithTypes(Map<OWLIndividual, SortedSet<OWLClassExpression>> ind2Types, int limit,
-			int offset) {
-		boolean notEmpty = false;
-		String query;
-		if (ks.supportsSPARQL_1_1()) {
-			query = String
-					.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?ind a ?type.?type a owl:Class. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}",
-							entityToDescribe.toStringID(), limit, offset);
-		} else {
-			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d",
-					entityToDescribe.toStringID(), limit, offset);
+		// check for each candidate if an overlap exist
+		int i = 1;
+		for (OWLClass cls : candidates) {
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
+
+			// get the popularity of the candidate
+			int candidatePopularity = reasoner.getPopularity(cls);
+
+			if(candidatePopularity == 0){// skip empty classes
+				logger.debug("Cannot compute subclass statements for empty candidate class " + cls);
+				continue;
+			}
+
+			// get the number of instances that belong to both classes
+			CLASS_OVERLAP_QUERY.setIri("cls_other", cls.toStringID());
+
+			ResultSet rs = executeSelectQuery(CLASS_OVERLAP_QUERY.toString());
+			int overlap = rs.next().getLiteral("cnt").getInt();
+
+			// compute the score
+			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, computeScore(popularity, overlap)));
 		}
-		ResultSet rs = executeSelectQuery(query);
-		OWLIndividual ind;
-		OWLClassExpression newType;
-		QuerySolution qs;
-		SortedSet<OWLClassExpression> types;
+	}
+
+	/**
+	 * Returns the candidate properties for comparison.
+	 * @return  the candidate properties
+	 */
+	protected SortedSet<OWLClass> getCandidates(){
+		// get the candidates
+		SortedSet<OWLClass> candidates = strictOWLMode ? reasoner.getOWLClasses() : reasoner.getClasses();
+
+		// remove class to describe
+		candidates.remove(entityToDescribe);
+
+		return candidates;
+	}
+
+	private void runBatched() {
+		ParameterizedSparqlString template = strictOWLMode ? CLASS_OVERLAP_BATCH_QUERY_STRICT_OWL : CLASS_OVERLAP_BATCH_QUERY;
+
+		template.setIri("cls", entityToDescribe.toStringID());
+		System.out.println(template.asQuery());
+
+		ResultSet rs = executeSelectQuery(template.toString());
+
 		while (rs.hasNext()) {
-			qs = rs.next();
-			ind = df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
-			newType = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-			types = ind2Types.get(ind);
-			if (types == null) {
-				types = new TreeSet<>();
-				ind2Types.put(ind, types);
-			}
-			types.add(newType);
-			Set<OWLClassExpression> superClasses;
-			if (reasoner.isPrepared()) {
-				if (reasoner.getClassHierarchy().contains(newType)) {
-					superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
-					types.addAll(superClasses);
+			QuerySolution qs = rs.next();
+
+			RDFNode cls = qs.get("cls_other");
+			if (!cls.isAnon()) {
+				OWLClass sup = OwlApiJenaUtils.asOWLEntity(cls.asNode(), EntityType.CLASS);
+				int overlap = qs.get("cnt").asLiteral().getInt();
+				if (!sup.isOWLThing() && !entityToDescribe.equals(sup)) {//omit owl:Thing and the class to describe itself
+					currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(sup, computeScore(popularity,
+																									  overlap)));
 				}
-
+			} else {
+				logger.warn("Ignoring anonymous super class candidate: " + cls);
 			}
-
-			notEmpty = true;
 		}
-		return notEmpty;
 	}
 
-	private void createEvaluatedDescriptions(Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types) {
-		currentlyBestEvaluatedDescriptions.clear();
+	protected Set<OWLClassAssertionAxiom> getExamples(ParameterizedSparqlString queryTemplate, EvaluatedAxiom<OWLSubClassOfAxiom> evAxiom) {
+		OWLSubClassOfAxiom axiom = evAxiom.getAxiom();
+		queryTemplate.setIri("cls1", axiom.getSubClass().asOWLClass().toStringID());
+		queryTemplate.setIri("cls2", axiom.getSuperClass().asOWLClass().toStringID());
 
-		Map<OWLClassExpression, Integer> result = new HashMap<>();
-		for (Entry<OWLIndividual, SortedSet<OWLClassExpression>> entry : individual2Types.entrySet()) {
-			for (OWLClassExpression nc : entry.getValue()) {
-				Integer cnt = result.get(nc);
-				if (cnt == null) {
-					cnt = 1;
-				} else {
-					cnt = cnt + 1;
-				}
-				result.put(nc, cnt);
-			}
+		Set<OWLClassAssertionAxiom> examples = new TreeSet<>();
+
+		ResultSet rs = executeSelectQuery(queryTemplate.toString());
+
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			examples.add(df.getOWLClassAssertionAxiom(axiom.getSuperClass(), subject));
 		}
 
-		//omit owl:Thing and entityToDescribe
-		result.remove(df.getOWLThing());
-		result.remove(entityToDescribe);
+		return examples;
+	}
 
-		EvaluatedDescription evalDesc;
-		int total = individual2Types.keySet().size();
-		for (Entry<OWLClassExpression, Integer> entry : sortByValues(result, true)) {
-			evalDesc = new EvaluatedDescription(entry.getKey(), computeScore(total, entry.getValue()));
-			currentlyBestEvaluatedDescriptions.add(evalDesc);
-		}
+	public void setBatchMode(boolean batchMode) {
+		this.batchMode = batchMode;
+	}
 
+	public boolean isBatchMode() {
+		return batchMode;
+	}
+
+	public void setStrictOWLMode(boolean strictOWLMode) {
+		this.strictOWLMode = strictOWLMode;
+	}
+
+	public boolean isStrictOWLMode() {
+		return strictOWLMode;
+	}
+
+	public static void main(String[] args) throws Exception {
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		ks.init();
+
+		SimpleSubclassLearner la = new SimpleSubclassLearner(ks);
+		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
+		la.setUseSampling(false);
+		la.setBatchMode(false);
+		la.setStrictOWLMode(true);
+		la.setProgressMonitor(new ConsoleAxiomLearningProgressMonitor());
+		la.init();
+
+		la.start();
+
+		la.getCurrentlyBestEvaluatedAxioms(0.3).forEach(ax -> {
+			System.out.println("---------------\n" + ax);
+			la.getPositiveExamples(ax).stream().limit(5).forEach(System.out::println);
+		});
 	}
 }

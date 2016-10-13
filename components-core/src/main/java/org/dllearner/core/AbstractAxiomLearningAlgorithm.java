@@ -154,14 +154,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     }
     
     /**
-	 * @param entityToDescribe the entityToDescribe to set
+	 * @param entityToDescribe the entity for which axioms will be computed
 	 */
 	public void setEntityToDescribe(E entityToDescribe) {
 		this.entityToDescribe = entityToDescribe;
 	}
 	
 	/**
-	 * @return the entityToDescribe
+	 * @return the entity for which axioms will be computed
 	 */
 	public E getEntityToDescribe() {
 		return entityToDescribe;
@@ -635,7 +635,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		sb.append("######################################");
 		System.out.println(sb.toString());
 	}
-	
+
 	public long getEvaluatedFramentSize(){
 		return sample.size();
 	}
