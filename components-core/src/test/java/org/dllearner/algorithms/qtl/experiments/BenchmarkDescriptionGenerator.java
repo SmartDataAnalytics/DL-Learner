@@ -116,7 +116,7 @@ public abstract class BenchmarkDescriptionGenerator {
 //		graphDir.mkdirs();
 		for (Map.Entry<String, Query> entry : id2Query.entrySet()) {
 			String id = entry.getKey();
-			if(!id.equals("qald-4-bio-train_20"))continue;
+
 			Query query = entry.getValue();
 			if (skipQueryTokens.stream().anyMatch(t -> query.toString().contains(t))){
 				continue;
