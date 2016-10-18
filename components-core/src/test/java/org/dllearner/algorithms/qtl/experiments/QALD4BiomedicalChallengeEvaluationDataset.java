@@ -232,7 +232,7 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 
 	public static void main(String[] args) throws Exception{
 		if(args.length == 0){
-			System.out.println("Usage: QALD4BiomedicalChallengeEvaluationDataset <queriesTargetFile");
+			System.out.println("Usage: QALD4BiomedicalChallengeEvaluationDataset <queriesTargetFile>");
 			System.exit(0);
 		}
 		QALD4BiomedicalChallengeEvaluationDataset ds = new QALD4BiomedicalChallengeEvaluationDataset(new File("/tmp/test"), endpoint);

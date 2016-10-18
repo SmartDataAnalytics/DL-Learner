@@ -152,12 +152,12 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 //				+ "<th data-valign='middle'>Query Graph</th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>Depth</th>\n"
 				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>#Instances</th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>min</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>max</sub></th>\n"
-				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD|<sub>avg</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_opt|<sub>min</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_opt|<sub>max</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_opt|<sub>avg</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_def|<sub>min</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_def|<sub>max</sub></th>\n"
+				+ "<th data-align=\"right\" data-sortable=\"true\" data-valign='middle'>|CBD_def|<sub>avg</sub></th>\n"
 				+ "</tr>\n" +
 				"</thead>\n");
 

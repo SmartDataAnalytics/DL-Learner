@@ -35,6 +35,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.kb.sparql.CBDStructureTree;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.TreeBasedConciseBoundedDescriptionGenerator;
@@ -115,6 +116,7 @@ public abstract class BenchmarkDescriptionGenerator {
 //		graphDir.mkdirs();
 		for (Map.Entry<String, Query> entry : id2Query.entrySet()) {
 			String id = entry.getKey();
+			if(!id.equals("qald-4-bio-train_20"))continue;
 			Query query = entry.getValue();
 			if (skipQueryTokens.stream().anyMatch(t -> query.toString().contains(t))){
 				continue;
@@ -155,35 +157,8 @@ public abstract class BenchmarkDescriptionGenerator {
 	}
 
 	private int getLongestPath(Query query) {
-		SPARQLUtils.QueryType type = SPARQLUtils.getQueryType(query);
-
-		int length = 0;
-		if(type == SPARQLUtils.QueryType.IN) {
-			Set<Triple> tmp = utils.extractIncomingTriplePatterns(query, query.getProjectVars().get(0));
-			while(!tmp.isEmpty()) {
-				length++;
-				tmp = tmp.stream()
-						.filter(tp -> tp.getSubject().isVariable())
-						.map(tp -> tp.getSubject())
-						.map(s -> utils.extractIncomingTriplePatterns(query, s))
-						.flatMap(tps -> tps.stream())
-						.collect(Collectors.toSet());
-			}
-		} else if(type == SPARQLUtils.QueryType.OUT) {
-			Set<Triple> tmp = utils.extractOutgoingTriplePatterns(query, query.getProjectVars().get(0));
-			while(!tmp.isEmpty()) {
-				length++;
-				tmp = tmp.stream()
-						.filter(tp -> tp.getObject().isVariable())
-						.map(tp -> tp.getObject())
-						.map(o -> utils.extractOutgoingTriplePatterns(query, o))
-						.flatMap(tps -> tps.stream())
-						.collect(Collectors.toSet());
-			}
-		} else {
-			length = -1;
-		}
-		return length;
+		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
+		return QueryTreeUtils.getDepth(cbdStructure);
 	}
 
 	public void setDefaultCbdStructure(CBDStructureTree defaultCbdStructure) {
@@ -209,8 +184,8 @@ public abstract class BenchmarkDescriptionGenerator {
 			if(useConstruct) {
 				Model cbd = null;
 				try {
-//					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-//					cnt = cbd.size();
+					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+					cnt = cbd.size();
 //					System.out.println(r + ":" + cnt);
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e.getCause());
@@ -249,9 +224,12 @@ public abstract class BenchmarkDescriptionGenerator {
 			if(useConstruct) {
 				Model cbd = null;
 				try {
-//					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-//					cnt = cbd.size();
+					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
+					cnt = cbd.size();
 				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println(r);
+					System.exit(0);
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
 

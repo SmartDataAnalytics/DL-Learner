@@ -275,7 +275,8 @@ public class QueryTreeUtils {
 	}
     
     /**
-     * Returns the depth of the query tree
+     * Returns the depth of the query tree, i.e. the length of the longest path from the root to a leaf node.
+	 *
      * @param tree the query tree
      * @return the depth
      */
