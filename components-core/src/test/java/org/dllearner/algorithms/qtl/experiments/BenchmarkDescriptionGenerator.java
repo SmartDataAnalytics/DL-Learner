@@ -49,12 +49,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -170,52 +167,16 @@ public abstract class BenchmarkDescriptionGenerator {
 	}
 
 	private DescriptiveStatistics determineDefaultCBDSizes(Query query, List<String> resources) {
-		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
-		AtomicInteger idx = new AtomicInteger(1);
-
-		CBDStructureTree cbdStructure = getDefaultCBDStructureTree();
-		System.out.println(cbdStructure.toStringVerbose());
-
-		ProgressBar progressBar = new ProgressBar();
-
-		resources.forEach(r -> {
-			long cnt = -1;
-			if(useConstruct) {
-				Model cbd = null;
-				try {
-					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
-					cnt = cbd.size();
-//					System.out.println(r + ":" + cnt);
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage(), e.getCause());
-				}
-
-			} else {
-				ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
-				template.setIri("uri", r);
-				try(QueryExecution qe = qef.createQueryExecution(template.toString())) {
-					ResultSet rs = qe.execSelect();
-					cnt = rs.next().getLiteral("cnt").getInt();
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage(), e.getCause());
-				}
-			}
-			stats.addValue(cnt);
-			progressBar.update(idx.getAndAdd(1), resources.size());
-
-		});
-
-		return stats;
+		return determineCBDSizes(getDefaultCBDStructureTree(), resources);
 	}
 
 	private DescriptiveStatistics determineOptimalCBDSizes(Query query, List<String> resources) {
-		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
-		AtomicInteger idx = new AtomicInteger(1);
+		return determineCBDSizes(QueryUtils.getOptimalCBDStructure(query), resources);
+	}
 
-		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
-		System.out.println(cbdStructure.toStringVerbose());
+	private DescriptiveStatistics determineCBDSizes(CBDStructureTree cbdStructure, List<String> resources) {
+		DescriptiveStatistics stats = new DescriptiveStatistics();
+		AtomicInteger idx = new AtomicInteger(1);
 
 		ProgressBar progressBar = new ProgressBar();
 
@@ -227,12 +188,8 @@ public abstract class BenchmarkDescriptionGenerator {
 					cbd = cbdGen.getConciseBoundedDescription(r, cbdStructure);
 					cnt = cbd.size();
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println(r);
-					System.exit(0);
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
-
 			} else {
 				ParameterizedSparqlString template = SPARQLUtils.CBD_TEMPLATE_DEPTH3.copy();
 				template.setIri("uri", r);
@@ -243,9 +200,10 @@ public abstract class BenchmarkDescriptionGenerator {
 					LOGGER.error(e.getMessage(), e.getCause());
 				}
 			}
-			stats.addValue(cnt);
+			if(cnt != -1) {
+				stats.addValue(cnt);
+			}
 			progressBar.update(idx.getAndAdd(1), resources.size());
-
 		});
 
 		return stats;
