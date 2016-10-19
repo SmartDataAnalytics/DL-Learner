@@ -105,7 +105,7 @@ public class PostProcessor {
 				valueObject = processStringMap(prefixes, (Map)valueObject);
 			} else if(valueObject instanceof Collection){
 				processStringCollection(prefixes, (Collection<?>) valueObject);
-			} else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
+			} else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double || valueObject instanceof Long) {
 				// nothing needs to be done for booleans
 			} else {
 				throw new Error("Unknown conf option type " + valueObject.getClass());
