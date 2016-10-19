@@ -36,6 +36,7 @@ public class SimpleCharStream
   public void setTabSize(int i) { tabSize = i; }
   public int getTabSize() { return tabSize; }
 
+
   protected void ExpandBuff(boolean wrapAround)
   {
     char[] newbuffer = new char[bufsize + 2048];
@@ -78,6 +79,7 @@ public class SimpleCharStream
     {
       throw new Error(t.getMessage());
     }
+
 
     bufsize += 2048;
     available = bufsize;
