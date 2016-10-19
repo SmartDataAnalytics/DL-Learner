@@ -121,6 +121,8 @@ public abstract class BenchmarkDescriptionGenerator {
 
 			System.out.println(query);
 
+			String graphML = QueryUtils.toGraphML(query, query.getBaseURI(), query.getPrefixMapping());
+
 //			exportGraph(query, new File("/tmp/graphs/graph" + id + ".png"));
 //			File graphFile = new File(graphDir, "graph" + id + ".png");
 //			QueryToGraphExporter.exportYedGraph(query, graphFile, true);
@@ -142,7 +144,8 @@ public abstract class BenchmarkDescriptionGenerator {
 			// columns: generic CBD sizes (min, max, avg)
 			DescriptiveStatistics genericCBDSizeStats = determineDefaultCBDSizes(query, result);
 
-			addRow(new QueryData(id, query, queryType, maxDepth, nrOfInstances, optimalCBDSizeStats, genericCBDSizeStats));
+			addRow(new QueryData(id, query, queryType, maxDepth, nrOfInstances, optimalCBDSizeStats, genericCBDSizeStats, graphML));
+			break;
 		}
 
 		endTable();
@@ -293,9 +296,11 @@ public abstract class BenchmarkDescriptionGenerator {
 		final int nrOfInstances;
 		final DescriptiveStatistics optimalCBDSizeStats;
 		final DescriptiveStatistics defaultCBDSizesStats;
+		final String graphML;
 
 		public QueryData(String id, Query query, SPARQLUtils.QueryType queryType, int maxTreeDepth, int nrOfInstances,
-						 DescriptiveStatistics optimalCBDSizeStats, DescriptiveStatistics determineDefaultCBDSizes) {
+						 DescriptiveStatistics optimalCBDSizeStats, DescriptiveStatistics determineDefaultCBDSizes,
+						 String graphML) {
 			this.id = id;
 			this.query = query;
 			this.queryType = queryType;
@@ -303,6 +308,7 @@ public abstract class BenchmarkDescriptionGenerator {
 			this.nrOfInstances = nrOfInstances;
 			this.optimalCBDSizeStats = optimalCBDSizeStats;
 			this.defaultCBDSizesStats = determineDefaultCBDSizes;
+			this.graphML = graphML;
 		}
 
 

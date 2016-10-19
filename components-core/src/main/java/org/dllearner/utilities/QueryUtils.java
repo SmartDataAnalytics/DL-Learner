@@ -32,24 +32,35 @@ import org.apache.commons.collections15.ListUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
+import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.core.TriplePath;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.serializer.SerializationContext;
 import org.apache.jena.sparql.syntax.*;
+import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.sparql.util.VarUtils;
 import org.apache.jena.vocabulary.RDF;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.kb.sparql.CBDStructureTree;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.EdgeNameProvider;
+import org.jgrapht.ext.GraphMLExporter;
 import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.ext.VertexNameProvider;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.TransformerConfigurationException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
@@ -683,6 +694,30 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		return g;
 	}
 
+	public static String toGraphML(Query query, String baseIRI, PrefixMapping pm) {
+		SerializationContext context = new SerializationContext(pm);
+		context.setBaseIRI(baseIRI);
+
+		DirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
+
+		VertexNameProvider<Node> vertexIDProvider = Node::toString;
+		VertexNameProvider<Node> vertexNameProvider = n -> FmtUtils.stringForNode(n, context);
+
+		EdgeNameProvider<LabeledEdge> edgeIDProvider = e -> e.s + "" + e.edge + "" + e.t;
+		EdgeNameProvider<LabeledEdge> edgeLabelProvider = e -> FmtUtils.stringForNode(e.edge, context);
+
+		GraphMLExporter<Node, LabeledEdge> exporter = new GraphMLExporter<>(vertexIDProvider, vertexNameProvider,
+																	   edgeIDProvider, edgeLabelProvider);
+
+		StringWriter sw = new StringWriter();
+		try {
+			exporter.export(sw, g);
+		} catch (TransformerConfigurationException | SAXException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
+
 	public static void exportAsGraph(Query query, File file) {
 		DirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
 		System.out.println(g.edgeSet().size());
@@ -737,7 +772,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		}
 
 	}
-	
+
 	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
 		Set<Node> superClasses = new HashSet<>();
 		

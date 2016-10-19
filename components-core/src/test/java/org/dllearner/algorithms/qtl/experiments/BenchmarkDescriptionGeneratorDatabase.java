@@ -113,13 +113,14 @@ public class BenchmarkDescriptionGeneratorDatabase extends BenchmarkDescriptionG
 					"cbd_size_def_min INT NOT NULL," +
 					"cbd_size_def_max INT NOT NULL," +
 					"cbd_size_def_avg INT NOT NULL," +
+					"graph TEXT NOT NULL," +
 					"PRIMARY KEY (id)" +
 					")");
 
 			ps_insert = conn.prepareStatement("INSERT INTO " + tableName + "" +
 					"(id, query, query_type, query_depth, instance_count," +
 					"cbd_size_opt_min, cbd_size_opt_max, cbd_size_opt_avg," +
-					"cbd_size_def_min, cbd_size_def_max, cbd_size_def_avg)" +
+					"cbd_size_def_min, cbd_size_def_max, cbd_size_def_avg, graph)" +
 					" VALUES " +
 					"(?,?,?,?,?,?,?,?,?,?,?)");
 
@@ -142,6 +143,8 @@ public class BenchmarkDescriptionGeneratorDatabase extends BenchmarkDescriptionG
 			ps_insert.setInt(9, (int) queryData.defaultCBDSizesStats.getMin());
 			ps_insert.setInt(10, (int) queryData.defaultCBDSizesStats.getMax());
 			ps_insert.setInt(11, (int) queryData.defaultCBDSizesStats.getMean());
+
+			ps_insert.setString(12, queryData.graphML);
 
 			ps_insert.executeUpdate();
 		} catch (SQLException e) {
