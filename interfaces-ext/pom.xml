@@ -229,6 +229,9 @@
                                 <goals>
                                     <goal>attached</goal>
                                 </goals>
+                                <configuration>
+                                    <tarLongFileMode>posix</tarLongFileMode>
+                                </configuration>
                             </execution>
                         </executions>
                         <configuration>
