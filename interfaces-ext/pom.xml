@@ -108,7 +108,7 @@
                                     <path>/interfaces-ext</path>
                                     <enableNaming>false</enableNaming>
                                     <finalName>dl-learner-standalone.jar</finalName>
-                                    <charset>utf-8</charset>
+                                    <!--<charset>utf-8</charset>-->
                                     <extraDependencies>
                                         <!--
                                             <dependency>
@@ -134,12 +134,12 @@
                                         -->
                                     </extraDependencies>
                                     <extraResources>
-                                        <extraRexource>
-                                            <directory>${basedir}/src/main/resources/</directory>
+                                        <extraResource>
+                                            <directory>${basedir}/src/main/conf/</directory>
                                             <includes>
                                                 <include>log4j.properties</include>
                                             </includes>
-                                        </extraRexource>
+                                        </extraResource>
                                     </extraResources>
                                 </configuration>
                             </execution>
@@ -171,7 +171,7 @@
                             <repositoryLayout>flat</repositoryLayout>
                             <useWildcardClassPath>true</useWildcardClassPath>
                             <assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
-                            <repoPath>lib</repoPath>
+                            <!--<repoPath>lib</repoPath>-->
                             <repositoryName>lib</repositoryName>
                             <!-- <defaultJvmSettings>
                                     <initialMemorySize>512M</initialMemorySize>
@@ -188,10 +188,10 @@
                             <!-- Include the target configuration directory in the classpath -->
                             <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
                             <extraJvmArguments>
-                                -Xms256m -Xmx3g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
+                                -Xms256m -Xmx3g -Dlog4j.configuration=file:@basedir@/etc/log4j.properties
                             </extraJvmArguments>
 							
-                            <installArtifacts>false</installArtifacts>
+                            <!--<installArtifacts>false</installArtifacts>-->
                             <!-- <configurationDirectory>/</configurationDirectory> -->
                             <platforms>
                                 <platform>windows</platform>
@@ -315,9 +315,9 @@
                         <configuration>
                             <repositoryLayout>flat</repositoryLayout>
                             <assembleDirectory>${project.build.directory}/${dist-dir}</assembleDirectory>
-                            <repoPath>/usr/share/dl-learner/lib</repoPath>
+                            <!--<repoPath>/usr/share/dl-learner/lib</repoPath>-->
                             <repositoryName>${install-dir}/lib</repositoryName>
-                            <extraJvmArguments>-Xms256m -Xmx2g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
+                            <extraJvmArguments>-Xms256m -Xmx2g -Dlog4j.configuration=file:@basedir@/etc/log4j.properties</extraJvmArguments>
                             <configurationDirectory>/</configurationDirectory>
                             <platforms>
                                 <platform>unix</platform>
@@ -490,8 +490,8 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>tomcat-maven-plugin</artifactId>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
