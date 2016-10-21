@@ -314,7 +314,8 @@ public class QueryTreeUtils {
     				return tree1.getData().equals(tree2.getData());
     			} else {
     				RDFDatatype d1 = tree1.getData().getLiteralDatatype();
-    				return tree2.getDatatype().equals(d1);
+					// dt(T2) == null || dt(T2) == dt(T1)
+    				return tree2.getDatatype() == null || tree2.getDatatype().equals(d1);
     			}
     		} else {
     			if(tree2.isLiteralValueNode()) {
@@ -588,7 +589,13 @@ public class QueryTreeUtils {
 					if(child.isLiteralNode()) {
 						OWLDataProperty dp = df.getOWLDataProperty(IRI.create(edge.getURI()));
 						if(!child.isLiteralValueNode()) {
-							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatype(IRI.create(child.getDatatype().getURI()))));
+							OWLDataRange dr;
+							if(child.getDatatype() == null) {
+								dr = df.getTopDatatype();
+							} else {
+								dr = df.getOWLDatatype(IRI.create(child.getDatatype().getURI()));
+							}
+							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, dr));
 						} else {
 							OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
 							classExpressions.add(df.getOWLDataHasValue(dp, value));

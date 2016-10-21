@@ -158,7 +158,8 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 	private boolean useDisjunction = false;
 
-	private int nrOfThreads = Runtime.getRuntime().availableProcessors();
+	private int nrOfThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+
 
 	public QTL2DisjunctiveMultiThreaded() {}
 
@@ -461,7 +462,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 			List<CompletableFuture<Void>> list = falseNegatives.stream()
 					.filter(fn -> !processedCombinations.contains(Sets.union(currentElement.getBaseQueryTrees(), Sets.newHashSet(fn))))
-					.map(fn -> CompletableFuture.supplyAsync(() -> computePartialSolution(currentTree, fn, Sets.newTreeSet(Sets.union(currentElement.getBaseQueryTrees(), Sets.newHashSet(fn)))), pool))
+					.map(fn -> CompletableFuture.supplyAsync(() -> new LGGTask().computePartialSolution(currentTree, fn, Sets.newTreeSet(Sets.union(currentElement.getBaseQueryTrees(), Sets.newHashSet(fn)))), pool))
 					.map(solutionFuture -> solutionFuture.thenAccept(solutions -> {
 						for (EvaluatedRDFResourceTree solution : solutions) {
 							logger.trace("solution: {} ({})", solution.getBaseQueryTrees(), solution.getTreeScore());
@@ -621,7 +622,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	 * @return TRUE if the query tree is already contained in the solutions or
 	 * todo list, otherwise FALSE
 	 */
-	private boolean isRedundant(RDFResourceTree tree) {
+	private synchronized boolean isRedundant(RDFResourceTree tree) {
 		//check if not already contained in todo list
 		for (EvaluatedRDFResourceTree evTree : todoList) {
 			if(QueryTreeUtils.sameTrees(tree, evTree.getTree())){
@@ -716,7 +717,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	 * @param useSpecifity whether to use SPECIFITY as measure
 	 * @return a set of evaluated query trees
 	 */
-	private Set<EvaluatedRDFResourceTree> evaluate(RDFResourceTree tree, boolean useSpecifity){
+	private synchronized Set<EvaluatedRDFResourceTree> evaluate(RDFResourceTree tree, boolean useSpecifity){
 		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<>();
 
 		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
@@ -1224,34 +1225,68 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 		return new QTL2DisjunctiveMultiThreaded(this);
 	}
 
-	private Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
-		try {
-//			System.err.println(baseQueryTrees);
+//	private Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
+//		try {
+//			System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
+//
+//			LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
+//			// compute the LGG
+//			MonitorFactory.getTimeMonitor("lgg").start();
+//			lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
+//			RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
+//			MonitorFactory.getTimeMonitor("lgg").stop();
+////			System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
+////				logger.info("LGG: "  + lgg.getStringRepresentation());
+//
+//			// redundancy check
+//			boolean redundant = isRedundant(lgg);
+//			if (redundant) {
+//                logger.trace("redundant");
+//                return Collections.emptySet();
+//            }
+//
+//			// evaluate the LGG
+//			Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
+//			solutions.forEach(s -> s.setBaseQueryTrees(baseQueryTrees));
+//
+//			return solutions;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
-			LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
-			// compute the LGG
-			MonitorFactory.getTimeMonitor("lgg").start();
-			lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
-			RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
-			MonitorFactory.getTimeMonitor("lgg").stop();
+	class LGGTask {
+		public Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
+			try {
+				System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
+
+				LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
+				// compute the LGG
+				MonitorFactory.getTimeMonitor("lgg").start();
+				lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
+				RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
+				MonitorFactory.getTimeMonitor("lgg").stop();
 //			System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
 //				logger.info("LGG: "  + lgg.getStringRepresentation());
 
-			// redundancy check
-			boolean redundant = isRedundant(lgg);
-			if (redundant) {
-                logger.trace("redundant");
-                return Collections.emptySet();
-            }
+				// redundancy check
+				boolean redundant = isRedundant(lgg);
+				if (redundant) {
+					logger.trace("redundant");
+					return Collections.emptySet();
+				}
 
-			// evaluate the LGG
-			Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
-			solutions.forEach(s -> s.setBaseQueryTrees(baseQueryTrees));
+				// evaluate the LGG
+				Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
+				solutions.forEach(s -> s.setBaseQueryTrees(baseQueryTrees));
 
-			return solutions;
-		} catch (Exception e) {
-			e.printStackTrace();
+				return solutions;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
-		return null;
+
 	}
 }

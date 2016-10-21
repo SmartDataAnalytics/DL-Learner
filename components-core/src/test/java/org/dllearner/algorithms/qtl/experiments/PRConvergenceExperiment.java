@@ -291,7 +291,7 @@ public class PRConvergenceExperiment {
 			String url = config.getProperty("url");
 			String username = config.getProperty("username");
 			String password = config.getProperty("password");
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(url, username, password);
 
 			java.sql.Statement stmt = conn.createStatement();
@@ -1690,7 +1690,7 @@ public class PRConvergenceExperiment {
 
 		String databaseName = options.valueOf(databaseNameSpec);
 
-		CBDStructureTree cbdStructureTree = options.has(options.valueOf(cbdSpec)) ? CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim()) : null;
+		CBDStructureTree cbdStructureTree = options.has(cbdSpec) ? CBDStructureTree.fromTreeString(options.valueOf(cbdSpec).trim()) : null;
 
 
 		PRConvergenceExperiment eval = new PRConvergenceExperiment(dataset, benchmarkDirectory,

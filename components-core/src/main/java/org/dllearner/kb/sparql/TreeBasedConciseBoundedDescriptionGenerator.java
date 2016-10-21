@@ -91,7 +91,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, structureTree);
-		System.out.println(QueryFactory.create(query));
+//		System.out.println(QueryFactory.create(query));
 
 		if(workaround) {
 			return constructWithReplacement(endpoint, query);

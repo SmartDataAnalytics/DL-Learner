@@ -39,7 +39,7 @@ public class QueryRewriter {
     public static List<Query> split(Query query) {
 //        System.out.println("SPLIT:\n" + query);
         List<Query> queries = new ArrayList<>();
-        queries.addAll(splitOutgoing2(query));
+        queries.addAll(splitOutgoing(query));
         queries.addAll(splitIncoming(query));
         return queries;
     }
@@ -51,10 +51,12 @@ public class QueryRewriter {
         // mapping from var to outgoing triple patterns
         Set<Triple> outgoingTPs = queryUtils.extractOutgoingTriplePatternsTrans(query, targetVar.asNode());
 
+        // return if there are no outgoing triple patterns
         if(outgoingTPs.isEmpty()) {
             return Collections.emptyList();
         }
 
+        // mapping from each variable to triple patterns in which they occur as subject
         final Multimap<Var, Triple> var2OutgoingTPs = HashMultimap.create();
         for (Triple tp : outgoingTPs) {
             var2OutgoingTPs.put(Var.alloc(tp.getSubject()), tp);
@@ -62,60 +64,67 @@ public class QueryRewriter {
 
         // 1. get the outgoing triple patterns of the target var that do not have
         // outgoing triple patterns
-        Set<Triple> fixedTriplePatterns = new HashSet<>();
-        Set<Set<Triple>> clusters = new HashSet<>();
-        var2OutgoingTPs.get(targetVar).forEach(tp -> {
-            Node object = tp.getObject();
-            if(object.isConcrete() || !var2OutgoingTPs.containsKey(Var.alloc(object))){
-                fixedTriplePatterns.add(tp);
-            } else {
-                Set<Triple> cluster = new TreeSet<>(new TripleComparator());
-                cluster.add(tp);
-                clusters.add(cluster);
-            }
-        });
-        boolean useSplitting = !clusters.isEmpty();
+        Set<Triple> fixedTriplePatterns = var2OutgoingTPs.get(targetVar).stream()
+                .filter(tp -> tp.getObject().isConcrete() || !var2OutgoingTPs.containsKey(Var.alloc(tp.getObject())))
+                .collect(Collectors.toSet());
 
-        if(!useSplitting){
-            clusters.add(Sets.newHashSet(fixedTriplePatterns));
-        } else {
-            logger.debug("Query too complex. Splitting...");
-            // 2. build clusters for other
-            for (Set<Triple> cluster : clusters) {
-                Triple representative = cluster.iterator().next();
-                cluster.addAll(var2OutgoingTPs.get(Var.alloc(representative.getObject())));
-                cluster.addAll(fixedTriplePatterns);
-            }
+        // split
+        List<List<Triple>> fixedTpPartitions = Lists.partition(new ArrayList<>(fixedTriplePatterns), 5);
+
+        // all other outgoing triple patterns from target var become a new cluster
+        Set<Set<Triple>> clusters = var2OutgoingTPs.get(targetVar).stream()
+                .filter(tp -> !fixedTriplePatterns.contains(tp))
+                .map(tp -> Sets.newHashSet(tp))
+                .collect(Collectors.toSet());
+
+        // add some fixed TPs to reduce size of resultset
+        for (Set<Triple> cluster : clusters) {
+            Triple representative = cluster.iterator().next();
+            cluster.addAll(var2OutgoingTPs.get(Var.alloc(representative.getObject())));
+            cluster.addAll(fixedTpPartitions.get(0));
         }
+
+        fixedTpPartitions.stream().filter(tp -> clusters.stream().noneMatch(c -> c.contains(tp))).forEach(tp -> {
+
+            Set<Triple> newCluster = Sets.newHashSet(tp);
+            if(!clusters.isEmpty()) {
+                newCluster.addAll(clusters.iterator().next());
+            }
+            clusters.add(newCluster);
+        });
 
         // again split clusters to have only a maximum number of triple patterns
-        int maxNrOfTriplePatternsPerQuery = 20;// number of outgoing triple patterns form the target var in each executed query
+        int maxNrOfTriplePatternsPerQuery = 10;// number of outgoing triple patterns form the target var in each executed query
         Set<Set<Triple>> newClusters = new HashSet<>();
-        for (Set<Triple> cluster : clusters) {
-            int cnt = 0;
-            for (Triple triple : cluster) {
-                if(triple.getSubject().matches(targetVar)) {
-                    cnt++;
-                }
-            }
 
-            if(cnt > maxNrOfTriplePatternsPerQuery) {
-                Set<Triple> newCluster = new HashSet<>();
-                for (Triple triple : cluster) {
-                    if(triple.getSubject().matches(targetVar)) {
-                        newCluster.add(triple);
-                    }
-                    if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
-                        newClusters.add(newCluster);
-                        newCluster = new HashSet<>();
-                    }
-                }
-                if(!newCluster.isEmpty()) {
-                    newClusters.add(newCluster);
-                }
-            }
+        for (Set<Triple> cluster : clusters) {
+            Lists.partition(new ArrayList<>(cluster), 10).forEach(p -> newClusters.add(Sets.newHashSet(p)));
+
+//            int cnt = 0;
+//            for (Triple triple : cluster) {
+//                if(triple.getObject().matches(targetVar)) {
+//                    cnt++;
+//                }
+//            }
+//
+//            if(cnt > maxNrOfTriplePatternsPerQuery) {
+//                Set<Triple> newCluster = new HashSet<>();
+//                for (Triple triple : cluster) {
+//                    if(triple.getObject().matches(targetVar)) {
+//                        newCluster.add(triple);
+//                    }
+//                    if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
+//                        newClusters.add(newCluster);
+//                        newCluster = new HashSet<>();
+//                    }
+//                }
+//                if(!newCluster.isEmpty()) {
+//                    newClusters.add(newCluster);
+//                }
+//            }
         }
 
+        // expand the paths, i.e. add triple patterns to var nodes if exist
         for (Set<Triple> cluster : newClusters) {
             for(int i = 1; i < maxTreeDepth; i++) {
                 Set<Triple> additionalTriples = new HashSet<>();
@@ -170,140 +179,20 @@ public class QueryRewriter {
         return queries;
     }
 
-    private static List<Query> splitOutgoing2(Query query) {
-        // the target variable
-        Var targetVar = query.getProjectVars().get(0);
-
-        // mapping from var to incoming triple patterns
-        Set<Triple> incomingTPs = queryUtils.extractOutgoingTriplePatternsTrans(query, targetVar.asNode());
-
-        // return if there are no incoming triple patterns
-        if(incomingTPs.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // mapping from each variable to triple patterns in which they occur as object
-        final Multimap<Var, Triple> var2IncomingTPs = HashMultimap.create();
-        for (Triple tp : incomingTPs) {
-            var2IncomingTPs.put(Var.alloc(tp.getSubject()), tp);
-        }
-
-        // 1. get the incoming triple patterns of the target var that do not have
-        // incoming triple patterns
-        Set<Triple> fixedTriplePatterns = var2IncomingTPs.get(targetVar).stream()
-                .filter(tp -> tp.getObject().isConcrete() || !var2IncomingTPs.containsKey(Var.alloc(tp.getObject())))
-                .collect(Collectors.toSet());
-
-        // split
-        List<List<Triple>> fixedTpPartitions = Lists.partition(new ArrayList<>(fixedTriplePatterns), 5);
-
-        // all other incoming triple patterns from target var become a new cluster
-        Set<Set<Triple>> clusters = var2IncomingTPs.get(targetVar).stream()
-                .filter(tp -> !fixedTriplePatterns.contains(tp))
-                .map(tp -> Sets.newHashSet(tp))
-                .collect(Collectors.toSet());
-
-        // add some fixed TPs to reduce resultset
-        for (Set<Triple> cluster : clusters) {
-            Triple representative = cluster.iterator().next();
-            cluster.addAll(var2IncomingTPs.get(Var.alloc(representative.getObject())));
-            cluster.addAll(fixedTpPartitions.get(0));
-        }
-
-        fixedTpPartitions.forEach(p -> clusters.add(Sets.newHashSet(p)));
-
-        // again split clusters to have only a maximum number of triple patterns
-        int maxNrOfTriplePatternsPerQuery = 10;// number of outgoing triple patterns form the target var in each executed query
-        Set<Set<Triple>> newClusters = new HashSet<>();
-
-        for (Set<Triple> cluster : clusters) {
-            Lists.partition(new ArrayList<>(cluster), 10).forEach(p -> newClusters.add(Sets.newHashSet(p)));
-
-//            int cnt = 0;
-//            for (Triple triple : cluster) {
-//                if(triple.getObject().matches(targetVar)) {
-//                    cnt++;
-//                }
-//            }
-//
-//            if(cnt > maxNrOfTriplePatternsPerQuery) {
-//                Set<Triple> newCluster = new HashSet<>();
-//                for (Triple triple : cluster) {
-//                    if(triple.getObject().matches(targetVar)) {
-//                        newCluster.add(triple);
-//                    }
-//                    if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
-//                        newClusters.add(newCluster);
-//                        newCluster = new HashSet<>();
-//                    }
-//                }
-//                if(!newCluster.isEmpty()) {
-//                    newClusters.add(newCluster);
-//                }
-//            }
-        }
-
-        // expand the paths, i.e. add triple patterns to var nodes if exist
-        for (Set<Triple> cluster : newClusters) {
-            for(int i = 1; i < maxTreeDepth; i++) {
-                Set<Triple> additionalTriples = new HashSet<>();
-                cluster.stream().filter(triple -> triple.getObject().isVariable()).forEach(triple -> {
-                    Collection<Triple> triples = var2IncomingTPs.get(Var.alloc(triple.getObject()));
-                    additionalTriples.addAll(triples);
-                });
-                cluster.addAll(additionalTriples);
-            }
-        }
-//		clusters = newClusters;
-
-        List<Query> queries = new ArrayList<>();
-
-        // 3. run query for each cluster
-        for (Set<Triple> cluster : clusters) {
-            // remove redundant edges
-            SortedSet<Triple> tmp = new TreeSet<>(new Comparator<Triple>() {
-
-                TripleComparator comp = new TripleComparator();
-
-                @Override
-                public int compare(Triple o1, Triple o2) {
-                    boolean same = o1.subjectMatches(o2.getSubject())
-                            && o2.predicateMatches(o2.getPredicate())
-                            && o1.getObject().isVariable() && o2.getObject().isVariable();
-//							&& !var2IncomingTPs.containsKey(o1.getObject());
-                    if (same) return 0;
-                    return comp.compare(o1, o2);
-                }
-            });
-            tmp.addAll(cluster);
-            cluster = tmp;
-
-            // build query
-            Query q = new Query();
-            q.addProjectVars(Collections.singleton(targetVar));
-            ElementTriplesBlock el = new ElementTriplesBlock();
-            for (Triple triple : cluster) {
-                el.addTriple(triple);
-            }
-            q.setQuerySelectType();
-            q.setDistinct(true);
-            q.setQueryPattern(el);
-
-            q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
-//			q = rewriteForVirtuosoFloatingPointIssue(q);
-//			sparqlQuery = getPrefixedQuery(sparqlQuery);
-
-            queries.add(q);
-        }
-        return queries;
-    }
-
     private static List<Query> splitIncoming(Query query) {
         // the target variable
         Var targetVar = query.getProjectVars().get(0);
 
         // mapping from var to incoming triple patterns
         Set<Triple> incomingTPs = queryUtils.extractIncomingTriplePatternsTrans(query, targetVar.asNode());
+
+        // extract all triple patterns
+        Set<Triple> tps = queryUtils.extractTriplePattern(query);
+        // mapping from var to TP
+        final Multimap<Var, Triple> var2outgoingTPs = HashMultimap.create();
+        tps.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
+            var2outgoingTPs.put(Var.alloc(tp.getSubject()), tp);
+        });
 
         // return if there are no incoming triple patterns
         if(incomingTPs.isEmpty()) {
@@ -319,7 +208,14 @@ public class QueryRewriter {
         // 1. get the incoming triple patterns of the target var that do not have
         // incoming triple patterns
         Set<Triple> fixedTriplePatterns = var2IncomingTPs.get(targetVar).stream()
-                .filter(tp -> tp.getSubject().isConcrete() || !var2IncomingTPs.containsKey(Var.alloc(tp.getSubject())))
+                .filter(tp -> {
+                    if(tp.getSubject().isConcrete()) {
+                        return true;
+                    } else {
+                        Var var = Var.alloc(tp.getSubject());
+                        return !var2IncomingTPs.containsKey(var) && !var2outgoingTPs.containsKey(var);
+                    }
+                })
                 .collect(Collectors.toSet());
 
         // split
@@ -331,11 +227,13 @@ public class QueryRewriter {
                 .map(tp -> Sets.newHashSet(tp))
                 .collect(Collectors.toSet());
 
-        // add some fixed TPs to reduce resultset
-        for (Set<Triple> cluster : clusters) {
-            Triple representative = cluster.iterator().next();
-            cluster.addAll(var2IncomingTPs.get(Var.alloc(representative.getSubject())));
-            cluster.addAll(fixedTpPartitions.get(0));
+        // add some fixed TPs to reduce size of resultset
+        if(!fixedTpPartitions.isEmpty()) {
+            for (Set<Triple> cluster : clusters) {
+                Triple representative = cluster.iterator().next();
+                cluster.addAll(var2IncomingTPs.get(Var.alloc(representative.getSubject())));
+                cluster.addAll(fixedTpPartitions.get(0));
+            }
         }
 
         fixedTpPartitions.forEach(p -> clusters.add(Sets.newHashSet(p)));
@@ -345,7 +243,7 @@ public class QueryRewriter {
         Set<Set<Triple>> newClusters = new HashSet<>();
         
         for (Set<Triple> cluster : clusters) {
-            Lists.partition(new ArrayList<>(cluster), 10).forEach(p -> newClusters.add(Sets.newHashSet(p)));
+//            Lists.partition(new ArrayList<>(cluster), 10).forEach(p -> newClusters.add(Sets.newHashSet(p)));
 
 //            int cnt = 0;
 //            for (Triple triple : cluster) {
@@ -372,21 +270,39 @@ public class QueryRewriter {
         }
 
         // expand the paths, i.e. add triple patterns to var nodes if exist
-        for (Set<Triple> cluster : newClusters) {
-            for(int i = 1; i < maxTreeDepth; i++) {
-                Set<Triple> additionalTriples = new HashSet<>();
-                cluster.stream().filter(triple -> triple.getSubject().isVariable()).forEach(triple -> {
-                    Collection<Triple> triples = var2IncomingTPs.get(Var.alloc(triple.getSubject()));
-                    additionalTriples.addAll(triples);
-                });
-                cluster.addAll(additionalTriples);
-            }
-        }
+//        for (Set<Triple> cluster : newClusters) {
+//            for(int i = 1; i < maxTreeDepth; i++) {
+//                Set<Triple> additionalTriples = new HashSet<>();
+//                cluster.stream().filter(triple -> triple.getSubject().isVariable()).forEach(triple -> {
+//                    Collection<Triple> triples = var2IncomingTPs.get(Var.alloc(triple.getSubject()));
+//                    additionalTriples.addAll(triples);
+//                });
+//                cluster.addAll(additionalTriples);
+//            }
+//        }
 //		clusters = newClusters;
+
+        clusters.forEach(c -> {
+            Set<Triple> additionalTriples = new HashSet<>(c);
+            // incoming
+            c.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
+                Collection<Triple> triples = var2IncomingTPs.get(Var.alloc(tp.getSubject()));
+                additionalTriples.addAll(triples);
+            });
+            // outgoing
+            c.stream().filter(tp -> tp.getSubject().isVariable()).forEach(tp -> {
+                Collection<Triple> triples = var2outgoingTPs.get(Var.alloc(tp.getSubject()));
+                additionalTriples.addAll(triples);
+            });
+
+            newClusters.add(additionalTriples);
+        });
+        clusters.clear();
+        clusters.addAll(newClusters);
 
         List<Query> queries = new ArrayList<>();
 
-        // 3. run query for each cluster
+        // 3. generate query for each cluster
         for (Set<Triple> cluster : clusters) {
             // remove redundant edges
             SortedSet<Triple> tmp = new TreeSet<>(new Comparator<Triple>() {
@@ -651,6 +567,53 @@ public class QueryRewriter {
                 "         <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/state>  \"Solid\" ;\n" +
                 "         <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/structure>  \"1\"\n" +
                 "  }";
+
+        query = "BASE    <http://dbpedia.org/resource/>\n" +
+                "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n" +
+                "PREFIX  schema: <http://schema.org/>\n" +
+                "PREFIX  odp-dul: <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#>\n" +
+                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n" +
+                "PREFIX  wiki: <http://wikidata.dbpedia.org/resource/>\n" +
+                "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n" +
+                "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                "PREFIX  dc:   <http://purl.org/dc/elements/1.1/>\n" +
+                "\n" +
+                "SELECT DISTINCT  ?s\n" +
+                "WHERE\n" +
+                "  { ?s        dbo:birthPlace        ?x0 .\n" +
+                "    ?x0       dbo:country           <United_States> ;\n" +
+                "              dbo:leaderTitle       \"Mayor\"@en ;\n" +
+                "              rdf:type              dbo:City .\n" +
+                "    ?s        rdf:type              dbo:Person .\n" +
+                "    ?x1       dbo:starring          ?s ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:1995_films> ;\n" +
+                "              rdf:type              dbo:Film .\n" +
+                "    <Last_Action_Hero>\n" +
+                "              dbo:starring          ?s .\n" +
+                "    ?x2       dbo:starring          ?s ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:1990s_fantasy_films> ;\n" +
+                "              rdf:type              dbo:Film .\n" +
+                "    ?x3       dbo:starring          ?s ;\n" +
+                "              dbo:runtime           \"5400.0\"^^xsd:double ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:English-language_films> ;\n" +
+                "              rdf:type              dbo:Film .\n" +
+                "    ?x4       dbo:starring          ?s ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:1990s_comedy-drama_films> ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:English-language_films> ;\n" +
+                "              rdf:type              dbo:Film .\n" +
+                "    ?x5       dbo:starring          ?s ;\n" +
+                "              dbo:distributor       <Paramount_Pictures> ;\n" +
+                "              rdf:type              dbo:Film .\n" +
+                "    ?x6       dbo:starring          ?s ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:English-language_television_programming> ;\n" +
+                "              rdf:type              dbo:TelevisionShow .\n" +
+                "    ?x7       dbo:starring          ?s ;\n" +
+                "              dbo:runtime           \"6180.0\"^^xsd:double ;\n" +
+                "              <http://purl.org/dc/terms/subject>  <./Category:American_films> ;\n" +
+                "              rdf:type              dbo:Film\n" +
+                "  }";
+        System.out.println(QueryFactory.create(query));
         List<Query> queries = split(QueryFactory.create(query));
         queries.forEach(System.out::println);
     }
