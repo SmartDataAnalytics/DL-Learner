@@ -234,6 +234,8 @@ public class PRConvergenceExperiment {
 
 	String databaseName;
 
+	int nrOfQTLThreads = 1;
+
 	public PRConvergenceExperiment(EvaluationDataset dataset, File benchmarkDirectory,
 								   boolean write2DB, String databaseName, boolean override, int maxQTLRuntime,
 								   boolean useEmailNotification, int nrOfThreads) {
@@ -510,7 +512,17 @@ public class PRConvergenceExperiment {
 		queries.removeAll(lowNrOfExamplesQueries);
 		queries = queries.subList(0, Math.min(80, queries.size()));
 
-		final int totalNrOfQTLRuns = heuristics.length * this.measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
+		// total number of runs
+		final int totalNrOfQTLRuns = Arrays.stream(nrOfExamplesIntervals).map(val -> {
+										int numQueries = (int) query2Examples.entrySet().stream()
+												.filter(e -> e.getValue().correctPosExampleCandidates.size() >= val)
+												.map(e -> e.getKey())
+												.count();
+										System.out.println(val + ":" + numQueries);
+										return heuristics.length * this.measures.length * noiseIntervals.length * numQueries;
+									}).sum();
+
+
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
 
 		final AtomicInteger currentNrOfFinishedRuns = new AtomicInteger(0);
@@ -658,6 +670,7 @@ public class PRConvergenceExperiment {
 											la.setHeuristic(heuristic);
 											la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 											la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
+											la.setNrOfThreads(nrOfQTLThreads);
 											la.init();
 											la.start();
 											List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
@@ -1611,6 +1624,9 @@ public class PRConvergenceExperiment {
 		OptionSpec<String> cbdSpec = parser.accepts("cbd", "CBD structure tree string").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> workaroundSpec = parser.accepts("workaround", "Virtuoso parse error workaround enabled").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 
+		OptionSpec<Integer> qtlThreadspec = parser.accepts("num-qtl-threads", "number of threads used within a single QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(1);
+
+
 		OptionSet options = null;
 		try {
 			options = parser.parse(args);
@@ -1700,10 +1716,12 @@ public class PRConvergenceExperiment {
 		eval.setDatabaseName(databaseName);
 		eval.setDefaultCbdStructure(cbdStructureTree);
 		eval.setWorkaroundEnabled(options.valueOf(workaroundSpec), endpoint);
+		eval.setNrOfQTLThreads(options.valueOf(qtlThreadspec));
 		eval.run(maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
+
 
 	public void setDefaultCbdStructure(CBDStructureTree cbdStructureTree) {
 		this.cbdStructureTree = cbdStructureTree;
@@ -1711,6 +1729,10 @@ public class PRConvergenceExperiment {
 
 	public void setQueriesToProcessTokens(Collection<String> queriesToProcessTokens) {
 		this.queriesToProcessTokens.addAll(queriesToProcessTokens);
+	}
+
+	public void setNrOfQTLThreads(int nrOfQTLThreads) {
+		this.nrOfQTLThreads = nrOfQTLThreads;
 	}
 
 	class Score {

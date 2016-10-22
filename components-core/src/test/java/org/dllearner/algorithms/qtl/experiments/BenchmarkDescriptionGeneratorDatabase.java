@@ -101,7 +101,8 @@ public class BenchmarkDescriptionGeneratorDatabase extends BenchmarkDescriptionG
 		try {
 			String tableName = "benchmark_data";
 			Statement stmt = conn.createStatement();
-			stmt.execute("CREATE Table " + tableName + " (" +
+			stmt.execute("DROP TABLE IF EXISTS " + tableName);
+			stmt.execute("CREATE Table IF NOT EXISTS " + tableName + " (" +
 					"id VARCHAR(20) NOT NULL," +
 					"query VARCHAR(500) NOT NULL," +
 					"query_type VARCHAR(50) NOT NULL," +
@@ -122,7 +123,7 @@ public class BenchmarkDescriptionGeneratorDatabase extends BenchmarkDescriptionG
 					"cbd_size_opt_min, cbd_size_opt_max, cbd_size_opt_avg," +
 					"cbd_size_def_min, cbd_size_def_max, cbd_size_def_avg, graph)" +
 					" VALUES " +
-					"(?,?,?,?,?,?,?,?,?,?,?)");
+					"(?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		} catch (SQLException e) {
 			e.printStackTrace();

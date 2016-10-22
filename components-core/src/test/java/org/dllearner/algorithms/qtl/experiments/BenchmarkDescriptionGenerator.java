@@ -145,7 +145,6 @@ public abstract class BenchmarkDescriptionGenerator {
 			DescriptiveStatistics genericCBDSizeStats = determineDefaultCBDSizes(query, result);
 
 			addRow(new QueryData(id, query, queryType, maxDepth, nrOfInstances, optimalCBDSizeStats, genericCBDSizeStats, graphML));
-			break;
 		}
 
 		endTable();

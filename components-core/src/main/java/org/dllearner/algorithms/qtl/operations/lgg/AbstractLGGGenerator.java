@@ -27,6 +27,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.StoppableOperation;
 import org.dllearner.algorithms.qtl.operations.TimeoutableOperation;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,12 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 	protected volatile boolean stop = false;
 
 	private boolean complete = true;
-	
+
+	PredicateExistenceFilter filter;
+
+	public void setFilter(PredicateExistenceFilter filter) {
+		this.filter = filter;
+	}
 
 	private void reset() {
 		stop = false;
@@ -95,7 +102,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		// a) if both root nodes have same URI or literal value, just return one of the two trees as LGG
 		if((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())){
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
-			return tree1;
+			return new RDFResourceTree(tree1);
 		}
 
 		// b) handle literal nodes
@@ -129,6 +136,8 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 			Node lcs = entry.getRight();
 
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+//			System.out.println(lcs + ": " + tree1.getChildren(edge1).size() * tree2.getChildren(edge2).size());
 
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);

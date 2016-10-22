@@ -35,9 +35,10 @@ import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.operations.lgg.*;
+import org.dllearner.algorithms.qtl.operations.lgg.AbstractLGGGenerator;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.core.*;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.config.ConfigOption;
@@ -158,7 +159,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 	private boolean useDisjunction = false;
 
-	private int nrOfThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+	private int nrOfThreads = 2;//Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 
 
 	public QTL2DisjunctiveMultiThreaded() {}
@@ -185,7 +186,8 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 
 	/**
 	 * Copy constructor.
-	 * @param qtl the QTL2Disjunctive instance
+	 *
+	 * @param qtl the QTL2DisjunctiveMultiThreaded instance
 	 */
 	public QTL2DisjunctiveMultiThreaded(QTL2DisjunctiveMultiThreaded qtl) {
 		super(qtl.getLearningProblem(), qtl.getReasoner());
@@ -492,6 +494,10 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
 //						todo(solution);
 							}
+
+							// add new tasks to pool
+
+
 							todo(solution);
 							addToSolutions(solution);
 						}
@@ -1259,9 +1265,10 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	class LGGTask {
 		public Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
 			try {
-				System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
+//				System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
 
 				LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
+
 				// compute the LGG
 				MonitorFactory.getTimeMonitor("lgg").start();
 				lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
@@ -1287,6 +1294,5 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 			}
 			return null;
 		}
-
 	}
 }
