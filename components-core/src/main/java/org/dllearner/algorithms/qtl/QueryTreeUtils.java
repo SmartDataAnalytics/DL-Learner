@@ -1105,12 +1105,16 @@ public class QueryTreeUtils {
 			// collapse rdfs:subClassOf paths
 			new ArrayList<>(typeChildren).forEach(child -> {
 				if(child.isVarNode()) {
-					new ArrayList<>(child.getChildren(RDFS.subClassOf.asNode())).forEach(childChild -> {
-						if(childChild.isResourceNode()) {
-							tree.addChild(childChild, RDF.type.asNode());
-							child.removeChild(childChild, RDFS.subClassOf.asNode());
-						}
-					});
+					List<RDFResourceTree> subClassChildren = child.getChildren(RDFS.subClassOf.asNode());
+					if(subClassChildren != null) {
+						new ArrayList<>(subClassChildren).forEach(childChild -> {
+							if(childChild.isResourceNode()) {
+								tree.addChild(childChild, RDF.type.asNode());
+								child.removeChild(childChild, RDFS.subClassOf.asNode());
+							}
+						});
+					}
+					// remove the var node
 					tree.removeChild(child, RDF.type.asNode());
 				}
 			});
