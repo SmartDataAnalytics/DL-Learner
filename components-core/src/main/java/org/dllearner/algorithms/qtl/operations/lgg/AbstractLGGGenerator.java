@@ -157,7 +157,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 					// check if there was already a more specific child computed before
 					// and if so don't add the current one
 					boolean add = true;
-					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
+					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext() && !(stop || isTimeout());){
 						RDFResourceTree addedChild = it.next();
 
 						if(isSubTreeOf(addedChild, lggChild)){

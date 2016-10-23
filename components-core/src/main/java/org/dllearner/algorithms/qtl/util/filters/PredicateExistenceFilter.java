@@ -88,7 +88,7 @@ public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
 		}
 
 		// we have to run the subsumption check one more time to prune the tree
-		QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
+//		QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
 		return newTree;
 	}
 }

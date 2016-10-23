@@ -466,40 +466,44 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 					.filter(fn -> !processedCombinations.contains(Sets.union(currentElement.getBaseQueryTrees(), Sets.newHashSet(fn))))
 					.map(fn -> CompletableFuture.supplyAsync(() -> new LGGTask().computePartialSolution(currentTree, fn, Sets.newTreeSet(Sets.union(currentElement.getBaseQueryTrees(), Sets.newHashSet(fn)))), pool))
 					.map(solutionFuture -> solutionFuture.thenAccept(solutions -> {
-						for (EvaluatedRDFResourceTree solution : solutions) {
-							logger.trace("solution: {} ({})", solution.getBaseQueryTrees(), solution.getTreeScore());
-							processedCombinations.add(solution.getBaseQueryTrees());
-							expressionTests++;
-							double score = solution.getScore();
-							double mas = heuristic.getMaximumAchievableScore(solution);
 
-							if (score >= bestCurrentScore) {
-								if (score > bestCurrentScore) {
-									timeBestSolutionFound = getCurrentRuntimeInMilliSeconds();
-									logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), timeBestSolutionFound);
+						// if timeout was before LGG start, NULL will be returned
+						if(solutions != null) {
+							for (EvaluatedRDFResourceTree solution : solutions) {
+								logger.trace("solution: {} ({})", solution.getBaseQueryTrees(), solution.getTreeScore());
+								processedCombinations.add(solution.getBaseQueryTrees());
+								expressionTests++;
+								double score = solution.getScore();
+								double mas = heuristic.getMaximumAchievableScore(solution);
+
+								if (score >= bestCurrentScore) {
+									if (score > bestCurrentScore) {
+										timeBestSolutionFound = getCurrentRuntimeInMilliSeconds();
+										logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), timeBestSolutionFound);
 //									logger.info("\t" + solutionAsString(solution.asEvaluatedDescription()));
-									bestCurrentScore = score;
-									bestPartialSolutionTree = solution;
-								}
-								// add to ToDo list, if not already contained in ToDo list or solution list
-								if (bestCurrentScore == 1.0 || mas > score) {
+										bestCurrentScore = score;
+										bestPartialSolutionTree = solution;
+									}
+									// add to ToDo list, if not already contained in ToDo list or solution list
+									if (bestCurrentScore == 1.0 || mas > score) {
 //							todo(solution);
-								}
-							} else if (bestCurrentScore == 1.0 || mas >= bestCurrentScore) { // add to ToDo list if max. achievable score is higher
+									}
+								} else if (bestCurrentScore == 1.0 || mas >= bestCurrentScore) { // add to ToDo list if max. achievable score is higher
 //						todo(solution);
-							} else {
-								logger.trace("Too weak: {}", solution.getTreeScore());
+								} else {
+									logger.trace("Too weak: {}", solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
 //						todo(solution);
+								}
+
+								// add new tasks to pool
+
+
+								todo(solution);
+								addToSolutions(solution);
 							}
-
-							// add new tasks to pool
-
-
-							todo(solution);
-							addToSolutions(solution);
 						}
 					}))
 					.collect(Collectors.toList());
@@ -1265,30 +1269,33 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	class LGGTask {
 		public Set<EvaluatedRDFResourceTree> computePartialSolution(RDFResourceTree tree1, RDFResourceTree tree2, Set<RDFResourceTree> baseQueryTrees) {
 			try {
-//				System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
+				long runtime = getRemainingPartialSolutionTime();
+				if(runtime > 0) {
+					System.err.println(Thread.currentThread() + " - source trees:" + baseQueryTrees);
 
-				LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
+					LGGGeneratorSimple lggGenerator = new LGGGeneratorSimple();
 
-				// compute the LGG
-				MonitorFactory.getTimeMonitor("lgg").start();
-				lggGenerator.setTimeout(getRemainingPartialSolutionTime(), TimeUnit.SECONDS);
-				RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
-				MonitorFactory.getTimeMonitor("lgg").stop();
+					// compute the LGG
+					MonitorFactory.getTimeMonitor("lgg").start();
+					lggGenerator.setTimeout(runtime, TimeUnit.SECONDS);
+					RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
+					MonitorFactory.getTimeMonitor("lgg").stop();
 //			System.out.println("COMPLETE:" + ((LGGGeneratorSimple)lggGenerator).isComplete());
 //				logger.info("LGG: "  + lgg.getStringRepresentation());
 
-				// redundancy check
-				boolean redundant = isRedundant(lgg);
-				if (redundant) {
-					logger.trace("redundant");
-					return Collections.emptySet();
+					// redundancy check
+					boolean redundant = isRedundant(lgg);
+					if (redundant) {
+						logger.trace("redundant");
+						return Collections.emptySet();
+					}
+
+					// evaluate the LGG
+					Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
+					solutions.forEach(s -> s.setBaseQueryTrees(baseQueryTrees));
+
+					return solutions;
 				}
-
-				// evaluate the LGG
-				Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
-				solutions.forEach(s -> s.setBaseQueryTrees(baseQueryTrees));
-
-				return solutions;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
