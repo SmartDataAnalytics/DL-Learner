@@ -23,6 +23,7 @@ import com.google.common.collect.HashBiMap;
 import com.jamonapi.MonitorFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -73,7 +74,7 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 
 	private BiMap<RDFResourceTree, OWLIndividual> tree2Individual = HashBiMap.create();
 
-	private PosNegLP lp;
+	private SPARQLQueryLearningProblemPosNeg lp;
 	private Model model;
 
 	private volatile boolean stop;
@@ -100,7 +101,7 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 
 	public QTL3() {}
 
-	public QTL3(PosNegLP lp, QueryExecutionFactory qef) {
+	public QTL3(SPARQLQueryLearningProblemPosNeg lp, QueryExecutionFactory qef) {
 		this.lp = lp;
 		this.qef = qef;
 	}
@@ -149,41 +150,25 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 		RDFResourceTree queryTree;
 
 		// positive examples
-		if(currentPosExampleTrees.isEmpty()){
-			for (OWLIndividual ind : lp.getPositiveExamples()) {
-				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
-//					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
-					tree2Individual.put(queryTree, ind);
-					currentPosExampleTrees.add(queryTree);
-					currentPosExamples.add(ind);
-					logger.debug(ind.toStringID());
-					logger.debug(queryTree.getStringRepresentation());
-				} catch (Exception e) {
-					logger.error("Failed to generate tree for resource " + ind, e);
-					throw new RuntimeException();
-				}
+		for (List<String> tuple : lp.getPosExamples()) {
+			try {
+
+				// get the CBD for each resource in the tuple
+				Model m = ModelFactory.createDefaultModel();
+				tuple.forEach(r -> {
+					Model cbd = cbdGen.getConciseBoundedDescription(r, maxTreeDepth);
+
+					m.add(cbd);
+				});
+
+//				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
+
+			} catch (Exception e) {
+//				logger.error("Failed to generate tree for resource " + ind, e);
+				throw new RuntimeException();
 			}
 		}
 
-		// negative examples
-		if(currentNegExampleTrees.isEmpty()){
-			for (OWLIndividual ind : lp.getNegativeExamples()) {
-				try {
-					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxTreeDepth);
-					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
-					tree2Individual.put(queryTree, ind);
-					currentNegExampleTrees.add(queryTree);
-					currentNegExamples.add(ind);
-					logger.debug(ind.toStringID());
-					logger.debug(queryTree.getStringRepresentation());
-				} catch (Exception e) {
-					logger.error("Failed to generate tree for resource " + ind, e);
-					throw new RuntimeException();
-				}
-			}
-		}
 		logger.info("...done.");
 	}
 
