@@ -67,6 +67,8 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
 	public static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
+
+	private Node nodeType;
 	
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
@@ -405,7 +407,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		
 		// render current node
 		String ren;
-		if(isLiteralNode() && !isLiteralValueNode()) {
+		if(isLiteralNode() && !isLiteralValueNode() && getDatatype() != null) {
 			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
 		} else {
 			ren = FmtUtils.stringForNode(this.getData(), context);

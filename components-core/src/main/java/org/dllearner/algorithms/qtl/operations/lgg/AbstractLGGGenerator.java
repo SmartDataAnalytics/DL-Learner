@@ -255,7 +255,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 			return new RDFResourceTree(d1);
 			// TODO collect literal values
 		}
-		return RDFResourceTree.newLiteralNode();
+		return RDFResourceTree.newVarNode();//LiteralNode();
 	}
 
 	@Override

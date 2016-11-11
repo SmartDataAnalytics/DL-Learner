@@ -20,22 +20,39 @@ package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.jamonapi.MonitorFactory;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlService;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
+import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
+import org.dllearner.algorithms.qtl.util.StopURIsOWL;
+import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
+import org.dllearner.algorithms.qtl.util.filters.*;
 import org.dllearner.core.*;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
@@ -47,6 +64,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
 public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgorithm{
@@ -121,7 +139,29 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 		}
 
 		if(treeFactory == null) {
-			treeFactory = new QueryTreeFactoryBase();
+			treeFactory = new QueryTreeFactoryBaseInv();
+			ArrayList<Filter<Statement>> filters = Lists.newArrayList(
+					new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+					new ObjectDropStatementFilter(StopURIsDBpedia.get()),
+					new PredicateDropStatementFilter(StopURIsRDFS.get()),
+					new PredicateDropStatementFilter(StopURIsOWL.get()),
+					new ObjectDropStatementFilter(StopURIsOWL.get()),
+					new PredicateDropStatementFilter(StopURIsSKOS.get()),
+					new ObjectDropStatementFilter(StopURIsSKOS.get()),
+					new NamespaceDropStatementFilter(
+							Sets.newHashSet(
+									"http://dbpedia.org/property/",
+//					"http://purl.org/dc/terms/",
+									"http://dbpedia.org/class/yago/"
+									, FOAF.getURI()
+							)
+					),
+					new PredicateDropStatementFilter(
+							Sets.newHashSet(
+									"http://www.w3.org/2002/07/owl#equivalentClass",
+									"http://www.w3.org/2002/07/owl#disjointWith"))
+			);
+			treeFactory.addDropFilters((Predicate<Statement>[]) filters.toArray(new Predicate[filters.size()]));
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 
@@ -161,11 +201,12 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 					m.add(cbd);
 				});
 
-//				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd, maxTreeDepth);
+				RDFResourceTree tree = treeFactory.getQueryTree(tuple.get(0), m, maxTreeDepth);
+				currentPosExampleTrees.add(tree);
 
 			} catch (Exception e) {
 //				logger.error("Failed to generate tree for resource " + ind, e);
-				throw new RuntimeException();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -188,6 +229,12 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 
 		reset();
 
+		RDFResourceTree lgg = lggGenerator.getLGG(currentPosExampleTrees);
+
+		PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
+		lgg = filter.apply(lgg);
+
+		System.out.println(lgg.getStringRepresentation());
 
 		isRunning = false;
 
@@ -367,5 +414,35 @@ public class QTL3 implements StoppableLearningAlgorithm, SparqlQueryLearningAlgo
 	@Override
 	public String getBestSPARQLQuery() {
 		return null;
+	}
+
+
+	public static void main(String[] args) throws Exception {
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+
+		QueryExecutionFactory qef = FluentQueryExecutionFactory.
+				http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.config()
+				.withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee()).setModelContentType(WebContent.contentTypeRDFXML))
+				.withDelay(50, TimeUnit.MILLISECONDS)
+				.end()
+				.create();
+
+		SortedSet<List<String>> posExamples = new TreeSet<>(new Comparator<List<String>>() {
+			@Override
+			public int compare(List<String> l1, List<String> l2) {
+				return l1.toString().compareTo(l2.toString());
+			}
+		});
+		posExamples.add(Lists.newArrayList("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Germany"));
+		posExamples.add(Lists.newArrayList("http://dbpedia.org/resource/Madrid", "http://dbpedia.org/resource/Spain"));
+		posExamples.add(Lists.newArrayList("http://dbpedia.org/resource/Paris", "http://dbpedia.org/resource/France"));
+
+		SPARQLQueryLearningProblemPosNeg lp = new SPARQLQueryLearningProblemPosNeg();
+		lp.setPosExamples(posExamples);
+
+		QTL3 qtl = new QTL3(lp, qef);
+		qtl.init();
+		qtl.start();
 	}
 }
