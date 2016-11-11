@@ -31,7 +31,8 @@ public class StopURIsRDFS {
 	static final Set<String> uris = ImmutableSet.of(
 			RDFS.label.getURI(),
 			RDFS.comment.getURI(),
-			RDFS.isDefinedBy.getURI()
+			RDFS.isDefinedBy.getURI(),
+			RDFS.seeAlso.getURI()
 			);
 	
 	public static Set<String> get() {
