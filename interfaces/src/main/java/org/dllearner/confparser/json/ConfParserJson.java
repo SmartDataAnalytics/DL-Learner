@@ -3,6 +3,7 @@ package org.dllearner.confparser.json;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.confparser.AbstractConfParser;
 import org.dllearner.core.ComponentInitException;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
@@ -21,11 +22,18 @@ import java.util.Set;
  */
 public class ConfParserJson extends AbstractConfParser {
 	final static Logger logger = LoggerFactory.getLogger(ConfParserJson.class);
-	private final InputStream inputStream;
+	private InputStream inputStream;
 	private StringBuffer out;
+	private Map jsonMap;
 
 	public ConfParserJson(InputStream inputStream) {
 		this.inputStream = inputStream;
+		this.jsonMap = null;
+	}
+
+	public ConfParserJson(Map jsonMap) {
+		this.inputStream = null;
+		this.jsonMap = jsonMap;
 	}
 
 	private void resolveBeanRef(ConfFileOption o, Object value) throws ComponentInitException {
@@ -74,6 +82,19 @@ public class ConfParserJson extends AbstractConfParser {
 	}
 
 	public void init() throws ComponentInitException {
+		if (isInitialized()) return;
+
+		if (jsonMap == null) {
+			jsonMap = parseJson();
+		}
+		convertMap();
+		postProcess();
+
+		this.initialized = true;
+	}
+
+	@NotNull
+	protected Map parseJson() throws ComponentInitException {
 		JSONObject ret = new JSONObject();
 		JSONParser parser = new JSONParser();
 
@@ -89,8 +110,11 @@ public class ConfParserJson extends AbstractConfParser {
 		if (!(parse instanceof Map)) {
 			throw new ComponentInitException("Not a JSON object: " + parse.getClass());
 		}
-		Map in = (Map) parse;
-		for (Map.Entry e1 : (Set<Map.Entry>) in.entrySet()) {
+		return (Map) parse;
+	}
+
+	public void convertMap() throws ComponentInitException {
+		for (Map.Entry e1 : (Set<Map.Entry>) jsonMap.entrySet()) {
 			Object v1 = e1.getValue();
 			final String k1 = (String) e1.getKey();
 			if (v1 instanceof Map && ((Map) v1).containsKey("type")) {
@@ -110,6 +134,5 @@ public class ConfParserJson extends AbstractConfParser {
 				addConfOption(o);
 			}
 		}
-		postProcess();
 	}
 }
