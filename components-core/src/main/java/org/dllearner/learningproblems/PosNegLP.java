@@ -70,6 +70,12 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
+		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
+			logger.info("Loading examples by expression");
+			exampleLoaderHelper.setPosNegLP(this);
+			exampleLoaderHelper.init();
+		}
 		// check if some positive examples have been set
 		if(positiveExamples.isEmpty()) {
 			throw new ComponentInitException("No positive examples have been set.");
@@ -98,7 +104,7 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		}
 		
 		// sanity check whether examples are contained in KB
-		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner != null && !(reasoner instanceof SPARQLReasoner) && !reasoner.getIndividuals().containsAll(allExamples)) {
             Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
             double percentage = missing.size()/allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
