@@ -11,16 +11,17 @@ import java.util.Collection;
  */
 @ComponentAnn(name = "SPARQL Reasoner (Quad)", shortName = "spr.quad", version = 0.1)
 public class SPARQLReasonerQuad extends SPARQLReasoner {
-	protected final String subsumptionHierarchyQuery =
-			"SELECT * WHERE {"
+	protected String buildSubsumptionHierarchyQuery() {
+		return "SELECT * WHERE {"
 				+ " ?sub a <http://www.w3.org/2002/07/owl#Class> . "
 				+ " OPTIONAL { "
-                // for ontoquad
+				// for ontoquad
 				+ "{ ?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . FILTER(?sub != ?sup) . } "
 				+ " UNION { ?sub <http://www.w3.org/2002/07/owl#equivalentClass> ?sup . FILTER(?sub != ?sup) . } "
 				+ " . "
 				+ " } "
 				+ "}";
+	}
 
 	@Override
 	protected String buildIndividualsQueryValues(OWLClassExpression description, Collection<OWLIndividual> indValues, boolean isCountQuery) {

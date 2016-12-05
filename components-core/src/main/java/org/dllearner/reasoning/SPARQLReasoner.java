@@ -517,13 +517,15 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	// we have this variable so that the query can be overwritten in subclasses (for workarounds)
-	protected final String subsumptionHierarchyQuery =
-			"SELECT * WHERE {"
+	protected String buildSubsumptionHierarchyQuery() {
+		return "SELECT * WHERE {"
 				+ " ?sub a <http://www.w3.org/2002/07/owl#Class> . "
 				+ " OPTIONAL { "
 				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
 				+ "} \n"
 				+ "}";
+	}
+
 	/**
 	 * Pre-computes the class hierarchy. Instead of executing queries for each class,
 	 * we query by the predicate rdfs:subClassOf.
@@ -535,7 +537,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<>();
 		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<>();
 
-		ResultSet rs = executeSelectQuery(this.subsumptionHierarchyQuery);
+		ResultSet rs = executeSelectQuery(buildSubsumptionHierarchyQuery());
 	
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
