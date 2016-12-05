@@ -18,11 +18,12 @@
  */
 package org.dllearner.core;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * A progress monitor for axiom learning algorithms which prints to the console.
@@ -35,7 +36,7 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	
 	final char[] animationChars = new char[] {'|', '/', '-', '\\'};
 	
-	private static final NumberFormat format = DecimalFormat.getPercentInstance();
+	private static final NumberFormat format = DecimalFormat.getPercentInstance(Locale.ROOT);
 	
 	private int lastPercentage;
 
