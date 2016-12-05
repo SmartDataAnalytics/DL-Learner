@@ -1,1046 +1,1046 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dllearner</groupId>
-    <artifactId>dllearner-parent</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>DL Learner Parent Pom</name>
-    <description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
-    <url>http://aksw.org/Projects/DLLearner</url>
-    <properties>
-        <compiler.version>1.8</compiler.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--Define the AKSW dependency version -->
-        <slf4j.version>1.7.21</slf4j.version>
-        <log4j.version>1.2.17</log4j.version>
-        <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.2.4</owlapi.version>
-        <spring.version>4.3.3.RELEASE</spring.version>
-        <jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
-        <pellet.version>2.5.0-dllearner</pellet.version>
-    </properties>
+	<groupId>org.dllearner</groupId>
+	<artifactId>dllearner-parent</artifactId>
+	<version>1.3.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>DL Learner Parent Pom</name>
+	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
+	<url>http://aksw.org/Projects/DLLearner</url>
+	<properties>
+		<compiler.version>1.8</compiler.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!--Define the AKSW dependency version -->
+		<slf4j.version>1.7.21</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<solr.version>5.3.0</solr.version>
+		<owlapi.version>4.2.4</owlapi.version>
+		<spring.version>4.3.3.RELEASE</spring.version>
+		<jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
+		<pellet.version>2.5.0-dllearner</pellet.version>
+	</properties>
 
-    <modules>
-        <module>components-core</module>
-        <module>components-ext</module>
-        <module>interfaces</module>
-        <module>interfaces-ext</module>
-        <module>scripts</module>
-    </modules>
+	<modules>
+		<module>components-core</module>
+		<module>components-ext</module>
+		<module>interfaces</module>
+		<module>interfaces-ext</module>
+		<module>scripts</module>
+	</modules>
 
 
-    <!--This is the SCM information, which needs to be here so we can use the
-        maven release plugin -->
-    <scm>
-        <url>https://github.com/AKSW/DL-Learner/</url>
-        <connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
-        <developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-        <tag>1.3.0</tag>
-    </scm>
+	<!--This is the SCM information, which needs to be here so we can use the
+		maven release plugin -->
+	<scm>
+		<url>https://github.com/AKSW/DL-Learner/</url>
+		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
+		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
+		<tag>1.3.0</tag>
+	</scm>
 
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-    <organization>
-        <name>AKSW, Department of Computer Science, University of Leipzig</name>
-        <url>http://www.aksw.org</url>
-    </organization>
+	<organization>
+		<name>AKSW, Department of Computer Science, University of Leipzig</name>
+		<url>http://www.aksw.org</url>
+	</organization>
 
-    <inceptionYear>2007</inceptionYear>
+	<inceptionYear>2007</inceptionYear>
 
-    <developers>
-        <developer>
-            <id>lorenz</id>
-            <name>Lorenz Buehmann</name>
-            <email>buehmann@informatik.uni-leipzig.de</email>
-            <organization>AKSW, Department of Computer Science, University of Leipzig</organization>
-            <organizationUrl>http://www.aksw.org</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-        <developer>
-            <id>patrick</id>
-            <name>Patrick Westphal</name>
-            <email>pwestphal@informatik.uni-leipzig.de</email>
-            <organization>AKSW, Department of Computer Science, University of Leipzig</organization>
-            <organizationUrl>http://www.aksw.org</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-        <developer>
-            <id>simon</id>
-            <name>Simon Bin</name>
-            <email>sbin@informatik.uni-leipzig.de</email>
-            <organization>AKSW, Department of Computer Science, University of Leipzig</organization>
-            <organizationUrl>http://www.aksw.org</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-        <developer>
-            <id>jens</id>
-            <name>Jens Lehmann</name>
-            <email>jens.lehmann@cs.uni-bonn.de</email>
-            <organization>SDA, Computer Science Institute, University of Bonn</organization>
-            <organizationUrl>http://sda.cs.uni-bonn.de/</organizationUrl>
-            <roles>
-                <role>principle maintainer</role>
-                <role>developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>lorenz</id>
+			<name>Lorenz Buehmann</name>
+			<email>buehmann@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>patrick</id>
+			<name>Patrick Westphal</name>
+			<email>pwestphal@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>simon</id>
+			<name>Simon Bin</name>
+			<email>sbin@informatik.uni-leipzig.de</email>
+			<organization>AKSW, Department of Computer Science, University of Leipzig</organization>
+			<organizationUrl>http://www.aksw.org</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>jens</id>
+			<name>Jens Lehmann</name>
+			<email>jens.lehmann@cs.uni-bonn.de</email>
+			<organization>SDA, Computer Science Institute, University of Bonn</organization>
+			<organizationUrl>http://sda.cs.uni-bonn.de/</organizationUrl>
+			<roles>
+				<role>principle maintainer</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
 
-    <build>
-        <!-- - Plugin Management defines the plugins that the child components
-            can use - It's good practice to do this as we can ensure all children use
-            common versions - of the plugins, and we can look in one place to see all
-            plugin dependencies. -->
-        <pluginManagement>
-            <plugins>
-                <!--Surefire - for JUnits -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
-                </plugin>
-                <!--Maven Compiler Plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
-                    <configuration>
-                        <source>${compiler.version}</source>
-                        <target>${compiler.version}</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <compilerArgs>
-                            <!--<arg>-Xlint:all,-options,-path</arg> -->
-                        </compilerArgs>
-                    </configuration>
-                </plugin>
+	<build>
+		<!-- - Plugin Management defines the plugins that the child components
+			can use - It's good practice to do this as we can ensure all children use
+			common versions - of the plugins, and we can look in one place to see all
+			plugin dependencies. -->
+		<pluginManagement>
+			<plugins>
+				<!--Surefire - for JUnits -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.19.1</version>
+				</plugin>
+				<!--Maven Compiler Plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<source>${compiler.version}</source>
+						<target>${compiler.version}</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<compilerArgs>
+							<!--<arg>-Xlint:all,-options,-path</arg> -->
+						</compilerArgs>
+					</configuration>
+				</plugin>
 
-                <!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm
-                    putting this in so we can create a jar for the test classes - in components
-                    core so that other components' tests can leverage them -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jarsigner-plugin</artifactId>
-                    <version>1.4</version>
-                    <executions>
-                        <execution>
-                            <id>sign</id>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <keystore>/path/to/the/keystore</keystore>
-                        <alias>Alias name</alias>
-                        <storepass>Store password</storepass>
-                        <keypass>Key password</keypass>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
-                </plugin>
-                <!--JAR the Sources -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.4</version>
-                    <configuration>
-                        <failOnError>false</failOnError>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>3.0</version>
-                    <configuration>
-                        <!-- <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
-                        <header>license_header.txt</header>
-                        <properties>
-                            <owner>Jens Lehmann</owner>
-                            <email>lehmann@informatik.uni-leipzig.de</email>
-                        </properties>
-                        <includes>
-                            <include>src/**/*.java</include>
-                        </includes>
-                        <excludes>
-                            <exclude>**/README</exclude>
-                            <exclude>src/test/resources/**</exclude>
-                            <exclude>src/etc/**</exclude>
-                            <exclude>src/deb-package/**</exclude>
-                            <exclude>src/deb/**</exclude>
-                            <exclude>src/main/resources/**</exclude>
-                            <exclude>cache/**</exclude>
-                            <exclude>log/**</exclude>
-                            <exclude>src/**/*.html</exclude>
-                            <exclude>src/**/*.jj</exclude>
-                            <exclude>src/**/*.txt</exclude>
-                            <exclude>package-info.java</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>tomcat-maven-plugin</artifactId>
-                    <version>2.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.mortbay.jetty</groupId>
-                    <artifactId>maven-jetty-plugin</artifactId>
-                    <version>6.1.26</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                    </configuration>
-                </plugin>
-                <!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
-                    See: https://github.com/aleksandr-m/gitflow-maven-plugin Usage: gitflow:release-start
-                    and gitflow:release-finish -->
-                <plugin>
-                    <groupId>com.amashchenko.maven.plugin</groupId>
-                    <artifactId>gitflow-maven-plugin</artifactId>
-                    <version>1.2.3</version>
-                    <configuration>
-                        <installProject>false</installProject>
-                        <verbose>true</verbose>
+				<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm
+					putting this in so we can create a jar for the test classes - in components
+					core so that other components' tests can leverage them -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>1.4</version>
+					<executions>
+						<execution>
+							<id>sign</id>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<keystore>/path/to/the/keystore</keystore>
+						<alias>Alias name</alias>
+						<storepass>Store password</storepass>
+						<keypass>Key password</keypass>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
+				</plugin>
+				<!--JAR the Sources -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.mycila</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>3.0</version>
+					<configuration>
+						<!-- <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
+						<header>license_header.txt</header>
+						<properties>
+							<owner>Jens Lehmann</owner>
+							<email>lehmann@informatik.uni-leipzig.de</email>
+						</properties>
+						<includes>
+							<include>src/**/*.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/README</exclude>
+							<exclude>src/test/resources/**</exclude>
+							<exclude>src/etc/**</exclude>
+							<exclude>src/deb-package/**</exclude>
+							<exclude>src/deb/**</exclude>
+							<exclude>src/main/resources/**</exclude>
+							<exclude>cache/**</exclude>
+							<exclude>log/**</exclude>
+							<exclude>src/**/*.html</exclude>
+							<exclude>src/**/*.jj</exclude>
+							<exclude>src/**/*.txt</exclude>
+							<exclude>package-info.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tomcat-maven-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>maven-jetty-plugin</artifactId>
+					<version>6.1.26</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.10</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+					</configuration>
+				</plugin>
+				<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
+					See: https://github.com/aleksandr-m/gitflow-maven-plugin Usage: gitflow:release-start
+					and gitflow:release-finish -->
+				<plugin>
+					<groupId>com.amashchenko.maven.plugin</groupId>
+					<artifactId>gitflow-maven-plugin</artifactId>
+					<version>1.2.3</version>
+					<configuration>
+						<installProject>false</installProject>
+						<verbose>true</verbose>
 
-                        <gitFlowConfig>
-                            <productionBranch>master</productionBranch>
-                            <developmentBranch>develop</developmentBranch>
-                            <featureBranchPrefix>feature/</featureBranchPrefix>
-                            <releaseBranchPrefix>release/</releaseBranchPrefix>
-                            <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-                            <supportBranchPrefix>support/</supportBranchPrefix>
-                            <versionTagPrefix></versionTagPrefix>
-                        </gitFlowConfig>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.5.1</version>
-                    <configuration>
-                        <!--<skipDeploy>true</skipDeploy> -->
-                    </configuration>
-                    <dependencies>
-                        <dependency><!-- add support for ssh/scp -->
-                            <groupId>org.apache.maven.wagon</groupId>
-                            <artifactId>wagon-ssh</artifactId>
-                            <version>2.10</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
+						<gitFlowConfig>
+							<productionBranch>master</productionBranch>
+							<developmentBranch>develop</developmentBranch>
+							<featureBranchPrefix>feature/</featureBranchPrefix>
+							<releaseBranchPrefix>release/</releaseBranchPrefix>
+							<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+							<supportBranchPrefix>support/</supportBranchPrefix>
+							<versionTagPrefix></versionTagPrefix>
+						</gitFlowConfig>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<!--<skipDeploy>true</skipDeploy> -->
+					</configuration>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>2.10</version>
+						</dependency>
+					</dependencies>
+				</plugin>
 
-                <plugin>
-                    <!-- the plugin to generate changelog and release announcements -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-changes-plugin</artifactId>
-                    <version>2.12</version>
-                    <configuration>
-                        <developmentTeam>DL-Learner team</developmentTeam>
-                        <!-- the changes filtered source changes file -->
-                        <xmlPath>${basedir}/etc/changes.xml</xmlPath>
-                        <templateDirectory>etc/templates</templateDirectory>
-                        <issueManagementSystems>
-                            <issueManagementSystem>changes.xml</issueManagementSystem>
-                        </issueManagementSystems>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <!-- checking if the changes file is well-formed -->
-                            <id>check-changes</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>changes-check</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <!-- generating of the Changes.txt file -->
-                            <id>generate-changes-file</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>announcement-generate</goal>
-                            </goals>
-                            <configuration>
-                                <announcementFile>Changes.txt</announcementFile>
-                                <template>changes.vm</template>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <!-- generation of the e-mail announcement message announcement.txt -->
-                            <id>generate-email-announcement</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>announcement-generate</goal>
-                            </goals>
-                            <configuration>
-                                <announcementFile>announcement.txt</announcementFile>
-                                <template>announcement.vm</template>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.6</version>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>attached</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!--This plugin's configuration is used to store Eclipse m2e settings
-                    only. It has no influence on the Maven build itself. -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.codehaus.mojo
-                                        </groupId>
-                                        <artifactId>
-                                            xmlbeans-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [2.3.3,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>xmlbeans</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.codehaus.mojo
-                                        </groupId>
-                                        <artifactId>
-                                            javacc-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [2.6,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>javacc</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <!--<plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId>
-            <executions> <execution> <id>stage-for-scm-publish</id> <phase>post-site</phase>
-            <goals> <goal>stage</goal> </goals> <configuration> <skipDeploy>false</skipDeploy>&lt;!&ndash;
-            MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
-            </configuration> </execution> </executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-scm-publish-plugin</artifactId> <version>1.1</version>
-            <executions> <execution> <id>scm-publish</id> <phase>site-deploy</phase>
-            <goals> <goal>publish-scm</goal> </goals> </execution> </executions> </plugin>
-            </plugins> -->
-    </build>
+				<plugin>
+					<!-- the plugin to generate changelog and release announcements -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changes-plugin</artifactId>
+					<version>2.12</version>
+					<configuration>
+						<developmentTeam>DL-Learner team</developmentTeam>
+						<!-- the changes filtered source changes file -->
+						<xmlPath>${basedir}/etc/changes.xml</xmlPath>
+						<templateDirectory>etc/templates</templateDirectory>
+						<issueManagementSystems>
+							<issueManagementSystem>changes.xml</issueManagementSystem>
+						</issueManagementSystems>
+					</configuration>
+					<executions>
+						<execution>
+							<!-- checking if the changes file is well-formed -->
+							<id>check-changes</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>changes-check</goal>
+							</goals>
+						</execution>
+						<execution>
+							<!-- generating of the Changes.txt file -->
+							<id>generate-changes-file</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>Changes.txt</announcementFile>
+								<template>changes.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- generation of the e-mail announcement message announcement.txt -->
+							<id>generate-email-announcement</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>announcement.txt</announcementFile>
+								<template>announcement.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.6</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>attached</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											xmlbeans-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.3.3,)
+										</versionRange>
+										<goals>
+											<goal>xmlbeans</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											javacc-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.6,)
+										</versionRange>
+										<goals>
+											<goal>javacc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<!--<plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId>
+			<executions> <execution> <id>stage-for-scm-publish</id> <phase>post-site</phase>
+			<goals> <goal>stage</goal> </goals> <configuration> <skipDeploy>false</skipDeploy>&lt;!&ndash;
+			MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
+			</configuration> </execution> </executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-scm-publish-plugin</artifactId> <version>1.1</version>
+			<executions> <execution> <id>scm-publish</id> <phase>site-deploy</phase>
+			<goals> <goal>publish-scm</goal> </goals> </execution> </executions> </plugin>
+			</plugins> -->
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+	</dependencies>
 
-    <dependencyManagement>
-        <!-- - Dependency Management defines the dependencies at the parent level
-            - These set the dependencies on a global level and the children are forced
-            to use the defined version - We do this to ensure consistent dependencies
-            amongst all children artifacts that are generated by this pom. - - Children
-            still have to include the dependency, but only the groupId and artifactId
-            as version is retrieved from the parent. - - Remember, default scope is compile
-            in Maven. -->
-        <dependencies>
+	<dependencyManagement>
+		<!-- - Dependency Management defines the dependencies at the parent level
+			- These set the dependencies on a global level and the children are forced
+			to use the defined version - We do this to ensure consistent dependencies
+			amongst all children artifacts that are generated by this pom. - - Children
+			still have to include the dependency, but only the groupId and artifactId
+			as version is retrieved from the parent. - - Remember, default scope is compile
+			in Maven. -->
+		<dependencies>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-math3</artifactId>
-                <version>3.6.1</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-distribution</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-reasoner</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-debugging</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-util</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-api</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-apibinding</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapi-impl</artifactId>
-                <version>${owlapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>owlapitools-concurrentimpl</artifactId>
-                <version>4.1.0</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-math3</artifactId>
+				<version>3.6.1</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-distribution</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-reasoner</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-debugging</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-util</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-api</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-apibinding</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-impl</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapitools-concurrentimpl</artifactId>
+				<version>4.1.0</version>
+			</dependency>
 
-            <!-- OWL API compatible reasoners -->
-            <!-- Pellet -->
-            <!-- orignal groupId: com.clarkparsia.pellet -->
-            <dependency>
-                <groupId>com.clarkparsia.pellet</groupId>
-                <artifactId>pellet-distribution</artifactId>
-                <version>${pellet.version}</version>
-                <type>pom</type>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.clarkparsia.pellet</groupId>
-                        <artifactId>pellet-cli</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.clarkparsia.pellet</groupId>
-                        <artifactId>pellet-examples</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.clarkparsia.pellet</groupId>
-                        <artifactId>pellet-test</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <!-- Trowl - no support for OWL API v4 yet -->
-            <!--<dependency> -->
-            <!--<groupId>eu.trowl</groupId> -->
-            <!--<artifactId>trowl-core</artifactId> -->
-            <!--<version>1.5.0</version> -->
-            <!--</dependency> -->
-            <!-- ELK -->
-            <dependency>
-                <groupId>org.semanticweb.elk</groupId>
-                <artifactId>elk-owlapi</artifactId>
-                <version>0.4.3-dllearner</version>
-            </dependency>
-            <!-- JFact -->
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>jfact</artifactId>
-                <version>4.0.3</version>
-            </dependency>
-            <!-- HermiT (OWL API v4 fork) -->
-            <dependency>
-                <groupId>net.sourceforge.owlapi</groupId>
-                <artifactId>org.semanticweb.hermit</artifactId>
-                <version>1.3.8.413</version>
-            </dependency>
-            <!-- Fact++ -->
-            <dependency>
-                <groupId>com.google.code.factplusplus</groupId>
-                <artifactId>factpp-owlapi</artifactId>
-                <version>1.6.2</version>
-            </dependency>
-            <!-- OWLlink -->
-            <dependency>
-                <groupId>net.sourceforge.owlapi.owllink</groupId>
-                <artifactId>owllink</artifactId>
-                <version>1.2.2</version>
-            </dependency>
+			<!-- OWL API compatible reasoners -->
+			<!-- Pellet -->
+			<!-- orignal groupId: com.clarkparsia.pellet -->
+			<dependency>
+				<groupId>com.clarkparsia.pellet</groupId>
+				<artifactId>pellet-distribution</artifactId>
+				<version>${pellet.version}</version>
+				<type>pom</type>
+				<exclusions>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-cli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-examples</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-test</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- Trowl - no support for OWL API v4 yet -->
+			<!--<dependency> -->
+			<!--<groupId>eu.trowl</groupId> -->
+			<!--<artifactId>trowl-core</artifactId> -->
+			<!--<version>1.5.0</version> -->
+			<!--</dependency> -->
+			<!-- ELK -->
+			<dependency>
+				<groupId>org.semanticweb.elk</groupId>
+				<artifactId>elk-owlapi</artifactId>
+				<version>0.4.3-dllearner</version>
+			</dependency>
+			<!-- JFact -->
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>jfact</artifactId>
+				<version>4.0.3</version>
+			</dependency>
+			<!-- HermiT (OWL API v4 fork) -->
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>org.semanticweb.hermit</artifactId>
+				<version>1.3.8.413</version>
+			</dependency>
+			<!-- Fact++ -->
+			<dependency>
+				<groupId>com.google.code.factplusplus</groupId>
+				<artifactId>factpp-owlapi</artifactId>
+				<version>1.6.2</version>
+			</dependency>
+			<!-- OWLlink -->
+			<dependency>
+				<groupId>net.sourceforge.owlapi.owllink</groupId>
+				<artifactId>owllink</artifactId>
+				<version>1.2.2</version>
+			</dependency>
 
-            <!-- SOLR Dependency -->
-            <dependency>
-                <groupId>org.apache.solr</groupId>
-                <artifactId>solr-core</artifactId>
-                <version>${solr.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-jdk14</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+			<!-- SOLR Dependency -->
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-core</artifactId>
+				<version>${solr.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-jdk14</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
-            <!-- <dependency> <groupId>org.nlp2rdf</groupId> <artifactId>nif</artifactId>
-                <version>1.1-SNAPSHOT</version> <exclusions> <exclusion> <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId> </exclusion> </exclusions> </dependency> -->
+			<!-- <dependency> <groupId>org.nlp2rdf</groupId> <artifactId>nif</artifactId>
+				<version>1.1-SNAPSHOT</version> <exclusions> <exclusion> <groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId> </exclusion> </exclusions> </dependency> -->
 
-            <!--Available via central, we use the latest with minor mods to DL Learner
-                source (IE Dig related code) -->
+			<!--Available via central, we use the latest with minor mods to DL Learner
+				source (IE Dig related code) -->
 
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>20160810</version>
-            </dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20160810</version>
+			</dependency>
 
-            <!--Used in NKE interfaces for now -->
-            <dependency>
-                <groupId>com.googlecode.json-simple</groupId>
-                <artifactId>json-simple</artifactId>
-                <version>1.1.1</version>
-            </dependency>
+			<!--Used in NKE interfaces for now -->
+			<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>1.1.1</version>
+			</dependency>
 
-            <dependency>
-                <groupId>net.sf.jopt-simple</groupId>
-                <artifactId>jopt-simple</artifactId>
-                <version>5.0.3</version>
-            </dependency>
+			<dependency>
+				<groupId>net.sf.jopt-simple</groupId>
+				<artifactId>jopt-simple</artifactId>
+				<version>5.0.3</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-core</artifactId>
-                <version>${solr.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-analyzers-common</artifactId>
-                <version>${solr.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-queryparser</artifactId>
-                <version>${solr.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-core</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-common</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.ini4j</groupId>
-                <artifactId>ini4j</artifactId>
-                <version>0.5.4</version>
-            </dependency>
+			<dependency>
+				<groupId>org.ini4j</groupId>
+				<artifactId>ini4j</artifactId>
+				<version>0.5.4</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.xmlbeans</groupId>
-                <artifactId>xmlbeans</artifactId>
-                <version>2.6.0</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.xmlbeans</groupId>
+				<artifactId>xmlbeans</artifactId>
+				<version>2.6.0</version>
+			</dependency>
 
-            <dependency>
-                <groupId>com.jamonapi</groupId>
-                <artifactId>jamon</artifactId>
-                <version>2.81</version>
-            </dependency>
+			<dependency>
+				<groupId>com.jamonapi</groupId>
+				<artifactId>jamon</artifactId>
+				<version>2.81</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>2.4.2</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-pool2</artifactId>
+				<version>2.4.2</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>1.10</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.10</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.aksw.jena-sparql-api</groupId>
-                <artifactId>jena-sparql-api-core</artifactId>
-                <version>${jena.sparql.api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.aksw.jena-sparql-api</groupId>
-                <artifactId>jena-sparql-api-cache-h2</artifactId>
-                <version>${jena.sparql.api.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.aksw.jena-sparql-api</groupId>
+				<artifactId>jena-sparql-api-core</artifactId>
+				<version>${jena.sparql.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aksw.jena-sparql-api</groupId>
+				<artifactId>jena-sparql-api-cache-h2</artifactId>
+				<version>${jena.sparql.api.version}</version>
+			</dependency>
 
-            <!--Junits -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
-                <scope>test</scope>
-            </dependency>
+			<!--Junits -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
 
-            <!--Dependencies that are generated as part of this parent pom -->
-            <dependency>
-                <groupId>org.dllearner</groupId>
-                <artifactId>components-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<!--Dependencies that are generated as part of this parent pom -->
+			<dependency>
+				<groupId>org.dllearner</groupId>
+				<artifactId>components-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <!--This is the jar of the tests from components-core -->
-            <dependency>
-                <groupId>org.dllearner</groupId>
-                <artifactId>components-core</artifactId>
-                <version>${project.version}</version>
-                <classifier>tests</classifier>
-            </dependency>
+			<!--This is the jar of the tests from components-core -->
+			<dependency>
+				<groupId>org.dllearner</groupId>
+				<artifactId>components-core</artifactId>
+				<version>${project.version}</version>
+				<classifier>tests</classifier>
+			</dependency>
 
-            <dependency>
-                <groupId>org.dllearner</groupId>
-                <artifactId>components-ext</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.dllearner</groupId>
+				<artifactId>components-ext</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.dllearner</groupId>
-                <artifactId>interfaces</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.dllearner</groupId>
+				<artifactId>interfaces</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>net.sourceforge.secondstring</groupId>
-                <artifactId>secondstring</artifactId>
-                <version>20060615</version>
-            </dependency>
+			<dependency>
+				<groupId>net.sourceforge.secondstring</groupId>
+				<artifactId>secondstring</artifactId>
+				<version>20060615</version>
+			</dependency>
 
-            <dependency>
-                <groupId>com.jgoodies</groupId>
-                <artifactId>looks</artifactId>
-                <version>2.2.2</version>
-            </dependency>
+			<dependency>
+				<groupId>com.jgoodies</groupId>
+				<artifactId>looks</artifactId>
+				<version>2.2.2</version>
+			</dependency>
 
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>1.4.192</version>
-            </dependency>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>1.4.192</version>
+			</dependency>
 
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>6.0.4</version>
-            </dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>6.0.4</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>9.4.1211</version>
-            </dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.4.1211</version>
+			</dependency>
 
-            <dependency>
-                <groupId>nz.ac.waikato.cms.weka</groupId>
-                <artifactId>weka-dev</artifactId>
-                <version>3.7.13</version>
-            </dependency>
+			<dependency>
+				<groupId>nz.ac.waikato.cms.weka</groupId>
+				<artifactId>weka-dev</artifactId>
+				<version>3.7.13</version>
+			</dependency>
 
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>19.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dumontierlab</groupId>
-                <artifactId>pdb2rdf-parser</artifactId>
-                <version>0.0.8</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <!--This pom is including a modified version of Jena that is out of
-                        sync with what we're using -->
-                    <exclusion>
-                        <groupId>com.hp.hpl.jena</groupId>
-                        <artifactId>jena</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.dumontierlab</groupId>
-                <artifactId>pdb2rdf-cli</artifactId>
-                <version>0.0.9</version>
-            </dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>19.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dumontierlab</groupId>
+				<artifactId>pdb2rdf-parser</artifactId>
+				<version>0.0.8</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<!--This pom is including a modified version of Jena that is out of
+						sync with what we're using -->
+					<exclusion>
+						<groupId>com.hp.hpl.jena</groupId>
+						<artifactId>jena</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.dumontierlab</groupId>
+				<artifactId>pdb2rdf-cli</artifactId>
+				<version>0.0.9</version>
+			</dependency>
 
-            <!--used in the webservice in interfaces -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.4</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jsp-api</artifactId>
-                <version>2.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>1.0.3</version>
-                <scope>provided</scope>
-            </dependency>
+			<!--used in the webservice in interfaces -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jsp-api</artifactId>
+				<version>2.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>1.0.3</version>
+				<scope>provided</scope>
+			</dependency>
 
-            <!-- Spring -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
+			<!-- Spring -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
 
-            <!--BEGIN Logging Dependencies -->
+			<!--BEGIN Logging Dependencies -->
 
-            <!--This is the api jar, it's needed at compile time -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+			<!--This is the api jar, it's needed at compile time -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
 
-            <!--This is the bridge that ties calls from the slf4j api to the log4j
-                framework. This is a runtime dependency for programs which wish to use log4j
-                as their implementation. -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+			<!--This is the bridge that ties calls from the slf4j api to the log4j
+				framework. This is a runtime dependency for programs which wish to use log4j
+				as their implementation. -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
 
-            <!-- This is the concrete implementation of the log4j framework - it is
-                a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
+			<!-- This is the concrete implementation of the log4j framework - it is
+				a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
 
-            <!--Bridge from JCL to SLF4J. Then we go from SLF4J to our desired logging
-                framework (which for DL-Learner interfaces is Log4J). - JCL is in use by
-                Spring and so this lets us control the output from the Spring libraries in
-                the same way we control anything else. - This is also a runtime dependency. -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <!--END Logging Dependencies -->
+			<!--Bridge from JCL to SLF4J. Then we go from SLF4J to our desired logging
+				framework (which for DL-Learner interfaces is Log4J). - JCL is in use by
+				Spring and so this lets us control the output from the Spring libraries in
+				the same way we control anything else. - This is also a runtime dependency. -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<!--END Logging Dependencies -->
 
-            <!--Explicit xml-api dependency so we can update xerces -->
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>1.4.01</version>
-            </dependency>
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.11.0</version>
-            </dependency>
+			<!--Explicit xml-api dependency so we can update xerces -->
+			<dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.4.01</version>
+			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.11.0</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.4</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.4</version>
+			</dependency>
 
-            <dependency>
-                <groupId>gurobi</groupId>
-                <artifactId>gurobi</artifactId>
-                <version>5.0.1</version>
-            </dependency>
+			<dependency>
+				<groupId>gurobi</groupId>
+				<artifactId>gurobi</artifactId>
+				<version>5.0.1</version>
+			</dependency>
 
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>2.9.4</version>
-            </dependency>
-            <dependency>
-                <groupId>edu.berkeley.compbio</groupId>
-                <artifactId>jlibsvm</artifactId>
-                <version>0.911</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>google-collections</artifactId>
-                        <groupId>com.google.collections</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.aksw</groupId>
-                <artifactId>semlibsvm</artifactId>
-                <version>3.20</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.9.4</version>
+			</dependency>
+			<dependency>
+				<groupId>edu.berkeley.compbio</groupId>
+				<artifactId>jlibsvm</artifactId>
+				<version>0.911</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>google-collections</artifactId>
+						<groupId>com.google.collections</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.aksw</groupId>
+				<artifactId>semlibsvm</artifactId>
+				<version>3.20</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>maven.aksw.internal</id>
-            <name>University Leipzig, AKSW Maven2 Repository</name>
-            <url>http://maven.aksw.org/repository/internal</url>
-            <releases />
-        </repository>
-        <repository>
-            <id>maven.aksw.snapshots</id>
-            <name>University Leipzig, AKSW Maven2 Repository</name>
-            <url>http://maven.aksw.org/repository/snapshots</url>
-            <snapshots />
-        </repository>
-        <repository>
-            <id>davidsoergel.releases</id>
-            <name>David Soergel's Maven Repository</name>
-            <url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>maven.aksw.internal</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/repository/internal</url>
+			<releases />
+		</repository>
+		<repository>
+			<id>maven.aksw.snapshots</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/repository/snapshots</url>
+			<snapshots />
+		</repository>
+		<repository>
+			<id>davidsoergel.releases</id>
+			<name>David Soergel's Maven Repository</name>
+			<url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
+		</repository>
+	</repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>maven.aksw.internal</id>
-            <name>AKSW Internal Release Repository</name>
-            <url>http://maven.aksw.org/archiva/repository/internal</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven.aksw.snapshots</id>
-            <name>AKSW Snapshot Repository</name>
-            <url>http://maven.aksw.org/archiva/repository/snapshots</url>
-        </snapshotRepository>
-        <!-- start - location where site is deployed - username/password for site.deployments
-            in server.xml -->
-        <site>
-            <id>site.deployments</id>
-            <name>Site deployments</name>
-            <url>scp://[2001:638:902:2010:0:168:35:165]/site</url>
-        </site>
-        <!-- end - location where site is deployed - username/password for site.deployments
-            in server.xml -->
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>maven.aksw.internal</id>
+			<name>AKSW Internal Release Repository</name>
+			<url>http://maven.aksw.org/archiva/repository/internal</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven.aksw.snapshots</id>
+			<name>AKSW Snapshot Repository</name>
+			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
+		</snapshotRepository>
+		<!-- start - location where site is deployed - username/password for site.deployments
+			in server.xml -->
+		<site>
+			<id>site.deployments</id>
+			<name>Site deployments</name>
+			<url>scp://[2001:638:902:2010:0:168:35:165]/site</url>
+		</site>
+		<!-- end - location where site is deployed - username/password for site.deployments
+			in server.xml -->
+	</distributionManagement>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <show>public</show>
-                    <!--aggregate>true</aggregate -->
-                    <links>
-                        <link>https://docs.oracle.com/javase/8/docs/api/</link>
-                    </links>
-                    <maxmemory>2g</maxmemory>
-                    <minmemory>128m</minmemory>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<show>public</show>
+					<!--aggregate>true</aggregate -->
+					<links>
+						<link>https://docs.oracle.com/javase/8/docs/api/</link>
+					</links>
+					<maxmemory>2g</maxmemory>
+					<minmemory>128m</minmemory>
 
-                    <header></header>
-                    <show>public</show>
-                    <nohelp>true</nohelp>
-                    <destDir>doc/javadoc</destDir>
-                    <doctitle>DL-Learner Javadoc</doctitle>
-                    <author>true</author>
-                    <nodeprecated>false</nodeprecated>
-                    <nodeprecatedlist>false</nodeprecatedlist>
-                    <noindex>false</noindex>
-                    <nonavbar>false</nonavbar>
-                    <notree>false</notree>
-                    <overview>src/etc/overview.html</overview>
-                    <source>${compiler.version}</source>
-                    <sourcepath>src/main/java</sourcepath>
-                    <splitindex>true</splitindex>
-                    <stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
-                    <use>true</use>
-                    <version>true</version>
-                    <linksource>true</linksource>
-                    <bottom>&lt;img style='float:right'
-                        src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
-                        border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
-                        under the terms of the GNU General Public License.&lt;br
-                        /&gt;Copyright &amp;#169; 2007-2016 Jens Lehmann</bottom>
-                    <encoding>ISO-8859-1</encoding>
-                    <windowtitle>DL-Learner Javadoc</windowtitle>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-changes-plugin</artifactId>
-                <version>2.12</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>github-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
+					<header></header>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>${compiler.version}</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right'
+						src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
+						border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
+						under the terms of the GNU General Public License.&lt;br
+						/&gt;Copyright &amp;#169; 2007-2016 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.12</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>github-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/AKSW/DL-Learner/issues</url>
-    </issueManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/AKSW/DL-Learner/issues</url>
+	</issueManagement>
 
-    <mailingLists>
-        <mailingList>
-            <name>DL-Learner discussion</name>
-            <subscribe>https://lists.sourceforge.net/lists/listinfo/dl-learner-discussion</subscribe>
-            <archive>http://sourceforge.net/p/dl-learner/mailman/dl-learner-discussion/</archive>
-        </mailingList>
-    </mailingLists>
+	<mailingLists>
+		<mailingList>
+			<name>DL-Learner discussion</name>
+			<subscribe>https://lists.sourceforge.net/lists/listinfo/dl-learner-discussion</subscribe>
+			<archive>http://sourceforge.net/p/dl-learner/mailman/dl-learner-discussion/</archive>
+		</mailingList>
+	</mailingLists>
 
-    <profiles>
-        <profile>
-            <id>hudson_build</id>
-            <build>
-                <plugins>
-                    <!--JAR the Sources -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- these actions will be activated only when staging a release -->
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- sign released artifacts using PGP, required by maven central -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- generate javadocs, required by maven central -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <links>
-                                <link>https://docs.oracle.com/javase/8/docs/api/</link>
-                            </links>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <maxmemory>512m</maxmemory>
-                                    <minmemory>128m</minmemory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<id>hudson_build</id>
+			<build>
+				<plugins>
+					<!--JAR the Sources -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- these actions will be activated only when staging a release -->
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<!-- sign released artifacts using PGP, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- generate javadocs, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<links>
+								<link>https://docs.oracle.com/javase/8/docs/api/</link>
+							</links>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<maxmemory>512m</maxmemory>
+									<minmemory>128m</minmemory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
