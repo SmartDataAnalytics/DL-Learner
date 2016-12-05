@@ -68,7 +68,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
 	
-	protected NumberFormat format = DecimalFormat.getPercentInstance();
+	protected NumberFormat format = DecimalFormat.getPercentInstance(Locale.ROOT);
 	
 	@ConfigOption(defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
