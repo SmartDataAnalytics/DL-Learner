@@ -62,7 +62,7 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
         QueryResult result = bundle.computeQuery(axiom);
         return new OWLProbExplanationReasonerResult(
                 axiom,
-                result.getQueryProbability().doubleValue(),
+                result.getQueryProbability().getValue(),
                 GeneralUtils.safe(result.getExplanations()));
     }
     

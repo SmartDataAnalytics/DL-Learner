@@ -21,7 +21,6 @@ package org.dllearner.core.probabilistic.unife;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 import org.dllearner.core.AbstractLearningProblem;
@@ -32,6 +31,7 @@ import org.dllearner.core.StoppableLearningAlgorithm;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.springframework.beans.factory.annotation.Autowired;
+import unife.core.ApproxDouble;
 
 /**
  * Abstract component representing a parameter Learner. A parameter learner
@@ -103,7 +103,7 @@ public abstract class AbstractParameterLearningAlgorithm implements ParameterLea
      * @param ax
      * @return the probabilistic parameter of the axiom
      */
-    public abstract BigDecimal getParameter(OWLAxiom ax) throws ParameterLearningException;
+    public abstract ApproxDouble getParameter(OWLAxiom ax) throws ParameterLearningException;
 
     /**
      * Gets the map of the time in milliseconds spent by various algorithms.

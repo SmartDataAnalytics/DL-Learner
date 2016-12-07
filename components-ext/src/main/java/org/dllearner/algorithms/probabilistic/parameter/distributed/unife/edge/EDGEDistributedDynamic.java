@@ -5,7 +5,6 @@
  */
 package org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import unife.bundle.logging.BundleLoggerFactory;
+import unife.core.ApproxDouble;
 import unife.edge.EDGEMPIDynamic;
 
 /**
@@ -137,8 +137,8 @@ public class EDGEDistributedDynamic extends AbstractEDGEDistributed {
 //    }
 
     @Override
-    public BigDecimal getParameter(OWLAxiom ax) {
-        BigDecimal parameter = super.getParameter(ax);
+    public ApproxDouble getParameter(OWLAxiom ax) {
+        ApproxDouble parameter = super.getParameter(ax);
         if (parameter == null) {
             String msg = "the given axiom: " + ax.getAxiomWithoutAnnotations() + " is not probabilistic or does not exist";
             logger.warn(msg);

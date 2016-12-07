@@ -8,10 +8,10 @@ package org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import unife.core.ApproxDouble;
 
 /**
  *
@@ -26,10 +26,10 @@ class Revision implements Comparable<Revision>, Serializable {
 
     private List<Boolean> boolVars;
 
-    private BigDecimal LL;
+    private ApproxDouble LL;
 
     public Revision(LinkedHashSet<OWLAxiom> targetAxioms, List<Boolean> boolVars,
-            Set<OWLSubClassOfAxiom> learnedAxioms, BigDecimal LL) {
+            Set<OWLSubClassOfAxiom> learnedAxioms, ApproxDouble LL) {
         this.targetAxioms = targetAxioms;
         this.boolVars = boolVars;
         this.learnedAxioms = learnedAxioms;
@@ -39,11 +39,11 @@ class Revision implements Comparable<Revision>, Serializable {
     public Revision(LinkedHashSet<OWLAxiom> targetAxioms, List<Boolean> boolVars) {
         this.targetAxioms = targetAxioms;
         this.boolVars = boolVars;
-        this.LL = new BigDecimal(Long.MIN_VALUE);
+        this.LL = new ApproxDouble(Double.MIN_VALUE);
     }
     
     public Revision() {
-        this.LL = new BigDecimal(Long.MIN_VALUE);
+        this.LL = new ApproxDouble(Double.MIN_VALUE);
     }
 
     /**
@@ -81,14 +81,14 @@ class Revision implements Comparable<Revision>, Serializable {
     /**
      * @return the LL
      */
-    public BigDecimal getLL() {
+    public ApproxDouble getLL() {
         return LL;
     }
 
     /**
      * @param LL the LL to set
      */
-    public void setLL(BigDecimal LL) {
+    public void setLL(ApproxDouble LL) {
         this.LL = LL;
     }
 

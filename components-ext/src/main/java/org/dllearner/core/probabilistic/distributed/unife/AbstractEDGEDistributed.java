@@ -5,7 +5,6 @@
  */
 package org.dllearner.core.probabilistic.distributed.unife;
 
-import java.math.BigDecimal;
 import mpi.Intracomm;
 import mpi.MPI;
 import org.dllearner.core.ComponentInitException;

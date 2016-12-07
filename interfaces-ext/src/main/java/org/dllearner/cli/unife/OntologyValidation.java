@@ -48,16 +48,18 @@ public class OntologyValidation extends CLIBase2 {
     //private ParameterLearningAlgorithm pla;
     //private OWLOntology learnedOntology;
     //private OWLOntology initialOntology;
-    @Autowired
+//    @Autowired
     private LearningProblem lp;
 
-    @Autowired
+//    @Autowired
     private OWLProbabilisticReasoner reasoner;
 
     @ConfigOption(description = "learned class", required = true)
     private OWLClass classExpression;
 
-    private String outputFile;
+    @ConfigOption(description = "output file containing the probabilistic results",
+            required = false)
+    private String outputFile = "validateResult.prop";
 
     @Override
     public void init() throws IOException {
@@ -157,6 +159,22 @@ public class OntologyValidation extends CLIBase2 {
      */
     public void setClassExpression(OWLClass classExpression) {
         this.classExpression = classExpression;
+    }
+
+    /**
+     * @param reasoner the reasoner to set
+     */
+    @Autowired
+    public void setReasoner(OWLProbabilisticReasoner reasoner) {
+        this.reasoner = reasoner;
+    }
+
+    /**
+     * @param lp the lp to set
+     */
+    @Autowired
+    public void setLp(LearningProblem lp) {
+        this.lp = lp;
     }
 
 }

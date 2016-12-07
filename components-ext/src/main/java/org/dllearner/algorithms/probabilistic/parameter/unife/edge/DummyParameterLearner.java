@@ -5,7 +5,6 @@
  */
 package org.dllearner.algorithms.probabilistic.parameter.unife.edge;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +38,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import unife.bundle.utilities.BundleUtilities;
 import static unife.bundle.utilities.BundleUtilities.getManchesterSyntaxString;
+import unife.core.ApproxDouble;
 import unife.edge.utilities.EDGEUtilities;
 import unife.exception.IllegalValueException;
 import unife.math.utilities.MathUtilities;
@@ -60,7 +60,7 @@ public class DummyParameterLearner extends AbstractEDGE {
     private static Logger logger
             = Logger.getLogger(DummyParameterLearner.class.getName());
 
-    Map<OWLAxiom, BigDecimal> pMap;
+    Map<OWLAxiom, ApproxDouble> pMap;
 
     public DummyParameterLearner() {
 
@@ -75,8 +75,8 @@ public class DummyParameterLearner extends AbstractEDGE {
      *
      * @return the log-likelihood of all the examples/queries
      */
-    public BigDecimal getLL() {
-        return new BigDecimal(0);
+    public ApproxDouble getLL() {
+        return ApproxDouble.getZero();
     }
 
     @Override
@@ -100,9 +100,9 @@ public class DummyParameterLearner extends AbstractEDGE {
     }
 
     @Override
-    public BigDecimal getParameter(OWLAxiom ax) throws ParameterLearningException {
+    public ApproxDouble getParameter(OWLAxiom ax) throws ParameterLearningException {
 
-        BigDecimal parameter;
+        ApproxDouble parameter;
         for (OWLAxiom axiom : pMap.keySet()) {
             if (axiom.equalsIgnoreAnnotations(ax)) {
                 parameter = pMap.get(axiom);
@@ -137,7 +137,7 @@ public class DummyParameterLearner extends AbstractEDGE {
 
                     owlManager.removeAxiom(sourcesOntology, ax);
 
-                    axAnnotations.add(owlFactory.getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, owlFactory.getOWLLiteral(pMap.get(pax).doubleValue())));
+                    axAnnotations.add(owlFactory.getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, owlFactory.getOWLLiteral(pMap.get(pax).getValue())));
                     owlManager.addAxiom(sourcesOntology, pax.getAnnotatedAxiom(axAnnotations));
                     //ontologyAxioms.remove(pax);
                     break;
@@ -165,8 +165,8 @@ public class DummyParameterLearner extends AbstractEDGE {
         stop = false;
     }
 
-    public BigDecimal getLOGZERO() {
-        return new BigDecimal(Math.log(0.000001)).setScale(accuracy, RoundingMode.HALF_UP);
+    public ApproxDouble getLOGZERO() {
+        return new ApproxDouble(Math.log(0.000001));
     }
 
     @Override
@@ -186,7 +186,7 @@ public class DummyParameterLearner extends AbstractEDGE {
         }
 
         for (OWLAxiom axiom : axioms) {
-            List<BigDecimal> probList = new ArrayList<>();
+            List<ApproxDouble> probList = new ArrayList<>();
             String axiomName = getManchesterSyntaxString(axiom);
 
             if (probabilizeAll) {
@@ -196,7 +196,7 @@ public class DummyParameterLearner extends AbstractEDGE {
                 } else {
                     probValue = fixedProbability;
                 }
-                probList.add(MathUtilities.getBigDecimal(probValue, accuracy));
+                probList.add(new ApproxDouble(probValue));
 
             } else {
 
@@ -205,12 +205,12 @@ public class DummyParameterLearner extends AbstractEDGE {
                     // metodo per aggiungere coppia assioma/probabilita alla Map
                     if (annotation.getValue() != null) {
 
-                        BigDecimal annProbability;
+                        ApproxDouble annProbability;
                         if (randomize) {
-                            annProbability = MathUtilities.getBigDecimal(probGenerator.nextDouble(), accuracy);
+                            annProbability = new ApproxDouble(probGenerator.nextDouble());
                             probList.add(annProbability);
                         } else {
-                            annProbability = MathUtilities.getBigDecimal(fixedProbability, accuracy);
+                            annProbability = new ApproxDouble(fixedProbability);
                             probList.add(annProbability);
                         }
                         if (showAll) {
@@ -224,13 +224,14 @@ public class DummyParameterLearner extends AbstractEDGE {
             }
             if (probList.size() > 0) {
                 OWLAxiom pMapAxiom = axiom.getAxiomWithoutAnnotations();
-                BigDecimal varProbTemp = MathUtilities.getBigDecimal("0", accuracy);
+                ApproxDouble varProbTemp = ApproxDouble.getZero();
                 if (pMap.containsKey(pMapAxiom)) {
                     varProbTemp = pMap.get(pMapAxiom);
                 }
-                for (BigDecimal ithProb : probList) {
-                    BigDecimal mul = varProbTemp.multiply(ithProb).setScale(accuracy, RoundingMode.HALF_UP);
-                    varProbTemp = varProbTemp.add(ithProb).subtract(mul);
+                for (ApproxDouble ithProb : probList) {
+                    ApproxDouble mul = varProbTemp.multiply(ithProb);
+//                    varProbTemp = varProbTemp._add(ithProb)._subtract(mul);
+                    varProbTemp._add(ithProb)._subtract(mul);
                 }
                 pMap.put(pMapAxiom, varProbTemp);
             }
@@ -243,10 +244,10 @@ public class DummyParameterLearner extends AbstractEDGE {
         }
 
         if (pMap.size() > 0) {
-//            System.out.println("Probability Map computed. Size: " + pMap.size());
+//            System.out.println("ApproxDouble Map computed. Size: " + pMap.size());
             logger.info("Probability Map computed. Size: " + pMap.size());
         } else {
-//            System.out.println("Probability Map computed. Size: " + pMap.size());
+//            System.out.println("ApproxDouble Map computed. Size: " + pMap.size());
             logger.info("Probability Map is empty");
         }
 

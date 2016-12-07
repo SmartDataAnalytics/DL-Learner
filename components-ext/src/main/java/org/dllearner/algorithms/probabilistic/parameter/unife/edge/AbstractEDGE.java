@@ -5,7 +5,6 @@
  */
 package org.dllearner.algorithms.probabilistic.parameter.unife.edge;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +23,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.mindswap.pellet.utils.Timers;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import unife.core.ApproxDouble;
 import unife.edge.EDGE;
 import unife.edge.EDGEStat;
 import unife.exception.IllegalValueException;
@@ -34,18 +34,18 @@ import unife.exception.IllegalValueException;
  * <riccardo.zese@unife.it>
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
-
+    
     protected EDGE edge;
-
+    
     public static enum PossibleOutputFormat {
-
+        
         OWLXML,
         OWLFUNCTIONAL
     }
-
+    
     @ConfigOption(description = "seed for random generation", defaultValue = "0")
     protected int seed = 0;
-
+    
     @ConfigOption(description = "randomize the starting probabilities of the probabilistic axioms", defaultValue = "false")
     protected boolean randomize = false;
 
@@ -53,52 +53,52 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     @ConfigOption(description = "make probabilistic all the axioms in the starting probabilistic "
             + "ontology (including non probabilistic ones)", defaultValue = "false")
     protected boolean probabilizeAll = false;
-
+    
     @ConfigOption(description = "stop difference between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double differenceLL = 0.00028;
-
+    
     @ConfigOption(description = "stop ratio between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double ratioLL = 0.00028;
-
+    
     @ConfigOption(description = "maximum number of cycles", defaultValue = "" + Long.MAX_VALUE)
     protected long maxIterations = Long.MAX_VALUE;
-
+    
     @ConfigOption(description = "the maximum number of explanations to find for each query", defaultValue = "" + Integer.MAX_VALUE)
     protected int maxExplanations = Integer.MAX_VALUE;
     // ATTENZIONE EDGE USA IL FORMATO STRING PER TIMEOUT!!!        
     @ConfigOption(description = "max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)", defaultValue = "0s (infinite timeout)")
     protected String timeout = "0s";
-
+    
     @ConfigOption(description = "force the visualization of all results", defaultValue = "false")
     protected boolean showAll = false;
-
+    
     @ConfigOption(description = "format of the output file", defaultValue = "OWLXML")
     protected PossibleOutputFormat outputformat = OWLXML;
-
+    
     @ConfigOption(description = "max number of positive examples that edge must handle when a class learning problem is given", defaultValue = "0 (infinite)")
     protected int maxPositiveExamples = 0;
-
+    
     @ConfigOption(description = "max number of negative examples that edge must handle when a class learning problem is given", defaultValue = "0 (infinite)")
     protected int maxNegativeExamples = 0;
-
+    
     @ConfigOption(description = "accuracy used during the computation of the probabilistic values (number of digital places)", defaultValue = "5")
     protected int accuracy = 5;
-
+    
     @ConfigOption(description = "If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them", defaultValue = "false")
     protected boolean keepParameters = false;
-
+    
     protected Set<OWLAxiom> positiveExampleAxioms;
     protected Set<OWLAxiom> negativeExampleAxioms;
-
+    
     protected EDGEStat results;
 
     // ontology obtained by merging all the sources
     protected OWLOntology sourcesOntology;
-
+    
     public AbstractEDGE() {
-
+        
     }
-
+    
     public AbstractEDGE(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
         super(lp, targetAxioms);
     }
@@ -108,15 +108,14 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
      *
      * @return the log-likelihood of all the examples/queries
      */
-    public BigDecimal getLL() {
+    public ApproxDouble getLL() {
         if (results != null) {
             return results.getLL();
         } else {
-//            return new BigDecimal("-500.04"); // stub
             throw new NullPointerException("EDGE results are NULL");
         }
     }
-
+    
     @Override
     public Map<String, Long> getTimeMap() {
         if (results != null) {
@@ -125,7 +124,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             throw new NullPointerException("EDGE results are NULL");
         }
     }
-
+    
     @Override
     public void init() throws ComponentInitException {
         try {
@@ -140,6 +139,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             edge.setSeed(seed);
             edge.setShowAll(showAll);
             edge.setTimeOut(timeout);
+            edge.LOGZERO = new ApproxDouble(Math.log(1 / Math.pow(10, accuracy)));
             //edge.setTimers(new Timers());
             AbstractReasonerComponent rc = learningProblem.getReasoner();
             if (rc instanceof ClosedWorldReasoner) {
@@ -157,18 +157,18 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             throw new ComponentInitException(rmue);
         }
     }
-
+    
     @Override
-    public BigDecimal getParameter(OWLAxiom ax) throws ParameterLearningException {
-        Map<OWLAxiom, BigDecimal> pMap = edge.getPMap();
-        BigDecimal parameter;
+    public ApproxDouble getParameter(OWLAxiom ax) throws ParameterLearningException {
+        Map<OWLAxiom, ApproxDouble> pMap = edge.getPMap();
+        ApproxDouble parameter;
         for (OWLAxiom axiom : pMap.keySet()) {
             if (axiom.equalsIgnoreAnnotations(ax)) {
                 parameter = pMap.get(axiom);
                 return parameter;
             }
         }
-
+        
         return null;
     }
 
@@ -381,7 +381,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     public void setAccuracy(int accuracy) {
         this.accuracy = accuracy;
     }
-
+    
     public OWLOntology getLearnedOntology() {
         return edge.getLearnedOntology();
     }
@@ -392,22 +392,22 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     public OWLOntology getSourcesOntology() {
         return sourcesOntology;
     }
-
+    
     public void changeSourcesOntology(OWLOntology ontology) {
         sourcesOntology = ontology;
         edge.setOntologies(ontology);
         learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) new OWLAPIOntology(ontology)));
 //        learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) ontology));
     }
-
+    
     public void reset() {
         edge.reset();
         isRunning = false;
         stop = false;
     }
-
-    public BigDecimal getLOGZERO() {
+    
+    public ApproxDouble getLOGZERO() {
         return edge.LOGZERO;
     }
-
+    
 }

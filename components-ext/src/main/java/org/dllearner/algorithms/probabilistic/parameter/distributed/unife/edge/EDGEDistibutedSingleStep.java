@@ -8,6 +8,9 @@ package org.dllearner.algorithms.probabilistic.parameter.distributed.unife.edge;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
+import org.dllearner.core.probabilistic.unife.ParameterLearningException;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import unife.core.ApproxDouble;
 import unife.edge.EDGEMPISingleStep;
 
 /**
@@ -30,6 +33,11 @@ public class EDGEDistibutedSingleStep extends AbstractEDGEDistributed {
 
     @Override
     public void start() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ApproxDouble getParameter(OWLAxiom ax) throws ParameterLearningException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

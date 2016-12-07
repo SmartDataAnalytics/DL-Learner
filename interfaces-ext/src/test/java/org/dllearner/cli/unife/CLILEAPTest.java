@@ -50,7 +50,7 @@ public class CLILEAPTest {
         String[] args = {"../examples/probabilistic/family/run.conf"};
         try {
             CLILEAP.main(args);
-        } catch (ParseException | IOException | ReasoningMethodUnsupportedException e) {
+        } catch (RuntimeException| ParseException | IOException | ReasoningMethodUnsupportedException e) {
             fail();
         }
     }
@@ -69,7 +69,6 @@ public class CLILEAPTest {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/premierleague/run.conf"};
         CLILEAP.main(args);
-        // TODO review the generated test code and remove the default call to fail.
         assertTrue(true);
     }
 

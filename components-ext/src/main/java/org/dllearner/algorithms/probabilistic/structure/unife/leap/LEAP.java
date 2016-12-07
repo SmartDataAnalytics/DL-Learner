@@ -1,6 +1,5 @@
 package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,7 +32,39 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
+import unife.core.ApproxDouble;
 import unife.math.utilities.MathUtilities;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
 import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
@@ -156,15 +187,11 @@ public class LEAP extends AbstractLEAP {
      * @return the set of axioms added in the knowledge base.
      */
     private Set<OWLAxiom> greedySearch(List<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
-        BigDecimal bestLL;
+        ApproxDouble bestLL;
         if (edge instanceof AbstractEDGE) {
-            bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(
-                    new BigDecimal(edge.getPositiveExampleAxioms().size()));
-            bestLL = bestLL.setScale(accuracy, RoundingMode.HALF_UP);
+            bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(new ApproxDouble((double) edge.getPositiveExampleAxioms().size()));
         } else {
-            bestLL = BigDecimal.ZERO.multiply(
-                    new BigDecimal(edge.getPositiveExampleAxioms().size()));
-            bestLL = bestLL.setScale(accuracy, RoundingMode.HALF_UP);
+            bestLL = ApproxDouble.getZero()._multiply(new ApproxDouble((double)edge.getPositiveExampleAxioms().size()));
         }
         logger.debug("Initial Log-likelihood: " + bestLL.toString());
 //        BigDecimal bestLL = edge.getLL();
@@ -210,7 +237,7 @@ public class LEAP extends AbstractLEAP {
                 }
                 logger.info("Running parameter learner");
                 edge.start();
-                BigDecimal currLL = edge.getLL();
+                ApproxDouble currLL = edge.getLL();
                 logger.info("Current Log-Likelihood: " + currLL);
                 if (getClassAxiomType().equalsIgnoreCase("both")) {
                     // Not supported yet
@@ -259,17 +286,16 @@ public class LEAP extends AbstractLEAP {
 
                         OWLAnnotation annotation = df.
                                 getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY,
-                                        df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
+                                        df.getOWLLiteral(edge.getParameter(axiom).getValue()));
 
                         if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
                             updatedAxiom = df.getOWLSubClassOfAxiom(
                                     ((OWLSubClassOfAxiom) axiom).getSubClass(),
                                     ((OWLSubClassOfAxiom) axiom).getSuperClass(),
                                     Collections.singleton(annotation));
-                        } else {
-                            if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+                        } else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 
-                                // I have to remove the subsumption a
+                            // I have to remove the subsumption a
 //                        for (OWLClass subClass : ((OWLEquivalentClassesAxiom) axiom).getNamedClasses()) {
 //                            if (subClass.compareTo(getDummyClass()) != 0) {
 ////                                subClass = c;
@@ -286,13 +312,12 @@ public class LEAP extends AbstractLEAP {
 //                                break;
 //                            }
 //                        }
-                                updatedAxiom = df.getOWLEquivalentClassesAxiom(
-                                        ((OWLEquivalentClassesAxiom) axiom).getClassExpressions(),
-                                        Collections.singleton(annotation));
-                            } else {
-                                throw new UnsupportedLearnedAxiom("The axiom to add is not supported: "
-                                        + BundleUtilities.getManchesterSyntaxString(axiom));
-                            }
+                            updatedAxiom = df.getOWLEquivalentClassesAxiom(
+                                    ((OWLEquivalentClassesAxiom) axiom).getClassExpressions(),
+                                    Collections.singleton(annotation));
+                        } else {
+                            throw new UnsupportedLearnedAxiom("The axiom to add is not supported: "
+                                    + BundleUtilities.getManchesterSyntaxString(axiom));
                         }
                         learnedAxioms.add(updatedAxiom);
                     }

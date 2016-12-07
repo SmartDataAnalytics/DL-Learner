@@ -10,3 +10,4 @@ cache
 log
 *.idea
 *.iml
+/interfaces-ext/nbproject/

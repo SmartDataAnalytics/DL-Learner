@@ -9,7 +9,6 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,6 +56,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.springframework.beans.factory.annotation.Autowired;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
+import unife.core.ApproxDouble;
 import static unife.edge.mpi.EDGEMPIConstants.*;
 import unife.edge.mpi.MPIUtilities;
 import unife.edge.utilities.EDGEUtilities;
@@ -71,17 +71,17 @@ import unife.math.utilities.MathUtilities;
 public class LEAPDistributed extends AbstractPSLA implements DistributedComponent {
 
     @ConfigOption(description = "stop difference between log-likelihood of two consecutive iterations", defaultValue = "0.00001")
-    private BigDecimal differenceLL = MathUtilities.getBigDecimal(0.00001, 5);
+    private ApproxDouble differenceLL = new ApproxDouble(0.00001);
 
-    private BigDecimal currentDifferenceLL;
+    private ApproxDouble currentDifferenceLL;
 
     @ConfigOption(description = "stop ratio between log-likelihood of two consecutive iterations", defaultValue = "0.00001")
-    private BigDecimal ratioLL = MathUtilities.getBigDecimal(0.00001, 5);
+    private ApproxDouble ratioLL = new ApproxDouble(0.00001);
 
-    private BigDecimal currentRatioLL;
+    private ApproxDouble currentRatioLL;
 
     @ConfigOption(description = "maximum number of iterations", defaultValue = "2147000000")
-    private long maxIterations = 2147000000L;
+    private long maxIterations = Long.MAX_VALUE;
 
     private long currentIteration = 0;
 
@@ -321,7 +321,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
                 beamRevisions.add(startRevision);
                 bestRevision = startRevision;
                 currentDifferenceLL = bestRevision.getLL().subtract(previousBestRevision.getLL());
-                currentRatioLL = currentDifferenceLL.divide(previousBestRevision.getLL(), accuracy, BigDecimal.ROUND_HALF_UP);
+                currentRatioLL = currentDifferenceLL.divide(previousBestRevision.getLL());
                 do {
                     //BigDecimal CLL0 = MathUtilities.getBigDecimal(-2.2 * Math.pow(10, 10), edge.getAccuracy());
                     //BigDecimal CLL1 = edge.getLL();
@@ -568,23 +568,23 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
     /**
      * @return the differenceLL
      */
-    public BigDecimal getDifferenceLL() {
+    public ApproxDouble getDifferenceLL() {
         return differenceLL;
     }
 
     public void setDifferenceLL(double differenceLL) {
-        this.differenceLL = MathUtilities.getBigDecimal(differenceLL, accuracy);
+        this.differenceLL = new ApproxDouble(differenceLL);
     }
 
     /**
      * @return the ratioLL
      */
-    public BigDecimal getRatioLL() {
+    public ApproxDouble getRatioLL() {
         return ratioLL;
     }
 
     public void setRatioLL(double ratioLL) {
-        this.ratioLL = MathUtilities.getBigDecimal(ratioLL, accuracy);
+        this.ratioLL = new ApproxDouble(ratioLL);
     }
 
     /**
@@ -783,7 +783,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
     }
 
     private Revision greedySearch(OWLOntology ontology, Revision revision, LinkedHashSet<OWLSubClassOfAxiom> candidateAxioms) {
-        BigDecimal LL0 = edge.getLL(); // da rivedere
+        ApproxDouble LL0 = edge.getLL(); // da rivedere
         logger.debug(myRank + " - Resetting EDGE");
         edge.reset();
         edge.changeSourcesOntology(ontology);
@@ -798,13 +798,13 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
                 logger.info("Axiom added.");
                 logger.info("Running parameter Learner");
                 edge.start();
-                BigDecimal LL1 = edge.getLL();
+                ApproxDouble LL1 = edge.getLL();
                 logger.info("Current Log-Likelihood: " + LL1);
                 if (LL1.compareTo(LL0) > 0) {
                     logger.info("Log-Likelihood enhanced. Updating ontologies...");
                     OWLAnnotation annotation = df.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, 
-                            df.getOWLLiteral(edge.getParameter(axiom).doubleValue()));
+                            df.getOWLLiteral(edge.getParameter(axiom).getValue()));
                     OWLSubClassOfAxiom updatedAxiom = df.getOWLSubClassOfAxiom(axiom.getSubClass(), 
                             axiom.getSuperClass(), Collections.singleton(annotation));
                     learnedAxioms.add(updatedAxiom);
@@ -970,7 +970,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
     private void updateTerminationCriteria() {
         currentIteration++;
         currentDifferenceLL = bestRevision.getLL().subtract(previousBestRevision.getLL());
-        currentRatioLL = currentDifferenceLL.divide(previousBestRevision.getLL(), accuracy, BigDecimal.ROUND_HALF_UP);
+        currentRatioLL = currentDifferenceLL.divide(previousBestRevision.getLL());
     }
 
     private OWLOntology replaceSuperClass(OWLOntology finalOntology, Set<OWLSubClassOfAxiom> learnedAxioms) {

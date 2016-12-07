@@ -20,7 +20,7 @@
         <dependency>
             <groupId>unife</groupId>
             <artifactId>edge</artifactId>
-            <version>3.2</version>
+            <version>3.3.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>${project.groupId}</groupId>
