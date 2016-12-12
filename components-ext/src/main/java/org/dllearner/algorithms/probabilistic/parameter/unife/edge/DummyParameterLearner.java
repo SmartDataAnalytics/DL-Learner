@@ -55,7 +55,7 @@ public class DummyParameterLearner extends AbstractEDGE {
             required = false,
             description = "Value of the fixed probability. All the probabilistic "
             + "axioms will have the same probability")
-    protected double fixedProbability = 0.4;
+    private double fixedProbability = 0.4;
 
     private static Logger logger
             = Logger.getLogger(DummyParameterLearner.class.getName());
@@ -194,7 +194,7 @@ public class DummyParameterLearner extends AbstractEDGE {
                 if (randomize) {
                     probValue = probGenerator.nextDouble();
                 } else {
-                    probValue = fixedProbability;
+                    probValue = getFixedProbability();
                 }
                 probList.add(new ApproxDouble(probValue));
 
@@ -210,7 +210,7 @@ public class DummyParameterLearner extends AbstractEDGE {
                             annProbability = new ApproxDouble(probGenerator.nextDouble());
                             probList.add(annProbability);
                         } else {
-                            annProbability = new ApproxDouble(fixedProbability);
+                            annProbability = new ApproxDouble(getFixedProbability());
                             probList.add(annProbability);
                         }
                         if (showAll) {
@@ -253,6 +253,20 @@ public class DummyParameterLearner extends AbstractEDGE {
 
         isRunning = false;
         stop = true;
+    }
+
+    /**
+     * @return the fixedProbability
+     */
+    public double getFixedProbability() {
+        return fixedProbability;
+    }
+
+    /**
+     * @param fixedProbability the fixedProbability to set
+     */
+    public void setFixedProbability(double fixedProbability) {
+        this.fixedProbability = fixedProbability;
     }
 
 }
