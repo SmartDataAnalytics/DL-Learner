@@ -1,8 +1,6 @@
 package org.dllearner.algorithms.probabilistic.structure.unife.leap;
 
-import java.math.RoundingMode;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import org.dllearner.core.probabilistic.unife.StructureLearningException;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
 
 import org.dllearner.utils.unife.OWLUtils;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -33,38 +30,6 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
 import unife.core.ApproxDouble;
-import unife.math.utilities.MathUtilities;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
-import static unife.utilities.GeneralUtils.safe;
 import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
@@ -191,7 +156,7 @@ public class LEAP extends AbstractLEAP {
         if (edge instanceof AbstractEDGE) {
             bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(new ApproxDouble((double) edge.getPositiveExampleAxioms().size()));
         } else {
-            bestLL = ApproxDouble.getZero()._multiply(new ApproxDouble((double)edge.getPositiveExampleAxioms().size()));
+            bestLL = new ApproxDouble(ApproxDouble.zero())._multiply(new ApproxDouble((double)edge.getPositiveExampleAxioms().size()));
         }
         logger.debug("Initial Log-likelihood: " + bestLL.toString());
 //        BigDecimal bestLL = edge.getLL();

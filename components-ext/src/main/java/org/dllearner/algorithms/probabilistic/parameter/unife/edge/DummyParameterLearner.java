@@ -76,7 +76,7 @@ public class DummyParameterLearner extends AbstractEDGE {
      * @return the log-likelihood of all the examples/queries
      */
     public ApproxDouble getLL() {
-        return ApproxDouble.getZero();
+        return ApproxDouble.zero();
     }
 
     @Override
@@ -224,7 +224,7 @@ public class DummyParameterLearner extends AbstractEDGE {
             }
             if (probList.size() > 0) {
                 OWLAxiom pMapAxiom = axiom.getAxiomWithoutAnnotations();
-                ApproxDouble varProbTemp = ApproxDouble.getZero();
+                ApproxDouble varProbTemp = new ApproxDouble(ApproxDouble.zero());
                 if (pMap.containsKey(pMapAxiom)) {
                     varProbTemp = pMap.get(pMapAxiom);
                 }
