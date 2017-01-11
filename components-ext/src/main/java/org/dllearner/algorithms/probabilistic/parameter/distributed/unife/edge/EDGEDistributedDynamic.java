@@ -16,7 +16,7 @@ import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import unife.bundle.logging.BundleLoggerFactory;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import unife.edge.EDGEMPIDynamic;
 
 /**

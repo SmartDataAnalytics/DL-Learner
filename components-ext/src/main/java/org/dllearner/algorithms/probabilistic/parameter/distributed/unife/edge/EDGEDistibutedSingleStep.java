@@ -10,7 +10,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.probabilistic.distributed.unife.AbstractEDGEDistributed;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import unife.edge.EDGEMPISingleStep;
 
 /**

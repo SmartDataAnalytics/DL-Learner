@@ -38,6 +38,9 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
     @ConfigOption(description = "library used for BDD compilation", defaultValue = "buddy")
     private String bddFType = "buddy";
 
+    @ConfigOption(description = "force the visualization of all results", defaultValue = "false")
+    private boolean showAll = false;
+
     @Override
     public ProbabilisticReasonerType getReasonerType() {
         return ProbabilisticReasonerType.BUNDLE;
@@ -50,6 +53,7 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
         bundle.setMaxExplanations(this.maxExplanations);
         bundle.setMaxTime(this.timeout);
         bundle.setLog(true);
+        bundle.setShowAll(this.showAll);
         bundle.setAccuracy(this.accuracy);
         bundle.loadOntologies(ontology);
         bundle.init();
@@ -65,7 +69,7 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
                 result.getQueryProbability().getValue(),
                 GeneralUtils.safe(result.getExplanations()));
     }
-    
+
     @Override
     public OWLProbReasonerResult computeQuery(OWLAxiom axiom) throws OWLException {
         return computeQueryWithExplanations(axiom);
@@ -97,6 +101,13 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
      */
     public void setBddFType(String bddFType) {
         this.bddFType = bddFType;
+    }
+
+    /**
+     * @param showAll the showAll to set
+     */
+    public void setShowAll(boolean showAll) {
+        this.showAll = showAll;
     }
 
 }

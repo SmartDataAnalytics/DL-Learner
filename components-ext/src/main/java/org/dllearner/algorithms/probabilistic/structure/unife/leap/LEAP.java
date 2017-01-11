@@ -29,7 +29,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)

@@ -31,7 +31,7 @@ import org.dllearner.core.StoppableLearningAlgorithm;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.springframework.beans.factory.annotation.Autowired;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 
 /**
  * Abstract component representing a parameter Learner. A parameter learner

@@ -15,7 +15,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.probabilistic.unife.ParameterLearningException;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 //import unife.edge.EDGE;
 /**
  * This class is a wrapper for EDGE algorithm. This algorithm uses BUNDLE for

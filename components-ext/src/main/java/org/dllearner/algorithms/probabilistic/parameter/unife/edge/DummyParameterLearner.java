@@ -38,7 +38,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import unife.bundle.utilities.BundleUtilities;
 import static unife.bundle.utilities.BundleUtilities.getManchesterSyntaxString;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import unife.edge.utilities.EDGEUtilities;
 import unife.exception.IllegalValueException;
 import unife.math.utilities.MathUtilities;

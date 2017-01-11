@@ -23,7 +23,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.mindswap.pellet.utils.Timers;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import unife.edge.EDGE;
 import unife.edge.EDGEStat;
 import unife.exception.IllegalValueException;

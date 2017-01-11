@@ -56,7 +56,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.springframework.beans.factory.annotation.Autowired;
 import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
-import unife.core.ApproxDouble;
+import unife.math.ApproxDouble;
 import static unife.edge.mpi.EDGEMPIConstants.*;
 import unife.edge.mpi.MPIUtilities;
 import unife.edge.utilities.EDGEUtilities;
@@ -343,7 +343,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
                         logger.debug(myRank + " - Sent START signal to EDGE slaves");
                         int sentBytes = MPIUtilities.sendBCastObject(revision, parameterLearnerComm);
                         logger.debug(myRank + " - Sent revision to "
-                                + MPIUtilities.getSlaves(parameterLearnerComm) + " slaves "
+                                + MPIUtilities.getSlaveSize(parameterLearnerComm) + " slaves "
                                 + "(" + sentBytes + " bytes)");
                     } catch (MPIException mpiEx) {
                         logger.error(myRank + " - Cannot send to EDGE slaves the refinement: " + mpiEx.getMessage());
