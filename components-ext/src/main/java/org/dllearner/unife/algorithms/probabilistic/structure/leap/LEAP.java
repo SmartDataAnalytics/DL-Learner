@@ -204,6 +204,8 @@ public class LEAP extends AbstractLEAP {
                 }
                 logger.info("Running parameter learner");
                 edge.start();
+                edge.setProbabilizeAll(false);
+                edge.setRandomize(false);
                 ApproxDouble currLL = edge.getLL();
                 logger.info("Current Log-Likelihood: " + currLL);
                 if (getClassAxiomType().equalsIgnoreCase("both")) {
@@ -288,7 +290,7 @@ public class LEAP extends AbstractLEAP {
                         }
                         learnedAxioms.add(updatedAxiom);
                     }
-                    updateOntology(); // queste operazioni fanno perdere tempo, sono da ottimizzare
+                    updateOntology(); // TO DO: This operation is time consuming, should be optimized
                     bestLL = currLL;
                 } else {
                     logger.info("Log-Likelihood worsened. Removing Last Axioms...");
