@@ -9,9 +9,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.dllearner.Constants.State;
 import org.dllearner.cli.CLIBase2;
 import org.dllearner.core.ComponentAnn;
@@ -21,7 +26,7 @@ import org.dllearner.unife.core.probabilistic.OWLProbReasonerResult;
 import org.dllearner.unife.core.probabilistic.OWLProbabilisticReasoner;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.unife.utils.OWLUtils;
+import org.dllearner.unife.utilities.OWLUtils;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -85,8 +90,10 @@ public class OntologyValidation extends CLIBase2 {
         negTestQueries = OWLUtils.convertIndividualsToAssertionalAxioms(safe(negIndividuals), classExpression);
         try {
             // run the test queries over the initial ontology
-            Set<OWLProbReasonerResult> posTestResults = computeQueries(posTestQueries);
-            Set<OWLProbReasonerResult> negTestResults = computeQueries(negTestQueries);
+            List<OWLProbReasonerResult> posTestResults = computeQueries(posTestQueries);
+            Collections.sort(posTestResults);
+            List<OWLProbReasonerResult> negTestResults = computeQueries(negTestQueries);
+            Collections.sort(negTestResults);
             // write result on output test configuration file
             PrintWriter outFile = new PrintWriter(outputFile, "UTF-8");
             outFile.println("pos: " + posTestResults.size());
@@ -120,8 +127,8 @@ public class OntologyValidation extends CLIBase2 {
     /**
      * It computes a set of probabilistic queries
      */
-    private Set<OWLProbReasonerResult> computeQueries(Set<OWLAxiom> queries) throws OWLException {
-        Set<OWLProbReasonerResult> results = new HashSet<>();
+    private List<OWLProbReasonerResult> computeQueries(Set<OWLAxiom> queries) throws OWLException {
+        List<OWLProbReasonerResult> results = new ArrayList<>();
         for (OWLAxiom query : queries) {
             results.add(reasoner.computeQuery(query));
         }

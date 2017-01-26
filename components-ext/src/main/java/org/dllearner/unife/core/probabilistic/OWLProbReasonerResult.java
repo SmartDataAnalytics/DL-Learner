@@ -11,7 +11,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  * 
  * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
-public class OWLProbReasonerResult {
+public class OWLProbReasonerResult implements Comparable {
 
     private OWLAxiom axiom;
     
@@ -34,6 +34,11 @@ public class OWLProbReasonerResult {
      */
     public Double getProbability() {
         return probability;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return probability.compareTo(((OWLProbReasonerResult) o).probability);
     }
     
     

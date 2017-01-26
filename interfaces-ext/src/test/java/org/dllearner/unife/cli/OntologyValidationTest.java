@@ -5,11 +5,9 @@
  */
 package org.dllearner.unife.cli;
 
-import org.dllearner.unife.cli.OntologyValidation;
 import java.util.Set;
 import java.util.TreeSet;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.unife.core.probabilistic.BUNDLE;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLP;
@@ -18,12 +16,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -121,5 +116,5 @@ public class OntologyValidationTest {
         instance.setLp(lpMock);
         instance.run();
     }
-
+    
 }

@@ -31,17 +31,19 @@ import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
 import unife.math.ApproxDouble;
 import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
 
-@ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
-public class LEAP extends AbstractLEAP {
+@ComponentAnn(name = "LEAP2", shortName = "leap2", version = 1.0)
+public class LEAP2 extends AbstractLEAP {
 
-    private static final Logger logger = LoggerFactory.getLogger(LEAP.class);
+    private static final Logger logger = LoggerFactory.getLogger(LEAP2.class);
 
-    public LEAP() {
+    public LEAP2() {
 
     }
 
-    public LEAP(AbstractCELA cela, AbstractEDGE lpr) {
+    public LEAP2(AbstractCELA cela, AbstractEDGE lpr) {
         super(cela, lpr);
     }
 

@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.dllearner.unife.utils;
+package org.dllearner.unife.utilities;
 
 import java.lang.reflect.Field;
 

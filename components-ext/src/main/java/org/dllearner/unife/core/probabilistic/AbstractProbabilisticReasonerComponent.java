@@ -15,7 +15,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import unife.bundle.logging.BundleLoggerFactory;
 import org.dllearner.unife.reasoning.ProbabilisticReasonerType;
-import org.dllearner.unife.utils.OWLUtils;
+import org.dllearner.unife.utilities.OWLUtils;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,6 +54,7 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
     }
     
     
+    @Override
     public void init() throws ComponentInitException {
         ontology = OWLUtils.mergeOntologies(sources);
     }

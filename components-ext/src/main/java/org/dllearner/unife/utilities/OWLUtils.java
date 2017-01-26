@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dllearner.unife.utils;
+package org.dllearner.unife.utilities;
 
 import org.apache.log4j.Logger;
 import org.dllearner.unife.algorithms.probabilistic.parameter.distributed.edge.EDGEDistributedDynamic;

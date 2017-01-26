@@ -9,7 +9,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.unife.reasoning.ProbabilisticReasonerType;
-import org.dllearner.unife.utils.OWLUtils;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import unife.bundle.Bundle;

@@ -63,7 +63,7 @@ public class LEAPTest {
     public void tearDown() {
     }
 
-//    @Test
+    @Test
     public void testCase1() throws Exception {
         System.out.println("Test case 1 - Equivalent axioms");
 
@@ -110,6 +110,7 @@ public class LEAPTest {
         lpr = new EDGE(lp, null);
         lpr.setRandomize(true);
         lpr.setProbabilizeAll(true);
+        ((EDGE) lpr).setShowAll(false);
         lpr.init();
 
         cela = new CELOE(lp, rc);
@@ -127,7 +128,7 @@ public class LEAPTest {
         assertTrue(true);
     }
 
-//    @Test
+    @Test
     public void testCase3() throws Exception {
         System.out.println("Test case 3 - Dummy parameter learner");
 

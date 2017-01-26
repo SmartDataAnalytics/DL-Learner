@@ -158,8 +158,8 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             edge.setShowAll(showAll);
             edge.setTimeOut(timeout);
             edge.setBddFType(bddFType);
-//            edge.LOGZERO = new ApproxDouble(Math.log(1 / Math.pow(10, accuracy)));
-            edge.LOGZERO = new ApproxDouble(Math.log(0.00001));
+            edge.LOGZERO = new ApproxDouble(Math.log(1.0 / Math.pow(10, accuracy)));
+//            edge.LOGZERO = new ApproxDouble(Math.log(0.00001));
             //edge.setTimers(new Timers());
             AbstractReasonerComponent rc = learningProblem.getReasoner();
             if (rc instanceof ClosedWorldReasoner) {
