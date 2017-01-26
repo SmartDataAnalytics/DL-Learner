@@ -3,7 +3,7 @@
 .settings
 .classpath
 target
-
+*.log
 *.swp
 deptree.txt
 cache
