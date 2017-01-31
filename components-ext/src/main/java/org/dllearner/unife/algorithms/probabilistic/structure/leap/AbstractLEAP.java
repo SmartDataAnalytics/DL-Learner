@@ -34,6 +34,7 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.unife.core.probabilistic.AbstractParameterLearningAlgorithm;
 import org.dllearner.exceptions.UnsupportedLearnedAxiom;
 import org.dllearner.unife.utilities.OWLClassExpressionSimplifierVisitorImpl;
+import org.dllearner.unife.utilities.OWLClassExpressionSplitterVisitorImpl;
 import org.dllearner.unife.utilities.ReflectionHelper;
 import org.dllearner.unife.utilities.OWLUtils;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -251,6 +252,13 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
             OWLClassExpression ce = (OWLClassExpression) description.getDescription();
             ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
+            
+//            OWLClassExpression initialCE = (OWLClassExpression) description.getDescription();
+//            initialCE = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
+//            // split the unions
+//            Set<OWLClassExpression> ces = OWLClassExpressionSplitterVisitorImpl.getOWLClassExpression(initialCE);
+
+
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
 //            if (classAxiomType.equalsIgnoreCase("subClassOf") || classAxiomType.equalsIgnoreCase("both")) {
