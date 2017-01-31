@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import unife.bundle.BDDFactoryType;
 
 /**
  *
@@ -78,6 +79,7 @@ public class LEAPTest {
         lpr = new EDGE(lp, null);
         lpr.setRandomize(true);
         lpr.setProbabilizeAll(true);
+        lpr.setBddFType(BDDFactoryType.J);
         lpr.init();
 
         cela = new CELOE(lp, rc);
@@ -110,7 +112,8 @@ public class LEAPTest {
         lpr = new EDGE(lp, null);
         lpr.setRandomize(true);
         lpr.setProbabilizeAll(true);
-        ((EDGE) lpr).setShowAll(false);
+        lpr.setBddFType(BDDFactoryType.J);
+        ((EDGE) lpr).setShowAll(true);
         lpr.init();
 
         cela = new CELOE(lp, rc);

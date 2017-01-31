@@ -45,7 +45,7 @@ public class CLILEAPTest {
      * Test of main method, of class CLILEAP.
      * @throws java.lang.Exception
      */
-    @Test
+//    @Test
     public void testMain1() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/family/run.conf"};
@@ -56,21 +56,26 @@ public class CLILEAPTest {
         }
     }
 
-//    @Test
+    @Test
     public void testMain2() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/carcinogenesis/run.conf"};
-        CLILEAP.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        assertTrue(true);
+        try {
+            CLILEAP.main(args);
+        } catch (RuntimeException| ParseException | IOException | ReasoningMethodUnsupportedException e) {
+            fail();
+        }
     }
 
-    //@Test
+//    @Test
     public void testMain3() throws Exception {
         System.out.println("main");
         String[] args = {"../examples/probabilistic/premierleague/run.conf"};
-        CLILEAP.main(args);
-        assertTrue(true);
+        try {
+            CLILEAP.main(args);
+        } catch (RuntimeException| ParseException | IOException | ReasoningMethodUnsupportedException e) {
+            fail();
+        }
     }
 
 //    @Test
