@@ -96,6 +96,7 @@ public class EDGE extends AbstractEDGE {
                 fullyInitialized = true;
             }
             results = edge.computeLearning();
+            edge.setInitialized(false);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             throw new ParameterLearningException(ex);
