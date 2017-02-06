@@ -1,4 +1,4 @@
- /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -58,8 +58,8 @@ import unife.bundle.utilities.BundleUtilities;
 import unife.constants.UniFeIRI;
 
 /**
- * There could be different version of LEAP (sequential, multi-thread,
- * distributed), so we need an abstract class.
+ * There could be different version of LEAP (sequential, multi-thread, distributed), so we need an
+ * abstract class.
  *
  * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
  * <riccardo.zese@unife.it>
@@ -252,27 +252,26 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         for (EvaluatedDescription description : evaluatedDescriptions.descendingSet()) {
             OWLClassExpression ce = (OWLClassExpression) description.getDescription();
             ce = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
-            
+
 //            OWLClassExpression initialCE = (OWLClassExpression) description.getDescription();
 //            initialCE = OWLClassExpressionSimplifierVisitorImpl.getOWLClassExpression(ce, manager);
 //            // split the unions
 //            Set<OWLClassExpression> ces = OWLClassExpressionSplitterVisitorImpl.getOWLClassExpression(initialCE);
-
-
             OWLAnnotation annotation = factory.
                     getOWLAnnotation(BundleUtilities.PROBABILISTIC_ANNOTATION_PROPERTY, factory.getOWLLiteral(description.getAccuracy()));
 //            if (classAxiomType.equalsIgnoreCase("subClassOf") || classAxiomType.equalsIgnoreCase("both")) {
             T axiom;
             if (type == OWLEquivalentClassesAxiom.class) {
                 axiom = (T) factory.getOWLEquivalentClassesAxiom(ce, dummyClass, Collections.singleton(annotation));
-
             } else if (type == OWLSubClassOfAxiom.class) {
                 axiom = (T) factory.getOWLSubClassOfAxiom(ce, dummyClass, Collections.singleton(annotation));
             } else {
                 throw new RuntimeException("convertIntoAxioms only works with "
                         + "equivalent and subclassOf axioms");
             }
-            axioms.add(axiom);
+            if (!axioms.contains(axiom)) {
+                axioms.add(axiom);
+            }
         }
         return axioms;
     }
@@ -285,7 +284,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     protected List<OWLEquivalentClassesAxiom> convertIntoEquivalentClassesAxioms(OWLOntologyManager manager, NavigableSet<? extends EvaluatedDescription> evaluatedDescriptions) {
         List<OWLEquivalentClassesAxiom> axioms = convertIntoAxioms(OWLEquivalentClassesAxiom.class, manager, evaluatedDescriptions);
         return axioms;
-        
+
     }
 
     /*
@@ -408,14 +407,12 @@ public abstract class AbstractLEAP extends AbstractPSLA {
     }
 
     /**
-     * It tries to add a set of axioms into the ontology. If there is an inconsistency
-     * after adding the axiom the axiom is removed from the ontology and an
-     * InconsistencyException is thrown.
+     * It tries to add a set of axioms into the ontology. If there is an inconsistency after adding
+     * the axiom the axiom is removed from the ontology and an InconsistencyException is thrown.
      *
      * @param ontology ontology to modify
      * @param axioms axioms to add
-     * @throws InconsistencyException if adding the exceptions leads to an
-     * inconsistency
+     * @throws InconsistencyException if adding the exceptions leads to an inconsistency
      */
     protected void addAxioms(OWLOntology ontology, List<? extends OWLAxiom> axioms) throws InconsistencyException {
         OWLOntologyManager manager = ontology.getOWLOntologyManager();
