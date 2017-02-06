@@ -5,6 +5,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -57,11 +58,17 @@ public class ExampleLoader extends AbstractComponent {
 				posNegLP.setPositiveExamples(posEx);
 			if (posOnlyLP != null)
 				posOnlyLP.setPositiveExamples(posEx);
+			initialized = true;
 		}
 
 		if (negativeExamples != null && posNegLP != null) {
 			negativeExamples = OWLAPIUtils.classExpressionPropertyExpander(negativeExamples, reasonerComponent, dataFactory, true);
-			Set<OWLIndividual> negEx = reasonerComponent.getIndividuals(negativeExamples);
+			Set<OWLIndividual> negEx;
+			if (reasonerComponent instanceof SPARQLReasoner) {
+				negEx = ((SPARQLReasoner) reasonerComponent).getIndividuals(negativeExamples, negativeRandomCount);
+			} else {
+				negEx = reasonerComponent.getIndividuals(negativeExamples);
+			}
 			if (negativeRandomCount > 0) {
 				ArrayList<OWLIndividual> sample = new ArrayList<>(negEx);
 				Collections.shuffle(sample, r2);
@@ -69,7 +76,9 @@ public class ExampleLoader extends AbstractComponent {
 			}
 			if (posNegLP != null)
 				posNegLP.setNegativeExamples(negEx);
+			initialized = true;
 		}
+
 	}
 
 	public OWLClassExpression getPositiveExamples() {
@@ -125,7 +134,6 @@ public class ExampleLoader extends AbstractComponent {
 		return posNegLP;
 	}
 
-	@Autowired(required = false)
 	public void setPosNegLP(PosNegLP posNegLP) {
 		this.posNegLP = posNegLP;
 	}
@@ -134,7 +142,6 @@ public class ExampleLoader extends AbstractComponent {
 		return posOnlyLP;
 	}
 
-	@Autowired(required = false)
 	public void setPosOnlyLP(PosOnlyLP posOnlyLP) {
 		this.posOnlyLP = posOnlyLP;
 	}

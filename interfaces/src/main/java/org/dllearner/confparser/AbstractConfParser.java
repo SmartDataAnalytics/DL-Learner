@@ -1,6 +1,7 @@
 package org.dllearner.confparser;
 
 import org.dllearner.cli.ConfFileOption;
+import org.dllearner.core.AbstractComponent;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * Config parser base class
  */
-public abstract class AbstractConfParser implements ConfParser {
+public abstract class AbstractConfParser extends AbstractComponent implements ConfParser {
 
         // special directives (those without a property name)
         protected Map<String, ConfFileOption> specialOptions = new HashMap<String, ConfFileOption>();
