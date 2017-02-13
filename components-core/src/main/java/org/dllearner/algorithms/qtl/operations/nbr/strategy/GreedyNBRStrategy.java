@@ -279,11 +279,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 	}
 	
 	private void setMatrixEntry(Map<RDFResourceTree, List<Integer>> matrix, RDFResourceTree row, int column, int entry){
-		List<Integer> list = matrix.get(row);
-		if(list == null){
-			list = new ArrayList<>();
-			matrix.put(row, list);
-		}
+		List<Integer> list = matrix.computeIfAbsent(row, k -> new ArrayList<>());
 		try {
 			list.set(column, entry);
 		} catch (IndexOutOfBoundsException e) {

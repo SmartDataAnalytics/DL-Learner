@@ -62,4 +62,9 @@ public class NodeInv extends Node_Concrete implements Comparable<NodeInv>{
 			return -1;
 		}
 	}
+
+//	@Override
+//	public String toString() {
+//		return "inv(" + super.toString() + ")";
+//	}
 }

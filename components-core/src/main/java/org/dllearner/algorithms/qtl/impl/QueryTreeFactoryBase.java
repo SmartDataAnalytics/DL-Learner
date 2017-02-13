@@ -117,11 +117,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 //			it = it.filterKeep(keepFilter);
 		}
 
-		SortedSet<Statement> statements = resource2Statements.get(s);
-		if (statements == null) {
-			statements = new TreeSet<>(comparator);
-			resource2Statements.put(s, statements);
-		}
+		SortedSet<Statement> statements = resource2Statements.computeIfAbsent(s, k -> new TreeSet<>(comparator));
 
 		while (it.hasNext()) {
 			Statement st = it.next();

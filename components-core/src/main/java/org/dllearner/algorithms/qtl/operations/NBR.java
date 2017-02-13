@@ -179,11 +179,7 @@ public class NBR<N> {
 		List<QueryTree<N>> treeList;
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
 			rowSum = sum(entry.getValue());
-			treeList = map.get(rowSum);
-			if(treeList == null){
-				treeList = new ArrayList<>();
-				map.put(rowSum, treeList);
-			}
+			treeList = map.computeIfAbsent(rowSum, k -> new ArrayList<>());
 			treeList.add(entry.getKey());
 		}
 		
@@ -238,11 +234,7 @@ public class NBR<N> {
 	}
 	
 	private void setMatrixEntry(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> row, int column, int entry){
-		List<Integer> list = matrix.get(row);
-		if(list == null){
-			list = new ArrayList<>();
-			matrix.put(row, list);
-		}
+		List<Integer> list = matrix.computeIfAbsent(row, k -> new ArrayList<>());
 		try {
 			list.set(column, entry);
 		} catch (IndexOutOfBoundsException e) {

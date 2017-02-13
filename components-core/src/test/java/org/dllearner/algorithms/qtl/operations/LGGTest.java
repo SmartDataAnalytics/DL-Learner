@@ -116,10 +116,10 @@ public class LGGTest {
 		return QueryTreeUtils.sameTrees(lgg, targetLGG);
 	}
 
-	public void testClassEntailmentWithMaterialization() {
-		treeFactory = new QueryTreeFactoryMaterialized();
-		testClassEntailment();
-	}
+//	public void testClassEntailmentWithMaterialization() {
+//		treeFactory = new QueryTreeFactoryMaterialized();
+//		testClassEntailment();
+//	}
 
 	@Test
 	public void testPropertyEntailment() {

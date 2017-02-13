@@ -250,7 +250,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	/**
 	 * Returns a filtered list of currently best class descriptions.
 	 * 
-	 * @param nrOfDescriptions Maximum number of restrictions. Use Integer.MAX_VALUE
+	 * @param nrOfDescriptions Maximum number of descriptions. Use Integer.MAX_VALUE
 	 * if you do not want this filter to be active.
 	 * 
 	 * @param accuracyThreshold Minimum accuracy. All class descriptions with lower

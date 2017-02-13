@@ -95,7 +95,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	protected Set<Triple<Node, Node, Node>> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
 		Set<Triple<Node, Node, Node>> result = new HashSet<>();
 
-		Predicate<Node> isBuiltIn = n -> isBuiltInEntity(n);
+		Predicate<Node> isBuiltIn = this::isBuiltInEntity;
 
 		// split by built-in and non-built-in predicates
 		Map<Boolean, List<Node>> split1 = tree1.getEdges().stream().collect(Collectors.partitioningBy(isBuiltIn));
@@ -127,7 +127,8 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		List<Node> builtInEntities1 = split1.get(true);
 		List<Node> builtInEntities2 = split2.get(true);
 
-		Set<Triple<Node, Node, Node>> builtInEntitiesCommon = builtInEntities1.stream().filter(e -> builtInEntities2.contains(e)).map(
+		Set<Triple<Node, Node, Node>> builtInEntitiesCommon = builtInEntities1.stream().filter(
+				builtInEntities2::contains).map(
 				e -> Triple.of(e, e, e)).collect(
 				Collectors.toSet());
 
