@@ -747,7 +747,7 @@ public class PRConvergenceExperiment {
 
 										} catch (Exception e) {
 											failed.set(true);
-											logger.error("Error occured for query\n" + sparqlQuery, e);
+											logger.error("Error occurred for query\n" + sparqlQuery, e);
 											try {
 												StringWriter sw = new StringWriter();
 												PrintWriter pw = new PrintWriter(sw);

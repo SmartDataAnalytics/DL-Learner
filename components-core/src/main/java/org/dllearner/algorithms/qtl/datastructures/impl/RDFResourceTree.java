@@ -168,11 +168,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public void addChild(RDFResourceTree child, Node edge) {
 		super.addChild(child);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.add(child);
 		
 		child2Edge.put(child, edge);
@@ -180,11 +176,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public void addChildren(List<RDFResourceTree> children, Node edge) {
 		super.addChildren(children);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.addAll(children);
 	}
 	

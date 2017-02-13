@@ -15,6 +15,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.jgrapht.graph.DirectedWeightedPseudograph;
 
+import java.util.Calendar;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -104,8 +105,12 @@ public class RDFGraph extends DirectedWeightedPseudograph<Node, RDFGraph.Edge> {
 				.stream().map(NodeFactory::createURI).collect(Collectors.toSet());
 
 
+		long s1 = System.currentTimeMillis();
 		Tree<Node> steinerTree = MinimumSteinerTreeApproximation.approximateSteinerTree(g, startVertex, vertices);
+		long s2 = System.currentTimeMillis();
 		System.out.println(steinerTree);
+		System.out.println(s2 - s1);
+
 	}
 
 }
