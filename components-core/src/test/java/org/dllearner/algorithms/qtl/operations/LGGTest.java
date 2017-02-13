@@ -27,6 +27,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.experiments.DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryMaterialized;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
@@ -34,7 +35,9 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.io.ByteArrayInputStream;
 import java.util.function.Predicate;
@@ -45,6 +48,7 @@ import static org.junit.Assert.assertTrue;
  * @author Lorenz Buehmann
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LGGTest {
 	
 	private static final String baseIRI = "http://test.org/";
@@ -77,7 +81,7 @@ public class LGGTest {
 		model.read(new ByteArrayInputStream(kb.getBytes()), null, "TURTLE");
 		
 		treeFactory = new QueryTreeFactoryBase();
-		
+
 //		StmtIterator statements = model.listStatements();
 //		while (statements.hasNext()) {
 //			Statement st = statements.next();
@@ -91,6 +95,30 @@ public class LGGTest {
 		
 		lggGenSimple = new LGGGeneratorSimple();
 		lggGenRDFS = new LGGGeneratorRDFS(reasoner);
+	}
+
+	private void compareLGGForInputTrees(RDFResourceTree t1, RDFResourceTree t2, RDFResourceTree targetLgg, LGGGenerator lggGen) {
+
+	}
+
+	private boolean compareLGGForInputTrees(String t1Root, String t2Root, String targetLggRoot, LGGGenerator lggGen) {
+		RDFResourceTree tree1 = treeFactory.getQueryTree(t1Root, model);
+		RDFResourceTree tree2 = treeFactory.getQueryTree(t2Root, model);
+
+		System.out.println("Tree 1\n" + tree1.getStringRepresentation());
+		System.out.println("Tree 2\n" + tree2.getStringRepresentation());
+
+		RDFResourceTree targetLGG = treeFactory.getQueryTree(targetLggRoot, model);
+		System.out.println("Target LGG\n" + targetLGG.getStringRepresentation());
+
+		RDFResourceTree lgg = lggGen.getLGG(tree1, tree2);
+
+		return QueryTreeUtils.sameTrees(lgg, targetLGG);
+	}
+
+	public void testClassEntailmentWithMaterialization() {
+		treeFactory = new QueryTreeFactoryMaterialized();
+		testClassEntailment();
 	}
 
 	@Test
