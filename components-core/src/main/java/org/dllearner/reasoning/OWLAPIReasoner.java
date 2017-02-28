@@ -207,6 +207,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             		InferenceType.OBJECT_PROPERTY_HIERARCHY,
             		InferenceType.DATA_PROPERTY_HIERARCHY,
             		InferenceType.OBJECT_PROPERTY_ASSERTIONS,
+					InferenceType.DATA_PROPERTY_ASSERTIONS,
             		InferenceType.SAME_INDIVIDUAL);
         } else {
         	PelletExplanation expGen = new PelletExplanation(ontology);
