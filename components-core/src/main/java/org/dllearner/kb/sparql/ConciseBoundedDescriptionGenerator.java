@@ -71,6 +71,10 @@ public interface ConciseBoundedDescriptionGenerator {
 	 * Computes the CBD of given depth for the given resource. Optionally, additional
 	 * information about the types for the leaf nodes is retrieved.
 	 *
+	 * @param resourceURI the URI of the resource
+	 * @param depth the max. depth of the graph retrieved starting from the resource
+	 * @param withTypesForLeafs whether to get the types for the leaf nodes
+	 *
 	 * @return the CBD
 	 */
 	Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
