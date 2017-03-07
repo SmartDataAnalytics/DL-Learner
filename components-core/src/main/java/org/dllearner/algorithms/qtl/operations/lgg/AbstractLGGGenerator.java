@@ -138,21 +138,24 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
 
 //			System.out.println(lcs + ": " + tree1.getChildren(edge1).size() * tree2.getChildren(edge2).size());
+ 			System.out.println(lcs + ":::\n" + tree1.getChildren(edge1) + "\n" + tree2.getChildren(edge2));
 
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){System.out.println("c1:" + child1);
 				if(stop || isTimeout()) {
 					complete = false;
 					break;
 				}
 				// loop over children of second tree
-				for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
+				for(RDFResourceTree child2 : tree2.getChildren(edge2)){System.out.println("c2:" + child2);
 					if(stop || isTimeout()) {
 						complete = false;
 						break;
 					}
 
 					RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
+					lgg.addChild(lggChild, lcs);
+					System.out.println("c_lgg:" + lggChild);
 
 					// check if there was already a more specific child computed before
 					// and if so don't add the current one
@@ -164,12 +167,15 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
 //										addedChild.getStringRepresentation(),
 //										lggChild.getStringRepresentation());
+							System.out.println("Skipped adding: Previously added child " + addedChild +  " is more specific than " + lggChild.getStringRepresentation());
+							lgg.removeChild(lggChild, lcs);
 							add = false;
 							break;
 						} else if(isSubTreeOf(lggChild, addedChild)){
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
 //										lggChild.getStringRepresentation(),
 //										addedChild.getStringRepresentation());
+							System.out.println("Removing child node: " + lggChild +  " is subsumed by previously added child " + addedChild.getStringRepresentation());
 							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 							it.remove();
 						}

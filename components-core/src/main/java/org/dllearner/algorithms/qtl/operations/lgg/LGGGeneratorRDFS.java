@@ -25,7 +25,9 @@ import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.graph.Node;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.OWL;
@@ -74,6 +76,9 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
+		System.out.println("Subtree(" + tree1 + ", "  + tree2 + ") = " + QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
+		System.out.println(tree1.isClassNode() + "::" + tree2.getParent());
+		System.out.println(tree2.isClassNode() + "::" + tree2.getParent());
 		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode());
 	}
 
@@ -147,11 +152,11 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
 
 		if(tree1.isResourceNode() && tree2.isResourceNode()) {
-			System.out.print("LCS(" + tree1 + ", " + tree2 + ")");
+//			System.out.print("LCS(" + tree1 + ", " + tree2 + ")");
 			Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner,
 																			tree1.getData(), tree2.getData(),
 																			EntityType.CLASS);
-			System.out.println(" = " + lcs);
+//			System.out.println(" = " + lcs);
 			if(lcs != null) {
 				return new RDFResourceTree(lcs);
 			}
@@ -167,6 +172,11 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			Node lcs = entry.getRight();
 
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
+			System.out.println(lcs);
+			System.out.println(tree1.getChildren(edge1));
+			System.out.println(tree2.getChildren(edge2));
+			System.out.println("#########################");
 
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
@@ -212,7 +222,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+		endpoint = SparqlEndpoint.create("http://sake.aksw.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
@@ -220,7 +230,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		int maxDepth = 2;
+		int maxDepth = 1;
 
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.setMaxDepth(maxDepth);
@@ -236,7 +246,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
 		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig",
-				"http://dbpedia.org/resource/Berlin");
+				"http://dbpedia.org/resource/Dresden");
 		for (String resource : resources) {
 			try {
 				System.out.println(resource);
