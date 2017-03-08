@@ -168,7 +168,6 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //										addedChild.getStringRepresentation(),
 //										lggChild.getStringRepresentation());
 							System.out.println("Skipped adding: Previously added child " + addedChild +  " is more specific than " + lggChild.getStringRepresentation());
-							lgg.removeChild(lggChild, lcs);
 							add = false;
 							break;
 						} else if(isSubTreeOf(lggChild, addedChild)){
@@ -180,9 +179,11 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 							it.remove();
 						}
 					}
+					lgg.removeChild(lggChild, lcs);
 					if(add){
 						lgg.addChild(lggChild, lcs);
 						addedChildren.add(lggChild);
+						System.out.println("Adding child " + lggChild);
 //							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 					}
 				}

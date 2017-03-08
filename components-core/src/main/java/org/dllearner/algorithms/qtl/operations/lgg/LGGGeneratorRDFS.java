@@ -77,8 +77,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
 		System.out.println("Subtree(" + tree1 + ", "  + tree2 + ") = " + QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
-		System.out.println(tree1.isClassNode() + "::" + tree2.getParent());
-		System.out.println(tree2.isClassNode() + "::" + tree2.getParent());
 		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode());
 	}
 
