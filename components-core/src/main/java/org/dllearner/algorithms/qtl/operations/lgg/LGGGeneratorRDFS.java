@@ -76,9 +76,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
-		System.out.println("Subtree(" + tree1 + ", "  + tree2 + ") = " + QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
-		System.out.println(tree1.isClassNode() + "::" + tree2.getParent());
-		System.out.println(tree2.isClassNode() + "::" + tree2.getParent());
+		logger.trace("isSubTreeOf(%s, %s) = %s", tree1, tree2, QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
 		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode());
 	}
 
@@ -150,13 +148,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
-
+		logger.trace("processing class nodes %s and %s...", tree1, tree2);
 		if(tree1.isResourceNode() && tree2.isResourceNode()) {
-//			System.out.print("LCS(" + tree1 + ", " + tree2 + ")");
+			// compute the LCS
 			Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner,
 																			tree1.getData(), tree2.getData(),
 																			EntityType.CLASS);
-//			System.out.println(" = " + lcs);
+			logger.trace("LCS(%s, %s) = %s", tree1, tree2, lcs);
 			if(lcs != null) {
 				return new RDFResourceTree(lcs);
 			}
@@ -172,11 +170,6 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			Node lcs = entry.getRight();
 
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
-
-			System.out.println(lcs);
-			System.out.println(tree1.getChildren(edge1));
-			System.out.println(tree2.getChildren(edge2));
-			System.out.println("#########################");
 
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);

@@ -181,8 +181,8 @@ public class NonStandardReasoningServices {
 		superEntities2.add(e2);
 
 		// recursive call using the parents
-		for (E sup1 : superEntities1) {System.out.println("P1:" + sup1);
-			for (E sup2 : superEntities2) {System.out.println("P2:" + sup2);
+		for (E sup1 : superEntities1) {
+			for (E sup2 : superEntities2) {
 				if(!(e1.equals(sup1) && e2.equals(sup2))) {
 					E lcs = getLeastCommonSubsumer2(sup1, sup2, f);
 
