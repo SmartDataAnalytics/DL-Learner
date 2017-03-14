@@ -23,12 +23,15 @@ import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -76,7 +79,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected boolean isSubTreeOf(RDFResourceTree tree1, RDFResourceTree tree2) {
-		logger.trace("isSubTreeOf(%s, %s) = %s", tree1, tree2, QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
+		logger.trace("isSubTreeOf({}, {}) = {}", tree1, tree2, QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode()));
 		return QueryTreeUtils.isSubsumedBy(tree1, tree2, reasoner, tree1.isClassNode());
 	}
 
@@ -148,13 +151,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 
 	@Override
 	protected RDFResourceTree processClassNodes(RDFResourceTree tree1, RDFResourceTree tree2) {
-		logger.trace("processing class nodes %s and %s...", tree1, tree2);
+		logger.trace("processing class nodes {} and {}...", tree1, tree2);
 		if(tree1.isResourceNode() && tree2.isResourceNode()) {
 			// compute the LCS
 			Node lcs = NonStandardReasoningServices.getLeastCommonSubsumer(reasoner,
 																			tree1.getData(), tree2.getData(),
 																			EntityType.CLASS);
-			logger.trace("LCS(%s, %s) = %s", tree1, tree2, lcs);
+			logger.trace("LCS({}, {}) = {}", tree1, tree2, lcs);
 			if(lcs != null) {
 				return new RDFResourceTree(lcs);
 			}
@@ -218,25 +221,28 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		endpoint = SparqlEndpoint.create("http://sake.aksw.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
+				.withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
-				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS)
+						.end().create();
 
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		int maxDepth = 1;
+		int maxDepth = 3;
 
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.setMaxDepth(maxDepth);
-		treeFactory.addDropFilters(
-				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
-				new PredicateDropStatementFilter(StopURIsRDFS.get()),
-				new PredicateDropStatementFilter(StopURIsOWL.get()),
-				new ObjectDropStatementFilter(StopURIsOWL.get()),
-				new PredicateDropStatementFilter(StopURIsSKOS.get()),
-				new ObjectDropStatementFilter(StopURIsSKOS.get()),
-				new NamespaceDropStatementFilter(Sets.newHashSet("http://dbpedia.org/property/",
-						"http://purl.org/dc/terms/", "http://dbpedia.org/class/yago/",
-						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
+//		treeFactory.addDropFilters(
+//				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+//				new PredicateDropStatementFilter(StopURIsRDFS.get()),
+//				new PredicateDropStatementFilter(StopURIsOWL.get()),
+//				new ObjectDropStatementFilter(StopURIsOWL.get()),
+//				new PredicateDropStatementFilter(StopURIsSKOS.get()),
+//				new ObjectDropStatementFilter(StopURIsSKOS.get()),
+//				new NamespaceDropStatementFilter(Sets.newHashSet("http://dbpedia.org/property/",
+//						"http://purl.org/dc/terms/", "http://dbpedia.org/class/yago/",
+//						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
 		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig",
 				"http://dbpedia.org/resource/Dresden");

@@ -138,13 +138,13 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
 
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){logger.trace("child1: %s", child1);
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){logger.trace("child1: {}", child1);
 				if(stop || isTimeout()) {
 					complete = false;
 					break;
 				}
 				// loop over children of second tree
-				for(RDFResourceTree child2 : tree2.getChildren(edge2)){logger.trace("child2: %s", child2);
+				for(RDFResourceTree child2 : tree2.getChildren(edge2)){logger.trace("child2: {}", child2);
 					if(stop || isTimeout()) {
 						complete = false;
 						break;
@@ -152,7 +152,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 					RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 					lgg.addChild(lggChild, lcs);
-					logger.trace("c_lgg:" + lggChild);
+					logger.trace("lgg_child: {}", lggChild);
 
 					// check if there was already a more specific child computed before
 					// and if so don't add the current one
@@ -178,8 +178,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 					if(add){
 						lgg.addChild(lggChild, lcs);
 						addedChildren.add(lggChild);
-						System.out.println("Adding child " + lggChild);
-//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
+						logger.trace("Adding child {}", lggChild);
 					}
 				}
 			}
