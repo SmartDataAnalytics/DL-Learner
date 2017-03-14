@@ -20,6 +20,8 @@ package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeTraverser;
+import org.aksw.jena_sparql_api.mapper.annotation.RdfType;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
@@ -45,6 +47,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
+import org.dllearner.algorithms.qtl.operations.traversal.PostOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
@@ -1053,6 +1056,45 @@ public class QueryTreeUtils {
 //				
 //			}
 //		}
+	}
+
+	/**
+	 * Minimize a query tree by removing trivial statements as follows
+	 * <ul>
+	 *     <li>for each leaf node:
+	 *     <ul>
+	 *     		<li>rdfs:subClassOf --> VAR</li>
+	 *     		<li>rdf:type --> VAR</li>
+	 *     		<li>owl:equivalentClass --> VAR</li>
+	 *     		<li>rdf:type --> owl:Class</li>
+	 *     		<li>rdf:type --> rdfs:Class</li>
+	 *     </ul>
+	 *     </li>
+	 *
+	 * </ul>
+	 * @param tree the query tree to minimize
+	 */
+	public static void minimize(RDFResourceTree tree) {
+		new PostOrderTreeTraversal(tree).forEachRemaining(node -> {
+			if(node.isLeaf()) {
+				Node edge = node.getEdgeToParent();
+				if(node.isVarNode()) {
+					if(edge.equals(RDFS.subClassOf.asNode())) {
+						node.getParent().removeChild(node, edge);
+					} else if(edge.equals(OWL.equivalentClass.asNode())) {
+						node.getParent().removeChild(node, edge);
+					} else if(edge.equals(RDF.type.asNode())) {
+						node.getParent().removeChild(node, edge);
+					}
+				} else {
+					if(edge.equals(RDF.type.asNode())) {
+						if(node.getData().equals(OWL.Class.asNode()) || node.getData().equals(RDFS.Class.asNode())) {
+							node.getParent().removeChild(node, edge);
+						}
+					}
+				}
+			}
+		});
 	}
 	
 	/**
