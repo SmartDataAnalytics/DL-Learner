@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>interfaces</artifactId>
@@ -98,7 +99,8 @@
 						<configuration>
 							<!-- put dependency JARs to /lib folder -->
 							<repositoryLayout>flat</repositoryLayout>
-							<!-- shorter classpath which avoid exceptions especially under Windows environment-->
+							<!-- shorter classpath which avoid exceptions especially under Windows
+								environment -->
 							<useWildcardClassPath>true</useWildcardClassPath>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repositoryName>lib</repositoryName>
@@ -110,7 +112,8 @@
 							<!-- Include the target configuration directory in the classpath -->
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
-								-Xms256m -Xmx2g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
+								-Xms256m -Xmx2g
+								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
 							</extraJvmArguments>
 							<installArtifacts>false</installArtifacts>
 							<platforms>
@@ -179,7 +182,8 @@
 							<assembleDirectory>${project.build.directory}/${dist-dir}</assembleDirectory>
 							<repoPath>/usr/share/dl-learner/lib</repoPath>
 							<repositoryName>${install-dir}/lib</repositoryName>
-							<extraJvmArguments>-Xms256m -Xmx1024m -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
+							<extraJvmArguments>-Xms256m -Xmx1024m
+								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
 							<configurationDirectory>/</configurationDirectory>
 							<platforms>
 								<platform>unix</platform>
@@ -299,6 +303,7 @@
 				<version>2.6</version>
 				<executions>
 					<execution>
+						<phase>generate-sources</phase>
 						<id>javacc</id>
 						<goals>
 							<goal>javacc</goal>

@@ -18,15 +18,7 @@
  */
 package org.dllearner.utilities.split;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.OWLAPIUtils;
@@ -35,7 +27,9 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
-import com.google.common.collect.Sets;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -72,7 +66,7 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 
 	public <T extends Number & Comparable<T>> List<T> computeSplitValues(OWLDataProperty dp) {
 		List<T> splitsDP = new LinkedList<>();
-		NumberFormat numberFormat = NumberFormat.getInstance();
+		NumberFormat numberFormat = NumberFormat.getInstance(Locale.ROOT);
 		
 		SortedSet<T> posRelatedValues = new TreeSet<>();
 		

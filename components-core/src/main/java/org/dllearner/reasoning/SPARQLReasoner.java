@@ -123,7 +123,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	private boolean prepared = false;
 	
-	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+	protected OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private OWLObjectDuplicator duplicator = new OWLObjectDuplicator(df);
@@ -516,32 +516,35 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return executeAskQuery(query);
 	}
 
+	// we have this variable so that the query can be overwritten in subclasses (for workarounds)
+	protected String buildSubsumptionHierarchyQuery() {
+		return "SELECT * WHERE {"
+				+ " ?sub a <http://www.w3.org/2002/07/owl#Class> . "
+				+ " OPTIONAL { "
+				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
+				+ "} \n"
+				+ "}";
+	}
+
 	/**
 	 * Pre-computes the class hierarchy. Instead of executing queries for each class,
 	 * we query by the predicate rdfs:subClassOf.
 	 * @return the class hierarchy
 	 */
-	public final ClassHierarchy prepareSubsumptionHierarchyFast() {
+	public ClassHierarchy prepareSubsumptionHierarchyFast() {
 		logger.info("Preparing class subsumption hierarchy ...");
 		long startTime = System.currentTimeMillis();
-		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<>(
-		);
-		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<>(
-		);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<>();
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<>();
 
-		String query = "SELECT * WHERE {"
-				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
-//				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
-				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
-				+ "FILTER(?sub != ?sup)"
-				+ "}";
-		ResultSet rs = executeSelectQuery(query);
+		ResultSet rs = executeSelectQuery(buildSubsumptionHierarchyQuery());
 	
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			if (qs.get("sub").isURIResource() && qs.get("sup").isURIResource()) {
+			if (qs.get("sub").isURIResource() && (qs.get("sup") == null || qs.get("sup").isURIResource())) {
 				OWLClass sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
-				OWLClass sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
+				OWLClass sup = qs.get("sup") == null ? df.getOWLThing()
+						: df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
 				
 				//add subclasses
 				SortedSet<OWLClassExpression> subClasses = subsumptionHierarchyDown.get(sup);
@@ -1225,6 +1228,25 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return getIndividuals(description, 0);
 	}
 
+	protected String buildIndividualsQueryValues(OWLClassExpression description, Collection<OWLIndividual> indValues, boolean isCountQuery) {
+		String query;
+		String tp = converter.convert("?ind", description);
+
+		if (isCountQuery) {
+			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n";
+		} else {
+			query = "SELECT DISTINCT ?ind WHERE { \n";
+		}
+
+		query += "VALUES ?ind { \n";
+		for (OWLIndividual x:indValues) {
+			query += "<" + x.toStringID() + "> ";
+		}
+		query += "}. \n " + tp + "\n}";
+
+		return query;
+	}
+
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
 		// we need to copy it to get something like A AND B from A AND A AND B
 		description = duplicator.duplicateObject(description);
@@ -1233,25 +1255,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query;
 		
 		if (indValues != null) {
-			String tp = converter.convert("?ind", description);
-			query = "SELECT DISTINCT ?ind WHERE { \n"
-					+ "VALUES ?ind { \n";
-			for (OWLIndividual x:indValues) {
-				query += "<" + x.toStringID() + "> ";
-			}
-			query += "}. \n " + tp + "\n}";
-			//query = converter.asQuery("?ind", description).toString();
-			//System.exit(1); // XXX
+			query = buildIndividualsQueryValues(description, indValues, false);
 		} else {
-			query = converter.asQuery("?ind", description, false).toString();//System.out.println(query);
+			query = converter.asQuery("?ind", description, false).toString();
 		}
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
 //		query = String.format(SPARQLQueryUtils.PREFIXES + " SELECT ?ind WHERE {?ind rdf:type/rdfs:subClassOf* <%s> .}", description.asOWLClass().toStringID());
-		if(logger.isDebugEnabled()){Thread.dumpStack();
-		logger.debug(sparql_debug, "get individuals query: " + query);
-		}
+		logger.trace(sparql_debug, "get individuals query: " + query);
+
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
@@ -1259,7 +1272,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
-		logger.debug(sparql_debug, "get individuals result: " + individuals);
+		logger.trace(sparql_debug, "get individuals result: " + (individuals.size() > 2 ? individuals.first() + ".."+(individuals.size()-2)+".."+individuals.last()
+			: individuals.size() == 1 ? individuals.first() : "0"));
 		return individuals;
 	}
 	
@@ -1277,13 +1291,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query;
 		
 		if (indValues != null) {
-			String tp = converter.convert("?ind", description);
-			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n"
-					+ "VALUES ?ind { \n";
-			for (OWLIndividual x:indValues) {
-				query += "<" + x.toStringID() + "> ";
-			}
-			query += "}. \n " + tp + "\n}";
+			query = buildIndividualsQueryValues(description, indValues, true);
 		} else {
 			query = converter.asQuery("?ind", description, true).toString();
 			System.err.println(query);
@@ -1292,14 +1300,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug(sparql_debug, "get individuals query: " + query);
+		if(logger.isTraceEnabled()){
+			logger.trace(sparql_debug, "get individuals query: " + query);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
 			if(qs.get("cnt").isLiteral()){
-				int ret = qs.get("cnt").asLiteral().getInt();logger.debug(sparql_debug, "result: "+ret);
+				int ret = qs.get("cnt").asLiteral().getInt();logger.trace(sparql_debug, "result: "+ret);
 				return ret;
 			}
 		}
@@ -2251,7 +2259,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits){
-		logger.trace("Sending query \n {}", queryString);//System.out.println(queryString);
+		if (logger.isTraceEnabled()) {
+			logger.trace("Sending query \n {}", queryString);//System.out.println(queryString);
+			//Thread.dumpStack();
+		}
 		try(QueryExecution qe = qef.createQueryExecution(queryString)) {
 			qe.setTimeout(timeout, timeoutUnits);
 			ResultSet rs = qe.execSelect();

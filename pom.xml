@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.dllearner</groupId>
@@ -16,7 +17,7 @@
         <slf4j.version>1.7.22</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.2.4</owlapi.version>
+        <owlapi.version>4.2.8</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
         <jena.sparql.api.version>3.1.1-1</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
@@ -26,7 +27,7 @@
 		<module>components-core</module>
 		<module>components-ext</module>
 		<module>interfaces</module>
-                <module>interfaces-ext</module>
+		<module>interfaces-ext</module>
 		<module>scripts</module>
 	</modules>
 
@@ -104,10 +105,10 @@
 	</developers>
 
 	<build>
-		<!-- - Plugin Management defines the plugins that the child components can
-            use - It's good practice to do this as we can ensure all children use common
-            versions - of the plugins, and we can look in one place to see all plugin
-            dependencies. -->
+		<!-- - Plugin Management defines the plugins that the child components
+			can use - It's good practice to do this as we can ensure all children use
+			common versions - of the plugins, and we can look in one place to see all
+			plugin dependencies. -->
 		<pluginManagement>
 			<plugins>
 				<!--Surefire - for JUnits -->
@@ -126,125 +127,125 @@
 						<target>${compiler.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<compilerArgs>
-							<!--<arg>-Xlint:all,-options,-path</arg>-->
+							<!--<arg>-Xlint:all,-options,-path</arg> -->
 						</compilerArgs>
 					</configuration>
 				</plugin>
 
-			<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm 
-				putting this in so we can create a jar for the test classes - in components 
-				core so that other components' tests can leverage them -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<keystore>/path/to/the/keystore</keystore>
-					<alias>Alias name</alias>
-					<storepass>Store password</storepass>
-					<keypass>Key password</keypass>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-			</plugin>
-			<!--JAR the Sources -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
-				<configuration>
-					<failOnError>false</failOnError>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-				<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
-					<header>license_header.txt</header>
-			        <properties>
-			            <owner>Jens Lehmann</owner>
-			            <email>lehmann@informatik.uni-leipzig.de</email>
-			        </properties>
-			       <includes>
-					   <include>src/**/*.java</include>
-			       </includes>
-			        <excludes>
-			            <exclude>**/README</exclude>
-			            <exclude>src/test/resources/**</exclude>
-			             <exclude>src/etc/**</exclude>
-			              <exclude>src/deb-package/**</exclude>
-			              <exclude>src/deb/**</exclude>
-			            <exclude>src/main/resources/**</exclude>
-			            <exclude>cache/**</exclude>
-			            <exclude>log/**</exclude>
-			            <exclude>src/**/*.html</exclude>
-			            <exclude>src/**/*.jj</exclude>
-			            <exclude>src/**/*.txt</exclude>
-						<exclude>package-info.java</exclude>
-			        </excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>tomcat-maven-plugin</artifactId>
-				<version>2.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.0.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.26</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.10</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-				</configuration>
-			</plugin>
-			<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
-			See: https://github.com/aleksandr-m/gitflow-maven-plugin
-			Usage: gitflow:release-start and gitflow:release-finish -->
-	<plugin>
-	<groupId>com.amashchenko.maven.plugin</groupId>
-	<artifactId>gitflow-maven-plugin</artifactId>
-	<version>1.2.3</version>
-	<configuration>
-		<installProject>false</installProject>
-		<verbose>true</verbose>
+				<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm
+					putting this in so we can create a jar for the test classes - in components
+					core so that other components' tests can leverage them -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>1.4</version>
+					<executions>
+						<execution>
+							<id>sign</id>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<keystore>/path/to/the/keystore</keystore>
+						<alias>Alias name</alias>
+						<storepass>Store password</storepass>
+						<keypass>Key password</keypass>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
+				</plugin>
+				<!--JAR the Sources -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.mycila</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>3.0</version>
+					<configuration>
+						<!-- <header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
+						<header>license_header.txt</header>
+						<properties>
+							<owner>Jens Lehmann</owner>
+							<email>lehmann@informatik.uni-leipzig.de</email>
+						</properties>
+						<includes>
+							<include>src/**/*.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/README</exclude>
+							<exclude>src/test/resources/**</exclude>
+							<exclude>src/etc/**</exclude>
+							<exclude>src/deb-package/**</exclude>
+							<exclude>src/deb/**</exclude>
+							<exclude>src/main/resources/**</exclude>
+							<exclude>cache/**</exclude>
+							<exclude>log/**</exclude>
+							<exclude>src/**/*.html</exclude>
+							<exclude>src/**/*.jj</exclude>
+							<exclude>src/**/*.txt</exclude>
+							<exclude>package-info.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tomcat-maven-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>maven-jetty-plugin</artifactId>
+					<version>6.1.26</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.10</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+					</configuration>
+				</plugin>
+				<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
+					See: https://github.com/aleksandr-m/gitflow-maven-plugin Usage: gitflow:release-start
+					and gitflow:release-finish -->
+				<plugin>
+					<groupId>com.amashchenko.maven.plugin</groupId>
+					<artifactId>gitflow-maven-plugin</artifactId>
+					<version>1.2.3</version>
+					<configuration>
+						<installProject>false</installProject>
+						<verbose>true</verbose>
 
 						<gitFlowConfig>
 							<productionBranch>master</productionBranch>
@@ -258,11 +259,11 @@
 					</configuration>
 				</plugin>
 				<plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.5.1</version>
-                	<configuration>
-						<!--<skipDeploy>true</skipDeploy>-->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<!--<skipDeploy>true</skipDeploy> -->
 					</configuration>
 					<dependencies>
 						<dependency><!-- add support for ssh/scp -->
@@ -336,40 +337,68 @@
 						</execution>
 					</executions>
 				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											xmlbeans-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.3.3,)
+										</versionRange>
+										<goals>
+											<goal>xmlbeans</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											javacc-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.6,)
+										</versionRange>
+										<goals>
+											<goal>javacc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
-		<!--<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>stage-for-scm-publish</id>
-						<phase>post-site</phase>
-						<goals>
-							<goal>stage</goal>
-						</goals>
-						<configuration>
-							<skipDeploy>false</skipDeploy>&lt;!&ndash; MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-publish-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>scm-publish</id>
-						<phase>site-deploy</phase>
-						<goals>
-							<goal>publish-scm</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>-->
+		<!--<plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId>
+			<executions> <execution> <id>stage-for-scm-publish</id> <phase>post-site</phase>
+			<goals> <goal>stage</goal> </goals> <configuration> <skipDeploy>false</skipDeploy>&lt;!&ndash;
+			MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
+			</configuration> </execution> </executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-scm-publish-plugin</artifactId> <version>1.1</version>
+			<executions> <execution> <id>scm-publish</id> <phase>site-deploy</phase>
+			<goals> <goal>publish-scm</goal> </goals> </execution> </executions> </plugin>
+			</plugins> -->
 	</build>
 
 	<dependencies>
@@ -436,7 +465,7 @@
 				<version>4.1.0</version>
 			</dependency>
 
-	<!-- OWL API compatible reasoners -->
+			<!-- OWL API compatible reasoners -->
 			<!-- Pellet -->
 			<!-- orignal groupId: com.clarkparsia.pellet -->
 			<dependency>
@@ -459,12 +488,12 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- Trowl - no support for OWL API v4 yet-->
-			<!--<dependency>-->
-				<!--<groupId>eu.trowl</groupId>-->
-				<!--<artifactId>trowl-core</artifactId>-->
-				<!--<version>1.5.0</version>-->
-			<!--</dependency>-->
+			<!-- Trowl - no support for OWL API v4 yet -->
+			<!--<dependency> -->
+			<!--<groupId>eu.trowl</groupId> -->
+			<!--<artifactId>trowl-core</artifactId> -->
+			<!--<version>1.5.0</version> -->
+			<!--</dependency> -->
 			<!-- ELK -->
 			<dependency>
 				<groupId>org.semanticweb.elk</groupId>
@@ -513,19 +542,9 @@
 				</exclusions>
 			</dependency>
 
-			<!-- 
-            <dependency>
-                <groupId>org.nlp2rdf</groupId>
-                <artifactId>nif</artifactId>
-                <version>1.1-SNAPSHOT</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-             -->
+			<!-- <dependency> <groupId>org.nlp2rdf</groupId> <artifactId>nif</artifactId>
+				<version>1.1-SNAPSHOT</version> <exclusions> <exclusion> <groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId> </exclusion> </exclusions> </dependency> -->
 
 			<!--Available via central, we use the latest with minor mods to DL Learner
 				source (IE Dig related code) -->
@@ -691,7 +710,8 @@
 						<groupId>org.slf4j</groupId>
 						<artifactId>slf4j-log4j12</artifactId>
 					</exclusion>
-					<!--This pom is including a modified version of Jena that is out of sync with what we're using-->
+					<!--This pom is including a modified version of Jena that is out of
+						sync with what we're using -->
 					<exclusion>
 						<groupId>com.hp.hpl.jena</groupId>
 						<artifactId>jena</artifactId>
@@ -742,45 +762,48 @@
 				<version>${spring.version}</version>
 			</dependency>
 
-			<!--BEGIN Logging Dependencies-->
+			<!--BEGIN Logging Dependencies -->
 
-			<!--This is the api jar, it's needed at compile time-->
+			<!--This is the api jar, it's needed at compile time -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!--This is the bridge that ties calls from the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
+			<!--This is the bridge that ties calls from the slf4j api to the log4j
+				framework. This is a runtime dependency for programs which wish to use log4j
+				as their implementation. -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
+			<!-- This is the concrete implementation of the log4j framework - it is
+				a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
 
-			<!--Bridge from JCL to SLF4J.  Then we go from SLF4J to our desired logging framework (which for DL-Learner interfaces is Log4J).
-             - JCL is in use by Spring and so this lets us control the output from the Spring libraries in the same way we control anything else.
-             - This is also a runtime dependency.
-             -->
+			<!--Bridge from JCL to SLF4J. Then we go from SLF4J to our desired logging
+				framework (which for DL-Learner interfaces is Log4J). - JCL is in use by
+				Spring and so this lets us control the output from the Spring libraries in
+				the same way we control anything else. - This is also a runtime dependency. -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<!--END Logging Dependencies-->
+			<!--END Logging Dependencies -->
 
-			<!--Explicit xml-api dependency so we can update xerces-->
+			<!--Explicit xml-api dependency so we can update xerces -->
 			<dependency>
-			  <groupId>xml-apis</groupId>
-			  <artifactId>xml-apis</artifactId>
-			  <version>1.4.01</version>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.4.01</version>
 			</dependency>
 			<dependency>
 				<groupId>xerces</groupId>
@@ -855,13 +878,15 @@
 			<name>AKSW Snapshot Repository</name>
 			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
-		<!-- start - location where site is deployed - username/password for site.deployments in server.xml -->
+		<!-- start - location where site is deployed - username/password for site.deployments
+			in server.xml -->
 		<site>
 			<id>site.deployments</id>
 			<name>Site deployments</name>
 			<url>scp://[2001:638:902:2010:0:168:35:165]/site</url>
 		</site>
-		<!-- end - location where site is deployed - username/password for site.deployments in server.xml -->
+		<!-- end - location where site is deployed - username/password for site.deployments
+			in server.xml -->
 	</distributionManagement>
 
 	<reporting>
@@ -955,11 +980,11 @@
 						<artifactId>maven-source-plugin</artifactId>
 						<executions>
 							<execution>
-                                <id>attach-sources</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
+								<id>attach-sources</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
 							</execution>
 						</executions>
 					</plugin>
