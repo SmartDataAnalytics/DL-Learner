@@ -13,12 +13,12 @@
 		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.22</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <solr.version>5.3.0</solr.version>
         <owlapi.version>4.2.4</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
-        <jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
+        <jena.sparql.api.version>3.1.1-1</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
