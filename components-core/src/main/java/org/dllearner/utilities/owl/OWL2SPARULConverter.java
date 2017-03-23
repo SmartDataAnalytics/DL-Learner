@@ -22,6 +22,8 @@ import com.google.common.collect.ComparisonChain;
 import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
+import org.semanticweb.owlapi.util.AlwaysOutputId;
+import org.semanticweb.owlapi.util.AxiomAppearance;
 import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
@@ -29,6 +31,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A converter of OWL axioms or OWL ontology changes into SPARQL 1.1 Update commands.
@@ -41,12 +44,14 @@ public class OWL2SPARULConverter
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
-			OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance) {
-		super(manager, ontology, useStrongTyping, individualAppearance);
+							   OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance,
+							   AxiomAppearance axiomAppearance, AtomicInteger nextNode) {
+		super(manager, ontology, useStrongTyping, individualAppearance, axiomAppearance, nextNode);
 	}
-	
+
 	public OWL2SPARULConverter(OWLOntology ontology, boolean useStrongTyping) {
-		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping, new OWLAnonymousIndividualsWithMultipleOccurrences());
+		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping,
+			 new OWLAnonymousIndividualsWithMultipleOccurrences(), new AlwaysOutputId(), new AtomicInteger());
 	}
 
 	/**
