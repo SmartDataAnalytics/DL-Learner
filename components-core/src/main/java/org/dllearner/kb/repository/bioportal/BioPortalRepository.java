@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
@@ -142,6 +143,14 @@ public class BioPortalRepository implements OntologyRepository {
 			return url.openStream();
 		}
 	}
+
+	/**
+	 * Download the ontologies and save them in the given directory.
+	 * @param dir the directory
+	 */
+	public void download(File dir) {
+
+	}
 	
 	public static void main(String[] args) throws Exception{
 		Collection<OntologyRepositoryEntry> entries = new BioPortalRepository().getEntries();
@@ -149,6 +158,8 @@ public class BioPortalRepository implements OntologyRepository {
 		dir.mkdir();
 
 		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
+
+		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
 
 		entries.parallelStream().forEach(entry -> {
 			try {
