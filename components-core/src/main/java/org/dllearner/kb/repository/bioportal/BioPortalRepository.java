@@ -157,6 +157,8 @@ public class BioPortalRepository implements OntologyRepository {
 		File dir = new File("/tmp/bioportal/");
 		dir.mkdir();
 
+		boolean parseEnabled = args.length == 1 && args[0].equals("parse");
+
 		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
 
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
@@ -176,7 +178,7 @@ public class BioPortalRepository implements OntologyRepository {
 				System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
 				map.put(entry.getOntologyShortName(), FileUtils.byteCountToDisplaySize(f.length()));
 
-				if(sizeInMb < 10) {
+				if(parseEnabled && sizeInMb < 10) {
 					try {
 						OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 						man.addMissingImportListener(e -> {
