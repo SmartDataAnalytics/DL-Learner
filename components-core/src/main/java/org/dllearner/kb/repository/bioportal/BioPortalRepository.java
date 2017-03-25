@@ -159,10 +159,10 @@ public class BioPortalRepository implements OntologyRepository {
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> baseDir =
 				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File("/tmp/bioportal/"));
-		OptionSpec<Boolean> downloadOption =
-				parser.accepts( "download" ).withOptionalArg().ofType( Boolean.class).defaultsTo( false );
-		OptionSpec<Boolean> parseOption =
-				parser.accepts( "parse" ).withOptionalArg().ofType( Boolean.class).defaultsTo( false );
+		OptionSpec<Void> downloadOption =
+				parser.accepts( "download" );
+		OptionSpec<Void> parseOption =
+				parser.accepts( "parse" );
 
 		OptionSet options = parser.parse(args);
 
@@ -186,8 +186,8 @@ public class BioPortalRepository implements OntologyRepository {
 		Collection<OntologyRepositoryEntry> entries = repo.getEntries();
 		System.out.println("BioPortal repository size: " + entries.size());
 
-		boolean downloadEnabled = options.valueOf(downloadOption);
-		boolean parseEnabled = options.valueOf(parseOption);
+		boolean downloadEnabled = options.has(downloadOption);
+		boolean parseEnabled = options.has(parseOption);
 
 		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
 
