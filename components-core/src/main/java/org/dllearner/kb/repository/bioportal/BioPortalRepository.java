@@ -160,9 +160,9 @@ public class BioPortalRepository implements OntologyRepository {
 		OptionSpec<File> baseDir =
 				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File("/tmp/bioportal/"));
 		OptionSpec<Boolean> downloadOption =
-				parser.accepts( "download" ).withRequiredArg().ofType( Boolean.class).defaultsTo( false );
+				parser.accepts( "download" ).withOptionalArg().ofType( Boolean.class).defaultsTo( false );
 		OptionSpec<Boolean> parseOption =
-				parser.accepts( "parse" ).withRequiredArg().ofType( Boolean.class).defaultsTo( false );
+				parser.accepts( "parse" ).withOptionalArg().ofType( Boolean.class).defaultsTo( false );
 
 		OptionSet options = parser.parse(args);
 
