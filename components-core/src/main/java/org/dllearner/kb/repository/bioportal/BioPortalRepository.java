@@ -18,23 +18,16 @@
  */
 package org.dllearner.kb.repository.bioportal;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.*;
-import java.util.concurrent.ForkJoinPool;
-
-import com.google.gson.JsonParser;
+import com.google.common.base.Charsets;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.KXml2Driver;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
@@ -42,6 +35,14 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
 
 public class BioPortalRepository implements OntologyRepository {
 	
@@ -153,11 +154,40 @@ public class BioPortalRepository implements OntologyRepository {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		Collection<OntologyRepositoryEntry> entries = new BioPortalRepository().getEntries();
-		File dir = new File("/tmp/bioportal/");
-		dir.mkdir();
 
-		boolean parseEnabled = args.length == 1 && args[0].equals("parse");
+		// create Options object
+		OptionParser parser = new OptionParser();
+		OptionSpec<File> baseDir =
+				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File("/tmp/bioportal/"));
+		OptionSpec<Boolean> downloadOption =
+				parser.accepts( "download" ).withRequiredArg().ofType( Boolean.class).defaultsTo( false );
+		OptionSpec<Boolean> parseOption =
+				parser.accepts( "parse" ).withRequiredArg().ofType( Boolean.class).defaultsTo( false );
+
+		OptionSet options = parser.parse(args);
+
+		File dir = options.valueOf(baseDir);
+		dir.mkdirs();
+
+		File downloadDir = new File(dir, "download");
+		File downloadSuccessfulDir = new File(downloadDir, "successful");
+		File downloadFailedDir = new File(downloadDir, "failed");
+		downloadSuccessfulDir.mkdirs();
+		downloadFailedDir.mkdirs();
+		File parsedDir = new File(dir, "parsed");
+		File parsedSuccessfulDir = new File(parsedDir, "successful");
+		File parsedFailedDir = new File(parsedDir, "failed");
+		parsedSuccessfulDir.mkdirs();
+		parsedFailedDir.mkdirs();
+
+		BioPortalRepository repo = new BioPortalRepository();
+		repo.initialize();
+
+		Collection<OntologyRepositoryEntry> entries = repo.getEntries();
+		System.out.println("BioPortal repository size: " + entries.size());
+
+		boolean downloadEnabled = options.valueOf(downloadOption);
+		boolean parseEnabled = options.valueOf(parseOption);
 
 		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
 
@@ -165,20 +195,42 @@ public class BioPortalRepository implements OntologyRepository {
 
 		entries.parallelStream().forEach(entry -> {
 			try {
-				System.out.println("Loading " + entry.getOntologyShortName() + " from " + entry.getPhysicalURI());
 
-				File f = new File(dir, entry.getOntologyShortName() + ".rdf");
-				IOUtils.copy(getInputStream(entry.getPhysicalURI().toURL()), new FileOutputStream(f));
+				File f = null;
+				long sizeInMb = 101;
+				if(downloadEnabled) {
 
-				// Get the number of bytes in the file
-				long sizeInBytes = f.length();
-				//transform in MB
-				long sizeInMb = sizeInBytes / (1024 * 1024);
+					System.out.println("Loading " + entry.getOntologyShortName() + " from " + entry.getPhysicalURI());
 
-				System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
-				map.put(entry.getOntologyShortName(), FileUtils.byteCountToDisplaySize(f.length()));
+					try(InputStream is = getInputStream(entry.getPhysicalURI().toURL())) {
+						f = new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf");
 
-				if(parseEnabled && sizeInMb < 10) {
+						IOUtils.copy(is, new FileOutputStream(f));
+
+						sizeInMb = f.length() / (1024 * 1024);
+
+						System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
+						map.put(entry.getOntologyShortName(), FileUtils.byteCountToDisplaySize(f.length()));
+					} catch (Exception e) {
+						com.google.common.io.Files.write(
+								ExceptionUtils.getMessage(e),
+								new File(downloadFailedDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
+						return;
+					}
+				}
+
+				if(f == null) {
+					System.out.println("Loading " + entry.getOntologyShortName() + " from disk");
+
+					f = new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf");
+
+					System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
+
+					sizeInMb = f.length() / (1024 * 1024);
+				}
+
+				if(parseEnabled && sizeInMb < 100) {
 					try {
 						OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 						man.addMissingImportListener(e -> {
@@ -190,12 +242,25 @@ public class BioPortalRepository implements OntologyRepository {
 						man.setOntologyLoaderConfiguration(conf);
 						OWLOntology ont = man.loadOntologyFromOntologyDocument(f);
 						System.out.println("#Axioms: " + ont.getLogicalAxiomCount());
+
+						com.google.common.io.Files.write(
+								ont.getLogicalAxiomCount() + "\t" +
+										ont.getClassesInSignature().size() + "\t" +
+										ont.getObjectPropertiesInSignature().size() + "\t" +
+										ont.getDataPropertiesInSignature().size() + "\t" +
+										ont.getIndividualsInSignature().size(),
+								new File(parsedSuccessfulDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
+
 						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||#Axioms: " + ont.getLogicalAxiomCount());
 						man.removeOntology(ont);
 					} catch (Exception e1) {
 						System.err.println("Failed to parse " + entry.getOntologyShortName());
 						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||Parse Error");
-
+						com.google.common.io.Files.write(
+								ExceptionUtils.getMessage(e1),
+								new File(parsedFailedDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
 					}
 				}
 			} catch (Exception e) {
