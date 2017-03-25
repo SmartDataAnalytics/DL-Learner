@@ -564,6 +564,10 @@
 				<version>0.5.0</version>
 				<scope>test</scope>
 			</dependency>
+		<dependency>
+			<groupId>net.sf.jopt-simple</groupId>
+			<artifactId>jopt-simple</artifactId>
+		</dependency>
 
 	</dependencies>
 </project>
