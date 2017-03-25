@@ -230,7 +230,7 @@ public class BioPortalRepository implements OntologyRepository {
 					sizeInMb = f.length() / (1024 * 1024);
 				}
 
-				if(parseEnabled && sizeInMb < 100) {
+				if(f.exists() && parseEnabled && sizeInMb < 100) {
 					try {
 						OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 						man.addMissingImportListener(e -> {
