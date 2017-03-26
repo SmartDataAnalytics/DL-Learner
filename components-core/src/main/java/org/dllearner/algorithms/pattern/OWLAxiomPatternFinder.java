@@ -20,9 +20,14 @@ package org.dllearner.algorithms.pattern;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.dllearner.kb.dataset.OWLOntologyDataset;
+import org.dllearner.kb.repository.LocalDirectoryOntologyRepository;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.ini4j.IniPreferences;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -36,6 +41,7 @@ import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -427,22 +433,41 @@ public class OWLAxiomPatternFinder {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// create Options object
+		OptionParser parser = new OptionParser();
+
+		OptionSpec<File> dir =
+				parser.accepts( "dir" ).withRequiredArg().ofType( File.class ).required();
+
+		OptionSpec<Integer> maxFileSize =
+				parser.accepts( "maxFileSize" ).withRequiredArg().ofType( Integer.class ).defaultsTo(-1);
+
+		parser.printHelpOn( System.out );
+
+		OptionSet options = parser.parse(args);
+
+		OntologyRepository repository = new LocalDirectoryOntologyRepository(options.valueOf(dir), options.valueOf(maxFileSize));
+		repository.initialize();
+		OWLAxiomPatternFinder patternFinder = new OWLAxiomPatternFinder(repository);
+		patternFinder.start();
 		
-		String ontologyURL = "ontologyURL";
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory = man.getOWLDataFactory();
-		OWLFunctionalDataPropertyAxiom axiom = dataFactory.getOWLFunctionalDataPropertyAxiom(dataFactory.getOWLDataProperty(IRI.create("http://ex.org/p")));
-		OWLOntology ontology = man.createOntology();
-		man.addAxiom(ontology, axiom);
-		StringWriter sw = new StringWriter();
-		FunctionalSyntaxObjectRenderer r = new FunctionalSyntaxObjectRenderer(ontology, sw);
-		axiom.accept(r);
-		System.out.println(sw.toString());
-		StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + sw.toString() + ")");
-		OWLFunctionalSyntaxOWLParser p = new OWLFunctionalSyntaxOWLParser();
-		OWLOntology newOntology = man.createOntology();
-		p.parse(s, newOntology, new OWLOntologyLoaderConfiguration());
-		System.out.println(newOntology.getLogicalAxioms());
+//		String ontologyURL = "ontologyURL";
+//		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+//		OWLDataFactory dataFactory = man.getOWLDataFactory();
+//		OWLFunctionalDataPropertyAxiom axiom = dataFactory.getOWLFunctionalDataPropertyAxiom(dataFactory.getOWLDataProperty(IRI.create("http://ex.org/p")));
+//		OWLOntology ontology = man.createOntology();
+//		man.addAxiom(ontology, axiom);
+//		StringWriter sw = new StringWriter();
+//		FunctionalSyntaxObjectRenderer r = new FunctionalSyntaxObjectRenderer(ontology, sw);
+//		axiom.accept(r);
+//		System.out.println(sw.toString());
+//		StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + sw.toString() + ")");
+//		OWLFunctionalSyntaxOWLParser p = new OWLFunctionalSyntaxOWLParser();
+//		OWLOntology newOntology = man.createOntology();
+//		p.parse(s, newOntology, new OWLOntologyLoaderConfiguration());
+//		System.out.println(newOntology.getLogicalAxioms());
+
+
 		
 	}
 }

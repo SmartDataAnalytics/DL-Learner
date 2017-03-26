@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 public class OxfordRepository implements OntologyRepository{
@@ -81,7 +82,12 @@ public class OxfordRepository implements OntologyRepository{
         return Collections.emptyList();
     }
 
-    public void dispose() {
+	@Override
+	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
+		return null;
+	}
+
+	public void dispose() {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////

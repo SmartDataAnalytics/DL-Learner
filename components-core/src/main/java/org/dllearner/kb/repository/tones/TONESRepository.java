@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
@@ -82,6 +83,11 @@ public class TONESRepository implements OntologyRepository{
     @Override
     public List<Object> getMetaDataKeys() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public OWLOntology getOntology(OntologyRepositoryEntry entry) {
+        return null;
     }
 
     public void dispose() {

@@ -2,6 +2,7 @@ package org.dllearner.kb.repository;
 
 import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 import java.io.File;
@@ -23,9 +24,15 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 				com.google.common.io.Files.getFileExtension(p.getFileName().toString()));
 
 	private final File directory;
+	private long maxFileSizeInMB = Long.MAX_VALUE;
 
 	public LocalDirectoryOntologyRepository(File directory){
 		this.directory = directory;
+	}
+
+	public LocalDirectoryOntologyRepository(File directory, long maxFileSizeInMB){
+		this.directory = directory;
+		this.maxFileSizeInMB = maxFileSizeInMB;
 	}
 
 	@Override
@@ -53,6 +60,7 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 		try {
 			return Files.list(directory.toPath())
 					.filter(filter::matches)
+					.filter(f -> f.toFile().length() / 1024 / 1024 < maxFileSizeInMB)
 					.map(f -> new RepositoryEntry(f.toUri()))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
@@ -63,6 +71,11 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 
 	@Override
 	public List<Object> getMetaDataKeys() {
+		return null;
+	}
+
+	@Override
+	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
 		return null;
 	}
 

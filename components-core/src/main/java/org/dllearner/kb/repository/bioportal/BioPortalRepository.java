@@ -152,6 +152,29 @@ public class BioPortalRepository implements OntologyRepository {
 	public void download(File dir) {
 
 	}
+
+	/**
+	 * Returns the ontology for the entry.
+	 * @param entry the entry
+	 * @return the OWL ontology
+	 */
+	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
+		try(InputStream is = getInputStream(entry.getPhysicalURI().toURL())) {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			man.addMissingImportListener(e -> {
+				System.out.println("Missing import: " + e.getImportedOntologyURI());
+			});
+			OWLOntologyLoaderConfiguration conf = new OWLOntologyLoaderConfiguration();
+			conf.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+			conf.addIgnoredImport(IRI.create("http://www.co-ode.org/ontologies/lists/2008/09/11/list.owl"));
+			man.setOntologyLoaderConfiguration(conf);
+			OWLOntology ont = man.loadOntologyFromOntologyDocument(is);
+			return ont;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static void main(String[] args) throws Exception{
 
