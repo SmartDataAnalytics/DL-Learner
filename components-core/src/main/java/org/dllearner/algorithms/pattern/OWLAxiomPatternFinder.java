@@ -245,10 +245,9 @@ public class OWLAxiomPatternFinder {
 			String dbUser = prefs.node("database").get("user", null);
 			String dbPass = prefs.node("database").get("pass", null);
 
-			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
-		} catch (ClassNotFoundException | IOException | SQLException  e) {
+		} catch (IOException | SQLException  e) {
 			e.printStackTrace();
 		}
 	}
