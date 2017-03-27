@@ -31,9 +31,12 @@ import org.dllearner.kb.repository.OntologyRepositoryEntry;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.ini4j.IniPreferences;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.functional.renderer.FunctionalSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
@@ -51,6 +54,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class OWLAxiomPatternFinder {
 	
@@ -134,6 +138,8 @@ public class OWLAxiomPatternFinder {
 
 		manager = OWLManager.createConcurrentOWLOntologyManager();
 
+//		entries = entries.stream().filter(e -> e.getOntologyShortName().equals("AURA")).collect(Collectors.toList());
+
 		for (OntologyRepositoryEntry entry : entries) {
 			tp.execute(() -> {
 					OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
@@ -142,8 +148,8 @@ public class OWLAxiomPatternFinder {
 					URI uri = entry.getPhysicalURI();
 					System.out.println(FileUtils.byteCountToDisplaySize(new File(uri).length()));
 //					if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
-					if (!ontologyProcessed(uri)) {//if(entry.getOntologyShortName().equals("00698"))continue;
-						LOGGER.info("Loading \"" + entry.getOntologyShortName() + "\" from " + uri);
+					if (!ontologyProcessed(uri)) {
+						LOGGER.info("Loading \"" + entry.getOntologyShortName() + "\" from " + uri + " ...");
 						try {
 
 							OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -152,11 +158,23 @@ public class OWLAxiomPatternFinder {
 							Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
 							Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.INCLUDED);
 
-							LOGGER.info(" (" + logicalAxioms.size() + " axioms)");
+							LOGGER.info("   finished loading \"" + entry.getOntologyShortName() + "\". #Axioms: " + logicalAxioms.size());
+							LOGGER.info("Running pattern detection for \"" + entry.getOntologyShortName() + "\" ...");
+							int cnt = 0;
 							for (OWLAxiom axiom : logicalAxioms) {
+//								if(axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+//									System.out.println(((OWLSubClassOfAxiom)axiom).getSuperClass());
+//								}
+
 								OWLAxiom renamedAxiom = renamer.rename(axiom);
 								axiomPatterns.add(renamedAxiom);
+								cnt++;
+								if(cnt % 1000 == 0) {
+									System.out.println(cnt);
+								}
 							}
+							LOGGER.info("   finished pattern detection for \"" + entry.getOntologyShortName() + "\". #Patterns: " +
+												axiomPatterns.elementSet().size());
 //							allAxiomPatterns.addAll(axiomPatterns);
 							addOntologyPatterns(uri, ontology, axiomPatterns);
 //							for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
@@ -435,14 +453,22 @@ public class OWLAxiomPatternFinder {
 				insertOntologyPatternPs.setInt(1, ontologyId);
 				insertOntologyPatternPs.setInt(2, patternId);
 				insertOntologyPatternPs.setInt(3, occurrences);
-				insertOntologyPatternPs.execute();
+				insertOntologyPatternPs.addBatch();
 			} catch (SQLException e) {
 				System.err.println("Adding pattern\n" + pattern + "\nfailed." + e.getMessage());
 			}
 		}
+		try {
+			insertOntologyPatternPs.executeBatch();
+		} catch (SQLException e) {
+			System.err.println("Adding patterns failed." + e.getMessage());
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
+//		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt(
+//				true, true);
+//		ToStringRenderer.getInstance().setRenderer(renderer);
 		// create Options object
 		OptionParser parser = new OptionParser();
 
