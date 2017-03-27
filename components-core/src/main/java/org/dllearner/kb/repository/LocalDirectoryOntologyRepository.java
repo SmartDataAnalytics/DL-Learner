@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,8 +62,10 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 		try {
 			return Files.list(directory.toPath())
 					.filter(filter::matches)
-					.filter(f -> f.toFile().length() / 1024 / 1024 < maxFileSizeInMB)
-					.map(f -> new RepositoryEntry(f.toUri()))
+					.filter(path -> path.toFile().length() / 1024 / 1024 < maxFileSizeInMB)
+					.map(Path::toFile)
+					.sorted(Comparator.comparingLong(File::length).reversed())
+					.map(path -> new RepositoryEntry(path.toURI()))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			e.printStackTrace();

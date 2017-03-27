@@ -23,18 +23,16 @@ import com.google.common.collect.Multiset;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.apache.commons.io.FileUtils;
 import org.dllearner.kb.dataset.OWLOntologyDataset;
 import org.dllearner.kb.repository.LocalDirectoryOntologyRepository;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
-import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.ini4j.IniPreferences;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.functional.parser.OWLFunctionalSyntaxOWLParser;
 import org.semanticweb.owlapi.functional.renderer.FunctionalSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
@@ -92,6 +90,9 @@ public class OWLAxiomPatternFinder {
 	
 	private boolean randomOrder = false;
 
+	private boolean multithreadedEnabled = false;
+	private int numThreads = 4;//Runtime.getRuntime().availableProcessors() - 1
+
 	public OWLAxiomPatternFinder(OWLOntologyDataset dataset) {
 		
 	}
@@ -118,7 +119,7 @@ public class OWLAxiomPatternFinder {
 	 * Start the pattern detection.
 	 */
 	public void start() {
-		final ExecutorService tp = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+		final ExecutorService tp = Executors.newFixedThreadPool(multithreadedEnabled ? numThreads : 1);
 
 		Collection<OntologyRepositoryEntry> entries = repository.getEntries();
 		if(randomOrder){
@@ -134,26 +135,23 @@ public class OWLAxiomPatternFinder {
 		manager = OWLManager.createConcurrentOWLOntologyManager();
 
 		for (OntologyRepositoryEntry entry : entries) {
-			tp.execute(new Runnable() {
-				@Override
-				public void run() {
+			tp.execute(() -> {
 					OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
 
 					System.out.print(i.incrementAndGet() + ": ");
 					URI uri = entry.getPhysicalURI();
+					System.out.println(FileUtils.byteCountToDisplaySize(new File(uri).length()));
 //					if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
 					if (!ontologyProcessed(uri)) {//if(entry.getOntologyShortName().equals("00698"))continue;
 						LOGGER.info("Loading \"" + entry.getOntologyShortName() + "\" from " + uri);
 						try {
 
+							OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+
 							OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 							Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
-							Set<OWLAxiom> logicalAxioms = new HashSet<>();
-							for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
-								if (type.isLogical()) {
-									logicalAxioms.addAll(ontology.getAxioms(type, Imports.INCLUDED));
-								}
-							}
+							Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.INCLUDED);
+
 							LOGGER.info(" (" + logicalAxioms.size() + " axioms)");
 							for (OWLAxiom axiom : logicalAxioms) {
 								OWLAxiom renamedAxiom = renamer.rename(axiom);
@@ -167,34 +165,47 @@ public class OWLAxiomPatternFinder {
 							manager.removeOntology(ontology);
 						} catch (OWLOntologyAlreadyExistsException e) {
 							e.printStackTrace();
+						} catch (UnloadableImportException e) {
+							LOGGER.error("Import loading failed", e);
+							addOntologyError(uri, e);
 						} catch (Exception e) {
-							e.printStackTrace();
+							LOGGER.error("Ontology processing failed", e);
 							addOntologyError(uri, e);
 						}
 					} else {
 						LOGGER.info("Already processed.");
 					}
-				}
-			});
+				});
 		}
 
-		tp.shutdown();
 		try {
-			// Wait a while for existing tasks to terminate
-			if (!tp.awaitTermination(60, TimeUnit.MINUTES)) {
-				tp.shutdownNow(); // Cancel currently executing tasks
-				// Wait a while for tasks to respond to being cancelled
-				if (!tp.awaitTermination(60, TimeUnit.SECONDS))
-					System.err.println("Pool did not terminate");
-			}
-		} catch (InterruptedException ie) {
-			// (Re-)Cancel if current thread also interrupted
-			tp.shutdownNow();
+			tp.shutdown();
+			tp.awaitTermination(600, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			System.err.println("tasks interrupted");
+
 			// Preserve interrupt status
 			Thread.currentThread().interrupt();
+		} finally {
+			if (!tp.isTerminated()) {
+				System.err.println("cancel non-finished tasks");
+			}
+			tp.shutdownNow();
+			System.out.println("shutdown finished");
 		}
 	}
-	
+
+	public void setMultithreadedEnabled(boolean multithreadedEnabled) {
+		this.multithreadedEnabled = multithreadedEnabled;
+	}
+
+	public void setNumThreads(int numThreads) {
+		this.numThreads = numThreads;
+		if(numThreads < 0) {
+			numThreads = Runtime.getRuntime().availableProcessors() - 1;
+		}
+	}
+
 	private void prepare(){
 		createTables();
 		try {
@@ -439,16 +450,29 @@ public class OWLAxiomPatternFinder {
 		OptionSpec<File> dir =
 				parser.accepts( "dir" ).withRequiredArg().ofType( File.class ).required();
 
-		OptionSpec<Integer> maxFileSize =
-				parser.accepts( "maxFileSize" ).withRequiredArg().ofType( Integer.class ).defaultsTo(-1);
+		OptionSpec<Long> maxFileSize =
+				parser.accepts( "maxFileSize" ).withRequiredArg().ofType(Long.class).defaultsTo(Long.MAX_VALUE);
+
+		OptionSpec<Boolean> multiThreadedEnabledOpt =
+				parser.accepts( "multiThreadedEnabled" ).withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+
+		OptionSpec<Integer> numThreadsOpt =
+				parser.accepts( "numThreads" ).availableIf(multiThreadedEnabledOpt).withRequiredArg().ofType(Integer.class).defaultsTo(4);
 
 		parser.printHelpOn( System.out );
 
 		OptionSet options = parser.parse(args);
 
+		boolean multiThreadedEnabled = options.has(multiThreadedEnabledOpt) &&
+				(!options.hasArgument(multiThreadedEnabledOpt) || options.valueOf(multiThreadedEnabledOpt));
+		int numThreads = options.valueOf(numThreadsOpt);
+
 		OntologyRepository repository = new LocalDirectoryOntologyRepository(options.valueOf(dir), options.valueOf(maxFileSize));
 		repository.initialize();
+
 		OWLAxiomPatternFinder patternFinder = new OWLAxiomPatternFinder(repository);
+		patternFinder.setMultithreadedEnabled(multiThreadedEnabled);
+		patternFinder.setNumThreads(numThreads);
 		patternFinder.start();
 		
 //		String ontologyURL = "ontologyURL";
