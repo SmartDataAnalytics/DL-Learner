@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.semanticweb.owlapi.util.OWLAPIPreconditions.checkNotNull;
+
 /**
  * A converter of OWL axioms or OWL ontology changes into SPARQL 1.1 Update commands.
  *
@@ -131,13 +133,14 @@ public class OWL2SPARULConverter
 	@Nonnull
 	@Override
 	protected RDFResourceBlankNode getAnonymousNode(@Nonnull Object key) {
-		return new RDFResourceBlankNode(System.identityHashCode(key), false, false);
+		return new RDFResourceBlankNode(System.identityHashCode(key), false,false, false);
 	}
 
 	@Nonnull
 	@Override
-	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object o) {
-		return new RDFResourceBlankNode(false, false);
+	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object key, boolean isAxiom) {
+		checkNotNull(key, "key cannot be null");
+		return new RDFResourceBlankNode(false, false, isAxiom);
 	}
 
 	@Nonnull
