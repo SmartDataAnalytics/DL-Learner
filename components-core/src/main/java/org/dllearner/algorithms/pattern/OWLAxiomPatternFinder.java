@@ -31,12 +31,10 @@ import org.dllearner.kb.repository.OntologyRepositoryEntry;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.ini4j.IniPreferences;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.functional.renderer.FunctionalSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
-import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
@@ -54,30 +52,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class OWLAxiomPatternFinder {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OWLAxiomPatternFinder.class);
 	
-	private static Queue<String> classVarQueue = new LinkedList<>();
-	private static Queue<String> propertyVarQueue = new LinkedList<>();
-	private static Queue<String> individualVarQueue = new LinkedList<>();
-	private static Queue<String> datatypeVarQueue = new LinkedList<>();
-	
-	static{
-		for(int i = 65; i <= 90; i++){
-			classVarQueue.add(String.valueOf((char)i));
-		}
-		for(int i = 97; i <= 111; i++){
-			individualVarQueue.add(String.valueOf((char)i));
-		}
-		for(int i = 112; i <= 122; i++){
-			propertyVarQueue.add(String.valueOf((char)i));
-		}
-		
-	}
-
 	private OntologyRepository repository;
 	private OWLOntologyManager manager;
 	private OWLDataFactory dataFactory;
@@ -85,6 +64,7 @@ public class OWLAxiomPatternFinder {
 	private Connection conn;
 	private PreparedStatement selectOntologyIdPs;
 	private PreparedStatement insertOntologyPs;
+	private PreparedStatement insertOntologyImportPs;
 	private PreparedStatement insertOntologyErrorPs;
 	private PreparedStatement selectPatternIdPs;
 	private PreparedStatement insertPatternIdPs;
@@ -134,7 +114,7 @@ public class OWLAxiomPatternFinder {
 
 		final Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
 
-		AtomicInteger i = new AtomicInteger(1);
+		AtomicInteger i = new AtomicInteger(0);
 
 		manager = OWLManager.createConcurrentOWLOntologyManager();
 
@@ -144,9 +124,9 @@ public class OWLAxiomPatternFinder {
 			tp.execute(() -> {
 					OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
 
-					System.out.print(i.incrementAndGet() + ": ");
 					URI uri = entry.getPhysicalURI();
-					System.out.println(FileUtils.byteCountToDisplaySize(new File(uri).length()));
+					LOGGER.info(i.incrementAndGet() + ": " + entry.getOntologyShortName() + " (" +
+											   FileUtils.byteCountToDisplaySize(new File(uri).length()) + ")");
 //					if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
 					if (!ontologyProcessed(uri)) {
 						LOGGER.info("Loading \"" + entry.getOntologyShortName() + "\" from " + uri + " ...");
@@ -155,16 +135,28 @@ public class OWLAxiomPatternFinder {
 							OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 							OWLOntology ontology = manager.loadOntology(IRI.create(uri));
-							Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
-							Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.INCLUDED);
-
+							Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.EXCLUDED);
 							LOGGER.info("   finished loading \"" + entry.getOntologyShortName() + "\". #Axioms: " + logicalAxioms.size());
+
 							LOGGER.info("Running pattern detection for \"" + entry.getOntologyShortName() + "\" ...");
+							Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
 							int cnt = 0;
 							for (OWLAxiom axiom : logicalAxioms) {
-//								if(axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+								if(axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+//									System.out.println(MaximumModalDepthDetector.getMaxModalDepth(axiom));
 //									System.out.println(((OWLSubClassOfAxiom)axiom).getSuperClass());
-//								}
+//									OWLClassExpression sup = ((OWLSubClassOfAxiom) axiom).getSuperClass();
+//									if(sup instanceof OWLObjectIntersectionOf) {
+//										List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) sup).getOperandsAsList();
+//										System.out.println("OPs: " + operands.size());
+//										if(operands.get(0).toString().equals("Oxidative-Phosphorylation")) {
+//											manager.createOntology(Sets.newHashSet(axiom)).saveOntology(
+//													new RDFXMLDocumentFormat(),
+//													new FileOutputStream("/tmp/longaxiom.owl"));
+//											System.exit(0);
+//										}
+//									}
+								}
 
 								OWLAxiom renamedAxiom = renamer.rename(axiom);
 								axiomPatterns.add(renamedAxiom);
@@ -173,6 +165,7 @@ public class OWLAxiomPatternFinder {
 									System.out.println(cnt);
 								}
 							}
+
 							LOGGER.info("   finished pattern detection for \"" + entry.getOntologyShortName() + "\". #Patterns: " +
 												axiomPatterns.elementSet().size());
 //							allAxiomPatterns.addAll(axiomPatterns);
@@ -180,11 +173,43 @@ public class OWLAxiomPatternFinder {
 //							for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
 //								System.out.println(owlAxiom + ": " + allAxiomPatterns.count(owlAxiom));
 //							}
+
+							// process the imports separately
+							Set<OWLOntology> imports = ontology.getImports();
+							if(!imports.isEmpty()) {
+								LOGGER.info("Processing the imports of \"" + entry.getOntologyShortName() + "\" ...");
+							}
+							imports.stream().forEach(importedOntology -> {
+								IRI iri = importedOntology.getOntologyID().getOntologyIRI().orNull();
+
+								// check if it was already processed before
+								if(!ontologyProcessed(iri.toURI())) {
+									LOGGER.info("Running pattern detection for import from " + iri + " ...");
+									axiomPatterns.clear();
+									importedOntology.getLogicalAxioms(Imports.INCLUDED).stream().forEach(axiom -> {
+										OWLAxiom renamedAxiom = renamer.rename(axiom);
+										axiomPatterns.add(renamedAxiom);
+									});
+									addOntologyPatterns(iri.toURI(), importedOntology, axiomPatterns);
+									addOntologyImport(uri, ontology, iri.toURI(), importedOntology);
+									LOGGER.info("   finished pattern detection for import from " + iri + ". #Patterns: " +
+														axiomPatterns.elementSet().size());
+								} else {
+									LOGGER.info("Import " + iri + " already processed.");
+								}
+
+							});
+
+
+
 							manager.removeOntology(ontology);
 						} catch (OWLOntologyAlreadyExistsException e) {
 							e.printStackTrace();
 						} catch (UnloadableImportException e) {
-							LOGGER.error("Import loading failed", e);
+							LOGGER.error("Import loading failed.", e.getMessage());
+							addOntologyError(uri, e);
+						} catch(UnparsableOntologyException e) {
+							LOGGER.error("Parsing of ontology failed.", e.getMessage());
 							addOntologyError(uri, e);
 						} catch (Exception e) {
 							LOGGER.error("Ontology processing failed", e);
@@ -230,6 +255,7 @@ public class OWLAxiomPatternFinder {
 			selectOntologyIdPs = conn.prepareStatement("SELECT id FROM Ontology WHERE url=?");
 			insertOntologyPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository, logical_axioms, tbox_axioms, rbox_axioms" +
 					", abox_axioms, classes, object_properties, data_properties, individuals) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+			insertOntologyImportPs = conn.prepareStatement("INSERT INTO Ontology_Import (ontology_id1, ontology_id2) VALUES(?,?)");
 			insertOntologyErrorPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository) VALUES(?,?,?)");
 			selectPatternIdPs = conn.prepareStatement("SELECT id FROM Pattern WHERE pattern=?");
 			insertPatternIdPs = conn.prepareStatement("INSERT INTO Pattern (pattern,pattern_pretty,axiom_type) VALUES(?,?,?)");
@@ -256,7 +282,8 @@ public class OWLAxiomPatternFinder {
 	
 	private void initDBConnection() {
 		try {
-			InputStream is = this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/pattern/db_settings.ini");
+			InputStream is = this.getClass().getClassLoader().getResourceAsStream(
+					"org/dllearner/algorithms/pattern/db_settings.ini");
 			Preferences prefs = new IniPreferences(is);
 			String dbServer = prefs.node("database").get("server", null);
 			String dbName = prefs.node("database").get("name", null);
@@ -265,8 +292,10 @@ public class OWLAxiomPatternFinder {
 
 			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
-		} catch (IOException | SQLException  e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			LOGGER.error("Failed to settings.", e);
+		} catch (SQLException e) {
+			LOGGER.error("Failed to setup database connection.", e);
 		}
 	}
 	
@@ -297,7 +326,13 @@ public class OWLAxiomPatternFinder {
 					+ "individuals MEDIUMINT DEFAULT 0,"
 					+ "PRIMARY KEY(id),"
 					+ "INDEX(url)) DEFAULT CHARSET=utf8");
-			
+
+			statement.execute("CREATE TABLE IF NOT EXISTS Ontology_Import ("
+									  + "ontology_id1 MEDIUMINT NOT NULL,"
+									  + "ontology_id2 MEDIUMINT NOT NULL,"
+									  + "PRIMARY KEY(ontology_id1, ontology_id2))"
+									  );
+
 			statement.execute("CREATE TABLE IF NOT EXISTS Ontology_Pattern (" 
 			        + "ontology_id MEDIUMINT NOT NULL,"
 					+ "pattern_id MEDIUMINT NOT NULL,"
@@ -306,58 +341,60 @@ public class OWLAxiomPatternFinder {
 					+ "FOREIGN KEY (pattern_id) REFERENCES Pattern(id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY(ontology_id, pattern_id)) DEFAULT CHARSET=utf8");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to setup database tables.", e);
 		}
 	}
 	
 	
 	private int addPattern(OWLAxiom axiom){
 		String axiomString = render(axiom);
-		//check for existing entry
-		try {
-			selectPatternIdPs.setString(1, axiomString);
-			ResultSet rs = selectPatternIdPs.executeQuery();
-			if(rs.next()){
-				return rs.getInt(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+
+		// check for existing entry
+		Integer patternID = getPatternID(axiom);
+		if(patternID != null) {
+			return patternID;
 		}
-		//add pattern entry
+
+		// otherwise, add pattern entry
 		try {
 			insertPatternIdPs.setString(1, axiomString);
 			insertPatternIdPs.setString(2, axiomRenderer.render(axiom));
 			insertPatternIdPs.setString(3, getAxiomType(axiom));
 			insertPatternIdPs.execute();
 		} catch (SQLException e) {
-			System.err.println("Pattern too long for database?" + axiomString.length());
-			e.printStackTrace();
+			LOGGER.error("Failed to insert pattern. Maybe too long with a length of " + axiomString.length() + "?", e);
 		}
-		//get the auto generated ID
+
+		// get the pattern ID after insertion
+		return getPatternID(axiom);
+	}
+
+	private Integer getPatternID(OWLAxiom axiom) {
 		try {
-			selectPatternIdPs.setString(1, axiomString);
+			selectPatternIdPs.setString(1, render(axiom));
 			ResultSet rs = selectPatternIdPs.executeQuery();
 			if(rs.next()){
 				return rs.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to get pattern ID.", e);
 		}
-		return -1;
+		return null;
 	}
-	
-	private String getAxiomType(OWLAxiom axiom){
+
+	private String getAxiomType(OWLAxiom axiom) {
 		AxiomType<?> type = axiom.getAxiomType();
 		String s;
-		if(AxiomType.TBoxAxiomTypes.contains(type)){
+		if (AxiomType.TBoxAxiomTypes.contains(type)) {
 			s = "TBox";
-		} else if(AxiomType.RBoxAxiomTypes.contains(type)){
+		} else if (AxiomType.RBoxAxiomTypes.contains(type)) {
 			s = "RBox";
-		} else if(AxiomType.ABoxAxiomTypes.contains(type)){
+		} else if (AxiomType.ABoxAxiomTypes.contains(type)) {
 			s = "ABox";
-		} else {System.out.println(axiom + "-" + type);
+		} else {
+			System.out.println(axiom + "-" + type);
 			//should not happen
-			s="Non-Logical";
+			s = "Non-Logical";
 		}
 		return s;
 	}
@@ -390,7 +427,7 @@ public class OWLAxiomPatternFinder {
 			insertOntologyErrorPs.setString(3, repository.getName());
 			insertOntologyErrorPs.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to insert ontology error statement.", e);
 		}
 	}
 	
@@ -400,17 +437,13 @@ public class OWLAxiomPatternFinder {
 		if(!ontology.getOntologyID().isAnonymous()){
 			ontologyIRI = ontology.getOntologyID().getOntologyIRI().toString();
 		}
-		//check for existing entry
-		try {
-			selectOntologyIdPs.setString(1, url);
-			ResultSet rs = selectOntologyIdPs.executeQuery();
-			if(rs.next()){
-				return rs.getInt(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		// check for existing entry
+		Integer ontologyID = getOntologyID(physicalURI, ontology);
+		if(ontologyID != null) {
+			return ontologyID;
 		}
-		//add ontology entry
+
+		// add ontology entry
 		try {
 			insertOntologyPs.setString(1, url);
 			insertOntologyPs.setString(2, ontologyIRI);
@@ -429,9 +462,56 @@ public class OWLAxiomPatternFinder {
 			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(Imports.INCLUDED).size());
 			insertOntologyPs.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to insert ontology.", e);
 		}
-		//get the auto generated ID
+
+		// get and return the auto generated ID
+		return getOntologyID(physicalURI, ontology);
+	}
+
+	private synchronized void addOntologyImport(URI physicalURI1, OWLOntology ontology1, URI physicalURI2, OWLOntology ontology2){
+		// get ID of first ontology
+		Integer ontologyID1 = getOntologyID(physicalURI1, ontology1);
+
+		// get ID of second ontology
+		Integer ontologyID2 = getOntologyID(physicalURI2, ontology2);
+
+		// add ontology entry
+		try {
+			insertOntologyImportPs.setInt(1, ontologyID1);
+			insertOntologyImportPs.setInt(2, ontologyID2);
+
+			insertOntologyPs.execute();
+		} catch (SQLException e) {
+			LOGGER.error("Failed to insert ontology.", e);
+		}
+	}
+
+	private Integer getOntologyID(OWLOntology ontology) {
+		String ontologyIRI = "Anonymous";
+		if(!ontology.getOntologyID().isAnonymous()){
+			ontologyIRI = ontology.getOntologyID().getOntologyIRI().toString();
+		}
+		//check for existing entry
+		try {
+			selectOntologyIdPs.setString(1, ontologyIRI);
+			ResultSet rs = selectOntologyIdPs.executeQuery();
+			if(rs.next()){
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Failed to get ontology ID.", e);
+		}
+		return null;
+	}
+
+	private Integer getOntologyID(URI physicalURI, OWLOntology ontology) {
+		String url = physicalURI.toString();
+		String ontologyIRI = "Anonymous";
+		if(!ontology.getOntologyID().isAnonymous()){
+			ontologyIRI = ontology.getOntologyID().getOntologyIRI().toString();
+		}
+		//check for existing entry
 		try {
 			selectOntologyIdPs.setString(1, url);
 			ResultSet rs = selectOntologyIdPs.executeQuery();
@@ -439,9 +519,9 @@ public class OWLAxiomPatternFinder {
 				return rs.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to get ontology ID.", e);
 		}
-		return -1;
+		return null;
 	}
 	
 	private synchronized void addOntologyPatterns(URI physicalURI, OWLOntology ontology, Multiset<OWLAxiom> patterns){
@@ -455,20 +535,20 @@ public class OWLAxiomPatternFinder {
 				insertOntologyPatternPs.setInt(3, occurrences);
 				insertOntologyPatternPs.addBatch();
 			} catch (SQLException e) {
-				System.err.println("Adding pattern\n" + pattern + "\nfailed." + e.getMessage());
+				LOGGER.error("Failed to insert pattern\n" + pattern + "\"", e);
 			}
 		}
 		try {
 			insertOntologyPatternPs.executeBatch();
 		} catch (SQLException e) {
-			System.err.println("Adding patterns failed." + e.getMessage());
+			LOGGER.error("Failed to insert patterns.", e);
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
-//		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt(
-//				true, true);
-//		ToStringRenderer.getInstance().setRenderer(renderer);
+		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt(
+				true, true);
+		ToStringRenderer.getInstance().setRenderer(renderer);
 		// create Options object
 		OptionParser parser = new OptionParser();
 
