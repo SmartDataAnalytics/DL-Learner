@@ -52,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class OWLAxiomPatternFinder {
 	
@@ -118,7 +119,7 @@ public class OWLAxiomPatternFinder {
 
 		manager = OWLManager.createConcurrentOWLOntologyManager();
 
-//		entries = entries.stream().filter(e -> e.getOntologyShortName().equals("AURA")).collect(Collectors.toList());
+		entries = entries.stream().filter(e -> e.getOntologyShortName().equals("SAO")).collect(Collectors.toList());
 
 		for (OntologyRepositoryEntry entry : entries) {
 			tp.execute(() -> {
@@ -180,7 +181,7 @@ public class OWLAxiomPatternFinder {
 								LOGGER.info("Processing the imports of \"" + entry.getOntologyShortName() + "\" ...");
 							}
 							imports.stream().forEach(importedOntology -> {
-								IRI iri = importedOntology.getOntologyID().getOntologyIRI().orNull();
+								IRI iri = importedOntology.getOntologyID().getOntologyIRI().or(manager.getOntologyDocumentIRI(importedOntology));
 
 								// check if it was already processed before
 								if(!ontologyProcessed(iri.toURI())) {
@@ -540,15 +541,17 @@ public class OWLAxiomPatternFinder {
 		}
 		try {
 			insertOntologyPatternPs.executeBatch();
+		} catch (BatchUpdateException e) {
+			LOGGER.error("Failed to insert some pattern. Reason: {}", e.getMessage());
 		} catch (SQLException e) {
 			LOGGER.error("Failed to insert patterns.", e);
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt(
-				true, true);
-		ToStringRenderer.getInstance().setRenderer(renderer);
+//		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt(
+//				true, true);
+//		ToStringRenderer.getInstance().setRenderer(renderer);
 		// create Options object
 		OptionParser parser = new OptionParser();
 

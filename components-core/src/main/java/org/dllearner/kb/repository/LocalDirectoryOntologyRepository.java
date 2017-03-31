@@ -64,7 +64,7 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 					.filter(filter::matches)
 					.filter(path -> path.toFile().length() / 1024 / 1024 < maxFileSizeInMB)
 					.map(Path::toFile)
-					.sorted(Comparator.comparingLong(File::length).reversed())
+					.sorted(Comparator.comparingLong(File::length))//.reversed())
 					.map(path -> new RepositoryEntry(path.toURI()))
 					.collect(Collectors.toList());
 		} catch (IOException e) {

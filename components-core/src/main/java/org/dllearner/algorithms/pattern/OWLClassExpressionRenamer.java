@@ -18,15 +18,7 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -123,6 +115,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		return (OWLClassExpression) renamedOWLObject;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T extends OWLPropertyExpression> T rename(T expr){
 		renamedOWLObject = null;
 		expr.accept(this);
@@ -150,8 +143,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLObjectIntersectionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
-		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
+//		Collections.sort(operands, comparator);
+		Set<OWLClassExpression> renamedOperands = new HashSet<>();//new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -337,11 +330,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(desc.isTopEntity()){
 			renamedOWLObject = desc;
 		} else {
-			OWLEntity newEntity = renaming.get(desc);
-			if(newEntity == null){
-				newEntity = df.getOWLClass(getIRI(classVarQueue.poll()));
-				renaming.put(desc, newEntity);
-			}
+			OWLEntity newEntity = renaming.computeIfAbsent(desc, k -> df.getOWLClass(getIRI(classVarQueue.poll())));
 			renamedOWLObject = newEntity;
 		}
 	}
@@ -351,11 +340,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(op.isTopEntity()){
 			renamedOWLObject = op;
 		} else {
-			OWLEntity newEntity = renaming.get(op);
-			if(newEntity == null){
-				newEntity = df.getOWLObjectProperty(getIRI(propertyVarQueue.poll()));
-				renaming.put(op, newEntity);
-			}
+			OWLEntity newEntity = renaming.computeIfAbsent(op, k -> df.getOWLObjectProperty(
+					getIRI(propertyVarQueue.poll())));
 			renamedOWLObject = newEntity;
 		}
 	}
@@ -365,11 +351,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(dp.isTopEntity()){
 			renamedOWLObject = dp;
 		} else {
-			OWLEntity newEntity = renaming.get(dp);
-			if(newEntity == null){
-				newEntity = df.getOWLDataProperty(getIRI(propertyVarQueue.poll()));
-				renaming.put(dp, newEntity);
-			}
+			OWLEntity newEntity = renaming.computeIfAbsent(dp,
+														   k -> df.getOWLDataProperty(getIRI(propertyVarQueue.poll())));
 			renamedOWLObject = newEntity;
 		}
 	}
@@ -381,11 +364,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLNamedIndividual ind) {
-		OWLEntity newEntity = renaming.get(ind);
-		if(newEntity == null){
-			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
-			renaming.put(ind, newEntity);
-		}
+		OWLEntity newEntity = renaming.computeIfAbsent(ind, k -> df.getOWLNamedIndividual(
+				getIRI(individualVarQueue.poll())));
 		renamedOWLObject = newEntity;
 	}
 	
