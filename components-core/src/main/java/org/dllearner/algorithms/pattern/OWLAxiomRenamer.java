@@ -38,6 +38,8 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	public OWLAxiom rename(OWLAxiom axiom){
 		Map<OWLEntity, OWLEntity> renaming = new HashMap<>();
 		expressionRenamer = new OWLClassExpressionRenamer(df, renaming);
+		boolean multipleClasses = axiom.getClassesInSignature().size() > 1;
+		expressionRenamer.setMultipleClasses(multipleClasses);
 		axiom.accept(this);
 		return renamedAxiom;
 	}
