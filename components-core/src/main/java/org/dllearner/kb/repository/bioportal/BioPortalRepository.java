@@ -221,7 +221,8 @@ public class BioPortalRepository implements OntologyRepository {
 
 				File f = null;
 				long sizeInMb = 101;
-				if(downloadEnabled) {
+				if(downloadEnabled && !new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf").exists()) {
+
 
 					System.out.println("Loading " + entry.getOntologyShortName() + " from " + entry.getPhysicalURI());
 
