@@ -20,7 +20,9 @@ package org.dllearner.algorithms.pattern;
 
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLFacet;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -34,8 +36,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	/*
 	Some constants here used for abstraction
 	 */
-	private static final OWLDatatype USER_DEFINED_DATATYPE = new OWLDatatypeImpl(IRI.create(NS + "used_defined_datatype"));
-	private static final OWLDatatype BUILT_IN_DATATYPE = new OWLDatatypeImpl(IRI.create(NS + "built_in_datatype"));
+
 	private static final int MIN_INTEGER_VALUE = 0;
 	private static final int MAX_INTEGER_VALUE = 9;
 	private static final double MIN_DOUBLE_VALUE = 0d;
@@ -371,7 +372,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(dt.isBuiltIn()) {
 			renamedOWLObject = dt;
 		} else {
-			renamedOWLObject = USER_DEFINED_DATATYPE;
+			renamedOWLObject = PatternConstants.USER_DEFINED_DATATYPE;
 		}
 	}
 

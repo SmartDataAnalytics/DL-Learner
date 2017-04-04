@@ -569,5 +569,5 @@
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 </project>
