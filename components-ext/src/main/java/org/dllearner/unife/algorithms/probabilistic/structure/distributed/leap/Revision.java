@@ -15,8 +15,7 @@ import unife.math.ApproxDouble;
 
 /**
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 class Revision implements Comparable<Revision>, Serializable {
 

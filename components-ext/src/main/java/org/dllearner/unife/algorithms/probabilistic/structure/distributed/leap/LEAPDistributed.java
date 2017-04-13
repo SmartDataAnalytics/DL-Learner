@@ -64,8 +64,7 @@ import unife.math.utilities.MathUtilities;
 
 /**
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 @ComponentAnn(name = "LEAPDistributed", shortName = "leapdistr", version = 1.0)
 public class LEAPDistributed extends AbstractPSLA implements DistributedComponent {

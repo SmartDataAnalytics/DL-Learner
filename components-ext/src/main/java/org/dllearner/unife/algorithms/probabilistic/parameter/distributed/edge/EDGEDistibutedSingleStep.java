@@ -15,8 +15,7 @@ import unife.edge.EDGEMPISingleStep;
 
 /**
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 @ComponentAnn(name = "EDGEDistributedSingleStep", shortName = "edgesingle", version = 1.0)
 public class EDGEDistibutedSingleStep extends AbstractEDGEDistributed {

@@ -61,8 +61,7 @@ import unife.constants.UniFeIRI;
  * There could be different version of LEAP (sequential, multi-thread, distributed), so we need an
  * abstract class.
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public abstract class AbstractLEAP extends AbstractPSLA {
 
@@ -117,7 +116,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
             // why should I do this?
 //            OWLSubClassOfAxiom axiom = owlFactory.
 //                    getOWLSubClassOfAxiom(dummyClass, owlFactory.getOWLThing());
-            manager.addAxiom(edge.getSourcesOntology(), axiom);
+//            manager.addAxiom(edge.getSourcesOntology(), axiom);
         }
 
         logger.debug("getting the individuals");

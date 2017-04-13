@@ -31,8 +31,7 @@ import unife.exception.IllegalValueException;
 
 /**
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     

@@ -37,7 +37,7 @@ import unife.math.ApproxDouble;
  * Abstract component representing a parameter Learner. A parameter learner
  * computes the probabilistic value of a single axiom
  *
- * @author Giuseppe Cota
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public abstract class AbstractParameterLearningAlgorithm implements ParameterLearningAlgorithm, StoppableLearningAlgorithm {
 

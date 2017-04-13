@@ -22,14 +22,12 @@ import unife.math.ApproxDouble;
  * probabilistic reasoning. This class stores an instantiation of EDGE and
  * invokes its methods in order to compute the parameters.
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 @ComponentAnn(name = "EDGE", shortName = "edge", version = 1.0)
 public class EDGE extends AbstractEDGE {
 
-    private static Logger logger
-            = Logger.getLogger(EDGE.class.getName());
+    private static Logger logger = Logger.getLogger(EDGE.class.getName());
 
     private boolean fullyInitialized = false;
 

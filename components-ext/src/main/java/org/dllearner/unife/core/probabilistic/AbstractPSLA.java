@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
- * @author Giuseppe Cota <giuseppe.cota@unife.it>, Riccardo Zese
- * <riccardo.zese@unife.it>
+ * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public abstract class AbstractPSLA implements ProbabilisticStructureLearningAlgorithm, StoppableLearningAlgorithm {
 
