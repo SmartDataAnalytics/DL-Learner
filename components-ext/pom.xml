@@ -43,6 +43,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- should not be necessary, but currently needed to override EDGE dependency of OWL API -->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-parsers</artifactId>
+        </dependency>
+
+
         <!--
             <dependency>
                 <groupId>com.jamonapi</groupId>

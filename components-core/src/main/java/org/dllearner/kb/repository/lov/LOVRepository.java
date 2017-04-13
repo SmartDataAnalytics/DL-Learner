@@ -88,6 +88,11 @@ public class LOVRepository implements OntologyRepository{
         return Collections.emptyList();
     }
 
+    @Override
+    public OWLOntology getOntology(OntologyRepositoryEntry entry) {
+        return null;
+    }
+
     public void dispose() {
     }
 

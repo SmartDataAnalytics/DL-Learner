@@ -14,12 +14,12 @@
 		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-		<slf4j.version>1.7.21</slf4j.version>
-		<log4j.version>1.2.17</log4j.version>
-		<solr.version>5.3.0</solr.version>
-		<owlapi.version>4.2.4</owlapi.version>
-		<spring.version>4.3.3.RELEASE</spring.version>
-		<jena.sparql.api.version>3.1.0-1</jena.sparql.api.version>
+        <slf4j.version>1.7.22</slf4j.version>
+        <log4j.version>1.2.17</log4j.version>
+        <solr.version>5.3.0</solr.version>
+        <owlapi.version>4.3.0</owlapi.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
+        <jena.sparql.api.version>3.1.1-1</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
@@ -461,6 +461,11 @@
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>owlapi-parsers</artifactId>
+				<version>${owlapi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>owlapitools-concurrentimpl</artifactId>
 				<version>4.1.0</version>
 			</dependency>
@@ -681,7 +686,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>6.0.4</version>
+				<version>6.0.6</version>
 			</dependency>
 
 			<dependency>

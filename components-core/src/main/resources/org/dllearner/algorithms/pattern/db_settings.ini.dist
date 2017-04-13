@@ -1,0 +1,9 @@
+[database]
+; the server, where the mysql database is located
+server = localhost
+; the user, that has rights to access the navigator database
+user = 
+; the password of that user
+pass = 
+; the name of the used database
+name = 
