@@ -12,7 +12,7 @@ import org.dllearner.unife.reasoning.ProbabilisticReasonerType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import unife.bundle.Bundle;
-import unife.bundle.QueryResult;
+import unife.bundle.utilities.QueryResult;
 import unife.utilities.GeneralUtils;
 
 /**

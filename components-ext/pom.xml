@@ -18,9 +18,9 @@
         
         <!-- EDGE dependency -->
         <dependency>
-            <groupId>unife</groupId>
+            <groupId>it.unife.endif.ml</groupId>
             <artifactId>edge</artifactId>
-            <version>3.3.2-SNAPSHOT</version>
+            <version>3.2.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>${project.groupId}</groupId>
@@ -197,7 +197,18 @@
     </dependencies>
     <build>
         <plugins>
-       
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <excludes>
+                        <exclude>org/dllearner/unife/algorithms/probabilistic/structure/leap/LEAP2.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -277,33 +288,5 @@
         </plugins>
     </build>
     
-    <repositories>
-        <repository>
-            <id>ml-unife-maven-repository</id>
-            <name>ML@UniFe Maven Repository</name>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/releases</url>
-        </repository>
-        <repository>
-            <id>ml-unife-maven-repositorysnapshots</id>
-            <name>ML@UniFe Maven Repository</name>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <url>https://api.bitbucket.org/1.0/repositories/giuseta/ml-unife-maven-repository.git/raw/snapshots</url>
-        </repository>
-    </repositories>
-    
+   
 </project>

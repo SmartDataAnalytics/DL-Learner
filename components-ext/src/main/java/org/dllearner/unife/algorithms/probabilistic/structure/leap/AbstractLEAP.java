@@ -114,8 +114,9 @@ public abstract class AbstractLEAP extends AbstractPSLA {
         if (dummyClass == null) {
             OWLDataFactory owlFactory = manager.getOWLDataFactory();
             dummyClass = owlFactory.getOWLClass(IRI.create(UniFeIRI.DISPONTE + "/learnedClass"));
-            OWLSubClassOfAxiom axiom = owlFactory.
-                    getOWLSubClassOfAxiom(dummyClass, owlFactory.getOWLThing());
+            // why should I do this?
+//            OWLSubClassOfAxiom axiom = owlFactory.
+//                    getOWLSubClassOfAxiom(dummyClass, owlFactory.getOWLThing());
             manager.addAxiom(edge.getSourcesOntology(), axiom);
         }
 
