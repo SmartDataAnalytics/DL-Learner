@@ -461,7 +461,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
                         throw new StructureLearningException(msg);
                     }
                     while (signal == START) {
-                        edge.reset();
+                        edge.clean();
                         // add axiom
                         logger.debug(myRank + " - Waiting for axiom to add");
                         OWLAxiom addedAxiom = recvAddAxiom(ontology);
@@ -784,7 +784,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
     private Revision greedySearch(OWLOntology ontology, Revision revision, LinkedHashSet<OWLSubClassOfAxiom> candidateAxioms) {
         ApproxDouble LL0 = edge.getLL(); // da rivedere
         logger.debug(myRank + " - Resetting EDGE");
-        edge.reset();
+        edge.clean();
         edge.changeSourcesOntology(ontology);
         LinkedHashSet<OWLSubClassOfAxiom> learnedAxioms = new LinkedHashSet<>();
         OWLDataFactory df = OWLManager.getOWLDataFactory();

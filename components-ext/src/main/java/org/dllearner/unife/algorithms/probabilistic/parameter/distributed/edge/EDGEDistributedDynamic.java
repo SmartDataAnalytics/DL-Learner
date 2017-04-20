@@ -129,8 +129,8 @@ public class EDGEDistributedDynamic extends AbstractEDGEDistributed {
     }
 
 //    @Override
-//    public void reset() {
-//        super.reset();
+//    public void clean() {
+//        super.clean();
 //        isRunning = false;
 //        stop = false;
 //    }

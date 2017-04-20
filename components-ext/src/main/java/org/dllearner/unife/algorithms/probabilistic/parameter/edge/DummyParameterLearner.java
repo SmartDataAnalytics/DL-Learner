@@ -160,7 +160,7 @@ public class DummyParameterLearner extends AbstractEDGE {
 //        learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) ontology));
     }
 
-    public void reset() {
+    public void clean() {
         isRunning = false;
         stop = false;
     }

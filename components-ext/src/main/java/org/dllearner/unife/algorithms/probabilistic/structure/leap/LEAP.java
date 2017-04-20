@@ -31,6 +31,7 @@ import unife.bundle.exception.InconsistencyException;
 import unife.bundle.utilities.BundleUtilities;
 import unife.math.ApproxDouble;
 import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP", shortName = "leap", version = 1.0)
 public class LEAP extends AbstractLEAP {
@@ -139,16 +140,15 @@ public class LEAP extends AbstractLEAP {
     }
 
     /**
-     * This method performs a greedy search in the space of Theories. Given a
-     * set of axioms it executes a loop for each axiom. For each iteration it
-     * adds an axiom into the knowledge base and if the log-likelihood (LL)
-     * increases the axiom is kept otherwise it is removed from the ontology.
-     * For EquivalentClassesAxiom: if we keep an EquivalentClassesAxiom because
-     * the LL has increased but a SubClassOfAxiom with the same classes has been
-     * already added, the SubClassOfAxiom is removed.
+     * This method performs a greedy search in the space of Theories. Given a set of axioms it
+     * executes a loop for each axiom. For each iteration it adds an axiom into the knowledge base
+     * and if the log-likelihood (LL) increases the axiom is kept otherwise it is removed from the
+     * ontology. For EquivalentClassesAxiom: if we keep an EquivalentClassesAxiom because the LL has
+     * increased but a SubClassOfAxiom with the same classes has been already added, the
+     * SubClassOfAxiom is removed.
      *
-     * @param candidateAxioms the set of candidate axiom that we would like to
-     * add in the knowledge base.
+     * @param candidateAxioms the set of candidate axiom that we would like to add in the knowledge
+     * base.
      * @return the set of axioms added in the knowledge base.
      */
     private Set<OWLAxiom> greedySearch(List<? extends OWLAxiom> candidateAxioms) throws UnsupportedLearnedAxiom {
@@ -156,12 +156,12 @@ public class LEAP extends AbstractLEAP {
         if (edge instanceof AbstractEDGE) {
             bestLL = ((AbstractEDGE) edge).getLOGZERO().multiply(new ApproxDouble((double) edge.getPositiveExampleAxioms().size()));
         } else {
-            bestLL = new ApproxDouble(ApproxDouble.zero())._multiply(new ApproxDouble((double)edge.getPositiveExampleAxioms().size()));
+            bestLL = new ApproxDouble(ApproxDouble.zero())._multiply(new ApproxDouble((double) edge.getPositiveExampleAxioms().size()));
         }
         logger.debug("Initial Log-likelihood: " + bestLL.toString());
 //        BigDecimal bestLL = edge.getLL();
 //        logger.debug("Resetting EDGE");
-//        edge.reset();
+//        edge.clean();
         OWLOntology ontology = edge.getLearnedOntology();
         edge.changeSourcesOntology(ontology); // queste operazioni fanno perdere tempo, sono da ottimizzare
         LinkedHashSet<OWLAxiom> learnedAxioms = new LinkedHashSet<>();
@@ -185,6 +185,9 @@ public class LEAP extends AbstractLEAP {
 //        int i = 0;
         int numChunks = (int) Math.ceil((double) candidateAxioms.size() / blockSizeGreedySearch);
         logger.info("number of axiom chunks: " + numChunks);
+        // I need this boolean in order to resolve BUG #1 https://trello.com/c/A8sjLWwl
+        // This is not a solution but only a patch
+        boolean addedAtLeastOneAxiom = false;
 //        for (OWLAxiom axiom : candidateAxioms) {
         for (int i = 0; i < numChunks; i++) {
             int lastIndex = i < numChunks - 1 ? (i + 1) * blockSizeGreedySearch : candidateAxioms.size();
@@ -201,9 +204,13 @@ public class LEAP extends AbstractLEAP {
                     continue;
                 }
                 logger.info("Running parameter learner");
+                if (i > 0 && addedAtLeastOneAxiom) {
+                    edge.setProbabilizeAll(false);
+                    edge.setRandomize(false);
+                } else if (i > 0 && !addedAtLeastOneAxiom) {
+                    edge.reset();
+                }
                 edge.start();
-                edge.setProbabilizeAll(false);
-                edge.setRandomize(false);
                 ApproxDouble currLL = edge.getLL();
                 logger.info("Current Log-Likelihood: " + currLL);
                 if (getClassAxiomType().equalsIgnoreCase("both")) {
@@ -246,6 +253,7 @@ public class LEAP extends AbstractLEAP {
                 }
                 if (currLL.compareTo(bestLL) > 0) {
                     logger.info("Log-Likelihood enhanced. Updating ontologies...");
+                    addedAtLeastOneAxiom = true;
                     // I recover the annotation containing the learned probabilistic values
 
                     for (OWLAxiom axiom : axioms) {

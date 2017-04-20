@@ -33,6 +33,9 @@ import unife.math.ApproxDouble;
 import static unife.utilities.GeneralUtils.safe;
 import static unife.utilities.GeneralUtils.safe;
 import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
+import static unife.utilities.GeneralUtils.safe;
 
 @ComponentAnn(name = "LEAP2", shortName = "leap2", version = 1.0)
 public class LEAP2 extends AbstractLEAP {
@@ -163,7 +166,7 @@ public class LEAP2 extends AbstractLEAP {
         logger.debug("Initial Log-likelihood: " + bestLL.toString());
 //        BigDecimal bestLL = edge.getLL();
 //        logger.debug("Resetting EDGE");
-//        edge.reset();
+//        edge.clean();
         OWLOntology ontology = edge.getLearnedOntology();
         edge.changeSourcesOntology(ontology); // queste operazioni fanno perdere tempo, sono da ottimizzare
         LinkedHashSet<OWLAxiom> learnedAxioms = new LinkedHashSet<>();

@@ -34,7 +34,7 @@ import unife.exception.IllegalValueException;
  * @author Giuseppe Cota <giuseppe.cota@unife.it>
  */
 public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
-    
+
     protected EDGE edge;
 
     /**
@@ -50,16 +50,15 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     public void setBddFType(BDDFactoryType bddFType) {
         this.bddFType = bddFType;
     }
-    
+
     public static enum PossibleOutputFormat {
-        
         OWLXML,
         OWLFUNCTIONAL
     }
-    
+
     @ConfigOption(description = "seed for random generation", defaultValue = "0")
     protected int seed = 0;
-    
+
     @ConfigOption(description = "randomize the starting probabilities of the probabilistic axioms", defaultValue = "false")
     protected boolean randomize = false;
 
@@ -67,55 +66,56 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     @ConfigOption(description = "make probabilistic all the axioms in the starting probabilistic "
             + "ontology (including non probabilistic ones)", defaultValue = "false")
     protected boolean probabilizeAll = false;
-    
+
     @ConfigOption(description = "stop difference between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double differenceLL = 0.00028;
-    
+
     @ConfigOption(description = "stop ratio between log-likelihood of two consecutive EM cycles", defaultValue = "0.000000000028")
     protected double ratioLL = 0.00028;
-    
+
     @ConfigOption(description = "maximum number of cycles", defaultValue = "" + Long.MAX_VALUE)
     protected long maxIterations = Long.MAX_VALUE;
-    
+
     @ConfigOption(description = "the maximum number of explanations to find for each query", defaultValue = "" + Integer.MAX_VALUE)
     protected int maxExplanations = Integer.MAX_VALUE;
-    // ATTENZIONE EDGE USA IL FORMATO STRING PER TIMEOUT!!!        
+    // ATTENZIONE EDGE USA IL FORMATO STRING PER TIMEOUT!!!
+    // this is a property of the probabilistic reasoner, in the future it should be removed
     @ConfigOption(description = "max time allowed for the inference (format: [0-9]h[0-9]m[0-9]s)", defaultValue = "0s (infinite timeout)")
     protected String timeout = "0s";
-    
+
     @ConfigOption(description = "force the visualization of all results", defaultValue = "false")
     protected boolean showAll = false;
-    
+
     @ConfigOption(description = "format of the output file", defaultValue = "OWLXML")
     protected PossibleOutputFormat outputFormat = OWLXML;
-    
+
     @ConfigOption(description = "BDD factory type", defaultValue = "BUDDY")
     private BDDFactoryType bddFType = BDDFactoryType.BUDDY;
-    
+
     @ConfigOption(description = "max number of positive examples that edge must handle when a class learning problem is given", defaultValue = "0 (infinite)")
     protected int maxPositiveExamples = 0;
-    
+
     @ConfigOption(description = "max number of negative examples that edge must handle when a class learning problem is given", defaultValue = "0 (infinite)")
     protected int maxNegativeExamples = 0;
-    
+
     @ConfigOption(description = "accuracy used during the computation of the probabilistic values (number of digital places)", defaultValue = "5")
     protected int accuracy = 5;
-    
+
     @ConfigOption(description = "If true EDGE keeps the old parameter values of all the probabilistic axioms and it does not relearn them", defaultValue = "false")
     protected boolean keepParameters = false;
-    
+
     protected Set<OWLAxiom> positiveExampleAxioms;
     protected Set<OWLAxiom> negativeExampleAxioms;
-    
+
     protected EDGEStat results;
 
     // ontology obtained by merging all the sources
     protected OWLOntology sourcesOntology;
-    
+
     public AbstractEDGE() {
-        
+
     }
-    
+
     public AbstractEDGE(ClassLearningProblem lp, Set<OWLAxiom> targetAxioms) {
         super(lp, targetAxioms);
     }
@@ -132,7 +132,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             throw new NullPointerException("EDGE results are NULL");
         }
     }
-    
+
     @Override
     public Map<String, Long> getTimeMap() {
         if (results != null) {
@@ -141,7 +141,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             throw new NullPointerException("EDGE results are NULL");
         }
     }
-    
+
     @Override
     public void init() throws ComponentInitException {
         try {
@@ -176,7 +176,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
             throw new ComponentInitException(rmue);
         }
     }
-    
+
     @Override
     public ApproxDouble getParameter(OWLAxiom ax) throws ParameterLearningException {
         Map<OWLAxiom, ApproxDouble> pMap = edge.getPMap();
@@ -187,7 +187,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
                 return parameter;
             }
         }
-        
+
         return null;
     }
 
@@ -400,7 +400,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     public void setAccuracy(int accuracy) {
         this.accuracy = accuracy;
     }
-    
+
     public OWLOntology getLearnedOntology() {
         return edge.getLearnedOntology();
     }
@@ -411,22 +411,27 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
     public OWLOntology getSourcesOntology() {
         return sourcesOntology;
     }
-    
+
     public void changeSourcesOntology(OWLOntology ontology) {
         sourcesOntology = ontology;
         edge.setOntologies(ontology);
         learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) new OWLAPIOntology(ontology)));
 //        learningProblem.getReasoner().changeSources(Collections.singleton((KnowledgeSource) ontology));
     }
-    
-    public void reset() {
-        edge.reset();
+
+    public void clean() {
+        edge.clean();
         isRunning = false;
         stop = false;
     }
-    
+
+    public void reset() {
+        clean();
+        edge.reset();
+    }
+
     public ApproxDouble getLOGZERO() {
         return edge.LOGZERO;
     }
-    
+
 }
