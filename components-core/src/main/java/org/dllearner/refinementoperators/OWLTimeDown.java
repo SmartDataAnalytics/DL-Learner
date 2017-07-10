@@ -12,10 +12,10 @@ import java.util.Set;
 /**
  * Refinement of temporal relationships
  */
-public class TemporalDown extends AbstractComponent implements LengthLimitedRefinementOperator, ReasoningBasedRefinementOperator {
+public class OWLTimeDown extends AbstractComponent implements LengthLimitedRefinementOperator, ReasoningBasedRefinementOperator {
 	@Override
 	public void setReasoner(Reasoner reasoner) {
-		
+
 	}
 
 	@Override
