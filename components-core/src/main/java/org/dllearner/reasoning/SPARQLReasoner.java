@@ -19,7 +19,9 @@
 package org.dllearner.reasoning;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -50,9 +52,12 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
@@ -87,8 +92,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
-	
-	
+
+	protected static final ToIRIFunction TO_IRI_FUNCTION = new ToIRIFunction(true);
+	protected static final OWLCLassExpressionToOWLClassTransformer OWLCLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
+
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY
 	}
@@ -1229,22 +1236,22 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	protected String buildIndividualsQueryValues(OWLClassExpression description, Collection<OWLIndividual> indValues, boolean isCountQuery) {
-		String query;
+		StringBuilder query;
 		String tp = converter.convert("?ind", description);
 
 		if (isCountQuery) {
-			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n";
+			query = new StringBuilder("SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n");
 		} else {
-			query = "SELECT DISTINCT ?ind WHERE { \n";
+			query = new StringBuilder("SELECT DISTINCT ?ind WHERE { \n");
 		}
 
-		query += "VALUES ?ind { \n";
+		query.append("VALUES ?ind { \n");
 		for (OWLIndividual x:indValues) {
-			query += "<" + x.toStringID() + "> ";
+			query.append("<").append(x.toStringID()).append("> ");
 		}
-		query += "}. \n " + tp + "\n}";
+		query.append("}. \n ").append(tp).append("\n}");
 
-		return query;
+		return query.toString();
 	}
 
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
@@ -2212,8 +2219,37 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return result;
 	}
 
-	
-	
+
+
+
+	public SortedSet<OWLClassExpression> getMeaningfulClasses(OWLClassExpression index, SortedSet<OWLClassExpression> targetClasses) {
+		String query = buildMeaningfulClassesQuery(index, targetClasses);
+		if (logger.isDebugEnabled()) logger.debug(sparql_debug, query);
+
+		SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
+		ResultSet rs = executeSelectQuery(query);
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
+		}
+		return meaningfulClasses;
+	}
+
+	@NotNull
+	protected String buildMeaningfulClassesQuery(OWLClassExpression index, SortedSet<OWLClassExpression> targetClasses) {
+		String query = "SELECT DISTINCT ?concept WHERE {";
+		query += converter.convert("?ind", index);
+		query += "?ind a ?concept . ";
+		query += "VALUES ?concept {"
+				+ Joiner.on(" ").join(
+				FluentIterable.from(targetClasses)
+						.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+				+ "}";
+		query += "}";
+		return query;
+	}
+
+
 	/**
 	 * Convert a SPARQL resultset into OWL entities based on the given entity type.
 	 * @param entityType the entity type
