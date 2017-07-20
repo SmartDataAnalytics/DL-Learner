@@ -661,7 +661,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// transform [r,s] to \exists r.\exists s.\top
 				OWLClassExpression existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				if(reasoner instanceof SPARQLReasoner) {
 					SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(existentialContext);
 					fillerFound = !Sets.intersection(individuals, examples).isEmpty();
 				} else {
