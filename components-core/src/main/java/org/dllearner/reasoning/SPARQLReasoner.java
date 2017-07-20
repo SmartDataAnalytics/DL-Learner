@@ -31,6 +31,7 @@ import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
@@ -1498,6 +1499,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty objectProperty) {
+		//if (logger.isTraceEnabled()) logger.trace(ExceptionUtils.getStackTrace(new Throwable()));
 		Map<OWLIndividual, SortedSet<OWLIndividual>> subject2objects = new HashMap<>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
 				"?s <%s> ?o." +
@@ -1516,6 +1518,30 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			subject2objects.computeIfAbsent(sub, k -> new TreeSet<>()).add(obj);
 		}
 		return subject2objects;
+	}
+
+	protected String buildApplicablePropertiesQuery(OWLClassExpression domain, Collection<? extends OWLObjectProperty> objectProperties) {
+		String domQuery = converter.convert("?dom", domain);
+		String props = objectProperties.stream().map(TO_IRI_FUNCTION).collect(Collectors.joining(" "));
+//		String prop1 = converter.convert("?p", objectProperties.iterator().next());
+
+		String query = "SELECT DISTINCT ?p WHERE { " +
+				"" + domQuery + " ?dom ?p ?o . \n" +
+				"" + " VALUES ?p { \n" + props + " } \n" +
+				"" + " }";
+		return query;
+	}
+
+	public Set<OWLObjectProperty> getApplicableProperties(OWLClassExpression domain, Set<OWLObjectProperty> objectProperties) {
+		Set<OWLObjectProperty> ret = new TreeSet<>();
+
+		ResultSet rs = executeSelectQuery(buildApplicablePropertiesQuery(domain, objectProperties));
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			ret.add(prop);
+		}
+		return ret;
 	}
 
 	@Override

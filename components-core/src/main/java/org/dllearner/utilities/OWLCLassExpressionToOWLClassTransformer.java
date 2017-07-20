@@ -28,7 +28,7 @@ import com.google.common.base.Function;
  * @author Lorenz Buehmann
  *
  */
-public class OWLCLassExpressionToOWLClassTransformer implements Function<OWLClassExpression, OWLClass> {
+public class OWLCLassExpressionToOWLClassTransformer implements Function<OWLClassExpression, OWLClass>, java.util.function.Function<OWLClassExpression, OWLClass> {
 	@Override
 	public OWLClass apply(OWLClassExpression input) {
 		return input.asOWLClass();

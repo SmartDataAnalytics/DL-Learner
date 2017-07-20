@@ -7,10 +7,13 @@ import org.dllearner.core.ComponentAnn;
 import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Specialised SPARQL Reasoner for specific SPARQL dialects
@@ -77,5 +80,28 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 		if (targetClasses.isEmpty())
 			return new TreeSet<>();
 		return super.getMeaningfulClasses(index, targetClasses);
+	}
+
+	@Override
+	protected String buildApplicablePropertiesQuery(OWLClassExpression domain, Collection<? extends OWLObjectProperty> objectProperties) {
+		String domQuery = converter.convert("?dom", domain);
+		String props = objectProperties.stream().map(TO_IRI_FUNCTION).collect(Collectors.joining(" "));
+//		String prop1 = converter.convert("?p", objectProperties.iterator().next());
+
+		String query = "SELECT DISTINCT ?p WHERE { " +
+				"" + domQuery + " ?dom ?p ?o . \n" +
+				"" + " }" +
+				"" + " VALUES ?p { \n" + props + " }";
+		return query;
+	}
+
+	@Override
+	public Set<OWLObjectProperty> getApplicableProperties(OWLClassExpression domain, Set<OWLObjectProperty> objectProperties) {
+		if (true) {
+			String domQuery = converter.convert("?dom", domain);
+			return objectProperties.stream().filter(p -> executeAskQuery("ASK { " + domQuery + " ?dom " + TO_IRI_FUNCTION.apply(p) + " ?o . }")).collect(Collectors.toSet());
+		} else {
+			return super.getApplicableProperties(domain, objectProperties);
+		}
 	}
 }
