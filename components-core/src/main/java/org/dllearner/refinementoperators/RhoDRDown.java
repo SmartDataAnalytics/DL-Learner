@@ -285,8 +285,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if (dataPropertyHierarchy == null) dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		if (objectPropertyHierarchy == null) objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
 
-//		System.out.println("classHierarchy: " + classHierarchy);
-//		System.out.println("object properties: " + reasoner.getObjectProperties());
+		logger.debug("classHierarchy: " + classHierarchy);
+		logger.debug("object properties: " + reasoner.getObjectProperties());
 
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -1413,7 +1413,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 		}
 
-//		System.out.println("m for " + nc + ": " + mA.get(nc));
+		logger.debug(sparql_debug, "m for " + nc + ": " + mA.get(nc));
 
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}

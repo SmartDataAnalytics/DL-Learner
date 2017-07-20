@@ -31,13 +31,16 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 		// for ontoquad
 
 		if (isCountQuery) {
-			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n";
+			query = "SELECT (COUNT(?ind) as ?cnt) WHERE { \n"
+			+ "SELECT DISTINCT ?ind WHERE { \n";
 		} else {
 			query = "SELECT DISTINCT ?ind WHERE { \n";
 		}
 
-		query += tp + "\n}"
-				+ "\n " + "VALUES (?ind) { \n";
+		query += tp + "\n}";
+		if (isCountQuery)
+			query += "\n}";
+		query += "\n " + "VALUES (?ind) { \n";
 
 		for (OWLIndividual x:indValues) {
 			query += "(<" + x.toStringID() + ">) ";
