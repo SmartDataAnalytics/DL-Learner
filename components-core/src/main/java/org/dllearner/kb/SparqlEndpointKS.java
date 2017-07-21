@@ -24,7 +24,6 @@ import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
@@ -156,10 +155,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	}
 
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
+		/*QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
-				endpoint.getDefaultGraphURIs());
-		qef = FluentQueryExecutionFactory
+				endpoint.getDefaultGraphURIs());*/
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
 				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
 						.setModelContentType(WebContent.contentTypeRDFXML))

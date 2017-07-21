@@ -3,7 +3,9 @@ package org.dllearner.reasoning;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import org.apache.jena.query.ResultSet;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -12,6 +14,8 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -94,4 +98,34 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 		return query;
 	}
 
+
+
+	private String getFromStatement() {
+		return getSources().stream()
+				.filter(SparqlEndpointKS.class::isInstance)
+				.map(SparqlEndpointKS.class::cast)
+				.filter(SparqlEndpointKS::isRemote)
+				.map(ks -> ks.getDefaultGraphURIs().stream().map(uri -> "FROM <" + uri + ">").collect(Collectors.joining(" "))
+						+ ks.getNamedGraphURIs().stream().map(uri -> "FROM NAMED <" + uri + ">").collect(Collectors.joining(" ")))
+				.collect(Collectors.joining(" "));
+	}
+
+	@Override
+	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits) {
+		String q2 = queryString.replaceFirst(
+				"(^|\\s+)SELECT(\\s+.*?\\s+)WHERE(\\s+)",
+				"$1" + "SELECT" + "$2" + " " + Matcher.quoteReplacement(getFromStatement()) + " "
+				+ "WHERE" + "$3"
+		);
+		return super.executeSelectQuery(q2, timeout, timeoutUnits);
+	}
+
+	@Override
+	protected boolean executeAskQuery(String queryString) {
+		String q2 = queryString.replaceFirst(
+				"(^|\\s+)ASK(\\s+)",
+				"$1" + "ASK " + Matcher.quoteReplacement(getFromStatement()) + " $2"
+		);
+		return super.executeAskQuery(q2);
+	}
 }
