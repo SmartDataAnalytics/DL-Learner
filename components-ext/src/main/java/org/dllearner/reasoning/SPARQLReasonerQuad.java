@@ -10,7 +10,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -83,7 +82,7 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 	}
 
 	@Override
-	protected String buildApplicablePropertiesQuery(OWLClassExpression domain, Collection<? extends OWLObjectProperty> objectProperties) {
+	protected String buildApplicablePropertiesValuesQuery(OWLClassExpression domain, Collection<? extends OWLObjectProperty> objectProperties) {
 		String domQuery = converter.convert("?dom", domain);
 		String props = objectProperties.stream().map(TO_IRI_FUNCTION).collect(Collectors.joining(" "));
 //		String prop1 = converter.convert("?p", objectProperties.iterator().next());
@@ -95,13 +94,4 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 		return query;
 	}
 
-	@Override
-	public Set<OWLObjectProperty> getApplicableProperties(OWLClassExpression domain, Set<OWLObjectProperty> objectProperties) {
-		if (true) {
-			String domQuery = converter.convert("?dom", domain);
-			return objectProperties.stream().filter(p -> executeAskQuery("ASK { " + domQuery + " ?dom " + TO_IRI_FUNCTION.apply(p) + " ?o . }")).collect(Collectors.toSet());
-		} else {
-			return super.getApplicableProperties(domain, objectProperties);
-		}
-	}
 }
