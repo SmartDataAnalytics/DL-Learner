@@ -219,7 +219,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public void precomputePropertyDomains() {
 		logger.info("precomputing property domains...");
 		String query = SPARQLQueryUtils.PREFIXES +
-				" select * where {?p rdfs:domain ?dom {?p a owl:ObjectProperty} UNION {?p a owl:DatatypeProperty}}";
+				" SELECT * WHERE {?p rdfs:domain ?dom {?p a owl:ObjectProperty} UNION {?p a owl:DatatypeProperty}}";
 
 		try {
 			ResultSet rs = executeSelectQuery(query);
@@ -240,7 +240,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public void precomputeObjectPropertyRanges() {
 		logger.info("precomputing object property ranges...");
 		String query = SPARQLQueryUtils.PREFIXES +
-				" select * where {?p rdfs:range ?ran; a owl:ObjectProperty }";
+				" SELECT * WHERE {?p rdfs:range ?ran; a owl:ObjectProperty }";
 
 		try {
 			ResultSet rs = executeSelectQuery(query);

@@ -633,6 +633,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	@Override
 	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression ce) {
 		Set<OWLNamedIndividual> individuals;
+		logger.trace("getIndividuals for " + ce);
 		try {
 			individuals = reasoner.getInstances(ce, false).getFlattened();
 		} catch (UnsupportedOperationException e) {
