@@ -22,19 +22,26 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
-import org.dllearner.learningproblems.AccMethodApproximate;
-import org.dllearner.learningproblems.AccMethodTwoValued;
-import org.dllearner.learningproblems.AccMethodTwoValuedApproximate;
+import org.dllearner.accuracymethods.AccMethodApproximate;
+import org.dllearner.accuracymethods.AccMethodTwoValued;
+import org.dllearner.accuracymethods.AccMethodTwoValuedApproximate;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Common utilities for using a reasoner in learning problems
  */
 public class ReasoningUtils implements Component {
+
+	final static Logger logger = LoggerFactory.getLogger(ReasoningUtils.class);
 
 	/**
 	 * binary counter to divide a set in 2 partitions
@@ -314,9 +321,11 @@ public class ReasoningUtils implements Component {
 	public double getAccuracyOrTooWeak2(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Collection<OWLIndividual> positiveExamples,
 			Collection<OWLIndividual> negativeExamples, double noise) {
 		if (accuracyMethod instanceof AccMethodApproximate) {
+			logger.trace("AccMethodApproximate");
 			return ((AccMethodTwoValuedApproximate) accuracyMethod).getAccApprox2(description, positiveExamples, negativeExamples, noise);
 		} else {
-			CoverageCount[] cc = this.getCoverageCount(description, positiveExamples, negativeExamples);
+			CoverageCount[] cc = getCoverageCount(description, positiveExamples, negativeExamples);
+			logger.trace("AccMethodExact: " + (new CoverageAdapter.CoverageCountAdapter2(cc)));
 			return getAccuracyOrTooWeakExact2(accuracyMethod, cc, noise);
 		}
 	}
@@ -332,6 +341,7 @@ public class ReasoningUtils implements Component {
 	public double getAccuracyOrTooWeakExact2(AccMethodTwoValued accuracyMethod, CoverageCount[] cc, double noise) {
 //		return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
 		CoverageAdapter.CoverageCountAdapter2 c2 = new CoverageAdapter.CoverageCountAdapter2(cc);
+		logger.trace("calling getAccOrToWeak2["+c2.tp()+","+c2.fn()+","+c2.fp()+","+c2.tn()+","+noise+"]");
 		return accuracyMethod.getAccOrTooWeak2(c2.tp(), c2.fn(), c2.fp(), c2.tn(), noise);
 	}
 

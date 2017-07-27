@@ -21,6 +21,7 @@ package org.dllearner.algorithms.ocel;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import org.apache.log4j.Level;
+import org.dllearner.accuracymethods.AccMethodNoWeakness;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;

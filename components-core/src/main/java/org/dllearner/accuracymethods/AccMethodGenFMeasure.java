@@ -1,7 +1,8 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.Heuristics;
 
 @ComponentAnn(name = "Generalised FMeasure", shortName = "gen_fmeasure", version = 0.1)
 public class AccMethodGenFMeasure implements AccMethodThreeValued, AccMethodWithBeta {

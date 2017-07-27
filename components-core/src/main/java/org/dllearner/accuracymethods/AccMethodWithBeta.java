@@ -1,4 +1,4 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 /**
  * Accuracy Method with beta factor;

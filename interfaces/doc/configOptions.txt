@@ -3329,7 +3329,7 @@ conf file usage: h.type = "qtree_heuristic_simple"
 * AccMethod *
 *************
 
-component: AMeasure (org.dllearner.learningproblems.AccMethodAMeasure) v0.1
+component: AMeasure (org.dllearner.accuracymethods.AccMethodAMeasure) v0.1
 ===========================================================================
 
 conf file usage: accMethod.type = "ameasure"
@@ -3341,7 +3341,7 @@ required: false
 default value: 0
 conf file usage: accMethod.beta = 0
 
-component: AMeasure Approximate (org.dllearner.learningproblems.AccMethodAMeasureApprox) v0.1
+component: AMeasure Approximate (org.dllearner.accuracymethods.AccMethodAMeasureApprox) v0.1
 =============================================================================================
 
 conf file usage: accMethod.type = "approx.ameasure"
@@ -3367,7 +3367,7 @@ required: false
 default value: 
 conf file usage: accMethod.reasoner = ""
 
-component: FMeasure (org.dllearner.learningproblems.AccMethodFMeasure) v0.0
+component: FMeasure (org.dllearner.accuracymethods.AccMethodFMeasure) v0.0
 ===========================================================================
 
 conf file usage: accMethod.type = "fmeasure"
@@ -3379,7 +3379,7 @@ required: false
 default value: 0
 conf file usage: accMethod.beta = 0
 
-component: FMeasure Approximate (org.dllearner.learningproblems.AccMethodFMeasureApprox) v0.0
+component: FMeasure Approximate (org.dllearner.accuracymethods.AccMethodFMeasureApprox) v0.0
 =============================================================================================
 
 conf file usage: accMethod.type = "approx.fmeasure"
@@ -3405,7 +3405,7 @@ required: false
 default value: 
 conf file usage: accMethod.reasoner = ""
 
-component: Weighted FMeasure (org.dllearner.learningproblems.AccMethodFMeasureWeighted) v0.0
+component: Weighted FMeasure (org.dllearner.accuracymethods.AccMethodFMeasureWeighted) v0.0
 ============================================================================================
 
 conf file usage: accMethod.type = "weighted.fmeasure"
@@ -3438,7 +3438,7 @@ required: false
 default value: 1
 conf file usage: accMethod.posWeight = 1
 
-component: Generalised FMeasure (org.dllearner.learningproblems.AccMethodGenFMeasure) v0.1
+component: Generalised FMeasure (org.dllearner.accuracymethods.AccMethodGenFMeasure) v0.1
 ==========================================================================================
 
 conf file usage: accMethod.type = "gen_fmeasure"
@@ -3450,12 +3450,12 @@ required: false
 default value: 0
 conf file usage: accMethod.beta = 0
 
-component: Jaccard Coefficient (org.dllearner.learningproblems.AccMethodJaccard) v0.1
+component: Jaccard Coefficient (org.dllearner.accuracymethods.AccMethodJaccard) v0.1
 =====================================================================================
 
 conf file usage: accMethod.type = "jaccard"
 
-component: Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAcc) v0.0
+component: Predictive Accuracy (org.dllearner.accuracymethods.AccMethodPredAcc) v0.0
 =====================================================================================
 
 conf file usage: accMethod.type = "pred_acc"
@@ -3467,7 +3467,7 @@ required: false
 default value: 0
 conf file usage: accMethod.beta = 0
 
-component: Predictive Accuracy Approximate (org.dllearner.learningproblems.AccMethodPredAccApprox) v0.0
+component: Predictive Accuracy Approximate (org.dllearner.accuracymethods.AccMethodPredAccApprox) v0.0
 =======================================================================================================
 
 conf file usage: accMethod.type = "approx.prec_acc"
@@ -3493,12 +3493,12 @@ required: false
 default value: 
 conf file usage: accMethod.reasoner = ""
 
-component: Predictive Accuracy without Weak elimination (org.dllearner.learningproblems.AccMethodPredAccOCEL) v0.0
+component: Predictive Accuracy without Weak elimination (org.dllearner.accuracymethods.AccMethodPredAccOCEL) v0.0
 ==================================================================================================================
 
 conf file usage: accMethod.type = "pred_acc.ocel"
 
-component: Weighted Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAccWeighted) v0.0
+component: Weighted Predictive Accuracy (org.dllearner.accuracymethods.AccMethodPredAccWeighted) v0.0
 ======================================================================================================
 
 conf file usage: accMethod.type = "weighted.pred_acc"
