@@ -745,6 +745,13 @@ A learning algorithm for data property domain axioms.
 
 conf file usage: la.type = "dpldomain"
 
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
+
 component: data property range learner (org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner) v0.1
 ===============================================================================================================
 A learning algorithm for reflexive data property range axioms.
@@ -756,6 +763,13 @@ component: disjoint data properties axiom learner (org.dllearner.algorithms.prop
 A learning algorithm for disjoint data properties axioms.
 
 conf file usage: la.type = "dpldisjoint"
+
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
 
 option name: beta
 description: the beta value for the F-score calculation
@@ -777,6 +791,13 @@ A learning algorithm for disjoint object properties axioms.
 
 conf file usage: la.type = "opldisjoint"
 
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
+
 option name: beta
 description: the beta value for the F-score calculation
 type: double
@@ -797,6 +818,13 @@ A learning algorithm for equivalent data properties axioms.
 
 conf file usage: la.type = "dplequiv"
 
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
+
 option name: beta
 description: the beta value for the F-score calculation
 type: double
@@ -816,6 +844,13 @@ component: equivalent object properties axiom learner (org.dllearner.algorithms.
 A learning algorithm for equivalent object properties axioms.
 
 conf file usage: la.type = "oplequiv"
+
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
 
 option name: beta
 description: the beta value for the F-score calculation
@@ -867,11 +902,25 @@ A learning algorithm for object property domain axioms.
 
 conf file usage: la.type = "opldomain"
 
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
+
 component: object property range learner (org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner) v0.1
 ===================================================================================================================
 A learning algorithm for object property range axioms.
 
 conf file usage: la.type = "oplrange"
+
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
 
 component: reflexive object property axiom learner (org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -884,6 +933,13 @@ component: data subproperty axiom learner (org.dllearner.algorithms.properties.S
 A learning algorithm data subproperty axioms.
 
 conf file usage: la.type = "dplsubprop"
+
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
 
 option name: beta
 description: the beta value for the F-score calculation
@@ -904,6 +960,13 @@ component: object subproperty axiom learner (org.dllearner.algorithms.properties
 A learning algorithm object subproperty axioms.
 
 conf file usage: la.type = "oplsubprop"
+
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
 
 option name: beta
 description: the beta value for the F-score calculation
@@ -1085,6 +1148,13 @@ component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearn
 
 conf file usage: la.type = "clsub"
 
+option name: batchMode
+description: compute everything in a single SPARQL query
+type: boolean
+required: false
+default value: false
+conf file usage: la.batchMode = false
+
 option name: entityToDescribe
 description: the OWL entity to learn about
 type: OWLEntity
@@ -1126,6 +1196,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: la.returnOnlyNewAxioms = false
+
+option name: strictOWLMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictOWLMode = false
 
 component: CELOE (org.dllearner.algorithms.celoe.CELOE) v1.0
 ============================================================
@@ -2920,6 +2997,13 @@ required: false
 default value: true
 conf file usage: reasoner.precomputePropertyDomains = true
 
+option name: preferAsk
+description: Prefer ASK queries when there is a choice in implementation
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.preferAsk = true
+
 option name: sources
 description: the underlying knowledge sources
 type: Set
@@ -2940,6 +3024,39 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useInstanceChecks = false
+
+option name: useValueLists
+description: Whether to use SPARQL1.1 Value Lists
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useValueLists = false
+
+component: SPARQL Reasoner (Quad) (org.dllearner.reasoning.SPARQLReasonerQuad) v0.1
+===================================================================================
+
+conf file usage: reasoner.type = "spr.quad"
+
+option name: laxMode
+description: Use alternative relaxed Sparql-queries for Classes and Individuals
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.laxMode = false
+
+option name: preferAsk
+description: Prefer ASK queries when there is a choice in implementation
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.preferAsk = true
+
+option name: useGenericSplitsCode
+description: Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useGenericSplitsCode = false
 
 option name: useValueLists
 description: Whether to use SPARQL1.1 Value Lists
@@ -3330,7 +3447,7 @@ conf file usage: h.type = "qtree_heuristic_simple"
 *************
 
 component: AMeasure (org.dllearner.accuracymethods.AccMethodAMeasure) v0.1
-===========================================================================
+==========================================================================
 
 conf file usage: accMethod.type = "ameasure"
 
@@ -3342,7 +3459,7 @@ default value: 0
 conf file usage: accMethod.beta = 0
 
 component: AMeasure Approximate (org.dllearner.accuracymethods.AccMethodAMeasureApprox) v0.1
-=============================================================================================
+============================================================================================
 
 conf file usage: accMethod.type = "approx.ameasure"
 
@@ -3368,7 +3485,7 @@ default value:
 conf file usage: accMethod.reasoner = ""
 
 component: FMeasure (org.dllearner.accuracymethods.AccMethodFMeasure) v0.0
-===========================================================================
+==========================================================================
 
 conf file usage: accMethod.type = "fmeasure"
 
@@ -3380,7 +3497,7 @@ default value: 0
 conf file usage: accMethod.beta = 0
 
 component: FMeasure Approximate (org.dllearner.accuracymethods.AccMethodFMeasureApprox) v0.0
-=============================================================================================
+============================================================================================
 
 conf file usage: accMethod.type = "approx.fmeasure"
 
@@ -3406,7 +3523,7 @@ default value:
 conf file usage: accMethod.reasoner = ""
 
 component: Weighted FMeasure (org.dllearner.accuracymethods.AccMethodFMeasureWeighted) v0.0
-============================================================================================
+===========================================================================================
 
 conf file usage: accMethod.type = "weighted.fmeasure"
 
@@ -3439,7 +3556,7 @@ default value: 1
 conf file usage: accMethod.posWeight = 1
 
 component: Generalised FMeasure (org.dllearner.accuracymethods.AccMethodGenFMeasure) v0.1
-==========================================================================================
+=========================================================================================
 
 conf file usage: accMethod.type = "gen_fmeasure"
 
@@ -3451,12 +3568,12 @@ default value: 0
 conf file usage: accMethod.beta = 0
 
 component: Jaccard Coefficient (org.dllearner.accuracymethods.AccMethodJaccard) v0.1
-=====================================================================================
+====================================================================================
 
 conf file usage: accMethod.type = "jaccard"
 
 component: Predictive Accuracy (org.dllearner.accuracymethods.AccMethodPredAcc) v0.0
-=====================================================================================
+====================================================================================
 
 conf file usage: accMethod.type = "pred_acc"
 
@@ -3468,7 +3585,7 @@ default value: 0
 conf file usage: accMethod.beta = 0
 
 component: Predictive Accuracy Approximate (org.dllearner.accuracymethods.AccMethodPredAccApprox) v0.0
-=======================================================================================================
+======================================================================================================
 
 conf file usage: accMethod.type = "approx.prec_acc"
 
@@ -3494,12 +3611,12 @@ default value:
 conf file usage: accMethod.reasoner = ""
 
 component: Predictive Accuracy without Weak elimination (org.dllearner.accuracymethods.AccMethodPredAccOCEL) v0.0
-==================================================================================================================
+=================================================================================================================
 
 conf file usage: accMethod.type = "pred_acc.ocel"
 
 component: Weighted Predictive Accuracy (org.dllearner.accuracymethods.AccMethodPredAccWeighted) v0.0
-======================================================================================================
+=====================================================================================================
 
 conf file usage: accMethod.type = "weighted.pred_acc"
 
