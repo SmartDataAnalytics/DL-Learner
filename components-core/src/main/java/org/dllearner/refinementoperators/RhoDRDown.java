@@ -217,7 +217,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(defaultValue="true")
 	private boolean instanceBasedDisjoints = true;
 
-	@ConfigOption(defaultValue="false")
+	@ConfigOption(defaultValue="false", description = "if enabled, generalise by removing parts of a disjunction")
 	private boolean dropDisjuncts = false;
 
 	@ConfigOption(description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",

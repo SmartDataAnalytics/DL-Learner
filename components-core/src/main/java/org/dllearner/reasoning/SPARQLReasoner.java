@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -1879,7 +1880,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			range = df.getOWLDatatype(IRI.create(qs.getResource("range").getURI()));
 
 		}
-		return range;
+		return range == null ? df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI()) : range;
 	}
 
 	@Override
