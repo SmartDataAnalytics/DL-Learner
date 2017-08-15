@@ -1218,13 +1218,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			boolean result = executeAskQuery(query);
 			return result;
 		} else { // complex class expressions
-			//TODO use ASK queries
-			SortedSet<OWLIndividual> individuals = getIndividuals(description, Collections.singleton(individual));
-			return individuals.contains(individual);
-//			String queryBody = converter.convert("?ind", description);
-//			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
-//			String query = "ASK {" + queryBody + "}";
-//			// FIXME universal and cardinality restrictions do not work with ASK queries
+//			//TODO use ASK queries
+//			SortedSet<OWLIndividual> individuals = getIndividuals(description, Collections.singleton(individual));
+//			return individuals.contains(individual);
+			// FIXME universal and cardinality restrictions do not work with ASK queries
+			String queryBody = converter.convert("?ind", description);
+			if (queryBody.isEmpty())
+				return true;
+			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
+			String query = "ASK {" + queryBody + "}";
+			boolean b = executeAskQuery(query);
+			return b;
 		}
 	}
 
