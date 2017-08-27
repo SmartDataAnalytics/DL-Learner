@@ -1,0 +1,829 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://dl-learner.org/ontologies/workstationcrashes#"
+     xml:base="http://dl-learner.org/ontologies/workstationcrashes"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/ontologies/workstationcrashes">
+        <rdfs:comment>An ontology describing crashes of a workstation. The data is completely made up with the intention to model some non-trivial causes to be learned in a temporal/event pattern learning setup.</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#device -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#device">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#deviceAdded -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#deviceAdded">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#hasExitStatus -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#hasExitStatus">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#ExitStatus"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#hasLogLevel -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#hasLogLevel">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#LogLevel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#newNetworkDeviceState -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#newNetworkDeviceState">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#oldNetworkDeviceState -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#oldNetworkDeviceState">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#runAsUser -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#runAsUser">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:range rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#occurredAt -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#occurredAt">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTimeStamp"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#pidOfKilledProcess -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/ontologies/workstationcrashes#pidOfKilledProcess">
+        <rdfs:domain rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#OutOfMemory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronDailyStart -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronDailyStart">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobStart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronHourlyStart -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronHourlyStart">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobStart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronJobExit -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronJobExit">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronJobStart -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronJobStart">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronJobTermination -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronJobTermination">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyExit -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyExit">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobExit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyStart -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyStart">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobStart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyTermination -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyTermination">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobTermination"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#Device -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#deviceAdded"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#DeviceEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#DeviceEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#device"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#DeviceNotReadyEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#DeviceNotReadyEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#Event -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#Event">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#runAsUser"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#ExitStatus -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#ExitStatus"/>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#Kernel -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#Kernel">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#LogLevel -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#LogLevel"/>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkDevice -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkDevice">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Device"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#device"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDevice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceInitEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceInitEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceEvent"/>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#newNetworkDeviceState"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#oldNetworkDeviceState"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NetworkEvent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NetworkEvent">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NormalExit -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NormalExit">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#ExitStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#NormalUser -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NormalUser">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#OutOfMemory -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#OutOfMemory">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#pidOfKilledProcess"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#SystemUser -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#SystemUser">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#User"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#User -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ontologies/workstationcrashes#User">
+        <owl:disjointUnionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://dl-learner.org/ontologies/workstationcrashes#Kernel"/>
+            <rdf:Description rdf:about="http://dl-learner.org/ontologies/workstationcrashes#NormalUser"/>
+            <rdf:Description rdf:about="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+            <rdf:Description rdf:about="http://dl-learner.org/ontologies/workstationcrashes#SystemUser"/>
+        </owl:disjointUnionOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#anacron -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#anacron">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event001 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event001">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:01-01:00</occurredAt>
+        <rdfs:comment>1 new devices added</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event002 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event002">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:01-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event003 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event003">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:01-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event004 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event004">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceInitEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:05-01:00</occurredAt>
+        <rdfs:comment>set-hw-addr: set MAC address</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event005 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event005">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceNotReadyEvent"/>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#runAsUser"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Kernel"/>
+            </owl:Restriction>
+        </rdf:type>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:05-01:00</occurredAt>
+        <rdfs:comment>wlp4s0: link is not ready</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event006 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event006">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:05-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event007 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event007">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:05-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event008 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event008">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wpa_supplicant"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:05-01:00</occurredAt>
+        <rdfs:comment>Reject scan trigger since one is already pending</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event009 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event009">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:36-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event010 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event010">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:36-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event011 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event011">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceAddedEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#minissdpd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:15:36-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event012 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event012">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronHourlyStart"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#root"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:17:01-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event013 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event013">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:17:14-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event014 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event014">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyStart"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#anacron"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:19:22-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event015 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event015">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#anacron"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:19:22-01:00</occurredAt>
+        <rdfs:comment>Updated timestamp for job `cron.weekly&apos; to 2017-08-07</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event016 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event016">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyTermination"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#anacron"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:19:23-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event017 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event017">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronWeeklyExit"/>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#hasExitStatus"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NormalExit"/>
+            </owl:Restriction>
+        </rdf:type>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#anacron"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:19:23-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event018 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event018">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#CronJobEvent"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#systemd"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:19:23-01:00</occurredAt>
+        <rdfs:comment>anacron.timer: Adding 4min 49.114258s random time.</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event019 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event019">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#OutOfMemory"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:07-01:00</occurredAt>
+        <pidOfKilledProcess rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5574</pidOfKilledProcess>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event020 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event020">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceInitEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:20-01:00</occurredAt>
+        <rdfs:comment>set-hw-addr: set MAC address</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event021 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event021">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#DeviceNotReadyEvent"/>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#runAsUser"/>
+                <owl:someValuesFrom rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Kernel"/>
+            </owl:Restriction>
+        </rdf:type>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:20-01:00</occurredAt>
+        <rdfs:comment>wlp4s0: link is not ready</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event022 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event022">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:20-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event023 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event023">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:20-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event024 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event024">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wpa_supplicant"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:20:20-01:00</occurredAt>
+        <rdfs:comment>Reject scan trigger since one is already pending</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event025 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event025">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceStateChangeEvent"/>
+        <device rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0"/>
+        <hasLogLevel rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo"/>
+        <newNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning"/>
+        <oldNetworkDeviceState rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive"/>
+        <runAsUser rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#networkManager"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:22:29-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#event026 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#event026">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#OutOfMemory"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:23:59-01:00</occurredAt>
+        <pidOfKilledProcess rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5575</pidOfKilledProcess>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#logLevelInfo">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#LogLevel"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#minissdpd -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#minissdpd">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceDisconnected">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceInactive">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#networkDeviceScanning">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDeviceState"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#networkManager -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#networkManager">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#outage001 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#outage001">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#Event"/>
+        <occurredAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTimeStamp">2017-08-07T11:24:00-01:00</occurredAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#root -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#root">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#SystemUser"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#systemd -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#systemd">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#wlp4s0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#wlp4s0">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#NetworkDevice"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ontologies/workstationcrashes#wpa_supplicant -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ontologies/workstationcrashes#wpa_supplicant">
+        <rdf:type rdf:resource="http://dl-learner.org/ontologies/workstationcrashes#PrivilegedUser"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

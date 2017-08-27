@@ -15,6 +15,10 @@
         <version>1.3.1-SNAPSHOT</version>
     </parent>
     <dependencies>
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+        </dependency>
         
         <!-- EDGE dependency -->
         <dependency>
@@ -137,8 +141,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
 
         <!--        <dependency>
             <groupId>openMPI</groupId>
@@ -146,6 +152,10 @@
             <version>1.8.6</version>
         </dependency>-->
         
+        <dependency>
+        	<groupId>org.dllearner</groupId>
+        	<artifactId>owl-time</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>org.slf4j</groupId>

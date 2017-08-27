@@ -418,7 +418,16 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
-
+			<dependency>
+				<groupId>org.influxdb</groupId>
+				<artifactId>influxdb-java</artifactId>
+				<version>2.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.dllearner</groupId>
+				<artifactId>owl-time</artifactId>
+				<version>0.1.0</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
@@ -630,12 +639,17 @@
 				<version>${jena.sparql.api.version}</version>
 			</dependency>
 
-			<!--Junits -->
+			<!--Junit/testing -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.12</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>2.8.47</version>
 			</dependency>
 
 			<!--Dependencies that are generated as part of this parent pom -->

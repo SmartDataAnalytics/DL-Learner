@@ -1,53 +1,67 @@
 package org.dllearner.reasoning;
 
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.semanticweb.owlapi.model.*;
-
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.jena.ext.com.google.common.collect.Lists;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
+
 /**
- * The Reasoner component that implements a virtual OWL-Time
+ * The Reasoner component that implements a virtual OWL-Time.
+ * 
+ * TODO: Which kinds of date properties to support? The date-time stamp? has-month, has-day, ... style properies?
  */
 @ComponentAnn(description = "OWL-Time reasoner", name = "OWL-Time Reasoner", shortName = "owltimere", version = 0.1)
-public class OWLTimeReasoner extends AbstractReasonerComponent {
+abstract class OWLTimeReasoner extends AbstractReasonerComponent implements TemporalOWLReasoner {
+	protected List<OWLProperty> dateTimePropertyPath;
+	protected OWLClassExpression timeIntervallClassExpression;
+	protected OWLClassExpression timeInstantClassExpression;
+	
 	@Override
 	public void init() throws ComponentInitException {
-
+		if (dateTimePropertyPath == null)
+			throw new RuntimeException("A property path to the actual "
+					+ "date time information must be set!");
+		else if ((timeIntervallClassExpression == null) && (timeInstantClassExpression == null))
+			throw new RuntimeException("A class containing all time intervall or "
+					+ "all time instance individuals must be set!");
 	}
 
 	@Override
 	public Set<OWLClass> getClasses() {
-		return null;
+		// FIXME
+		throw new RuntimeException("Not implemented,yet");
 	}
 
 	@Override
 	public SortedSet<OWLIndividual> getIndividuals() {
-		return null;
-	}
-
-	@Override
-	public String getBaseURI() {
-		return null;
-	}
-
-	@Override
-	public Map<String, String> getPrefixes() {
-		return null;
+		// FIXME
+		throw new RuntimeException("Not implemented, yet");
 	}
 
 	@Override
 	public ReasonerType getReasonerType() {
-		return null;
+		// FIXME
+		throw new RuntimeException("Not implemented, yet");
 	}
 
 	@Override
 	public void releaseKB() {
-
+		// FIXME
+		throw new RuntimeException("Not implemented, yet");
 	}
 
 	@Override
@@ -87,11 +101,43 @@ public class OWLTimeReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
-		return null;
+		// FIXME
+		throw new RuntimeException("Not implemented, yet");
 	}
 
 	@Override
 	public void setSynchronized() {
 
 	}
+
+	public List<OWLProperty> getDateTimePropertyPath() {
+		return dateTimePropertyPath;
+	}
+
+	public void setDateTimePropertyPath(List<OWLProperty> dateTimePropertyPath) {
+		this.dateTimePropertyPath = dateTimePropertyPath;
+	}
+	
+	public void setDateTimePropertyPath(OWLDataProperty dateTimeProperty) {
+		List<OWLProperty> dateTimePropertyPath = Lists.newArrayList(dateTimeProperty);
+		this.dateTimePropertyPath = dateTimePropertyPath;
+	}
+
+	public OWLClassExpression getTimeIntervallClassExpression() {
+		return timeIntervallClassExpression;
+	}
+
+	public void setTimeIntervallClassExpression(OWLClassExpression timeIntervallClassExpression) {
+		this.timeIntervallClassExpression = timeIntervallClassExpression;
+	}
+
+	public OWLClassExpression getTimeInstantClassExpression() {
+		return timeInstantClassExpression;
+	}
+
+	public void setTimeInstantClassExpression(OWLClassExpression timeInstantClassExpression) {
+		this.timeInstantClassExpression = timeInstantClassExpression;
+	}
+	
+	
 }
