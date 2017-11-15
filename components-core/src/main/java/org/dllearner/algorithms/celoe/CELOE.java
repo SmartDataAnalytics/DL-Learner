@@ -310,7 +310,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
-		operator.init();
+		
+		if (!((AbstractRefinementOperator) operator).isInitialized())
+			operator.init();
+		
+		initialized = true;
 	}
 	
 	@Override
