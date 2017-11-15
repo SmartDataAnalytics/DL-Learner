@@ -198,7 +198,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 				//start();
 
-		
+		initialized = true;
 	}
 	
 	

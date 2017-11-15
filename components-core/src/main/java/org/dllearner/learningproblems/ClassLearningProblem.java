@@ -160,6 +160,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
+		
+		initialized = true;
 	}
 
 	@Override

@@ -321,6 +321,8 @@ public class PCELOE extends AbstractCELA {
 
 		reasoner.setSynchronized();
 		operator = new SynchronizedRefinementOperator(operator);
+		
+		initialized = true;
 	}
 
 	@Override

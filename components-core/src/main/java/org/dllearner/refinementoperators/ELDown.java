@@ -139,6 +139,8 @@ public class ELDown extends RefinementOperatorAdapter {
 		}
 		
 		utility = new Utility(rs, opDomains, dpDomains, instanceBasedDisjoints);
+		
+		initialized = true;
 	}
 	
 	/* (non-Javadoc)

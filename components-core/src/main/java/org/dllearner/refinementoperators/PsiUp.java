@@ -249,8 +249,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		
+		initialized = true;
 	}
 
 }

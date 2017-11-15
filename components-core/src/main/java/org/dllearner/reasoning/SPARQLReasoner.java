@@ -199,6 +199,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			}
 		}
+		
+		initialized = true;
 	}
 	
 	public QueryExecutionFactory getQueryExecutionFactory() {

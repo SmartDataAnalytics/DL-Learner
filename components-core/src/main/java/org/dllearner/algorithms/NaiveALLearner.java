@@ -85,6 +85,8 @@ public class NaiveALLearner extends AbstractCELA{
         // start with owl:Thing
         bestDescription = OWL_THING;
         bestScore = null;
+        
+        initialized = true;
     }
 
     @Override

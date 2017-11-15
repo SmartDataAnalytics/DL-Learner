@@ -151,6 +151,8 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 
 			initialized = true;
 		}
+		
+		initialized = true;
 		logger.info("SPARQL KB setup:\n" + toString());
 	}
 

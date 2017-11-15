@@ -129,6 +129,8 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         		throw new RuntimeException(e);
         	}
         }
+        
+        initialized = true;
     }
 
     @Override

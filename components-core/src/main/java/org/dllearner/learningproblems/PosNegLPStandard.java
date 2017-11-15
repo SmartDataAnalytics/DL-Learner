@@ -73,6 +73,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	@Override
 	public void init() throws ComponentInitException {
 		super.init();
+		
+		initialized = true;
 	}
 
 	/**

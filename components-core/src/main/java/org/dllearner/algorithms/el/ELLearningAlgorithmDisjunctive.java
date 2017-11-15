@@ -161,6 +161,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		noise = noisePercentage/100d;
+		
+		initialized = true;
 	}	
 	
 	@Override

@@ -135,6 +135,8 @@ public class SemKernel extends AbstractComponent {
 
         svmParams.weight = new double[0];  // TODO: make configurable
         svmParams.weight_label = new int[0];  // TODO make configurable
+        
+        initialized = true;
     }
 
     public void train() {

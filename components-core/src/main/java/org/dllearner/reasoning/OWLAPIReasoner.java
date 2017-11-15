@@ -235,6 +235,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
 		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
+		 
+		 initialized = true;
     }
     
     private void initDatatypes() {

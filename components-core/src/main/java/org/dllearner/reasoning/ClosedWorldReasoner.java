@@ -218,6 +218,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 //		loadOrDematerialize();
         materialize();
+        
+        initialized = true;
     }
 
     private void loadOrDematerialize() {

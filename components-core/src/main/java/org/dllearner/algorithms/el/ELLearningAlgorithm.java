@@ -131,6 +131,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
+		
+		initialized = true;
 	}	
 	
 	@Override

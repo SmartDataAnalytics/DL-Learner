@@ -121,6 +121,8 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
                 logger.error(str);
             }
 		}
+		
+		initialized = true;
 	}
 	
 	public Set<OWLIndividual> getNegativeExamples() {
