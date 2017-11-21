@@ -19,8 +19,8 @@
 package org.dllearner.core;
 
 import com.google.common.collect.Sets;
-import org.apache.commons.collections15.BidiMap;
-import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.AccMethod;
