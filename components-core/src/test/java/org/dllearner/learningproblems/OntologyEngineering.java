@@ -40,7 +40,10 @@ package org.dllearner.learningproblems;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.*;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -250,24 +253,25 @@ public class OntologyEngineering {
 								+ algorithmRuntimeInSeconds + " seconds)");
 							lp.setEquivalence(false);
 					}
-					AccMethodTwoValued acc;
-					if (useApproximations) {
-						if (useFMeasure) {
-							acc = new AccMethodFMeasureApprox();
-						} else {
-							acc = new AccMethodPredAccApprox();
-						}
-						((AccMethodTwoValuedApproximate)acc).setReasoner(reasoner);
+					// accuracy methods
+					AccMethodTwoValuedApproximate accApprox;
+					if (useFMeasure) {
+						accApprox = new AccMethodFMeasureApprox();
 					} else {
-						if (useFMeasure) {
-							acc = new AccMethodFMeasure();
-						} else {
-							acc = new AccMethodPredAcc();
-						}
+						accApprox = new AccMethodPredAccApprox();
+					}
+					accApprox.setReasoner(reasoner);
+					accApprox.init();
+					AccMethodTwoValued acc;
+					if (useFMeasure) {
+						acc = new AccMethodFMeasure();
+					} else {
+						acc = new AccMethodPredAcc();
 					}
 					acc.init();
 					lp.setAccuracyMethod(acc);
 					lp.init();
+
 					CELOE celoe = new CELOE(lp, reasoner);
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					celoe.setNoisePercentage(noisePercent);
@@ -317,10 +321,12 @@ public class OntologyEngineering {
 						if(computeApproxDiff) {
 							for(EvaluatedDescriptionClass ed : suggestionsList) {
 								OWLClassExpression d = ed.getDescription();
-							//	lp.setAccuracyMethod(accuracyMethod);
-								//lp.getReasoningUtil().getAccuracyOrTooWeak2()
-								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
-								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
+
+								lp.setAccuracyMethod(accApprox);
+								double approx = lp.getAccuracyOrTooWeak(d, noisePercent/(double)100);
+
+								lp.setAccuracyMethod(acc);
+								double exact = lp.getAccuracyOrTooWeak(d, noisePercent/(double)100);
 								
 								double diff = Math.abs(approx-exact);
 								// do not count "too weak"

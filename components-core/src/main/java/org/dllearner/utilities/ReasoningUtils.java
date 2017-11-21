@@ -48,8 +48,8 @@ public class ReasoningUtils implements Component {
 	/**
 	 * binary counter to divide a set in 2 partitions and an additional counter for unkown individuals
 	 */
-	public class Coverage3Count extends CoverageCount {
-		public int unknownCount;
+	class Coverage3Count extends CoverageCount {
+		int unknownCount;
 	}
 
 	/**
@@ -63,10 +63,10 @@ public class ReasoningUtils implements Component {
 	/**
 	 * binary set to divide a set in 2 partitions, and an additonal for unknown individuals
 	 */
-	public class Coverage3 extends Coverage3Count {
-		public SortedSet<OWLIndividual> trueSet = new TreeSet<>();
-		public SortedSet<OWLIndividual> falseSet = new TreeSet<>();
-		public SortedSet<OWLIndividual> unknownSet = new TreeSet<>();
+	class Coverage3 extends Coverage3Count {
+		final SortedSet<OWLIndividual> trueSet = new TreeSet<>();
+		final SortedSet<OWLIndividual> falseSet = new TreeSet<>();
+		final SortedSet<OWLIndividual> unknownSet = new TreeSet<>();
 	}
 
 	protected AbstractReasonerComponent reasoner;
@@ -94,7 +94,7 @@ public class ReasoningUtils implements Component {
 	 */
 	public final Coverage[] getCoverage(OWLClassExpression concept,
 	                                    Collection<OWLIndividual>... collections) {
-		Set[] sets = new Set [ collections.length ];
+		Set[] sets = new Set[collections.length];
 		for (int i = 0; i < collections.length; ++i) {
 			sets[i] = makeSet(collections[i]);
 		}

@@ -325,36 +325,5 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 		return cc[0].trueCount/(double)cc[0].total;
 	}
-
-	/* () for ontology engineering */
-	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
-		AccMethodTwoValuedApproximate acc;
-		if (accuracyMethod instanceof AccMethodPredAcc) {
-			acc = new AccMethodPredAccApprox();
-		} else if (accuracyMethod instanceof AccMethodFMeasure) {
-			acc = new AccMethodFMeasureApprox();
-		} else if (accuracyMethod instanceof AccMethodAMeasure) {
-			acc = new AccMethodAMeasureApprox();
-		} else {
-			throw new RuntimeException();
-		}
-		acc.setReasoner(reasoner);
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
-	}
-
-	/* () for ontology engineering */
-	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-		AccMethodTwoValued acc;
-		if (accuracyMethod instanceof AccMethodPredAcc) {
-			acc = new AccMethodPredAcc();
-		} else if (accuracyMethod instanceof AccMethodFMeasure) {
-			acc = new AccMethodFMeasure();
-		} else if (accuracyMethod instanceof AccMethodAMeasure) {
-			acc = new AccMethodAMeasure();
-		} else {
-			throw new RuntimeException();
-		}
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
-	}
 }
 
