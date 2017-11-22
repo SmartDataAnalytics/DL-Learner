@@ -14,12 +14,12 @@
 		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.7.22</slf4j.version>
-        <log4j.version>1.2.17</log4j.version>
-        <solr.version>5.3.0</solr.version>
-        <owlapi.version>4.3.0</owlapi.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <log4j.version>2.9.1</log4j.version>
+        <solr.version>7.1.0</solr.version>
+        <owlapi.version>4.5.0</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
-        <jena.sparql.api.version>3.1.1-1</jena.sparql.api.version>
+        <jena.sparql.api.version>3.4.0-1</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
@@ -30,6 +30,11 @@
 		<module>interfaces-ext</module>
 		<module>scripts</module>
 	</modules>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
 
 
 	<!--This is the SCM information, which needs to be here so we can use the
@@ -115,13 +120,13 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.19.1</version>
+					<version>2.20.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.5.1</version>
+					<version>3.7.0</version>
 					<configuration>
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
@@ -216,7 +221,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.0.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.mortbay.jetty</groupId>
@@ -226,7 +231,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.10</version>
+					<version>3.0.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -242,7 +247,7 @@
 				<plugin>
 					<groupId>com.amashchenko.maven.plugin</groupId>
 					<artifactId>gitflow-maven-plugin</artifactId>
-					<version>1.2.3</version>
+					<version>1.8.0</version>
 					<configuration>
 						<installProject>false</installProject>
 						<verbose>true</verbose>
@@ -261,7 +266,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.5.1</version>
+					<version>3.6.0</version>
 					<configuration>
 						<!--<skipDeploy>true</skipDeploy> -->
 					</configuration>
@@ -278,7 +283,7 @@
 					<!-- the plugin to generate changelog and release announcements -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-changes-plugin</artifactId>
-					<version>2.12</version>
+					<version>2.12.1</version>
 					<configuration>
 						<developmentTeam>DL-Learner team</developmentTeam>
 						<!-- the changes filtered source changes file -->
@@ -327,7 +332,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.1.0</version>
 					<executions>
 						<execution>
 							<phase>package</phase>
@@ -509,7 +514,7 @@
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>jfact</artifactId>
-				<version>4.0.3</version>
+				<version>4.0.4</version>
 			</dependency>
 			<!-- HermiT (OWL API v4 fork) -->
 			<dependency>
@@ -557,7 +562,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20160810</version>
+				<version>20171018</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->
@@ -570,7 +575,7 @@
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
-				<version>5.0.3</version>
+				<version>5.0.4</version>
 			</dependency>
 
 			<dependency>
@@ -610,13 +615,13 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
-				<version>2.4.2</version>
+				<version>2.4.3</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.10</version>
+				<version>1.15</version>
 			</dependency>
 
 			<dependency>
@@ -680,31 +685,31 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.192</version>
+				<version>1.4.196</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>6.0.6</version>
+				<version>8.0.8-dmr</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.4.1211</version>
+				<version>42.1.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>nz.ac.waikato.cms.weka</groupId>
 				<artifactId>weka-dev</artifactId>
-				<version>3.7.13</version>
+				<version>3.9.1</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>19.0</version>
+				<version>23.4-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -788,10 +793,16 @@
 			<!-- This is the concrete implementation of the log4j framework - it is
 				a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+
 
 			<!--Bridge from JCL to SLF4J. Then we go from SLF4J to our desired logging
 				framework (which for DL-Learner interfaces is Log4J). - JCL is in use by
@@ -819,7 +830,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.4</version>
+				<version>3.7</version>
 			</dependency>
 
 			<dependency>
@@ -831,7 +842,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.9.4</version>
+				<version>2.9.9</version>
 			</dependency>
 			<dependency>
 				<groupId>edu.berkeley.compbio</groupId>
