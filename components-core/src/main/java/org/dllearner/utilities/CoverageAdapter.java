@@ -35,6 +35,20 @@ public class CoverageAdapter {
 
 		public int tn() { return cc[1].falseCount; }
 		public void setTn(int tn) { cc[1].falseCount = tn; }
+
+		private String valueToString(int value) {
+			return "#" + value;
+		}
+
+		@Override
+		public String toString() {
+			return "CoverageCount2{" +
+					"tp" + valueToString(tp()) + "," +
+					"fn" + valueToString(fn()) + "," +
+					"fp" + valueToString(fp()) + "," +
+					"tn" + valueToString(tn()) +
+					'}';
+		}
 	}
 
 	public static class CoverageAdapter2 {
@@ -64,5 +78,18 @@ public class CoverageAdapter {
 
 		public SortedSet<OWLIndividual> tn() { return cov[1].falseSet; }
 		public void setTn(SortedSet<OWLIndividual> tn) { cov[1].falseSet = tn; cov[1].falseCount = tn.size(); }
+
+		private String setValueToString(SortedSet<OWLIndividual> set) {
+			return "#" + set.size() + (set.size()>0?"(" + set.first() + (set.size()>1?"...":"")+")":"");
+		}
+		@Override
+		public String toString() {
+			return "Coverage2{" +
+					"tp" + setValueToString(tp()) + "," +
+					"fn" + setValueToString(fn()) + "," +
+					"fp" + setValueToString(fp()) + "," +
+					"tn" + setValueToString(tn()) +
+					'}';
+		}
 	}
 }

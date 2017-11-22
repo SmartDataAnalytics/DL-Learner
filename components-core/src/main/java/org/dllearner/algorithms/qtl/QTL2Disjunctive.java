@@ -241,6 +241,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		allExamplesTrees.addAll(currentNegExampleTrees);
 //		RDFResourceTree lgg = lggGenerator.getLGG(allExamplesTrees);
 //		lgg.dump();
+		
+		initialized = true;
 		logger.info("...initialization finished.");
 	}
 	

@@ -104,6 +104,8 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     	} catch (IOException e) {
     		throw new ComponentInitException("KB file " + getUrl() + " could not be read.", e);
     	}
+    	
+    	initialized = true;
     }
 
     @Override

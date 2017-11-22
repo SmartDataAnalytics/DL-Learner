@@ -24,8 +24,8 @@ function showAllCat(){
 <h1>DL-Learner Components</h1>
 <p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>
 <a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('AccMethod')">AccMethod</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodAMeasure">AMeasure</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodAMeasureApprox">AMeasure Approximate</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodAMeasure">AMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodAMeasureApprox">AMeasure Approximate</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.core.probabilistic.unife.BUNDLE">BUNDLE</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassAsInstanceLearningProblem">Class as Instance LP</a></li></div>
@@ -40,13 +40,13 @@ function showAllCat(){
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier">ETDT</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.learningproblems.ExampleLoader">ExampleLoader</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasure">FMeasure</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasureApprox">FMeasure Approximate</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodFMeasure">FMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodFMeasureApprox">FMeasure Approximate</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.ocel.FlexibleHeuristic">Flexible Heuristic</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.FuzzyPosNegLPStandard">FuzzyPosNegLPStandard</a></li></div>
 <div class="type menu Class"><li><a href="#org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc">GLOBAL OPTIONS</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodGenFMeasure">Generalised FMeasure</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodJaccard">Jaccard Coefficient</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodGenFMeasure">Generalised FMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodJaccard">Jaccard Coefficient</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
 <div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.structure.unife.leap.LEAP">LEAP</a></li></div>
 <div class="type menu LearningAlgorithm"><li><a href="#org.dllearner.algorithms.probabilistic.structure.distributed.unife.leap.LEAPDistributed">LEAPDistributed</a></li></div>
@@ -64,21 +64,22 @@ function showAllCat(){
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegLPStandard">PosNegLPStandard</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegLPStrict">PosNegLPStrict</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegUndLP">PosNegUndLP</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAcc">Predictive Accuracy</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccApprox">Predictive Accuracy Approximate</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodPredAcc">Predictive Accuracy</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodPredAccApprox">Predictive Accuracy Approximate</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PropertyAxiomLearningProblem">PropertyAxiomLearningProblem</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple">QueryTreeHeuristic</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex">QueryTreeHeuristicC</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator">Refinement Operator TDT</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.SPARQLReasoner">SPARQL Reasoner</a></li></div>
+<div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.SPARQLReasonerQuad">SPARQL Reasoner (Quad)</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.sparql.SparqlKnowledgeSource">SPARQL endpoint fragment</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.SemKernelWorkflow">SemKernel Workflow</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.el.StableHeuristic">Stable Heuristic</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier">TDT</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasureWeighted">Weighted FMeasure</a></li></div>
-<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccWeighted">Weighted Predictive Accuracy</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodFMeasureWeighted">Weighted FMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodPredAccWeighted">Weighted Predictive Accuracy</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner">asymmetric object property axiom learner</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.ClosedWorldReasoner">closed world reasoner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner">data property domain axiom learner</a></li></div>
@@ -109,12 +110,12 @@ function showAllCat(){
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner">symmetric object property axiom learner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner">transitive object property axiom learner</a></li></div>
 </ul>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodAMeasure"><h2>AMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodAMeasure</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodAMeasure"><h2>AMeasure <small class="default-hidden">org.dllearner.accuracymethods.AccMethodAMeasure</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodAMeasureApprox"><h2>AMeasure Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodAMeasureApprox</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodAMeasureApprox"><h2>AMeasure Approximate <small class="default-hidden">org.dllearner.accuracymethods.AccMethodAMeasureApprox</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>approx.ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
@@ -308,12 +309,12 @@ function showAllCat(){
 <tr><td>randomSeed</td><td>random seed for deterministic example choice</td><td> long</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasure"><h2>FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasure</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodFMeasure"><h2>FMeasure <small class="default-hidden">org.dllearner.accuracymethods.AccMethodFMeasure</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureApprox"><h2>FMeasure Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureApprox</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodFMeasureApprox"><h2>FMeasure Approximate <small class="default-hidden">org.dllearner.accuracymethods.AccMethodFMeasureApprox</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>approx.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
@@ -340,12 +341,12 @@ function showAllCat(){
 <tr><td>rendering</td><td>The string renderer for any OWL expression output, can be "dlsyntax" or "manchester" <strong>Example:</strong> dlsyntax</td><td> String</td><td>manchester</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodGenFMeasure"><h2>Generalised FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodGenFMeasure</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodGenFMeasure"><h2>Generalised FMeasure <small class="default-hidden">org.dllearner.accuracymethods.AccMethodGenFMeasure</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>gen_fmeasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodJaccard"><h2>Jaccard Coefficient <small class="default-hidden">org.dllearner.learningproblems.AccMethodJaccard</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodJaccard"><h2>Jaccard Coefficient <small class="default-hidden">org.dllearner.accuracymethods.AccMethodJaccard</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>jaccard</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.KBFile"><h2>KB File <small class="default-hidden">org.dllearner.kb.KBFile</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>kbfile</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
@@ -573,19 +574,19 @@ function showAllCat(){
 <tr><td>uncertainExamples</td><td>the uncertain examples</td><td> Set</td><td></td><td> true</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAcc"><h2>Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAcc</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodPredAcc"><h2>Predictive Accuracy <small class="default-hidden">org.dllearner.accuracymethods.AccMethodPredAcc</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccApprox"><h2>Predictive Accuracy Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccApprox</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodPredAccApprox"><h2>Predictive Accuracy Approximate <small class="default-hidden">org.dllearner.accuracymethods.AccMethodPredAccApprox</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>approx.prec_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 <tr><td>reasoner</td><td>(configured by the learning problem)</td><td> Reasoner</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccOCEL"><h2>Predictive Accuracy without Weak elimination <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccOCEL</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodPredAccOCEL"><h2>Predictive Accuracy without Weak elimination <small class="default-hidden">org.dllearner.accuracymethods.AccMethodPredAccOCEL</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc.ocel</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PropertyAxiomLearningProblem"><h2>PropertyAxiomLearningProblem <small class="default-hidden">org.dllearner.learningproblems.PropertyAxiomLearningProblem</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>palp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
@@ -612,9 +613,18 @@ function showAllCat(){
 <tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>precomputeObjectPropertyRanges</td><td>if object property ranges should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>precomputePropertyDomains</td><td>if property domains should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>preferAsk</td><td>Prefer ASK queries when there is a choice in implementation</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useGenericSplitsCode</td><td>Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useValueLists</td><td>Whether to use SPARQL1.1 Value Lists</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type ReasonerComponent"><a name="org.dllearner.reasoning.SPARQLReasonerQuad"><h2>SPARQL Reasoner (Quad) <small class="default-hidden">org.dllearner.reasoning.SPARQLReasonerQuad</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>spr.quad</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>laxMode</td><td>Use alternative relaxed Sparql-queries for Classes and Individuals</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>preferAsk</td><td>Prefer ASK queries when there is a choice in implementation</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useGenericSplitsCode</td><td>Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useValueLists</td><td>Whether to use SPARQL1.1 Value Lists</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -648,7 +658,7 @@ function showAllCat(){
 <tr><td>puritythreshold</td><td>Purity threshold for setting a leaf</td><td> double</td><td>0.05</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureWeighted"><h2>Weighted FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureWeighted</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodFMeasureWeighted"><h2>Weighted FMeasure <small class="default-hidden">org.dllearner.accuracymethods.AccMethodFMeasureWeighted</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>weighted.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>balanced</td><td>balance the weights to relative set size</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
@@ -656,7 +666,7 @@ function showAllCat(){
 <tr><td>posWeight</td><td>weight on the positive examples</td><td> double</td><td>1</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccWeighted"><h2>Weighted Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccWeighted</small></h2></a>
+<div class="type AccMethod"><a name="org.dllearner.accuracymethods.AccMethodPredAccWeighted"><h2>Weighted Predictive Accuracy <small class="default-hidden">org.dllearner.accuracymethods.AccMethodPredAccWeighted</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>weighted.pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>balanced</td><td>balance the weights to relative set size</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>negWeight</td><td>weight on the negative examples</td><td> double</td><td>1</td><td> false</td></tr>
@@ -683,11 +693,15 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner"><h2>data property domain axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>dpldomain</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for data property domain axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>dpldomain</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for data property domain axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner"><h2>data property range learner <small class="default-hidden">org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dblrange</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for reflexive data property range axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner"><h2>data subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm data subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
@@ -706,12 +720,14 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner"><h2>disjoint data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dpldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner"><h2>disjoint object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>opldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
@@ -730,12 +746,14 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner"><h2>equivalent data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner"><h2>equivalent object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
@@ -761,11 +779,18 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner"><h2>object property domain axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>opldomain</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for object property domain axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>opldomain</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for object property domain axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"><h2>object property range learner <small class="default-hidden">org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>oplrange</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for object property range axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>oplrange</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for object property range axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm object subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
@@ -850,12 +875,14 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.SimpleSubclassLearner"><h2>simple subclass learner <small class="default-hidden">org.dllearner.algorithms.SimpleSubclassLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>clsub</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>batchMode</td><td>compute everything in a single SPARQL query</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>entityToDescribe</td><td>the OWL entity to learn about</td><td> OWLEntity</td><td></td><td> false</td></tr>
 <tr><td>ks</td><td>the sparql endpoint knowledge source</td><td> SparqlEndpointKS</td><td></td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds (abstract)</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> int</td><td></td><td> false</td></tr>
 <tr><td>reasoner</td><td>The sparql reasoner instance to use</td><td> SPARQLReasoner</td><td>SPARQLReasoner</td><td> false</td></tr>
 <tr><td>returnOnlyNewAxioms</td><td>omit axioms already existing in the knowledge base</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>strictOWLMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner"><h2>symmetric object property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner</small></h2></a>

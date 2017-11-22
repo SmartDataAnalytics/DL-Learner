@@ -69,7 +69,7 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	@Override
 	public void init()
 	{
-		
+		initialized = true;
 	}
 
 

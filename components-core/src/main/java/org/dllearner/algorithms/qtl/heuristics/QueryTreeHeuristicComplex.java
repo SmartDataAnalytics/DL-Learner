@@ -52,6 +52,7 @@ public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		initialized = true;
 	}
 
 	@Override

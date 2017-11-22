@@ -33,7 +33,7 @@ import java.util.Set;
  * @author Jens Lehmann
  *
  */
-public abstract class RefinementOperatorAdapter extends AbstractComponent implements LengthLimitedRefinementOperator {
+public abstract class RefinementOperatorAdapter extends AbstractRefinementOperator implements LengthLimitedRefinementOperator {
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 

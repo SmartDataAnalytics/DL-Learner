@@ -134,6 +134,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
+		
+		initialized = true;
 	}	
 	
 	@Override

@@ -44,6 +44,8 @@ public class OWLAxiomRenamerTest {
 	
 	private OWLAxiomRenamer renamer;
 
+	private Rendering rendering = Rendering.MANCHESTER_SYNTAX;
+
 	@Before
 	public void setUp() throws Exception {
 		df = new OWLDataFactoryImpl();
@@ -65,7 +67,7 @@ public class OWLAxiomRenamerTest {
 
 	@Test
 	public void testRename() {
-		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
+		StringRenderer.setRenderer(rendering);
 		OWLAxiom ax1 = df.getOWLSubClassOfAxiom(clsA, clsB);
 		OWLAxiom ax2 = df.getOWLSubClassOfAxiom(clsB, clsC);
 		
@@ -104,7 +106,9 @@ public class OWLAxiomRenamerTest {
 		System.out.print(ax1 + "->");ax1 = renamer.rename(ax1);System.out.println(ax1);
 		System.out.print(ax2 + "->");ax2 = renamer.rename(ax2);System.out.println(ax2);
 		assertEquals(ax1, ax2);
-		
+
+		ax1 = df.getOWLDisjointClassesAxiom(clsA, clsB, clsC);
+		ax1 = renamer.rename(ax1);System.out.println(ax1);
 		
 	}
 	

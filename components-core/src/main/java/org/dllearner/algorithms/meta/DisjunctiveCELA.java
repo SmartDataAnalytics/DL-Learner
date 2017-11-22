@@ -74,6 +74,7 @@ public class DisjunctiveCELA extends AbstractCELA {
         la.setMaxExecutionTimeInSeconds(partialSolutionSearchTimeSeconds);
 
         reset();
+        initialized = true;
     }
 
     @Override

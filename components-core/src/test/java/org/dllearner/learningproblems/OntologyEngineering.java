@@ -39,6 +39,7 @@ package org.dllearner.learningproblems;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.accuracymethods.*;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;

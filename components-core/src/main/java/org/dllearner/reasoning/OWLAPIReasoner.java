@@ -235,6 +235,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
 		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
+		 
+		 initialized = true;
     }
     
     private void initDatatypes() {
@@ -633,6 +635,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	@Override
 	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression ce) {
 		Set<OWLNamedIndividual> individuals;
+		logger.trace("getIndividuals for " + ce);
 		try {
 			individuals = reasoner.getInstances(ce, false).getFlattened();
 		} catch (UnsupportedOperationException e) {

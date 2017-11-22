@@ -523,6 +523,12 @@
 		<dependency>
 			<groupId>org.aksw</groupId>
 			<artifactId>semlibsvm</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-httpclient</artifactId>
+					<groupId>commons-httpclient</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -566,5 +572,5 @@
 			<artifactId>commons-collections4</artifactId>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 </project>

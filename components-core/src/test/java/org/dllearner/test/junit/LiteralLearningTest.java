@@ -228,8 +228,10 @@ public final class LiteralLearningTest {
 		// T : 1970-10-22 <= x <= 1971-09-24
 		TestRunner runner = new TestRunner(DATETIMES, DATETIMES_OWL, XSD.DATE_TIME);
 		
-		runner.setDualRestrictionTarget("1970-01-22T08:10:10", "1971-09-24T02:22:22");
-		
+//		runner.setDualRestrictionTarget("1970-01-22T08:10:10", "1971-09-24T02:22:22");
+
+		runner.setDualRestrictionTarget("1970-01-22T08:10:10", "1972-01-22T11:11:11");
+
 		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
 //		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks);
 //		oar.setReasonerImplementation(ReasonerImplementation.HERMIT);

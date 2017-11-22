@@ -148,6 +148,14 @@ public class OWLAPIUtils {
 		.toFormatter().withZoneUTC());
 //		dateTimeParsers.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 //		dateTimeParsers.put(XSD.DATE, ISODateTimeFormat.date());
+		dateTimeParsers.put(XSD.DATE_TIME, new DateTimeFormatterBuilder()
+		.append(DateTimeFormat.forPattern("yyyy-MM-DD'T'HH:mm:ss"))
+		.appendOptional(new DateTimeFormatterBuilder()
+		.appendLiteral('.')
+		.appendFractionOfSecond(1,4)
+		.toParser())
+		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
+		.toFormatter().withZoneUTC());
 //		dateTimeParsers.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
 //		dateTimeParsers.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}

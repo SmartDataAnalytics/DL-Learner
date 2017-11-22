@@ -19,6 +19,7 @@
 package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
+import org.dllearner.accuracymethods.*;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.ReasoningUtils;
@@ -159,6 +160,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
+		
+		initialized = true;
 	}
 
 	@Override

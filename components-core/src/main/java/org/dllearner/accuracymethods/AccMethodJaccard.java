@@ -1,6 +1,7 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.learningproblems.Heuristics;
 
 @ComponentAnn(name = "Jaccard Coefficient", shortName = "jaccard", version = 0.1)
 public class AccMethodJaccard implements AccMethodTwoValued {

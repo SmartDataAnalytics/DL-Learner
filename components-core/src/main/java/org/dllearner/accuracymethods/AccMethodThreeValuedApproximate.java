@@ -1,4 +1,4 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 /**
  * Approximation support for @AccMethodThreeValued

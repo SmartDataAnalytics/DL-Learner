@@ -228,6 +228,8 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 //        }*/
 //        log.info(JamonMonitorLogger.getStringForAllSortedByLabel());
 //        log.info("**************************************");
+        
+        initialized = true;
     }
 
     public String getEndpointURL() {

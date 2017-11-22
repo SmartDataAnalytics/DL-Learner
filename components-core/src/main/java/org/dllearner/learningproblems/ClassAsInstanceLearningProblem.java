@@ -76,6 +76,8 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		
+		initialized = true;
 	}
 
 	/* (non-Javadoc)

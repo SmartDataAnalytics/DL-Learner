@@ -23,7 +23,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.learningproblems.AccMethod;
+import org.dllearner.accuracymethods.AccMethod;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
