@@ -203,13 +203,8 @@ public class ELDown extends RefinementOperatorAdapter {
 		List<ELDescriptionTree> refinements = new LinkedList<>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
-		OWLClassExpression index;
-		if(v.isRoot()) {
-			index = df.getOWLThing();
-		} else {
-			index = opRanges.get(v.getParentEdge().getLabel());
-		}
-		
+		OWLClassExpression index = v.isRoot() ? df.getOWLThing() : opRanges.get(v.getParentEdge().getLabel());
+
 		// call ncc (see paper)
 		Set<OWLClass> candidates = utility.getClassCandidates(index, v.getLabel());
 		
@@ -537,9 +532,9 @@ public class ELDown extends RefinementOperatorAdapter {
 			if(v.isRoot()) {
 				// root is connected to main tree via role r
 				if(r instanceof OWLObjectProperty){
-					vp = new ELDescriptionNode(clonedNode, r, newTree.getRootNode().getLabel());
+					vp = new ELDescriptionNode(clonedNode, r.asOWLObjectProperty(), newTree.getRootNode().getLabel());
 				} else {
-					vp = new ELDescriptionNode(clonedNode, r, dpRanges.get(r));
+					vp = new ELDescriptionNode(clonedNode, r.asOWLDataProperty(), dpRanges.get(r));
 				}
 				
 			} else if(v.isClassNode()){
@@ -547,13 +542,13 @@ public class ELDown extends RefinementOperatorAdapter {
 				OWLProperty role = v.getParentEdge().getLabel();
 				Set<OWLClass> label = v.getLabel();
 				// create new node
-				vp = new ELDescriptionNode(parent, role, label);				
+				vp = new ELDescriptionNode(parent, role.asOWLObjectProperty(), label);
 			} else {
 				ELDescriptionNode parent = cloneMap.get(v.getParent());
 				OWLProperty role = v.getParentEdge().getLabel();
 				OWLDataRange label = v.getDataRange();
 				// create new node
-				vp = new ELDescriptionNode(parent, role, label);
+				vp = new ELDescriptionNode(parent, role.asOWLDataProperty(), label);
 			}
 			cloneMap.put(v, vp);
 			// attach children of node to process list
@@ -622,9 +617,8 @@ public class ELDown extends RefinementOperatorAdapter {
 		Set<OWLClassExpression> operands = new HashSet<>();
 		
 		// add all named classes to intersection
-		for(OWLClass nc : node.getLabel()) {
-			operands.add(nc);
-		}
+		operands.addAll(node.getLabel());
+
 		// add domain of all roles to intersection
 		for(ELDescriptionEdge edge : node.getEdges()) {
 			operands.add(opDomains.get(edge.getLabel()));
@@ -664,7 +658,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	}
 	
 	/**
-	 * @param maxClassExpressionDepth the maxClassExpressionDepth to set
+	 * @param maxClassExpressionDepth the max. depth of generated class expressions
 	 */
 	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
 		this.maxClassExpressionDepth = maxClassExpressionDepth;

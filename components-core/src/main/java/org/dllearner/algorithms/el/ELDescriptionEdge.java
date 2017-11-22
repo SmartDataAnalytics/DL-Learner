@@ -21,16 +21,16 @@ package org.dllearner.algorithms.el;
 import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * A (directed) edge in an EL OWLClassExpression tree. It consists of an edge
- * label, which is an object property, and the EL OWLClassExpression tree
+ * A (directed) edge in an EL concept tree. It consists of an edge
+ * label, which is an object property or data property, and the EL concept tree
  * the edge points to.
  * 
  * @author Jens Lehmann
  *
  */
-public class ELDescriptionEdge {
+public class ELDescriptionEdge<T extends OWLProperty> {
 
-	private OWLProperty label;
+	private T label;
 	
 	private ELDescriptionNode node;
 
@@ -39,7 +39,7 @@ public class ELDescriptionEdge {
 	 * @param label The label of this edge.
 	 * @param tree The tree the edge points to (edges are directed).
 	 */
-	public ELDescriptionEdge(OWLProperty label, ELDescriptionNode tree) {
+	public ELDescriptionEdge(T label, ELDescriptionNode tree) {
 		this.label = label;
 		this.node = tree;
 	}
@@ -47,14 +47,14 @@ public class ELDescriptionEdge {
 	/**
 	 * @param label the label to set
 	 */
-	public void setLabel(OWLProperty label) {
+	public void setLabel(T label) {
 		this.label = label;
 	}
 
 	/**
 	 * @return The label of this edge.
 	 */
-	public OWLProperty getLabel() {
+	public T getLabel() {
 		return label;
 	}
 
