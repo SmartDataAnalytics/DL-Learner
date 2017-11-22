@@ -25,6 +25,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLIndividualVisitor, OWLDataRangeVisitor, OWLDataVisitor {
@@ -70,6 +71,14 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		
 		literalRenamer = new OWLLiteralRenamer(df);
 		
+		reset();
+	}
+
+	public void reset() {
+		classVarQueue = new LinkedList<>();
+		propertyVarQueue = new LinkedList<>();
+		individualVarQueue = new LinkedList<>();
+
 		for(int i = 65; i <= 90; i++){
 			classVarQueue.add(String.valueOf((char)i));
 		}
@@ -305,14 +314,20 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		inverse = rename(inverse);
 		renamedOWLObject = df.getOWLObjectInverseOf(inverse);
 	}
-	
+
+	Function<OWLEntity, OWLEntity> classRenamingFn = k -> df.getOWLClass(getIRI("A_" + clsCounter.getAndIncrement()));
+
+	public void setClassRenamingFn(Function<OWLEntity, OWLEntity> classRenamingFn) {
+		this.classRenamingFn = classRenamingFn;
+	}
+
 	@Override
 	public void visit(OWLClass desc) {
 		if(desc.isTopEntity()){
 			renamedOWLObject = desc;
 		} else {
 //			OWLEntity newEntity = renaming.computeIfAbsent(desc, k -> df.getOWLClass(getIRI(classVarQueue.poll())));
-			OWLEntity newEntity = renaming.computeIfAbsent(desc, k -> df.getOWLClass(getIRI("A_" + clsCounter.getAndIncrement())));
+			OWLEntity newEntity = renaming.computeIfAbsent(desc, classRenamingFn);
 			renamedOWLObject = newEntity;
 
 		}
