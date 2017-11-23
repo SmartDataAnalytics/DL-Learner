@@ -25,19 +25,26 @@ import com.google.common.hash.Hashing;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -175,18 +182,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         }
 
         for (OWLObjectProperty p : baseReasoner.getObjectProperties()) {
-            if (opPos.get(p) == null) {
-                opPos.put(p, new HashMap<>());
-            }
+            opPos.computeIfAbsent(p, k -> new HashMap<>());
         }
 
         for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
-            if (bdPos.get(dp) == null) {
-                bdPos.put(dp, new TreeSet<>());
-            }
-            if (bdNeg.get(dp) == null) {
-                bdNeg.put(dp, new TreeSet<>());
-            }
+            bdPos.computeIfAbsent(dp, k -> new TreeSet<>());
+            bdNeg.computeIfAbsent(dp, k -> new TreeSet<>());
 
         }
     }
@@ -226,7 +227,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         if (useMaterializationCaching) {
             File cacheDir = new File("cache");
             cacheDir.mkdirs();
-            HashFunction hf = Hashing.md5();
+            HashFunction hf = Hashing.goodFastHash(128);
             Hasher hasher = hf.newHasher();
             hasher.putBoolean(materializeExistentialRestrictions);
             hasher.putBoolean(handlePunning);
@@ -371,11 +372,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                     //for each x \in N_I with A(x) we add relatedTo(x,A)
                     SortedSet<OWLIndividual> individuals = classInstancesPos.get(cls);
                     for (OWLIndividual individual : individuals) {
-                        SortedSet<OWLIndividual> objects = map.get(individual);
-                        if (objects == null) {
-                            objects = new TreeSet<>();
-                            map.put(individual, objects);
-                        }
+                        SortedSet<OWLIndividual> objects = map.computeIfAbsent(individual, k -> new TreeSet<>());
                         objects.add(clsAsInd);
 
                     }
@@ -410,12 +407,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             for (OWLIndividual individual : individuals) {
                 OWLIndividual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++));
                 newIndividuals.add(newIndividual);
-                SortedSet<OWLIndividual> values = map.get(individual);
-                if (values == null) {
-                    values = new TreeSet<>();
-                    map.put(individual, values);
-                }
-                values.add(newIndividual);
+                map
+                        .computeIfAbsent(individual, k -> new TreeSet<>())
+                        .add(newIndividual);
             }
             fill(newIndividuals, filler);
 
@@ -985,7 +979,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 // get all objects that are related by r to (at least) one subject which is of type C
                 Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
                         MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.<OWLIndividual, OWLIndividual>create());
+                        TreeMultimap.create());
 
                 mapping = mappingInv.asMap();
             }
@@ -1029,7 +1023,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 // get all objects that are related by r to (at least) one subject which is of type C
                 Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
                         MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.<OWLIndividual, OWLIndividual>create());
+                        TreeMultimap.create());
 
                 mapping = mappingInv.asMap();
             }
@@ -1064,7 +1058,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 // get all objects that are related by r to (at least) one subject which is of type C
                 Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
                         MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.<OWLIndividual, OWLIndividual>create());
+                        TreeMultimap.create());
 
                 mapping = mappingInv.asMap();
             }
@@ -1117,7 +1111,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 // get all objects that are related by r to (at least) one subject which is of type C
                 Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
                         MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.<OWLIndividual, OWLIndividual>create());
+                        TreeMultimap.create());
 
                 mapping = mappingInv.asMap();
             }
@@ -1160,168 +1154,132 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             OWLIndividual value = ((OWLObjectHasValue) description).getFiller();
 
             // the mapping of instances related by r
-            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping =
+                    property.isAnonymous() ? // \exists r^{-1}.{a} -> invert the mapping, i.e. get all objects that
+                            // are related by r to (at least) one subject which is of type C
+                            Multimaps.invertFrom(
+                                    MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+                                    TreeMultimap.create()).asMap() :
+                            opPos.get(property.getNamedProperty());
 
-            if (property.isAnonymous()) { // \exists r^{-1}.{a}
-                // invert the mapping
-                // get all objects that are related by r to (at least) one subject which is of type C
-                Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
-                        MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.<OWLIndividual, OWLIndividual>create());
-
-                mapping = mappingInv.asMap();
-            }
-
-            SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-
-            for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
-                if (entry.getValue().contains(value)) {
-                    returnSet.add(entry.getKey());
-                }
-            }
-            return returnSet;
+            return mapping.entrySet().stream()
+                    .filter(e -> e.getValue().contains(value))
+                    .map(Entry::getKey)
+                    .collect(Collectors.toCollection(TreeSet::new));
         } else if (description instanceof OWLDataSomeValuesFrom) {
             OWLDataPropertyExpression property = ((OWLDataSomeValuesFrom) description).getProperty();
             OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
 
             if (filler.isDatatype()) {
-                //we assume that the values are of the given datatype
+                // we assume that the values are of the given datatype
                 return new TreeSet<>(dpPos.get(property).keySet());
-//				OWLDatatype dt = filler.asOWLDatatype();
-//				if(dt.isDouble()){
-//					return new TreeSet<OWLIndividual>(dd.get(property).keySet());
-//				} else if(dt.isInteger()){
-//					return new TreeSet<OWLIndividual>(id.get(property).keySet());
-//				} else if(dt.isBoolean()){
-//					return bdPos.get(property);
-//				}
+            } else if (filler instanceof OWLDataIntersectionOf) {
+                return ((OWLDataIntersectionOf) filler).getOperands().stream()
+                        .map(dr -> getIndividuals(df.getOWLDataSomeValuesFrom(property, dr)))
+                        .reduce((s1, s2) -> {
+                            s1.retainAll(s2);
+                            return s1;
+                        })
+                        .orElse(new TreeSet<>());
+            } else if (filler instanceof OWLDataUnionOf) {
+                return ((OWLDataUnionOf) filler).getOperands().stream()
+                        .map(dr -> getIndividuals(df.getOWLDataSomeValuesFrom(property, dr)))
+                        .reduce((s1, s2) -> {
+                            s1.addAll(s2);
+                            return s1;
+                        })
+                        .orElse(new TreeSet<>());
+            } else if (filler instanceof OWLDataComplementOf) {
+                return new TreeSet<>(Sets.difference(
+                        individuals,
+                        getIndividualsImpl(df.getOWLDataSomeValuesFrom(
+                                property,
+                                ((OWLDataComplementOf) filler).getDataRange()))));
             } else if (filler instanceof OWLDatatypeRestriction) {
                 OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
                 Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 
                 if (OWLAPIUtils.floatDatatypes.contains(datatype)) {
-                    double min = -Double.MAX_VALUE;
-                    double max = Double.MAX_VALUE;
-                    for (OWLFacetRestriction facet : facetRestrictions) {
-                        if (facet.getFacet() == OWLFacet.MIN_INCLUSIVE) {
-                            min = Double.parseDouble(facet.getFacetValue().getLiteral());
-                        } else if (facet.getFacet() == OWLFacet.MAX_INCLUSIVE) {
-                            max = Double.parseDouble(facet.getFacetValue().getLiteral());
-                        }
-                    }
-                    Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(property);
-                    SortedSet<OWLIndividual> returnSet = new TreeSet<>();
+                    double min = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MIN_INCLUSIVE)
+                            .map(fr -> fr.getFacetValue().isDouble() ? fr.getFacetValue().parseDouble() : (double) fr.getFacetValue().parseFloat())
+                            .findAny().orElse(-Double.MAX_VALUE);
+                    double max = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MAX_INCLUSIVE)
+                            .map(fr -> fr.getFacetValue().isDouble() ? fr.getFacetValue().parseDouble() : (double) fr.getFacetValue().parseFloat())
+                            .findAny().orElse(Double.MAX_VALUE);
 
-                    for (Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
-                        //we can skip of largest number is below minimum or lowest number is above maximum
-                        if (entry.getValue().last() < min
-                                || entry.getValue().first() > max) {
-                            continue;
-                        }
+                    return dd.getOrDefault(property, new HashMap<>()).entrySet().stream()
+                            .filter(e -> {
+                                SortedSet<Double> values = e.getValue();
 
-                        //search a value which is in the interval
-                        for (Double value : entry.getValue()) {
-                            if (value >= min && value <= max) {
-                                returnSet.add(entry.getKey());
-                                break;
-                            }
-                        }
-                    }
-                    return returnSet;
+                                // we can skip if largest number is below minimum or lowest number is above maximum
+                                if (values.last() < min || values.first() > max) {
+                                    return false;
+                                }
+
+                                // search a value which is in the interval
+                                return values.stream().anyMatch(val -> val >= min && val <= max);
+                            })
+                            .map(Entry::getKey)
+                            .collect(Collectors.toCollection(TreeSet::new));
+//
                 } else if (OWLAPIUtils.intDatatypes.contains(datatype)) {
-                    int min = Integer.MIN_VALUE;
-                    int max = Integer.MAX_VALUE;
-                    for (OWLFacetRestriction facet : facetRestrictions) {
-                        if (facet.getFacet() == OWLFacet.MIN_INCLUSIVE) {
-                            min = facet.getFacetValue().parseInteger();
-                        } else if (facet.getFacet() == OWLFacet.MAX_INCLUSIVE) {
-                            max = facet.getFacetValue().parseInteger();
-                        }
-                    }
-                    Map<OWLIndividual, SortedSet<Integer>> mapping = id.get(property);
-                    SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-                    for (Entry<OWLIndividual, SortedSet<Integer>> entry : mapping.entrySet()) {
-                        //we can skip of largest number is below minimum or lowest number is above maximum
-                        if (entry.getValue().last() < min
-                                || entry.getValue().first() > max) {
-                            continue;
-                        }
+                    int min = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MIN_INCLUSIVE)
+                            .map(fr -> fr.getFacetValue().parseInteger())
+                            .findAny().orElse(-Integer.MAX_VALUE);
+                    int max = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MAX_INCLUSIVE)
+                            .map(fr -> fr.getFacetValue().parseInteger())
+                            .findAny().orElse(Integer.MAX_VALUE);
 
-                        //search a value which is in the interval
-                        for (Integer value : entry.getValue()) {
-                            if (value >= min && value <= max) {
-                                returnSet.add(entry.getKey());
-                                break;
-                            }
-                        }
-                    }
-                    return returnSet;
+                    return id.getOrDefault(property, new HashMap<>()).entrySet().stream()
+                            .filter(e -> {
+                                SortedSet<Integer> values = e.getValue();
+
+                                // we can skip if largest number is below minimum or lowest number is above maximum
+                                if (values.last() < min || values.first() > max) {
+                                    return false;
+                                }
+
+                                // search a value which is in the interval
+                                return values.stream().anyMatch(val -> val >= min && val <= max);
+                            })
+                            .map(Entry::getKey)
+                            .collect(Collectors.toCollection(TreeSet::new));
                 } else if (OWLAPIUtils.dtDatatypes.contains(datatype)) {
-					// TODO we cannot ensure the sorting, because OWL API does only String comparison
-                    // on the lexical String value
-                    OWLLiteral min = null;
-                    OWLLiteral max = null;
-                    for (OWLFacetRestriction facet : facetRestrictions) {
-                        if (facet.getFacet() == OWLFacet.MIN_INCLUSIVE) {
-                            min = facet.getFacetValue();
-                        } else if (facet.getFacet() == OWLFacet.MAX_INCLUSIVE) {
-                            max = facet.getFacetValue();
-                        }
-                    }
-                    Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
-                    // we can return false if largest number is below minimum or lowest number is above maximum
-                    DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
-                    DateTime minDateTime = null;
-                    if (min != null) {
-                        minDateTime = parser.parseDateTime(min.getLiteral());
-                    }
-                    DateTime maxDateTime = null;
-                    if (max != null) {
-                        maxDateTime = parser.parseDateTime(max.getLiteral());
-                    }
-                    SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-                    for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
-                        //search a value which is in the interval
-                        for (OWLLiteral value : entry.getValue()) {
-                            if (OWLAPIUtils.inRange(value, min, max)) {
-                                returnSet.add(entry.getKey());
-                            }
-                        }
-                    }
-                    return returnSet;
+                    OWLLiteral min = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MIN_INCLUSIVE)
+                            .map(OWLFacetRestriction::getFacetValue)
+                            .findAny().orElse(null);
+                    OWLLiteral max = facetRestrictions.stream()
+                            .filter(fr -> fr.getFacet() == OWLFacet.MAX_INCLUSIVE)
+                            .map(OWLFacetRestriction::getFacetValue)
+                            .findAny().orElse(null);
+
+                    return dpPos.getOrDefault(property, new HashMap<>()).entrySet().stream()
+                            .filter(e -> e.getValue().stream().anyMatch(val -> OWLAPIUtils.inRange(val, min, max)))
+                            .map(Entry::getKey)
+                            .collect(Collectors.toCollection(TreeSet::new));
                 }
             } else if (filler.getDataRangeType() == DataRangeType.DATA_ONE_OF) {
                 OWLDataOneOf dataOneOf = (OWLDataOneOf) filler;
                 Set<OWLLiteral> values = dataOneOf.getValues();
 
-                Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
-                SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-
-                for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
-                    OWLIndividual ind = entry.getKey();
-                    SortedSet<OWLLiteral> indValues = entry.getValue();
-
-                    if (!Sets.intersection(values, indValues).isEmpty()) {
-                        returnSet.add(ind);
-                    }
-                }
-                return returnSet;
+                return dpPos.getOrDefault(property, new HashMap<>()).entrySet().stream()
+                        .filter(e -> !Sets.intersection(e.getValue(), values).isEmpty())
+                        .map(Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
             }
         } else if (description instanceof OWLDataHasValue) {
             OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
             OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 
-            SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-
-            Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
-
-            for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
-                if (entry.getValue().contains(value)) {
-                    returnSet.add(entry.getKey());
-                }
-            }
-
-            return returnSet;
+            return dpPos.getOrDefault(property, new HashMap<>()).entrySet().stream()
+                    .filter(e -> e.getValue().contains(value))
+                    .map(Entry::getKey)
+                    .collect(Collectors.toCollection(TreeSet::new));
         } else if (description instanceof OWLObjectOneOf) {
             return new TreeSet(((OWLObjectOneOf) description).getIndividuals());
         }
@@ -1348,7 +1306,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      */
     @Override
     public Set<OWLObjectProperty> getObjectPropertiesImpl() {
-        return objectProperties;
+        return baseReasoner.getObjectProperties();
     }
 
     @Override
@@ -1668,6 +1626,83 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     @NoConfigOption
     public void setSynchronized() {
         baseReasoner.setSynchronized();
+    }
+
+    public static void main(String[] args) throws Exception{
+
+        OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+        OWLOntology ontology = man.createOntology();
+        OWLDataFactory df = new OWLDataFactoryImpl();
+        PrefixManager pm = new DefaultPrefixManager();
+        pm.setDefaultPrefix("http://test.org/");
+
+        OWLDataProperty dp = df.getOWLDataProperty("dp", pm);
+        OWLObjectProperty op = df.getOWLObjectProperty("op", pm);
+        OWLClass cls = df.getOWLClass("C", pm);
+        man.addAxiom(ontology,
+                df.getOWLDataPropertyAssertionAxiom(
+                        dp,
+                        df.getOWLNamedIndividual("a", pm),
+                        df.getOWLLiteral(2.0d)));
+        man.addAxiom(ontology,
+                df.getOWLDataPropertyAssertionAxiom(
+                        dp,
+                        df.getOWLNamedIndividual("b", pm),
+                        df.getOWLLiteral(1.3d)));
+        man.addAxiom(ontology, df.getOWLDataPropertyRangeAxiom(dp, df.getDoubleOWLDatatype()));
+        IntStream.range(1, 11).forEach( i -> {
+            man.addAxiom(ontology, df.getOWLObjectPropertyAssertionAxiom(op,
+                    df.getOWLNamedIndividual("s", pm),
+                    df.getOWLNamedIndividual("o" + i, pm)));
+            man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, df.getOWLNamedIndividual("o" + i, pm)));
+        });
+
+        OWLAPIOntology ks = new OWLAPIOntology(ontology);
+        ks.init();
+
+        ClosedWorldReasoner reasoner = new ClosedWorldReasoner(ks);
+        reasoner.init();
+
+
+        SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(
+                df.getOWLDataSomeValuesFrom(
+                        dp,
+                        df.getOWLDatatypeMinMaxInclusiveRestriction(1.0d, 2.0d)));
+        System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLDataSomeValuesFrom(
+                        dp,
+                        df.getOWLDatatypeMinMaxInclusiveRestriction(1.0d, 1.9d)));
+        System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLDataSomeValuesFrom(
+                        dp,
+                        df.getOWLDataUnionOf(
+                                df.getOWLDatatypeMinMaxInclusiveRestriction(1.0d, 1.5d),
+                                df.getOWLDatatypeMinMaxInclusiveRestriction(2.0d, 2.5d))
+                        ));
+        System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLDataSomeValuesFrom(
+                        dp,
+                        df.getOWLDataComplementOf(
+                                df.getOWLDatatypeMinMaxInclusiveRestriction(1.0d, 1.5d))
+                ));
+        System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLObjectMaxCardinality(5, op, cls)
+                       );
+        System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLObjectMaxCardinality(10, op, cls)
+        );
+        System.out.println(individuals);
+
     }
 
 }
