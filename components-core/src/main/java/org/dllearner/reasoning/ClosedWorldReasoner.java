@@ -1071,22 +1071,21 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
                 int nrOfFillers = 0;
                 int index = 0;
-                Collection<OWLIndividual> inds = entry.getValue();
+                Collection<OWLIndividual> fillers = entry.getValue();
 
                 // we do not need to run tests if there are not sufficiently many fillers
-                if (number < inds.size()) {
-                    returnSet.add(entry.getKey());
+                if (fillers.size() <= number) {
                     continue;
                 }
 
-                for (OWLIndividual ind : inds) {
-                    // stop inner loop when nr of fillers is reached
-                    if (nrOfFillers >= number) {
+                for (OWLIndividual ind : fillers) {
+                    // stop inner loop when there are more fillers than allowed
+                    if (nrOfFillers > number) {
+                        returnSet.remove(entry.getKey());
                         break;
                     }
-                    // early abort when too many instance are true already
-                    if (inds.size() - index < number) {
-                        returnSet.add(entry.getKey());
+                    // early termination when there are not enough remaining candidates that could belong to C
+                    if (fillers.size() - index + nrOfFillers <= number) {
                         break;
                     }
                     if (targetSet.contains(ind)) {
