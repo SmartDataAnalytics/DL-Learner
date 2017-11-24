@@ -88,13 +88,9 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 		this.uncertainExamples=uncertainExamples;
 	}
 	
-			
-			
-  //useless methods and therefore empty implementations
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		
+		initialized = true;
 	}
 
 	@Override

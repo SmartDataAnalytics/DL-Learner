@@ -18,68 +18,34 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataComplementOf;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataRangeVisitor;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLIndividualVisitor;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectInverseOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLPropertyExpression;
-import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.OWLFacet;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLIndividualVisitor, OWLDataRangeVisitor {
+public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLIndividualVisitor, OWLDataRangeVisitor, OWLDataVisitor {
 	
 	private static final String NS = "http://dl-learner.org/pattern/";
-	
+
+	/*
+	Some constants here used for abstraction
+	 */
+
+	private static final int MIN_INTEGER_VALUE = 0;
+	private static final int MAX_INTEGER_VALUE = 9;
+	private static final double MIN_DOUBLE_VALUE = 0d;
+	private static final double MAX_DOUBLE_VALUE = 9d;
+	private static final float MIN_FLOAT_VALUE = 0f;
+	private static final float MAX_FLOAT_VALUE = 9f;
+
+
 	private OWLDataFactory df;
 	private Map<OWLEntity, OWLEntity> renaming;
 	private OWLObject renamedOWLObject;
@@ -94,6 +60,11 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	private boolean normalizeCardinalities = true;
 	private boolean normalizeHasValue = true;
 	private boolean normalizeOneOf = true;
+
+	private AtomicInteger clsCounter = new AtomicInteger(1);
+
+	private boolean multipleClasses = false;
+
 	
 	public OWLClassExpressionRenamer(OWLDataFactory df, Map<OWLEntity, OWLEntity> renaming) {
 		this.df = df;
@@ -101,6 +72,14 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		
 		literalRenamer = new OWLLiteralRenamer(df);
 		
+		reset();
+	}
+
+	public void reset() {
+		classVarQueue = new LinkedList<>();
+		propertyVarQueue = new LinkedList<>();
+		individualVarQueue = new LinkedList<>();
+
 		for(int i = 65; i <= 90; i++){
 			classVarQueue.add(String.valueOf((char)i));
 		}
@@ -116,13 +95,18 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			propertyVarQueue.add(String.valueOf((char)i));
 		}
 	}
-	
+
+	public void setMultipleClasses(boolean multipleClasses) {
+		this.multipleClasses = multipleClasses;
+	}
+
 	public OWLClassExpression rename(OWLClassExpression expr){
 		renamedOWLObject = null;
 		expr.accept(this);
 		return (OWLClassExpression) renamedOWLObject;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T extends OWLPropertyExpression> T rename(T expr){
 		renamedOWLObject = null;
 		expr.accept(this);
@@ -150,8 +134,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLObjectIntersectionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
-		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
+//		Collections.sort(operands, comparator);
+		Set<OWLClassExpression> renamedOperands = new HashSet<>();//new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -331,18 +315,22 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		inverse = rename(inverse);
 		renamedOWLObject = df.getOWLObjectInverseOf(inverse);
 	}
-	
+
+	Function<OWLEntity, OWLEntity> classRenamingFn = k -> df.getOWLClass(getIRI("A_" + clsCounter.getAndIncrement()));
+
+	public void setClassRenamingFn(Function<OWLEntity, OWLEntity> classRenamingFn) {
+		this.classRenamingFn = classRenamingFn;
+	}
+
 	@Override
 	public void visit(OWLClass desc) {
 		if(desc.isTopEntity()){
 			renamedOWLObject = desc;
 		} else {
-			OWLEntity newEntity = renaming.get(desc);
-			if(newEntity == null){
-				newEntity = df.getOWLClass(getIRI(classVarQueue.poll()));
-				renaming.put(desc, newEntity);
-			}
+//			OWLEntity newEntity = renaming.computeIfAbsent(desc, k -> df.getOWLClass(getIRI(classVarQueue.poll())));
+			OWLEntity newEntity = renaming.computeIfAbsent(desc, classRenamingFn);
 			renamedOWLObject = newEntity;
+
 		}
 	}
 	
@@ -351,11 +339,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(op.isTopEntity()){
 			renamedOWLObject = op;
 		} else {
-			OWLEntity newEntity = renaming.get(op);
-			if(newEntity == null){
-				newEntity = df.getOWLObjectProperty(getIRI(propertyVarQueue.poll()));
-				renaming.put(op, newEntity);
-			}
+			OWLEntity newEntity = renaming.computeIfAbsent(op, k -> df.getOWLObjectProperty(
+					getIRI(propertyVarQueue.poll())));
 			renamedOWLObject = newEntity;
 		}
 	}
@@ -365,11 +350,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		if(dp.isTopEntity()){
 			renamedOWLObject = dp;
 		} else {
-			OWLEntity newEntity = renaming.get(dp);
-			if(newEntity == null){
-				newEntity = df.getOWLDataProperty(getIRI(propertyVarQueue.poll()));
-				renaming.put(dp, newEntity);
-			}
+			OWLEntity newEntity = renaming.computeIfAbsent(dp,
+														   k -> df.getOWLDataProperty(getIRI(propertyVarQueue.poll())));
 			renamedOWLObject = newEntity;
 		}
 	}
@@ -381,11 +363,8 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLNamedIndividual ind) {
-		OWLEntity newEntity = renaming.get(ind);
-		if(newEntity == null){
-			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
-			renaming.put(ind, newEntity);
-		}
+		OWLEntity newEntity = renaming.computeIfAbsent(ind, k -> df.getOWLNamedIndividual(
+				getIRI(individualVarQueue.poll())));
 		renamedOWLObject = newEntity;
 	}
 	
@@ -405,7 +384,11 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDatatype dt) {
-		renamedOWLObject = dt;
+		if(dt.isBuiltIn()) {
+			renamedOWLObject = dt;
+		} else {
+			renamedOWLObject = PatternConstants.USER_DEFINED_DATATYPE;
+		}
 	}
 
 	@Override
@@ -449,7 +432,62 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDatatypeRestriction desc) {
-		renamedOWLObject = desc;
+		OWLDatatype datatype = desc.getDatatype();
+		Set<OWLFacetRestriction> facetRestrictions = desc.getFacetRestrictions();
+		Set<OWLFacetRestriction> newFacets = facetRestrictions.stream()
+				.map(facetRestriction -> normalize(facetRestriction))
+				.sorted()
+				.collect(Collectors.toSet());
+		renamedOWLObject = df.getOWLDatatypeRestriction(datatype, newFacets);;
 	}
 
+	private OWLFacetRestriction normalize(OWLFacetRestriction fr) {
+		OWLFacet facet = fr.getFacet();
+
+		OWLLiteral value = fr.getFacetValue();
+
+		return df.getOWLFacetRestriction(facet, normalize(value, facet));
+	}
+
+	private OWLLiteral normalize(OWLLiteral lit, OWLFacet facet) {
+		OWLDatatype datatype = lit.getDatatype();
+		OWLLiteral newLit = lit;
+		if(datatype.isBuiltIn()) {
+			switch(facet) {
+				case MIN_INCLUSIVE:
+				case MIN_EXCLUSIVE:
+					if(datatype.isDouble()) {
+						newLit = df.getOWLLiteral(MIN_DOUBLE_VALUE);
+					} else if(datatype.isInteger()) {
+						newLit = df.getOWLLiteral(MIN_INTEGER_VALUE);
+					} else if(datatype.isFloat()) {
+						newLit = df.getOWLLiteral(MIN_FLOAT_VALUE);
+					}
+					break;
+				case MAX_INCLUSIVE:
+				case MAX_EXCLUSIVE:
+					if(datatype.isDouble()) {
+						newLit = df.getOWLLiteral(MAX_DOUBLE_VALUE);
+					} else if(datatype.isInteger()) {
+						newLit = df.getOWLLiteral(MAX_INTEGER_VALUE);
+					} else if(datatype.isFloat()) {
+						newLit = df.getOWLLiteral(MAX_FLOAT_VALUE);
+					}
+					break;
+					default:
+			}
+
+		}
+		return newLit;
+	}
+
+	@Override
+	public void visit(@Nonnull OWLLiteral node) {
+
+	}
+
+	@Override
+	public void visit(@Nonnull OWLFacetRestriction node) {
+
+	}
 }

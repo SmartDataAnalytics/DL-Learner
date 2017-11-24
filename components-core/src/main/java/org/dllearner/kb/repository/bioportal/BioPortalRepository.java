@@ -18,28 +18,41 @@
  */
 package org.dllearner.kb.repository.bioportal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.KXml2Driver;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
 
 public class BioPortalRepository implements OntologyRepository {
 	
 	private static final Logger log = Logger.getLogger(BioPortalRepository.class);
 	
-	private static final String apiKey = "8fadfa2c-47de-4487-a1f5-b7af7378d693";
+	private static final String apiKey = "20caf25c-f140-4fef-be68-ff1a3936f405";
 	private static final String serviceURL = "http://rest.bioontology.org/bioportal/ontologies";
+
+	private static final String listOntologiesURL = "http://data.bioontology.org/ontologies";
+	private static final String downloadURL = "http://data.bioontology.org/ontologies/%s/download";
 	
 	private boolean initialized = false;
 	
@@ -67,42 +80,40 @@ public class BioPortalRepository implements OntologyRepository {
 	}
 	
 	private void fillRepository(){
-		XStream xstream = new XStream(new KXml2Driver());
-		xstream.alias("success", Success.class);
-		xstream.alias("data", Data.class);
-		xstream.alias("ontologyBean", OntologyBean.class);
-//		xstream.alias("userAcl", UserAcl.class);
-		xstream.alias("userEntry", UserEntry.class);
-		
-		InputStream is = null;
+
 		try {
-			is = getInputStream(new URL(withAPIKey(serviceURL)));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (is == null) {
-			return;
-		}
-		Success success = (Success) xstream.fromXML(is);
-		if (success == null) {
-			return;
-		}
-		List<OntologyBean> beans = success.getData().getOntologyBeans();
-		entries = new ArrayList<>();
-		for(OntologyBean bean : beans){
-			URI physicalURI = URI.create(withAPIKey(serviceURL + "/download/" + bean.getId()));
-			String shortName = bean.getDisplayLabel();
-			boolean add = false;
-			for(String filename : bean.getFilenames()){
-				if(filename.endsWith(".owl") || filename.endsWith("rdf") || filename.endsWith(".obo") || filename.endsWith(".nt") || filename.endsWith("*.ttl")){
-					add = true;
-					break;
+			HttpURLConnection conn = (HttpURLConnection)new URL(listOntologiesURL).openConnection();
+			conn.setRequestProperty("Authorization", "apikey token=" + apiKey);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			// list all ontologies
+			try (InputStream is = conn.getInputStream()) {
+
+//				JsonParser jp = new JsonParser();
+//				jp.parse(new InputStreamReader(is));
+
+
+				JsonReader rdr = Json.createReader(is);
+				JsonArray array = rdr.readArray();
+
+				// for each ontology get the download link
+				for (JsonObject obj : array.getValuesAs(JsonObject.class)) {
+					String acronym = obj.getString("acronym");
+					String name = obj.getString("name");
+
+					URI physicalURI = URI.create(obj.getJsonObject("links").getString("download"));
+					String shortName = acronym;
+					boolean add = false;
+					entries.add(new RepositoryEntry(physicalURI, physicalURI, shortName));
 				}
+			} catch( Exception e){
+				e.printStackTrace();
 			}
-			if(add){
-				entries.add(new RepositoryEntry(physicalURI, physicalURI, shortName));
-			}
+		} catch(Exception e) {
+
 		}
+
 		log.info("Loaded " + entries.size() + " ontology entries from BioPortal.");
 	}
 
@@ -120,10 +131,11 @@ public class BioPortalRepository implements OntologyRepository {
 		return null;
 	}
 	
-	private InputStream getInputStream(URL url) throws IOException {
+	private static InputStream getInputStream(URL url) throws IOException {
 		if (url.getProtocol().equals("http")) {
-			URLConnection conn;
-			conn = url.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestProperty("Authorization", "apikey token=" + apiKey);
+			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "application/rdf+xml");
 			conn.addRequestProperty("Accept", "text/xml");
 			conn.addRequestProperty("Accept", "*/*");
@@ -132,18 +144,157 @@ public class BioPortalRepository implements OntologyRepository {
 			return url.openStream();
 		}
 	}
-	
-	private String withAPIKey(String url){
-		return url + "?apikey=" + apiKey;
+
+	/**
+	 * Download the ontologies and save them in the given directory.
+	 * @param dir the directory
+	 */
+	public void download(File dir) {
+
+	}
+
+	/**
+	 * Returns the ontology for the entry.
+	 * @param entry the entry
+	 * @return the OWL ontology
+	 */
+	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
+		try(InputStream is = getInputStream(entry.getPhysicalURI().toURL())) {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			man.addMissingImportListener(e -> {
+				System.out.println("Missing import: " + e.getImportedOntologyURI());
+			});
+			OWLOntologyLoaderConfiguration conf = new OWLOntologyLoaderConfiguration();
+			conf.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+			conf.addIgnoredImport(IRI.create("http://www.co-ode.org/ontologies/lists/2008/09/11/list.owl"));
+			man.setOntologyLoaderConfiguration(conf);
+			OWLOntology ont = man.loadOntologyFromOntologyDocument(is);
+			return ont;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static void main(String[] args) throws Exception{
-		Collection<OntologyRepositoryEntry> entries = new BioPortalRepository().getEntries();
-		for(OntologyRepositoryEntry entry : entries){
-			System.out.println("Loading " + entry.getOntologyShortName());
-			System.out.println("From " + entry.getPhysicalURI());
-		}
-		
+
+		// create Options object
+		OptionParser parser = new OptionParser();
+		OptionSpec<File> baseDir =
+				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File("/tmp/bioportal/"));
+		OptionSpec<Void> downloadOption =
+				parser.accepts( "download" );
+		OptionSpec<Void> parseOption =
+				parser.accepts( "parse" );
+
+		OptionSet options = parser.parse(args);
+
+		File dir = options.valueOf(baseDir);
+		dir.mkdirs();
+
+		File downloadDir = new File(dir, "download");
+		File downloadSuccessfulDir = new File(downloadDir, "successful");
+		File downloadFailedDir = new File(downloadDir, "failed");
+		downloadSuccessfulDir.mkdirs();
+		downloadFailedDir.mkdirs();
+		File parsedDir = new File(dir, "parsed");
+		File parsedSuccessfulDir = new File(parsedDir, "successful");
+		File parsedFailedDir = new File(parsedDir, "failed");
+		parsedSuccessfulDir.mkdirs();
+		parsedFailedDir.mkdirs();
+
+		BioPortalRepository repo = new BioPortalRepository();
+		repo.initialize();
+
+		Collection<OntologyRepositoryEntry> entries = repo.getEntries();
+		System.out.println("BioPortal repository size: " + entries.size());
+
+		boolean downloadEnabled = options.has(downloadOption);
+		boolean parseEnabled = options.has(parseOption);
+
+		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
+
+		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
+
+		entries.parallelStream().forEach(entry -> {
+			try {
+
+				File f = null;
+				long sizeInMb = 101;
+				if(downloadEnabled && !new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf").exists()) {
+
+
+					System.out.println("Loading " + entry.getOntologyShortName() + " from " + entry.getPhysicalURI());
+
+					try(InputStream is = getInputStream(entry.getPhysicalURI().toURL())) {
+						f = new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf");
+
+						IOUtils.copy(is, new FileOutputStream(f));
+
+						sizeInMb = f.length() / (1024 * 1024);
+
+						System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
+						map.put(entry.getOntologyShortName(), FileUtils.byteCountToDisplaySize(f.length()));
+					} catch (Exception e) {
+						com.google.common.io.Files.write(
+								ExceptionUtils.getMessage(e),
+								new File(downloadFailedDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
+						return;
+					}
+				}
+
+				if(f == null) {
+					System.out.println("Loading " + entry.getOntologyShortName() + " from disk");
+
+					f = new File(downloadSuccessfulDir, entry.getOntologyShortName() + ".rdf");
+
+					System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
+
+					sizeInMb = f.length() / (1024 * 1024);
+				}
+
+				if(f.exists() && parseEnabled && sizeInMb < 100) {
+					try {
+						OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+						man.addMissingImportListener(e -> {
+							System.out.println("Missing import: " + e.getImportedOntologyURI());
+						});
+						OWLOntologyLoaderConfiguration conf = new OWLOntologyLoaderConfiguration();
+						conf.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+						conf.addIgnoredImport(IRI.create("http://www.co-ode.org/ontologies/lists/2008/09/11/list.owl"));
+						man.setOntologyLoaderConfiguration(conf);
+						OWLOntology ont = man.loadOntologyFromOntologyDocument(f);
+						System.out.println("#Axioms: " + ont.getLogicalAxiomCount());
+
+						com.google.common.io.Files.write(
+								ont.getLogicalAxiomCount() + "\t" +
+										ont.getClassesInSignature().size() + "\t" +
+										ont.getObjectPropertiesInSignature().size() + "\t" +
+										ont.getDataPropertiesInSignature().size() + "\t" +
+										ont.getIndividualsInSignature().size(),
+								new File(parsedSuccessfulDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
+
+						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||#Axioms: " + ont.getLogicalAxiomCount());
+						man.removeOntology(ont);
+					} catch (Exception e1) {
+						System.err.println("Failed to parse " + entry.getOntologyShortName());
+						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||Parse Error");
+						com.google.common.io.Files.write(
+								ExceptionUtils.getMessage(e1),
+								new File(parsedFailedDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8);
+					}
+				}
+			} catch (Exception e) {
+				System.err.println("Failed to load "  + entry.getOntologyShortName() + ". Reason: " + e.getMessage());
+//				e.printStackTrace();
+				map.put(entry.getOntologyShortName(), "Load error");
+			}
+		});
+
+		map.forEach((k, v) -> System.out.println(k + " -> " + v));
 	}
 	
 	private class RepositoryEntry implements OntologyRepositoryEntry {

@@ -1,13 +1,12 @@
 package org.dllearner.configuration.spring.editors;
 
-import java.util.regex.Pattern;
-
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+
+import java.util.regex.Pattern;
 
 /**
  * Basic Property Editor for OWL class expressions.  
@@ -26,7 +25,8 @@ public class ClassExpressionPropertyEditor extends AbstractPropertyEditor<OWLCla
 	final static Pattern whitespace = Pattern.compile("\\s");
 	@Override
 	public void setAsText(String s) throws IllegalArgumentException {
-		if (!whitespace.matcher(s).find()) {
+		if (!whitespace.matcher(s).find() && Pattern.compile(":").matcher(s).find()) {
+			// it already is a full URI
 			value = new OWLClassImpl(IRI.create(s));
 		} else {
 			// quote IRIs

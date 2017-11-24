@@ -19,6 +19,7 @@
 package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
+import org.dllearner.accuracymethods.*;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.ReasoningUtils;
@@ -159,6 +160,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
+		
+		initialized = true;
 	}
 
 	@Override
@@ -324,37 +327,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			return 0;
 		}
 		return cc[0].trueCount/(double)cc[0].total;
-	}
-
-	/* () for ontology engineering */
-	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
-		AccMethodTwoValuedApproximate acc;
-		if (accuracyMethod instanceof AccMethodPredAcc) {
-			acc = new AccMethodPredAccApprox();
-		} else if (accuracyMethod instanceof AccMethodFMeasure) {
-			acc = new AccMethodFMeasureApprox();
-		} else if (accuracyMethod instanceof AccMethodAMeasure) {
-			acc = new AccMethodAMeasureApprox();
-		} else {
-			throw new RuntimeException();
-		}
-		acc.setReasoner(reasoner);
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
-	}
-
-	/* () for ontology engineering */
-	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-		AccMethodTwoValued acc;
-		if (accuracyMethod instanceof AccMethodPredAcc) {
-			acc = new AccMethodPredAcc();
-		} else if (accuracyMethod instanceof AccMethodFMeasure) {
-			acc = new AccMethodFMeasure();
-		} else if (accuracyMethod instanceof AccMethodAMeasure) {
-			acc = new AccMethodAMeasure();
-		} else {
-			throw new RuntimeException();
-		}
-		return reasoningUtil.getAccuracyOrTooWeak2(acc, description, classInstances, superClassInstances, noise);
 	}
 }
 

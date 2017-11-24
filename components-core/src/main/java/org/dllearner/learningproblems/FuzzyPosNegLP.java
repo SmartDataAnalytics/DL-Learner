@@ -71,6 +71,8 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	public void init() {
 		// commented by Josue as now there's no need of + and - examples (more code need to be deleted in this sense)
 		// allExamples = Helper.union(positiveExamples, negativeExamples);
+		
+		initialized = true;
 	}
 	
 	public SortedSet<OWLIndividual> getNegativeExamples() {

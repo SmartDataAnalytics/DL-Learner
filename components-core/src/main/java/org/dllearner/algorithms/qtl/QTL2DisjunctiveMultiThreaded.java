@@ -249,6 +249,8 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 //		allExamplesTrees.addAll(currentNegExampleTrees);
 //		RDFResourceTree lgg = lggGenerator.getLGG(allExamplesTrees);
 //		lgg.dump();
+		
+		initialized = true;
 		logger.info("...initialization finished.");
 	}
 

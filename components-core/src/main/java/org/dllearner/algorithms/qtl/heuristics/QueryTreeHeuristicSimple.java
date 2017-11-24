@@ -40,6 +40,7 @@ public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		initialized = true;
 	}
 	
 	@Override

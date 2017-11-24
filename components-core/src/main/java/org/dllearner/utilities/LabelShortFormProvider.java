@@ -55,7 +55,11 @@ public class LabelShortFormProvider implements ShortFormProvider{
 
 	@Override
 	public void dispose() {
-		qef.close();
+		try {
+			qef.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Nonnull

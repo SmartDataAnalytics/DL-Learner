@@ -723,7 +723,7 @@ public class QTLEvaluation {
 								} finally {
 									int cnt = currentNrOfFinishedRuns.incrementAndGet();
 									logger.info("***********Evaluation Progress:"
-											+ NumberFormat.getPercentInstance().format((double)cnt / totalNrOfQTLRuns)
+											+ NumberFormat.getPercentInstance(Locale.ROOT).format((double)cnt / totalNrOfQTLRuns)
 											+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
 											+ "***********");
 								}

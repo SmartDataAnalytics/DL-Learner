@@ -20,10 +20,7 @@ package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -70,7 +67,13 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	}
 
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
+		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
+		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
+			logger.info("Loading examples by expression");
+			exampleLoaderHelper.setPosOnlyLP(this);
+			exampleLoaderHelper.init();
+		}
 
 		Random rand = new Random(1);
 
@@ -81,6 +84,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 
 		positiveExamplesShuffled = new LinkedList<>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
+		
+		initialized = true;
 	}
 
 	public SortedSet<OWLIndividual> getPositiveExamples() {

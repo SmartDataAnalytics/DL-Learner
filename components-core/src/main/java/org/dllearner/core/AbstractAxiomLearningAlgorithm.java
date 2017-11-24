@@ -18,20 +18,22 @@
  */
 package org.dllearner.core;
 
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.query.*;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 import org.apache.jena.sparql.resultset.ResultSetMem;
-import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.Unused;
@@ -56,7 +58,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+//import org.apache.jena.util.iterator.Filter;
 
 /**
  * @author Lorenz Bühmann
@@ -68,7 +73,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
 	
-	protected NumberFormat format = DecimalFormat.getPercentInstance();
+	protected NumberFormat format = DecimalFormat.getPercentInstance(Locale.ROOT);
 	
 	@ConfigOption(defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
@@ -363,6 +368,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 //		ksReasoner.supportsSPARQL1_1();
 		reasoner = ksReasoner;
+		
+		initialized = true;
 	}
 	
 	/**
@@ -730,22 +737,21 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		this.ks = ks;
 	}
 	
-	class OWLFilter extends Filter<OntClass>{
+	class OWLFilter implements Predicate<OntClass> {
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(OWL2.getURI());
 			}
 			return false;
 		}
-		
 	}
 	
-	class RDFSFilter extends Filter<OntClass>{
+	class RDFSFilter implements Predicate<OntClass>{
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(RDFS.getURI());
 			}
@@ -754,10 +760,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 	}
 	
-	class RDFFilter extends Filter<OntClass>{
+	class RDFFilter implements Predicate<OntClass>{
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(RDF.getURI());
 			}

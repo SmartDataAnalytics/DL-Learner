@@ -18,10 +18,7 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.utilities.CoverageAdapter;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -76,6 +73,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	@Override
 	public void init() throws ComponentInitException {
 		super.init();
+		
+		initialized = true;
 	}
 
 	/**

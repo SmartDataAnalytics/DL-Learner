@@ -54,7 +54,6 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
         bundle.loadOntologies(ontology);
         bundle.init();
         initialized = true;
-
     }
 
     @Override

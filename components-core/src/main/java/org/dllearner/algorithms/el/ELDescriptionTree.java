@@ -88,38 +88,37 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	/**
-	 * Constructs an EL OWLClassExpression tree from an EL description.
+	 * Constructs an EL description tree from an EL class expression.
 	 * 
-	 * @param description
-	 *            A description
+	 * @param ce the EL class expression
 	 */
-	public ELDescriptionTree(AbstractReasonerComponent rs, OWLClassExpression description) {
+	public ELDescriptionTree(AbstractReasonerComponent rs, OWLClassExpression ce) {
 		this(rs);
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);
-		constructTree(description, rootNode);
+		constructTree(ce, rootNode);
 	}
 
-	private void constructTree(OWLClassExpression description, ELDescriptionNode node) {
+	private void constructTree(OWLClassExpression description, ELDescriptionNode parentNode) {
 		if (description.isOWLThing()) {
 			// nothing needs to be done as an empty set is owl:Thing
 		} else if (!description.isAnonymous()) {
-			node.extendLabel(description.asOWLClass());
+			parentNode.extendLabel(description.asOWLClass());
 		} else if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLObjectProperty op = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
-			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<>());
+			ELDescriptionNode newNode = new ELDescriptionNode(parentNode, op, new TreeSet<>());
 			constructTree(((OWLObjectSomeValuesFrom) description).getFiller(), newNode);
 		} else if (description instanceof OWLDataSomeValuesFrom) {
 			OWLDataProperty op = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
-			ELDescriptionNode newNode = new ELDescriptionNode(node, op, ((OWLDataSomeValuesFrom) description).getFiller());
+			ELDescriptionNode newNode = new ELDescriptionNode(parentNode, op, ((OWLDataSomeValuesFrom) description).getFiller());
 		} else if (description instanceof OWLObjectIntersectionOf) {
 			// loop through all elements of the intersection
 			for (OWLClassExpression child : ((OWLObjectIntersectionOf) description).getOperands()) {
 				if (!child.isAnonymous()) {
-					node.extendLabel(child.asOWLClass());
+					parentNode.extendLabel(child.asOWLClass());
 				} else if (child instanceof OWLObjectSomeValuesFrom) {
 					OWLObjectProperty op = ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty();
-					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
+					ELDescriptionNode newNode = new ELDescriptionNode(parentNode, op,
 							new TreeSet<>());
 					constructTree(((OWLObjectSomeValuesFrom) child).getFiller(), newNode);
 				} else {
@@ -560,26 +559,6 @@ public class ELDescriptionTree implements Cloneable {
 		return treeClone;
 	}
 	
-	public ELDescriptionTree cloneOld() {
-		// create a new reference tree
-		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
-		// create a root node attached to this reference tree
-		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<>(
-				rootNode.getLabel()));
-		cloneRecursively(rootNode, rootNodeClone);
-		return treeClone;
-	}
-
-	// we read from the original structure and write to the new structure
-	private void cloneRecursively(ELDescriptionNode node, ELDescriptionNode nodeClone) {
-		// loop through all edges and clone the subtrees
-		for (ELDescriptionEdge edge : node.getEdges()) {
-			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
-					new TreeSet<>(edge.getNode().getLabel()));
-			cloneRecursively(edge.getNode(), tmp);
-		}
-	}
-
 	@Override
 	public String toString() {
 		return rootNode.toString();

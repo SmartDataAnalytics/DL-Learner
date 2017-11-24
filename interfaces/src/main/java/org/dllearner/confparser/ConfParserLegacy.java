@@ -29,6 +29,8 @@ public class ConfParserLegacy extends AbstractConfParser implements ConfParserLe
                         throw new ComponentInitException(e);
                 }
                 postProcess();
+                
+                initialized = true;
         }
 
   final public void Start() throws ParseException {ConfFileOption confOption;

@@ -18,12 +18,10 @@
  */
 package org.dllearner.refinementoperators;
 
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
-import com.google.common.collect.*;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
@@ -31,11 +29,8 @@ import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.*;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
-import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
-import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
-import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
 import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
@@ -76,9 +71,6 @@ import static com.google.common.primitives.Ints.max;
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
-
-	private static final ToIRIFunction TO_IRI_FUNCTION = new ToIRIFunction(true);
-	private static final OWLCLassExpressionToOWLClassTransformer OWLCLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
@@ -225,7 +217,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(defaultValue="true")
 	private boolean instanceBasedDisjoints = true;
 
-	@ConfigOption(defaultValue="false")
+	@ConfigOption(defaultValue="false", description = "if enabled, generalise by removing parts of a disjunction")
 	private boolean dropDisjuncts = false;
 
 	@ConfigOption(description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",
@@ -285,8 +277,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if (dataPropertyHierarchy == null) dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		if (objectPropertyHierarchy == null) objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
 
-//		System.out.println("classHierarchy: " + classHierarchy);
-//		System.out.println("object properties: " + reasoner.getObjectProperties());
+		logger.debug("classHierarchy: " + classHierarchy);
+		logger.debug("object properties: " + reasoner.getObjectProperties());
 
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -1413,7 +1405,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 		}
 
-//		System.out.println("m for " + nc + ": " + mA.get(nc));
+		logger.debug(sparql_debug, "m for " + nc + ": " + mA.get(nc));
 
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
@@ -1429,26 +1421,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> subClasses = classHierarchy.getSubClasses(upperClass, true);
 
 		if(reasoner instanceof SPARQLReasoner) {
-			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
-			String query = "SELECT DISTINCT ?concept WHERE {";
-			query += conv.convert("?ind", index);
-			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {"
-					+ Joiner.on(" ").join(
-							FluentIterable.from(subClasses)
-							.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
-							+ "}";
-			query += "}";
-//			System.out.println(query);
-
-			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
-			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
-			ResultSet rs = qe.execSelect();
-			while(rs.hasNext()) {
-				QuerySolution qs = rs.next();
-				meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
-			}
-			qe.close();
+			Collection<? extends OWLClassExpression> meaningfulClasses = ((SPARQLReasoner)reasoner).getMeaningfulClasses(index, subClasses);
 			candidates.addAll(meaningfulClasses);
 			// recursive call, i.e. go class hierarchy down for non-meaningful classes
 //			for (OWLClassExpression cls : Sets.difference(superClasses, meaningfulClasses)) {
@@ -1513,25 +1486,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> superClasses = classHierarchy.getSuperClasses(lowerClass);
 
 		if(reasoner instanceof SPARQLReasoner) {
-			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
-			String query = "SELECT DISTINCT ?concept WHERE {";
-			query += conv.convert("?ind", index);
-			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {"
-					+ Joiner.on(" ").join(
-							FluentIterable.from(superClasses)
-							.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
-							+ "}";
-			query += "}";
-//			System.out.println(query);
-			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
-			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
-			ResultSet rs = qe.execSelect();
-			while(rs.hasNext()) {
-				QuerySolution qs = rs.next();
-				meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
-			}
-			qe.close();
+			Collection<? extends OWLClassExpression> meaningfulClasses = ((SPARQLReasoner)reasoner).getMeaningfulClasses(index, superClasses);
 			candidates.addAll(meaningfulClasses);
 			// recursive call, i.e. go class hierarchy up for non-meaningful classes
 //			for (OWLClassExpression cls : Sets.difference(superClasses, meaningfulClasses)) {
@@ -1630,29 +1585,34 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// computes the set of applicable properties for a given class
 	private void computeApp(OWLClassExpression domain) {
-		SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
-		// object properties
-		Set<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
 		Set<OWLObjectProperty> applicableRoles = new TreeSet<>();
-		for(OWLObjectProperty role : mostGeneral) {
-			// TODO: currently we just rely on named classes as roles,
-			// instead of computing dom(r) and ran(r)
-			OWLClassExpression d = opDomains.get(role);
+		Set<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
+		if (reasoner instanceof SPARQLReasoner) {
+			Set<OWLObjectProperty> roleAppRoles = ((SPARQLReasoner) reasoner).getApplicableProperties(domain, mostGeneral);
+			applicableRoles.addAll(roleAppRoles);
+		} else {
+			SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
+			// object properties
+			for (OWLObjectProperty role : mostGeneral) {
+				// TODO: currently we just rely on named classes as roles,
+				// instead of computing dom(r) and ran(r)
+				OWLClassExpression d = opDomains.get(role);
 
-			Set<OWLIndividual> individuals2 = new HashSet<>();
-			for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
-				OWLIndividual ind = entry.getKey();
-				if(!entry.getValue().isEmpty()){
-					individuals2.add(ind);
+				Set<OWLIndividual> individuals2 = new HashSet<>();
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
+					OWLIndividual ind = entry.getKey();
+					if (!entry.getValue().isEmpty()) {
+						individuals2.add(ind);
+					}
 				}
-			}
 
-			boolean disjoint = Sets.intersection(individuals1, individuals2).isEmpty();
+				boolean disjoint = Sets.intersection(individuals1, individuals2).isEmpty();
 //			if(!isDisjoint(domain,d))
-				if(!disjoint){
+				if (!disjoint) {
 					applicableRoles.add(role);
 				}
 
+			}
 		}
 
 		appOP.put(domain, applicableRoles);

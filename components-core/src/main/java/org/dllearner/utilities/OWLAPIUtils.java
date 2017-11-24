@@ -21,6 +21,7 @@ package org.dllearner.utilities;
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.Range;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.jetbrains.annotations.NotNull;
@@ -148,6 +149,14 @@ public class OWLAPIUtils {
 		.toFormatter().withZoneUTC());
 //		dateTimeParsers.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 //		dateTimeParsers.put(XSD.DATE, ISODateTimeFormat.date());
+		dateTimeParsers.put(XSD.DATE_TIME, new DateTimeFormatterBuilder()
+		.append(DateTimeFormat.forPattern("yyyy-MM-DD'T'HH:mm:ss"))
+		.appendOptional(new DateTimeFormatterBuilder()
+		.appendLiteral('.')
+		.appendFractionOfSecond(1,4)
+		.toParser())
+		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
+		.toFormatter().withZoneUTC());
 //		dateTimeParsers.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
 //		dateTimeParsers.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
@@ -284,6 +293,10 @@ public class OWLAPIUtils {
 					{
 				return true;
 			}
+		} else if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
+			return Range.between(min.parseFloat(), max.parseFloat()).contains(value.parseFloat());
+		} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
+			return Range.between(min.parseInteger(), max.parseInteger()).contains(value.parseInteger());
 		}
 		
 		return false;

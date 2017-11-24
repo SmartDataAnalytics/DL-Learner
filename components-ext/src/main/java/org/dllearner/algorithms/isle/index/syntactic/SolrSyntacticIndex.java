@@ -44,16 +44,16 @@ public class SolrSyntacticIndex implements Index{
 	private String searchField;
 	private String typesField = "types";
 	
-	long totalNumberOfDocuments = -1;
+	private long totalNumberOfDocuments = -1;
 	
-	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<>());
+	private Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<>());
 	private OWLOntology ontology;
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
 		this.ontology = ontology;
 		this.searchField = searchField;
-		solr = new HttpSolrClient(solrServerURL);
+		solr = new HttpSolrClient.Builder(solrServerURL).build();
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
 	

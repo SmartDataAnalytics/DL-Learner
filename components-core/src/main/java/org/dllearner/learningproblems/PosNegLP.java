@@ -21,6 +21,9 @@ package org.dllearner.learningproblems;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import org.apache.log4j.Logger;
+import org.dllearner.accuracymethods.AccMethodApproximate;
+import org.dllearner.accuracymethods.AccMethodPredAcc;
+import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -70,6 +73,12 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
+		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
+			logger.info("Loading examples by expression");
+			exampleLoaderHelper.setPosNegLP(this);
+			exampleLoaderHelper.init();
+		}
 		// check if some positive examples have been set
 		if(positiveExamples.isEmpty()) {
 			throw new ComponentInitException("No positive examples have been set.");
@@ -98,7 +107,7 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		}
 		
 		// sanity check whether examples are contained in KB
-		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner != null && !(reasoner instanceof SPARQLReasoner) && !reasoner.getIndividuals().containsAll(allExamples)) {
             Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
             double percentage = missing.size()/allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
@@ -112,6 +121,8 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
                 logger.error(str);
             }
 		}
+		
+		initialized = true;
 	}
 	
 	public Set<OWLIndividual> getNegativeExamples() {

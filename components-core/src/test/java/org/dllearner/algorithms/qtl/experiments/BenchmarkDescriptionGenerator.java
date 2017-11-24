@@ -196,7 +196,7 @@ public abstract class BenchmarkDescriptionGenerator {
 
 	private DescriptiveStatistics determineDefaultCBDSizes(Query query, List<String> resources) {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
+		NumberFormat df = DecimalFormat.getPercentInstance(Locale.ROOT);
 		AtomicInteger idx = new AtomicInteger(1);
 
 		CBDStructureTree cbdStructure = getDefaultCBDStructureTree();
@@ -236,7 +236,7 @@ public abstract class BenchmarkDescriptionGenerator {
 
 	private DescriptiveStatistics determineOptimalCBDSizes(Query query, List<String> resources) {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
+		NumberFormat df = DecimalFormat.getPercentInstance(Locale.ROOT);
 		AtomicInteger idx = new AtomicInteger(1);
 
 		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
