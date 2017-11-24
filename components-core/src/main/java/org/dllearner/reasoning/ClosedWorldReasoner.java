@@ -31,6 +31,9 @@ import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -963,41 +966,21 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             }
             return ret;
         } else if (description instanceof OWLObjectSomeValuesFrom) {
-            SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-
             OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
             OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
 
-            //get instances of filler concept
+            // get instances of filler concept
             SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 
             // the mapping of instances related by r
-            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
-            if (property.isAnonymous()) { // \exists r^{-1}.C
-                // invert the mapping
-                // get all objects that are related by r to (at least) one subject which is of type C
-                Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
-                        MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.create());
-
-                mapping = mappingInv.asMap();
-            }
-
-			// each individual is connected to a set of individuals via the property;
+            // each individual is connected to a set of individuals via the property;
             // we loop through the complete mapping
-            for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
-                Collection<OWLIndividual> inds = entry.getValue();
-                for (OWLIndividual ind : inds) {
-                    if (targetSet.contains(ind)) {
-                        returnSet.add(entry.getKey());
-                        // once we found an individual, we do not need to check the others
-                        break;
-                    }
-                }
-            }
-
-            return returnSet;
+            return mapping.entrySet().stream()
+                    .filter(e -> e.getValue().stream().anyMatch(targetSet::contains))
+                    .map(Entry::getKey)
+                    .collect(Collectors.toCollection(TreeSet::new));
         } else if (description instanceof OWLObjectAllValuesFrom) {
 			// \forall restrictions are difficult to handle; assume we want to check
             // \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
@@ -1016,52 +999,27 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 
             // the mapping of instances related by r
-            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
-
-            if (property.isAnonymous()) { // \forall r^{-1}.C
-                // invert the mapping
-                // get all objects that are related by r to (at least) one subject which is of type C
-                Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
-                        MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.create());
-
-                mapping = mappingInv.asMap();
-            }
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
 //			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
             SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 
 			// each individual is connected to a set of individuals via the property;
             // we loop through the complete mapping
-            for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
-                Collection<OWLIndividual> inds = entry.getValue();
-                for (OWLIndividual ind : inds) {
-                    if (!targetSet.contains(ind)) {
-                        returnSet.remove(entry.getKey());
-                        break;
-                    }
-                }
-            }
+            mapping.entrySet().stream()
+                    .filter(e -> e.getValue().stream().anyMatch(ind -> !targetSet.contains(ind)))
+                    .forEach(e -> returnSet.remove(e.getKey()));
+
             return returnSet;
         } else if (description instanceof OWLObjectMinCardinality) {
             OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
             OWLClassExpression filler = ((OWLObjectMinCardinality) description).getFiller();
 
-            //get instances of filler concept
+            // get instances of filler concept
             SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 
             // the mapping of instances related by r
-            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
-
-            if (property.isAnonymous()) { // \forall r^{-1}.C
-                // invert the mapping
-                // get all objects that are related by r to (at least) one subject which is of type C
-                Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
-                        MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.create());
-
-                mapping = mappingInv.asMap();
-            }
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
             SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 
@@ -1083,7 +1041,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                         returnSet.add(entry.getKey());
                         break;
                     }
-                    // early abort when too many instance checks failed
+                    // early abort when too many instance checks failed, i.e. there are not enough remaining candidates
                     if (inds.size() - index < number) {
                         break;
                     }
@@ -1095,26 +1053,16 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             }
 
             return returnSet;
-        } else if (description instanceof OWLObjectMaxCardinality) {
+        } else if (description instanceof OWLObjectMaxCardinality) { // <=n r.C
             OWLObjectPropertyExpression property = ((OWLObjectMaxCardinality) description).getProperty();
             OWLClassExpression filler = ((OWLObjectMaxCardinality) description).getFiller();
             int number = ((OWLObjectMaxCardinality) description).getCardinality();
 
-            //get instances of filler concept
+            // get instances of filler concept
             SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 
             // the mapping of instances related by r
-            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
-
-            if (property.isAnonymous()) { // \forall r^{-1}.C
-                // invert the mapping
-                // get all objects that are related by r to (at least) one subject which is of type C
-                Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
-                        MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
-                        TreeMultimap.create());
-
-                mapping = mappingInv.asMap();
-            }
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
 			// initially all individuals are in the return set and we then remove those
             // with too many fillers
@@ -1287,6 +1235,16 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
                 + description + " unsupported.");
 
+    }
+
+    // get all objects that are related by r to (at least) one subject which is of type C
+    // or if r^{-1} invert the mapping
+    private Map<OWLIndividual, ? extends Collection<OWLIndividual>> getTargetIndividuals(OWLObjectPropertyExpression ope) {
+        return ope.isAnonymous()
+                ? Multimaps.invertFrom(
+                        MapUtils.createSortedMultiMap(opPos.get(ope.getNamedProperty())),
+                        TreeMultimap.create()).asMap()
+                : opPos.get(ope.getNamedProperty());
     }
 
     /*
@@ -1637,25 +1595,40 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         pm.setDefaultPrefix("http://test.org/");
 
         OWLDataProperty dp = df.getOWLDataProperty("dp", pm);
-        OWLObjectProperty op = df.getOWLObjectProperty("op", pm);
-        OWLClass cls = df.getOWLClass("C", pm);
-        man.addAxiom(ontology,
-                df.getOWLDataPropertyAssertionAxiom(
-                        dp,
-                        df.getOWLNamedIndividual("a", pm),
-                        df.getOWLLiteral(2.0d)));
-        man.addAxiom(ontology,
-                df.getOWLDataPropertyAssertionAxiom(
-                        dp,
-                        df.getOWLNamedIndividual("b", pm),
-                        df.getOWLLiteral(1.3d)));
-        man.addAxiom(ontology, df.getOWLDataPropertyRangeAxiom(dp, df.getDoubleOWLDatatype()));
-        IntStream.range(1, 11).forEach( i -> {
+        OWLObjectProperty op = df.getOWLObjectProperty("p", pm);
+        OWLClass clsA = df.getOWLClass("A", pm);
+        OWLClass cls1 = df.getOWLClass("C", pm);
+        OWLClass cls2 = df.getOWLClass("C2", pm);
+//        man.addAxiom(ontology,
+//                df.getOWLDataPropertyAssertionAxiom(
+//                        dp,
+//                        df.getOWLNamedIndividual("a", pm),
+//                        df.getOWLLiteral(2.0d)));
+//        man.addAxiom(ontology,
+//                df.getOWLDataPropertyAssertionAxiom(
+//                        dp,
+//                        df.getOWLNamedIndividual("b", pm),
+//                        df.getOWLLiteral(1.3d)));
+//        man.addAxiom(ontology, df.getOWLDataPropertyRangeAxiom(dp, df.getDoubleOWLDatatype()));
+        man.addAxiom(ontology, df.getOWLClassAssertionAxiom(clsA, df.getOWLNamedIndividual("s", pm)));
+        IntStream.range(0, 5).forEach( i -> {
             man.addAxiom(ontology, df.getOWLObjectPropertyAssertionAxiom(op,
                     df.getOWLNamedIndividual("s", pm),
                     df.getOWLNamedIndividual("o" + i, pm)));
-            man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, df.getOWLNamedIndividual("o" + i, pm)));
         });
+        IntStream.range(0, 5).forEach( i -> {
+            man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls1, df.getOWLNamedIndividual("o" + i, pm)));
+        });
+//        IntStream.range(5, 20).forEach( i -> {
+//            man.addAxiom(ontology, df.getOWLObjectPropertyAssertionAxiom(op,
+//                    df.getOWLNamedIndividual("s", pm),
+//                    df.getOWLNamedIndividual("o" + i, pm)));
+//            man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls2, df.getOWLNamedIndividual("o" + i, pm)));
+//        });
+
+        ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+        ontology.getLogicalAxioms().forEach(System.out::println);
+//        ontology.saveOntology(new TurtleDocumentFormat(), System.out);
 
         OWLAPIOntology ks = new OWLAPIOntology(ontology);
         ks.init();
@@ -1691,15 +1664,23 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                         df.getOWLDataComplementOf(
                                 df.getOWLDatatypeMinMaxInclusiveRestriction(1.0d, 1.5d))
                 ));
+//        System.out.println(individuals);
+
+        System.out.println(df.getOWLObjectIntersectionOf(clsA,
+                df.getOWLObjectMaxCardinality(2, op, cls1)));
+        individuals = reasoner.getIndividuals(
+                df.getOWLObjectIntersectionOf(clsA,
+                        df.getOWLObjectMaxCardinality(2, op, cls1))
+        );
         System.out.println(individuals);
 
         individuals = reasoner.getIndividuals(
-                df.getOWLObjectMaxCardinality(5, op, cls)
-                       );
+                df.getOWLObjectMaxCardinality(10, op, cls1)
+        );
         System.out.println(individuals);
 
         individuals = reasoner.getIndividuals(
-                df.getOWLObjectMaxCardinality(10, op, cls)
+                df.getOWLObjectMaxCardinality(8, op, cls1)
         );
         System.out.println(individuals);
 
