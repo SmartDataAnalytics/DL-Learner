@@ -1231,7 +1231,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		} else {
 			query = converter.asQuery("?ind", description, true).toString();
 			System.err.println(query);
-			System.exit(1);
+			throw new RuntimeException();
 		}
 		if(limit != 0) {
 			query += " LIMIT " + limit;
@@ -2196,7 +2196,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return meaningfulClasses;
 	}
 
-	@NotNull
 	protected String buildMeaningfulClassesQuery(OWLClassExpression index, SortedSet<OWLClassExpression> targetClasses) {
 		String query = "SELECT DISTINCT ?concept WHERE {";
 		query += converter.convert("?ind", index);

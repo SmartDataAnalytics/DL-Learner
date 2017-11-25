@@ -229,7 +229,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     private void loadOrDematerialize() {
         if (useMaterializationCaching) {
             File cacheDir = new File("cache");
-            cacheDir.mkdirs();
+            if(!cacheDir.mkdirs()) {
+                throw new RuntimeException("Failed to create cache directory at "  + cacheDir.getAbsolutePath());
+            }
             HashFunction hf = Hashing.goodFastHash(128);
             Hasher hasher = hf.newHasher();
             hasher.putBoolean(materializeExistentialRestrictions);
@@ -1587,6 +1589,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
     public static void main(String[] args) throws Exception{
 
+        StringRenderer.setRenderer(StringRenderer.Rendering.OWL_XML_SYNTAX);
+
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
         OWLOntology ontology = man.createOntology();
         OWLDataFactory df = new OWLDataFactoryImpl();
@@ -1625,7 +1629,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 //            man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls2, df.getOWLNamedIndividual("o" + i, pm)));
 //        });
 
-        ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
         ontology.getLogicalAxioms().forEach(System.out::println);
 //        ontology.saveOntology(new TurtleDocumentFormat(), System.out);
 

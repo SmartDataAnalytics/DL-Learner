@@ -1425,11 +1425,11 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             propertyManager = new OWLObjectPropertyManager(getRootOntology().getOWLOntologyManager(), getRootOntology());
             sub2Super = propertyManager.getPropertyHierarchy();
             super2Sub = new HashMap<>();
-            for(OWLObjectPropertyExpression sub : sub2Super.keySet()) {
-                for(OWLObjectPropertyExpression superProp : sub2Super.get(sub)) {
+            for(Map.Entry<OWLObjectPropertyExpression, Set<OWLObjectPropertyExpression>> entry : sub2Super.entrySet()) {
+                for(OWLObjectPropertyExpression superProp : entry.getValue()) {
                     super2Sub
                             .computeIfAbsent(superProp, k -> new HashSet<>())
-                            .add(sub);
+                            .add(entry.getKey());
                 }
             }
         }
