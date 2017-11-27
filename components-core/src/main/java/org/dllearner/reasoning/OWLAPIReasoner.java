@@ -211,8 +211,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             		InferenceType.SAME_INDIVIDUAL);
         } else {
         	PelletExplanation expGen = new PelletExplanation(ontology);
-        	System.out.println(expGen.getInconsistencyExplanation());
-        	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+        	logger.error("The loaded ontology is logically inconsistent! One explanation for this is the following minimal set of axioms: "
+					+ expGen.getInconsistencyExplanation());
             throw new ComponentInitException("Inconsistent ontologies.");
         }
 
@@ -225,16 +225,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
 
         // remove classes that are built-in entities
-		Iterator<OWLClass> it = atomicConcepts.iterator();
-		while (it.hasNext()) {
-			OWLClass cls = it.next();
-			if(cls.getIRI().isReservedVocabulary()){
-				it.remove();
-			}
-		}
+		atomicConcepts.removeIf(cls -> cls.getIRI().isReservedVocabulary());
 
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
 		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
+		 
+		 initialized = true;
     }
     
     private void initDatatypes() {
@@ -479,14 +475,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	}
 
 	@Override
-	protected TreeSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) {
+	protected TreeSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression ce) {
 		NodeSet<OWLClass> classes;
 
 		try {
-			classes = reasoner.getSubClasses(concept, true);
+			classes = reasoner.getSubClasses(ce, true);
 		} catch (UnsupportedOperationException e) {
 			if (useFallbackReasoner) {
-				classes = fallbackReasoner.getSubClasses(concept, true);
+				classes = fallbackReasoner.getSubClasses(ce, true);
 			} else {
 				throw e;
 			}
@@ -495,15 +491,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		subClasses.remove(df.getOWLNothing());
 		// remove built-in entities sometimes returned as subclasses of
 		// owl:Thing
-		if (concept.isOWLThing()) {
-			Iterator<OWLClassExpression> it = subClasses.iterator();
-			while (it.hasNext()) {
-				OWLClassExpression ce = it.next();
-				if (!ce.isAnonymous() &&
-						ce.asOWLClass().getIRI().isReservedVocabulary()) {
-					it.remove();
-				}
-			}
+		if (ce.isOWLThing()) {
+			subClasses.removeIf(_ce -> !_ce.isAnonymous() &&
+					_ce.asOWLClass().getIRI().isReservedVocabulary());
 		}
 		return subClasses;
 	}
@@ -518,23 +508,21 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	return representatives;
     }
 
-	protected SortedSet<OWLClassExpression> getEquivalentClassesImpl(OWLClassExpression concept) {
+	protected SortedSet<OWLClassExpression> getEquivalentClassesImpl(OWLClassExpression ce) {
 		SortedSet<OWLClassExpression> equivalentClasses = new TreeSet<>();
 		Node<OWLClass> classNodes;
 		try {
-			classNodes = reasoner.getEquivalentClasses(concept);
+			classNodes = reasoner.getEquivalentClasses(ce);
 		} catch (UnsupportedOperationException e) {
 			if (useFallbackReasoner) {
-				classNodes = fallbackReasoner.getEquivalentClasses(concept);
+				classNodes = fallbackReasoner.getEquivalentClasses(ce);
 			} else {
 				throw e;
 			}
 		}
 
-		for (OWLClass eqCls : classNodes.getEntitiesMinusTop()) {
-			equivalentClasses.add(eqCls);
-		}
-		equivalentClasses.remove(concept);
+		equivalentClasses.addAll(classNodes.getEntitiesMinusTop());
+		equivalentClasses.remove(ce);
 		return equivalentClasses;
 	}
 
@@ -633,6 +621,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	@Override
 	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression ce) {
 		Set<OWLNamedIndividual> individuals;
+		logger.trace("getIndividuals for " + ce);
 		try {
 			individuals = reasoner.getInstances(ce, false).getFlattened();
 		} catch (UnsupportedOperationException e) {
@@ -643,11 +632,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			}
 		}
 
-		SortedSet<OWLIndividual> inds = new TreeSet<>();
-		for (OWLNamedIndividual ind : individuals) {
-			inds.add(ind);
-		}
-		return inds;
+		return new TreeSet<>(individuals);
 	}
 
 	@Override
@@ -813,8 +798,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	Set<OWLDataPropertyRangeAxiom> axioms = ontology.getDataPropertyRangeAxioms(datatypeProperty);
     	if(!axioms.isEmpty()){
     		OWLDataPropertyRangeAxiom axiom = axioms.iterator().next();
-    		OWLDataRange range = axiom.getRange();
-    		return range;
+    		return axiom.getRange();
     	} else {
     		return df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI());
     	}
@@ -883,11 +867,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return map;
     }
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Set<OWLIndividual> getRelatedIndividualsImpl(
 			OWLIndividual individual, OWLObjectProperty objectProperty) {
 
-		Set<OWLNamedIndividual> namedIndividuals;
+		Set<? extends OWLIndividual> namedIndividuals;
 		try {
 			namedIndividuals = reasoner.getObjectPropertyValues(
 					individual.asOWLNamedIndividual(), objectProperty).getFlattened();
@@ -900,12 +885,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			}
 		}
 
-		Set<OWLIndividual> values = new HashSet<>(namedIndividuals.size());
-
-		for (OWLNamedIndividual namedIndividual : namedIndividuals) {
-			values.add(namedIndividual);
-		}
-		return values;
+		return (Set<OWLIndividual>) namedIndividuals;
 	}
 
 	@Override
@@ -1155,13 +1135,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public boolean remainsSatisfiableImpl(OWLAxiom axiom) {
-		boolean consistent = true;
+		boolean consistent;
 
-		try {
-			manager.applyChange(new AddAxiom(ontology, axiom));
-		} catch (OWLOntologyChangeException e1) {
-			e1.printStackTrace();
-		}
+		manager.addAxiom(ontology, axiom);
 
 		try {
 			consistent = reasoner.isConsistent();
@@ -1173,11 +1149,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			}
 		}
 
-		try {
-			manager.applyChange(new RemoveAxiom(ontology, axiom));
-		} catch (OWLOntologyChangeException e) {
-			e.printStackTrace();
-		}
+		manager.removeAxiom(ontology, axiom);
 
 		return consistent;
 	}

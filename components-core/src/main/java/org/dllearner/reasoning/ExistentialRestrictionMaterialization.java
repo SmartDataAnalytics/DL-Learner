@@ -86,23 +86,18 @@ public class ExistentialRestrictionMaterialization {
 			Set<OWLClassExpression> superClasses = map.get(cls);
 			superClasses.remove(cls);
 			
-			//filter out non existential superclasses
+			// filter out non existential superclasses
 			if(onlyIfExistentialOnPath){
-				for (Iterator<OWLClassExpression> iterator = superClasses.iterator(); iterator.hasNext();) {
-					OWLClassExpression sup = iterator.next();
-					if (!(sup instanceof OWLObjectSomeValuesFrom || sup instanceof OWLDataAllValuesFrom)) {
-						iterator.remove();
-					}
-				}
+				superClasses.removeIf(sup -> !(sup instanceof OWLObjectSomeValuesFrom || sup instanceof OWLDataAllValuesFrom));
 			}
 			return superClasses;
 		}
 		
 		private void computeSuperClasses(OWLClass cls){
-			String s = "";
-			for(int i = 0; i < indent; i++){
-				s += "   ";
-			}
+//			StringBuilder s = new StringBuilder();
+//			for(int i = 0; i < indent; i++){
+//				s.append("   ");
+//			}
 //			System.out.println(s + cls);
 			indent++;
 			Set<OWLClassExpression> superClasses = new HashSet<>();

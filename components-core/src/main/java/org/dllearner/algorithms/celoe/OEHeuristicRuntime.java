@@ -53,6 +53,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	@Override
 	public void init() throws ComponentInitException {
 
+		initialized = true;
 	}
 
 	@Override

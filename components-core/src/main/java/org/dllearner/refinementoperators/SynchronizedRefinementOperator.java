@@ -35,7 +35,7 @@ import java.util.Set;
  *
  */
 // not for conf
-public class SynchronizedRefinementOperator implements LengthLimitedRefinementOperator{
+public class SynchronizedRefinementOperator extends AbstractRefinementOperator implements LengthLimitedRefinementOperator{
 	
 	private final LengthLimitedRefinementOperator delegate;
 
@@ -51,6 +51,8 @@ public class SynchronizedRefinementOperator implements LengthLimitedRefinementOp
 		synchronized (delegate) {
 			delegate.init();
 		}
+		
+		initialized = true;
 	}
 
 	/* (non-Javadoc)

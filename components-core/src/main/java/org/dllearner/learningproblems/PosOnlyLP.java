@@ -84,6 +84,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 
 		positiveExamplesShuffled = new LinkedList<>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
+		
+		initialized = true;
 	}
 
 	public SortedSet<OWLIndividual> getPositiveExamples() {

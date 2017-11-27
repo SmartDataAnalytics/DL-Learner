@@ -53,8 +53,7 @@ public class SemKernelWorkflow extends AbstractComponent {
 
     @Override
     public void init() throws ComponentInitException {
-        // TODO Auto-generated method stub
-
+    	initialized = true;
     }
 
     public void start() {

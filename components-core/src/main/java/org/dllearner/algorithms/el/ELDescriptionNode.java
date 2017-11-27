@@ -24,15 +24,15 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.util.*;
 
 /**
- * Represents an EL OWLClassExpression tree, which corresponds to a
- * OWLClassExpression in the EL OWLClassExpression logic. Note that an EL OWLClassExpression tree
- * can be a subtree of another EL OWLClassExpression tree. In general,
- * an EL OWLClassExpression tree is a tree where the node label is a set
+ * Represents an EL description tree, which corresponds to a
+ * description in the EL description logic. Note that an EL description tree
+ * can be a subtree of another EL description tree. In general,
+ * an EL description tree is a tree where the node label is a set
  * of named classes and the edges are labelled with a property.
  * 
  * In the documentation below "this node" refers to the root node
- * of this EL OWLClassExpression (sub-)tree. One tree cannot be reused,
- * i.e. used as subtree in several OWLClassExpression trees, as some of
+ * of this EL description (sub-)tree. One tree cannot be reused,
+ * i.e. used as subtree in several description trees, as some of
  * the associated variables (level, simulation) depend on the overall
  * tree. 
  * 
@@ -125,11 +125,11 @@ public class ELDescriptionNode {
 	}
 	
 	// convenience constructor
-	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, OWLClass... label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLObjectProperty parentProperty, OWLClass... label) {
 		this(parentNode, parentProperty, new TreeSet<>(Arrays.asList(label)));
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, Set<OWLClass> label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLObjectProperty parentProperty, Set<OWLClass> label) {
 //		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
@@ -140,7 +140,7 @@ public class ELDescriptionNode {
 		// level increases by 1
 		level = parentNode.level + 1;
 		// we add an edge from the parent to this node
-		ELDescriptionEdge edge = new ELDescriptionEdge(parentProperty, this);
+		ELDescriptionEdge<OWLObjectProperty> edge = new ELDescriptionEdge(parentProperty, this);
 		parent.edges.add(edge);
 		// we need to update the set of nodes on a particular level
 		tree.addNodeToLevel(this, level);		
@@ -210,7 +210,7 @@ public class ELDescriptionNode {
 		isClassNode = true;
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, OWLDataRange dataRange) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLDataProperty parentProperty, OWLDataRange dataRange) {
 		this.dataRange = dataRange;
 		//		this.label = label;
 		// we first need to add the edge and update the simulation and then add

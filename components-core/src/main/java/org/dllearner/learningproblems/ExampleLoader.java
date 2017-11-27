@@ -79,6 +79,7 @@ public class ExampleLoader extends AbstractComponent {
 			initialized = true;
 		}
 
+		initialized = true;
 	}
 
 	public OWLClassExpression getPositiveExamples() {

@@ -1,8 +1,9 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 

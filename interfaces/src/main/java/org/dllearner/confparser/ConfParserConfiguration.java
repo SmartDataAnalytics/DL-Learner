@@ -1,6 +1,6 @@
 package org.dllearner.confparser;
 
-import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections4.BidiMap;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;

@@ -42,10 +42,7 @@ import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URI;
 import java.sql.*;
 import java.util.*;
@@ -69,10 +66,15 @@ public class OWLAxiomPatternFinder {
 	private PreparedStatement insertOntologyPs;
 	private PreparedStatement insertOntologyImportPs;
 	private PreparedStatement insertOntologyErrorPs;
+
 	private PreparedStatement selectPatternIdPs;
 	private PreparedStatement insertPatternIdPs;
 	private PreparedStatement insertOntologyPatternPs;
-	
+
+	private PreparedStatement insertPatternGeneralizationPs;
+	private PreparedStatement insertPatternToPatternGeneralizationPs;
+	private PreparedStatement selectGeneralizedPatternIdPs;
+
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 	
 	private boolean randomOrder = false;
@@ -245,6 +247,15 @@ public class OWLAxiomPatternFinder {
 			tp.shutdownNow();
 			System.out.println("shutdown finished");
 		}
+
+
+		computeAndAddGeneralizedPatterns();
+
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			LOGGER.error("Failed to close DB connection.", e);
+		}
 	}
 
 	public void setMultithreadedEnabled(boolean multithreadedEnabled) {
@@ -264,11 +275,18 @@ public class OWLAxiomPatternFinder {
 			selectOntologyIdPs = conn.prepareStatement("SELECT id FROM Ontology WHERE url=?");
 			insertOntologyPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository, logical_axioms, tbox_axioms, rbox_axioms" +
 					", abox_axioms, classes, object_properties, data_properties, individuals) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+
 			insertOntologyImportPs = conn.prepareStatement("INSERT INTO Ontology_Import (ontology_id1, ontology_id2) VALUES(?,?)");
 			insertOntologyErrorPs = conn.prepareStatement("INSERT INTO Ontology_Error (url, repository, error) VALUES(?,?,?)");
+
 			selectPatternIdPs = conn.prepareStatement("SELECT id FROM Pattern WHERE pattern=?");
 			insertPatternIdPs = conn.prepareStatement("INSERT INTO Pattern (pattern,pattern_pretty,axiom_type) VALUES(?,?,?)");
 			insertOntologyPatternPs = conn.prepareStatement("INSERT INTO Ontology_Pattern (ontology_id, pattern_id, occurrences) VALUES(?,?,?)");
+
+			insertPatternGeneralizationPs = conn.prepareStatement("INSERT INTO Pattern_Generalized (pattern,pattern_pretty,axiom_type) VALUES(?,?,?)");
+			insertPatternToPatternGeneralizationPs = conn.prepareStatement("INSERT INTO Pattern_Pattern_Generalized (pattern_id, generalized_pattern_id) VALUES(?,?)");
+			selectGeneralizedPatternIdPs = conn.prepareStatement("SELECT id FROM Pattern_Generalized WHERE pattern=?");
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -356,9 +374,118 @@ public class OWLAxiomPatternFinder {
 					+ "FOREIGN KEY (ontology_id) REFERENCES Ontology(id) ON DELETE CASCADE,"
 					+ "FOREIGN KEY (pattern_id) REFERENCES Pattern(id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY(ontology_id, pattern_id)) DEFAULT CHARSET=utf8");
+
+			statement.execute("CREATE TABLE IF NOT EXISTS Pattern_Generalized ("
+					+ "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
+					+ "pattern TEXT NOT NULL,"
+					+ "pattern_pretty TEXT NOT NULL,"
+					+ "axiom_type VARCHAR(15) NOT NULL,"
+					+ "PRIMARY KEY(id),"
+					+ "INDEX(pattern(1000))) DEFAULT CHARSET=utf8");
+
+			statement.execute("CREATE TABLE IF NOT EXISTS Pattern_Pattern_Generalized ("
+					+ "pattern_id MEDIUMINT NOT NULL,"
+					+ "generalized_pattern_id MEDIUMINT NOT NULL,"
+					+ "FOREIGN KEY (pattern_id) REFERENCES Pattern(id) ON DELETE CASCADE,"
+					+ "FOREIGN KEY (generalized_pattern_id) REFERENCES Pattern_Generalized(id) ON DELETE CASCADE,"
+					+ "PRIMARY KEY(pattern_id, generalized_pattern_id)) DEFAULT CHARSET=utf8");
+
+
 		} catch (SQLException e) {
 			LOGGER.error("Failed to setup database tables.", e);
 		}
+	}
+
+	OWLAxiomGeneralizer generalizer = new OWLAxiomGeneralizer();
+
+	private void computeAndAddGeneralizedPatterns() {
+		// get all patterns from DB
+		String sql = "SELECT id, pattern FROM Pattern";
+		try(Statement stmt = conn.createStatement()) {
+			try(ResultSet rs = stmt.executeQuery(sql)){
+				while(rs.next()) {
+					int id = rs.getInt(1);
+					String patternStr = rs.getString(2);
+
+					// parse to OWLAxiom
+					OWLAxiom axiom = parse(patternStr);
+
+					// compute generalizations
+					System.out.println(axiom);
+					Set<OWLAxiom> generalizations = generalizer.generalize(axiom);
+
+					// add to DB
+					generalizations.forEach(gen -> {
+						// add generalized pattern if not exist and get ID
+						int genID = addGeneralizedPattern(gen);
+
+						// add mapping from pattern to generalized pattern
+						try {
+							insertPatternToPatternGeneralizationPs.setInt(1, id);
+							insertPatternToPatternGeneralizationPs.setInt(2, genID);
+							insertPatternToPatternGeneralizationPs.addBatch();
+						} catch (SQLException e) {
+							LOGGER.error("Failed to insert pattern to gen. pattern mapping.", e);
+						}
+					});
+					insertPatternToPatternGeneralizationPs.executeBatch();
+				}
+			} catch(SQLException e) {
+				LOGGER.error("Failed to get patterns from DB.", e);
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Failed to create statement.", e);
+		}
+
+	}
+
+	private OWLAxiom parse(String axiomStr) {
+		String ontologyStr = "Ontology (" + axiomStr + ")";
+		try {
+			OWLOntology ont = manager
+					.loadOntologyFromOntologyDocument(new ByteArrayInputStream(ontologyStr.getBytes()));
+			return ont.getLogicalAxioms().iterator().next();
+		} catch (OWLOntologyCreationException e) {
+			LOGGER.error("Failed to parse axiom from " + axiomStr, e);
+		}
+		return null;
+	}
+
+	private int addGeneralizedPattern(OWLAxiom axiom){
+		String axiomString = render(axiom);
+
+		// check for existing entry
+		Integer patternID = getGeneralizedPatternID(axiom);
+		if(patternID != null) {
+			return patternID;
+		}
+
+		// otherwise, add pattern entry
+		try {
+			insertPatternGeneralizationPs.setString(1, axiomString);
+			insertPatternGeneralizationPs.setString(2, axiomRenderer.render(axiom));
+			insertPatternGeneralizationPs.setString(3, getAxiomType(axiom));
+			insertPatternGeneralizationPs.execute();
+		} catch (SQLException e) {
+			LOGGER.error("Failed to insert pattern. Maybe too long with a length of " + axiomString.length() + "?", e);
+		}
+
+		// get the pattern ID after insertion
+		return getGeneralizedPatternID(axiom);
+	}
+
+	private Integer getGeneralizedPatternID(OWLAxiom axiom) {
+		try {
+			selectGeneralizedPatternIdPs.setString(1, render(axiom));
+			try(ResultSet rs = selectGeneralizedPatternIdPs.executeQuery()){
+				if(rs.next()){
+					return rs.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Failed to get pattern ID.", e);
+		}
+		return null;
 	}
 	
 	
@@ -614,7 +741,5 @@ public class OWLAxiomPatternFinder {
 //		p.parse(s, newOntology, new OWLOntologyLoaderConfiguration());
 //		System.out.println(newOntology.getLogicalAxioms());
 
-
-		
 	}
 }

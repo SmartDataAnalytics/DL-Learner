@@ -235,6 +235,8 @@ public class OWLClassExpressionLengthMetric extends AbstractComponent {
 	}
 
 	@Override
-	public void init() {}
+	public void init() {
+		initialized = true;
+	}
 
 }

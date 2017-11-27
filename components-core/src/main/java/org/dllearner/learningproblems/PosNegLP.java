@@ -21,6 +21,9 @@ package org.dllearner.learningproblems;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import org.apache.log4j.Logger;
+import org.dllearner.accuracymethods.AccMethodApproximate;
+import org.dllearner.accuracymethods.AccMethodPredAcc;
+import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -118,6 +121,8 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
                 logger.error(str);
             }
 		}
+		
+		initialized = true;
 	}
 	
 	public Set<OWLIndividual> getNegativeExamples() {

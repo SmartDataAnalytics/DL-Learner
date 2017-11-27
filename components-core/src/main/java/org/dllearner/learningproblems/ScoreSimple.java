@@ -50,7 +50,11 @@ public class ScoreSimple extends Score {
 	public double getAccuracy() {
 		return accuracy;
 	}
-	
-	 
 
+	@Override
+	public String toString() {
+		return "ScoreSimple{" +
+				"accuracy=" + accuracy +
+				'}';
+	}
 }

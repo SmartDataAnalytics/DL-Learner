@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.Heuristics;
 
 @ComponentAnn(name = "FMeasure", shortName = "fmeasure", version = 0)
 public class AccMethodFMeasure implements AccMethodTwoValued, AccMethodWithBeta {

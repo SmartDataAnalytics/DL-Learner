@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Stream;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -127,7 +128,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
      */
     public StructuralReasonerExtended(OWLOntology rootOntology, OWLReasonerConfiguration configuration, BufferingMode bufferingMode) {
         super(rootOntology, configuration, bufferingMode);
-        pm = configuration.getProgressMonitor()==null?new NullReasonerProgressMonitor():configuration.getProgressMonitor();
+        pm = configuration.getProgressMonitor();
         prepareReasoner();
         df = rootOntology.getOWLOntologyManager().getOWLDataFactory();
     }
@@ -1357,35 +1358,21 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         public Collection<OWLClass> getParents(OWLClass child) {
             Collection<OWLClass> result = new HashSet<>();
             for (OWLOntology ont : getRootOntology().getImportsClosure()) {
-                for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(child)) {
-                    OWLClassExpression superCls = ax.getSuperClass();
-                    if (!superCls.isAnonymous()) {
-                        result.add(superCls.asOWLClass());
-                    }
-                    else if (superCls instanceof OWLObjectIntersectionOf) {
-                        OWLObjectIntersectionOf intersectionOf = (OWLObjectIntersectionOf) superCls;
+                Stream.concat(
+                        ont.getSubClassAxiomsForSubClass(child).stream().map(OWLSubClassOfAxiom::getSuperClass),
+                        ont.getEquivalentClassesAxioms(child).stream().flatMap(ax -> ax.getClassExpressionsMinus(child).stream())
+                ).forEach(ce -> {
+                    if (!ce.isAnonymous()) {
+                        result.add(ce.asOWLClass());
+                    } else if (ce instanceof OWLObjectIntersectionOf) {
+                        OWLObjectIntersectionOf intersectionOf = (OWLObjectIntersectionOf) ce;
                         for (OWLClassExpression conjunct : intersectionOf.asConjunctSet()) {
                             if (!conjunct.isAnonymous()) {
                                 result.add(conjunct.asOWLClass());
                             }
                         }
                     }
-                }
-                for (OWLEquivalentClassesAxiom ax : ont.getEquivalentClassesAxioms(child)) {
-                    for (OWLClassExpression ce : ax.getClassExpressionsMinus(child)) {
-                        if (!ce.isAnonymous()) {
-                            result.add(ce.asOWLClass());
-                        }
-                        else if (ce instanceof OWLObjectIntersectionOf) {
-                            OWLObjectIntersectionOf intersectionOf = (OWLObjectIntersectionOf) ce;
-                            for (OWLClassExpression conjunct : intersectionOf.asConjunctSet()) {
-                                if (!conjunct.isAnonymous()) {
-                                    result.add(conjunct.asOWLClass());
-                                }
-                            }
-                        }
-                    }
-                }
+                });
             }
             return result;
         }
@@ -1440,12 +1427,9 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             super2Sub = new HashMap<>();
             for(OWLObjectPropertyExpression sub : sub2Super.keySet()) {
                 for(OWLObjectPropertyExpression superProp : sub2Super.get(sub)) {
-                    Set<OWLObjectPropertyExpression> subs = super2Sub.get(superProp);
-                    if(subs == null) {
-                        subs = new HashSet<>();
-                        super2Sub.put(superProp, subs);
-                    }
-                    subs.add(sub);
+                    super2Sub
+                            .computeIfAbsent(superProp, k -> new HashSet<>())
+                            .add(sub);
                 }
             }
         }

@@ -24,6 +24,6 @@ DL-Learner uses several other libraries. An incomplete list is as follows:
   * HermiT (licensed under LGPL)
   * Apache Jena (Apache License, Version 2.0)
 
-Use DL-Learner in other tools:
+Usage of DL-Learner in other tools:
   * Protégé (http://dl-learner.org/community/protege-plugin/)
   * ORE (http://ore-tool.net/)

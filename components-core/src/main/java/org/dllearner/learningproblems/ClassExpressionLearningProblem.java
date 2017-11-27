@@ -34,24 +34,33 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.util.*;
 
 /**
- * The problem of learning the OWL class expression of an existing class
+ * The problem of learning the OWL class expression for another OWL class expression
  * in an OWL ontology.
+ * This for example allows to learn domain or range of a property by descibing the following class expressions:
+ * <ul>
+ *     <li><code>Dom(p, C) -> ∃p.⊤</code> </li>
+ *     <li><code>Ran(p, C) -> ∃p^(-1).⊤</code></li>
+ * </ul>
  *
+ * Note, this learning problem generalizes the {@link ClassLearningProblem}, which will be kept in the code for legacy
+ * reasons.
+ *
+ * @author Lorenz Buehmann
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "ClassLearningProblem", shortName = "clp", version = 0.6)
-public class ClassLearningProblem extends AbstractClassExpressionLearningProblem<ClassScore> {
+@ComponentAnn(name = "ClassExpressionLearningProblem", shortName = "celp", version = 0.6)
+public class ClassExpressionLearningProblem extends AbstractClassExpressionLearningProblem<ClassScore> {
 
-	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
+	private static Logger logger = LoggerFactory.getLogger(ClassExpressionLearningProblem.class);
 	private long nanoStartTime;
 	@ConfigOption(defaultValue = "10",
 	              description = "Maximum execution time in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 
-	@ConfigOption(description = "class of which an OWL class expression should be learned",
+	@ConfigOption(description = "OWL class expression of which an OWL class expression should be learned",
 	              required = true)
-	private OWLClass classToDescribe;
+	private OWLClassExpression classExpressionToDescribe;
 
 	private List<OWLIndividual> classInstances;
 	private TreeSet<OWLIndividual> classInstancesSet;
@@ -87,17 +96,15 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
-	public ClassLearningProblem() {
+	public ClassExpressionLearningProblem() {}
 
+	public ClassExpressionLearningProblem(AbstractReasonerComponent reasoner) {
+		super(reasoner);
 	}
 
 	@Override
 	protected ReasoningUtils newReasoningUtils(AbstractReasonerComponent reasoner) {
-		return new ReasoningUtilsCLP(this, reasoner);
-	}
-
-	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
-		super(reasoner);
+		return new ReasoningUtils(reasoner);
 	}
 
 	@Override
@@ -107,14 +114,18 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}
 
-		if (!getReasoner().getClasses().contains(classToDescribe)) {
-			throw new ComponentInitException("The class \"" + classToDescribe + "\" does not exist. Make sure you spelled it correctly.");
+		// check if entities in signature of class expression occur in ontology
+		if (!getReasoner().getClasses().containsAll(classExpressionToDescribe.getClassesInSignature()) ||
+				!getReasoner().getObjectProperties().containsAll(classExpressionToDescribe.getObjectPropertiesInSignature()) ||
+				!getReasoner().getDatatypeProperties().containsAll(classExpressionToDescribe.getDataPropertiesInSignature())) {
+			throw new ComponentInitException("Some entities in \"" + classExpressionToDescribe + "\" do not exist. Make sure you spelled it correctly.");
 		}
 
-		classInstances = new LinkedList<>(getReasoner().getIndividuals(classToDescribe));
+		classInstances = new LinkedList<>(getReasoner().getIndividuals(classExpressionToDescribe));
 		// sanity check
 		if (classInstances.size() == 0) {
-			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + AnnComponentManager.getName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
+			throw new ComponentInitException("Class " + classExpressionToDescribe + " has 0 instances according to \"" +
+					AnnComponentManager.getName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
 		}
 
 		classInstancesSet = new TreeSet<>(classInstances);
@@ -128,7 +139,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 		// we compute the instances of the super class to perform
 		// optimisations later on
-		Set<OWLClassExpression> superClasses = getReasoner().getSuperClasses(classToDescribe);
+		Set<OWLClassExpression> superClasses = getReasoner().getSuperClasses(classExpressionToDescribe);
 		TreeSet<OWLIndividual> superClassInstancesTmp = new TreeSet<>(getReasoner().getIndividuals());
 		for (OWLClassExpression superClass : superClasses) {
 			superClassInstancesTmp.retainAll(getReasoner().getIndividuals(superClass));
@@ -147,21 +158,22 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		if (accuracyMethod == null) {
 			accuracyMethod = new AccMethodPredAcc(true);
 		}
+
 		if (accuracyMethod instanceof AccMethodApproximate) {
 			((AccMethodApproximate) accuracyMethod).setReasoner(getReasoner());
 		}
+
 		if (accuracyMethod instanceof AccMethodThreeValued) {
-			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), superClassInstances);
+			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classExpressionToDescribe), superClassInstances);
 			negatedClassInstances = Sets.newTreeSet(cc[0].trueSet);
 //			System.out.println("negated class instances: " + negatedClassInstances);
 		}
+
 		if (accuracyMethod instanceof AccMethodWithBeta) {
 			((AccMethodWithBeta)accuracyMethod).setBeta(coverageFactor);
 		}
 
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
-		
-		initialized = true;
 	}
 
 	@Override
@@ -213,7 +225,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		} else if (accuracyMethod instanceof  AccMethodTwoValued) {
 			return reasoningUtil.getAccuracyOrTooWeak2((AccMethodTwoValued) accuracyMethod, description, classInstances, superClassInstances, noise);
 		} else {
-			throw new RuntimeException();
+			throw new RuntimeException("Method ClassExpressionLearningProblem::getAccuracyOrTooWeak doesn't handle accuracyMethod "  + accuracyMethod);
 		}
 	}
 
@@ -232,18 +244,18 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// for all methods below (currently dummies)
 
 	/**
-	 * @return the classToDescribe
+	 * @return the class expression to describe
 	 */
-	public OWLClass getClassToDescribe() {
-		return classToDescribe;
+	public OWLClassExpression getClassExpressionToDescribe() {
+		return classExpressionToDescribe;
 	}
 
-	public void setClassToDescribe(OWLClass classToDescribe) {
-		this.classToDescribe = classToDescribe;
+	public void setClassExpressionToDescribe(OWLClassExpression classExpressionToDescribe) {
+		this.classExpressionToDescribe = classExpressionToDescribe;
 	}
 
 	public void setClassToDescribe(IRI classIRI) {
-		this.classToDescribe = df.getOWLClass(classIRI);
+		setClassExpressionToDescribe(df.getOWLClass(classIRI));
 	}
 
 	/* (non-Javadoc)
@@ -256,20 +268,36 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	}
 
 	/**
-	 * @return the isConsistent
+	 * @return whether the current ontology remains logically consistent if the given class expression is
+	 * added OWL axiom, i.e.
+	 * <ul>
+	 *     <li>SubClassOf(classToDescribe, ce) or</li>
+	 *     <li>EquivalentClass(classToDescribe, ce)</li>
+	 * </ul>
+	 * depending on the type of axiom set via {@link ClassExpressionLearningProblem#setEquivalence(boolean)} method.
+	 * @see AbstractReasonerComponent#remainsSatisfiable(OWLAxiom)
 	 */
-	public boolean isConsistent(OWLClassExpression description) {
-		OWLAxiom axiom;
-		if (equivalence) {
-			axiom = df.getOWLEquivalentClassesAxiom(classToDescribe, description);
-		} else {
-			axiom = df.getOWLSubClassOfAxiom(classToDescribe, description);
-		}
+	public boolean isConsistent(OWLClassExpression ce) {
+		OWLAxiom axiom = equivalence
+				? df.getOWLEquivalentClassesAxiom(classExpressionToDescribe, ce)
+				: df.getOWLSubClassOfAxiom(classExpressionToDescribe, ce);
 		return getReasoner().remainsSatisfiable(axiom);
 	}
 
+	/**
+	 * @return whether the given class expression as OWL axiom of type
+	 * <ul>
+	 *     <li>SubClassOf(classToDescribe, ce) or</li>
+	 *     <li>EquivalentClass(classToDescribe, ce)</li>
+	 * </ul>
+	 * (depending on the type of axiom set via {@link ClassExpressionLearningProblem#setEquivalence(boolean)} method)
+	 * can already be logically derived from existing axioms in the ontology, i.e. it's logically redundant.
+	 * @see AbstractReasonerComponent#remainsSatisfiable(OWLAxiom)
+	 */
 	public boolean followsFromKB(OWLClassExpression description) {
-		return equivalence ? getReasoner().isEquivalentClass(description, classToDescribe) : getReasoner().isSuperClassOf(description, classToDescribe);
+		return equivalence
+				? getReasoner().isEquivalentClass(description, classExpressionToDescribe)
+				: getReasoner().isSuperClassOf(description, classExpressionToDescribe);
 	}
 
 	public int getMaxExecutionTimeInSeconds() {

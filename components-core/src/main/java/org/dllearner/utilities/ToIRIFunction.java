@@ -18,9 +18,8 @@
  */
 package org.dllearner.utilities;
 
-import org.semanticweb.owlapi.model.OWLEntity;
-
 import com.google.common.base.Function;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Utility class that calls toStringID() method for OWLEntity objects instead of
@@ -28,7 +27,7 @@ import com.google.common.base.Function;
  * @author Lorenz Buehmann
  *
  */
-public class ToIRIFunction implements Function<OWLEntity, String> {
+public class ToIRIFunction implements Function<OWLEntity, String>, java.util.function.Function<OWLEntity, String> {
 	
 	private boolean inAngleBrackets;
 
@@ -44,4 +43,5 @@ public class ToIRIFunction implements Function<OWLEntity, String> {
 	public String apply(OWLEntity input) {
 		return inAngleBrackets ? ("<" + input.toStringID() + ">") : input.toStringID();
 	}
+
 }

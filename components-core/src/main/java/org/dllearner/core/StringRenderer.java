@@ -20,6 +20,7 @@ package org.dllearner.core;
 
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
+import org.dllearner.utilities.owl.OWLXMLRenderer;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.util.ShortFormProvider;
@@ -31,11 +32,13 @@ import org.semanticweb.owlapi.util.SimpleRenderer;
  * @author Simon Bin
  */
 public final class StringRenderer {
+
   	public enum Rendering {
   		OWLAPI_SYNTAX("owlapi", new SimpleRenderer()),
     	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()),
     	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, false)),
-    	MANCHESTER_SYNTAX_NL("manchester_nl", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, true));
+    	MANCHESTER_SYNTAX_NL("manchester_nl", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, true)),
+		OWL_XML_SYNTAX("owl/xml", new OWLXMLRenderer());
     	
     	String name;
     	OWLObjectRenderer renderer;

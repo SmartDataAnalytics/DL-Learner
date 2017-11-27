@@ -85,6 +85,8 @@ public class PosNegLPStrict extends PosNegLP {
 		// modifying them)
 		neutralExamples = Sets.intersection(getReasoner().getIndividuals(), positiveExamples);
 		neutralExamples.retainAll(negativeExamples);
+		
+		initialized = true;
 	}
 
 	/* (non-Javadoc)

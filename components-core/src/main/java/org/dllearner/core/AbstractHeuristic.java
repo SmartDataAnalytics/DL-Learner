@@ -39,6 +39,7 @@ public abstract class AbstractHeuristic extends AbstractComponent implements Heu
 	@Override
 	public void init() throws ComponentInitException {
 
+		initialized = true;
 	}
 	
 	@Override
