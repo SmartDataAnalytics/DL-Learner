@@ -58,15 +58,15 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int)
 	 */
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth) {
-		return getConciseBoundedDescription(resourceURI, depth, false);
+	public Model getConciseBoundedDescription(String resource, int depth) {
+		return getConciseBoundedDescription(resource, depth, false);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
 	 */
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
 		StringBuilder constructTemplate = new StringBuilder("?s0 ?p0 ?o0 .");
 		for(int i = 1; i <= depth; i++){
 			constructTemplate.append("?o").append(i-1).append(" ?p").append(i).append(" ?o").append(i).append(" .");
@@ -84,7 +84,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		}
 
 		ParameterizedSparqlString query = new ParameterizedSparqlString("prefix : <http://dl-learner.org/ontology/> " + "CONSTRUCT{" + constructTemplate + "}" + " WHERE {" + triplesTemplate + "}");
-		query.setIri("s0", resourceURI);
+		query.setIri("s0", resource);
 		System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query.toString());
 		Model cbd = qe.execConstruct();
@@ -100,7 +100,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#setRestrictToNamespaces(java.util.List)
 	 */
 	@Override
-	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
 	}
 
 	/* (non-Javadoc)

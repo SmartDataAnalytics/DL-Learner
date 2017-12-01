@@ -108,12 +108,12 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	}
 
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
 		throw new NotImplementedException("please use getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) instead.");
 	}
 
 	@Override
-	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
 		this.allowedPropertyNamespaces.addAll(namespaces);
 	}
 	
