@@ -197,13 +197,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge != null) {
 			childrenForEdge.remove(child);
+
+			// if there are no other children for the given edge, remove whole edge
+			if(childrenForEdge.isEmpty()) {
+				edge2Children.remove(edge);
+			}
 		}
-		
-		// if there are no other children for the given edge, remove whole edge
-		if(childrenForEdge.isEmpty()) {
-			edge2Children.remove(edge);
-		}
-		
+
 		child2Edge.remove(child);
 	}
 	
@@ -435,17 +435,24 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.datastructures.impl.GenericTree#equals(org.dllearner.algorithms.qtl.datastructures.impl.GenericTree)
-	 */
 	@Override
-	public boolean equals(RDFResourceTree other) {
-		if(this.isResourceNode() || this.isLiteralValueNode()) {
-			return this.getData().equals(other.getData());
-		}
-		return this == other;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+
+		RDFResourceTree that = (RDFResourceTree) o;
+
+		return (this.isResourceNode() || this.isLiteralValueNode()) && this.getData().equals(that.getData());
 	}
-	
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + id;
+		return result;
+	}
+
 	/**
 	 * @param datatype the datatype to set
 	 */

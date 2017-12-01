@@ -74,8 +74,7 @@ public class ExampleLoader extends AbstractComponent {
 				Collections.shuffle(sample, r2);
 				negEx = new HashSet<>(sample.subList(0, negativeRandomCount));
 			}
-			if (posNegLP != null)
-				posNegLP.setNegativeExamples(negEx);
+			posNegLP.setNegativeExamples(negEx);
 			initialized = true;
 		}
 

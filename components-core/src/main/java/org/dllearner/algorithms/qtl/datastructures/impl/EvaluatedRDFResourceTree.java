@@ -35,7 +35,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResourceTree>{
 	
-	public static int cnt = 0;
+	public int cnt = 0;
 	
 	private TIntSet parentIDs = new TIntHashSet();
 	

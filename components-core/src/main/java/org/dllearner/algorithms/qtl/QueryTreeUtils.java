@@ -718,7 +718,7 @@ public class QueryTreeUtils {
 	    		Vertex childVertex = new Vertex(childId, childLabel);
 	    		graph.addVertex(childVertex);
 	    		
-	    		Edge edge = new Edge(Long.valueOf(parentId + "0" + childId), edgeLabel);
+	    		Edge edge = new Edge(Long.parseLong(parentId + "0" + childId), edgeLabel);
 				graph.addEdge(parent, childVertex, edge);
 
 				childId = buildGraph(childId, graph, child, context);

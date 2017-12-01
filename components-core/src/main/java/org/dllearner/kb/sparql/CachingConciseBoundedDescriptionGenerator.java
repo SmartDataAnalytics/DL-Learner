@@ -36,27 +36,25 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	
 	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
-		Model cbd = cache.get(resourceURI);
-		if(cbd == null){
-			cbd = delegatee.getConciseBoundedDescription(resourceURI);
-			cache.put(resourceURI, cbd);
-		}
-		return cbd;
+		return cache.computeIfAbsent(resourceURI, r -> delegatee.getConciseBoundedDescription(r));
 	}
 	
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth){
-		Model cbd = cache.get(resourceURI);
-		if(cbd == null){
-			cbd = delegatee.getConciseBoundedDescription(resourceURI, depth);
-			cache.put(resourceURI, cbd);
-		}
-		return cbd;
+	public Model getConciseBoundedDescription(String resource, int depth){
+		return cache.computeIfAbsent(resource, r -> delegatee.getConciseBoundedDescription(r, depth));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+	 */
+	@Override
+	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
+		return cache.computeIfAbsent(resource, r -> delegatee.getConciseBoundedDescription(r, depth, withTypesForLeafs));
 	}
 
 	@Override
-	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
-		delegatee.addAllowedPropertyNamespaces(namespaces);
+	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
+		delegatee.setAllowedPropertyNamespaces(namespaces);
 	}
 	
 	/* (non-Javadoc)
@@ -71,20 +69,4 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	public void addPropertiesToIgnore(Set<String> properties) {
 		delegatee.addPropertiesToIgnore(properties);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
-	 */
-	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
-		Model cbd = cache.get(resourceURI);
-		if(cbd == null){
-			cbd = delegatee.getConciseBoundedDescription(resourceURI, depth, withTypesForLeafs);
-			cache.put(resourceURI, cbd);
-		}
-		return cbd;
-	}
-
-	
-
 }

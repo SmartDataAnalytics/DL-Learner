@@ -34,7 +34,7 @@ import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.*;
  * 
  * @author Lorenz Buehmann
  */
-public class DLSyntaxObjectRenderer extends org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer
+public class DLSyntaxObjectRendererExt extends org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer
 implements OWLObjectRenderer, OWLObjectVisitor {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//

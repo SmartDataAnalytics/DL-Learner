@@ -125,7 +125,7 @@ private Set<String> questionWords;
 			if(numbers.isEmpty()){
 				return false;
 			} else {
-				int i = Integer.valueOf(value);
+				int i = Integer.parseInt(value);
 				return numbers.contains(i);
 			}
 		}

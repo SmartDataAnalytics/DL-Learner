@@ -40,7 +40,7 @@ import java.io.UnsupportedEncodingException;
 public class OWLAPIRenderers {
 	
 	private static final ManchesterOWLSyntaxOWLObjectRendererImplExt manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
-	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
+	private static final DLSyntaxObjectRendererExt dlSyntaxRenderer = new DLSyntaxObjectRendererExt();
 	
 	static {
 		manchesterRenderer.setUseWrapping(false);

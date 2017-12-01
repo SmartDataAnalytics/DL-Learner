@@ -150,9 +150,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 					tree.addChild(subTree, predicate);
 //					System.out.println(root + "::" + object + "::" + (currentDepth < maxDepth));
 					if (currentDepth < maxDepth) {
-						if (currentDepth < maxDepth) {
-							fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
-						}
+						fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
 					}
 				} else if (object.isAnon()) {
 					subTree = new RDFResourceTree(nodeId++);
@@ -166,7 +164,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 		currentDepth--;
 	}
 
-	class StatementComparator implements Comparator<Statement> {
+	static class StatementComparator implements Comparator<Statement> {
 		
 		final NodeComparator nodeComparator = new NodeComparator();
 

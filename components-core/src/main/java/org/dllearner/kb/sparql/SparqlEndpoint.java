@@ -53,7 +53,7 @@ public class SparqlEndpoint {
 	}
 
 	public SparqlEndpoint(URL url, String defaultGraphURI) {
-		this(url, Collections.singletonList(defaultGraphURI), Collections.<String>emptyList());
+		this(url, Collections.singletonList(defaultGraphURI), Collections.emptyList());
 	}
 
 	public URL getURL() {

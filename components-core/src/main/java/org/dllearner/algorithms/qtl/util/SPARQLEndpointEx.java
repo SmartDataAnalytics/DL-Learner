@@ -90,19 +90,18 @@ public class SPARQLEndpointEx extends SparqlEndpoint {
 
 		return sb;
 	}
-	
+
 	@Override
-	public boolean equals(Object obj) {
-		if(obj == this){
-			return true;
-		}
-		if(!(obj instanceof SPARQLEndpointEx) || obj == null){
-			return false;
-		}
-		SPARQLEndpointEx other = (SPARQLEndpointEx)obj;
-		return this.getURL().equals(other.getURL());
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+
+		SPARQLEndpointEx that = (SPARQLEndpointEx) o;
+
+		return getURL() != null ? getURL().equals(that.getURL()) : that.getURL() == null;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();

@@ -85,6 +85,7 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
+import org.dllearner.utilities.owl.DLSyntaxObjectRendererExt;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -215,7 +216,7 @@ public class PRConvergenceExperiment {
 
 	private int nrOfThreads;
 
-	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
+	OWLObjectRenderer owlRenderer = new DLSyntaxObjectRendererExt();
 
 	DescriptiveStatistics treeSizeStats = new DescriptiveStatistics();
 
@@ -648,7 +649,7 @@ public class PRConvergenceExperiment {
 											lp.setNegativeExamples(examples.negExamplesMapping.keySet());
 //											QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 											QTL2DisjunctiveMultiThreaded la = new QTL2DisjunctiveMultiThreaded(lp, qef);
-											la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+											la.setRenderer(new DLSyntaxObjectRendererExt());
 											la.setReasoner(dataset.getReasoner());
 											la.setEntailment(Entailment.SIMPLE);
 											la.setTreeFactory(queryTreeFactory);
@@ -1036,7 +1037,7 @@ public class PRConvergenceExperiment {
 //		lp.init();
 
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-		la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+		la.setRenderer(new DLSyntaxObjectRendererExt());
 		la.setReasoner(dataset.getReasoner());
 		la.setEntailment(Entailment.RDFS);
 		la.setTreeFactory(queryTreeFactory);

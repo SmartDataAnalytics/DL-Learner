@@ -133,7 +133,7 @@ public class LCS {
 	 * @author Lorenz Buehmann
 	 *
 	 */
-	class RootedRDFGraph {
+	static class RootedRDFGraph {
 		private Set<Triple> triples;
 		private Node root;
 		

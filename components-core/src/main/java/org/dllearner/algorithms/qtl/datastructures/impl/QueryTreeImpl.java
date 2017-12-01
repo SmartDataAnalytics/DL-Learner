@@ -926,14 +926,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         for (QueryTree<N> child : getChildren()) {
             Object edge = getEdge(child);
             boolean meaningful = !edge.equals(RDF.type.getURI()) || meaningful(child);
-            if (edge != null && meaningful) {
+            if (meaningful) {
                 writer.print(sb.toString());
                 writer.print("--- ");
                 writer.print(edge);
                 writer.print(" ---\n");
-            }
-            if(meaningful){
-            	child.dump(writer, indent);
+
+                // recursive call
+				child.dump(writer, indent);
             }
         }
         writer.flush();
@@ -1667,7 +1667,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for (QueryTree<N> child : children) {
     		Vertex childVertex = new Vertex(child.getId(), prefixed(prefixes, child.getUserObject().toString()));
     		graph.addVertex(childVertex);
-    		Edge edge = new Edge(Long.valueOf(parent.getId() + "0" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
+    		Edge edge = new Edge(Long.parseLong(parent.getId() + "0" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
 			graph.addEdge(parent, childVertex, edge);
 			buildGraph(graph, child);
 		}

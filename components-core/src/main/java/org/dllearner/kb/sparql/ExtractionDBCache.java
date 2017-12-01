@@ -85,26 +85,26 @@ public class ExtractionDBCache {
 	public ExtractionDBCache(String cacheDir) {
 		databaseDirectory = cacheDir;
 		try {
-		md5 = MessageDigest.getInstance("MD5");
-		
-		// load driver
-		Class.forName("org.h2.Driver");
-		
-		String jdbcString = "";
-		if(autoServerMode) {
-			jdbcString = ";AUTO_SERVER=TRUE";
-		}
-		
-		// connect to database (created automatically if not existing)
-        conn = DriverManager.getConnection("jdbc:h2:"+databaseDirectory+"/"+databaseName+jdbcString, "sa", "");
+			md5 = MessageDigest.getInstance("MD5");
 
-        // create cache table if it does not exist
-        Statement stmt = conn.createStatement();
-        stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");
-		} catch(NoSuchAlgorithmException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
+			// load driver
+			Class.forName("org.h2.Driver");
+
+			String jdbcString = "";
+			if (autoServerMode) {
+				jdbcString = ";AUTO_SERVER=TRUE";
+			}
+
+			// connect to database (created automatically if not existing)
+			conn = DriverManager.getConnection("jdbc:h2:" + databaseDirectory + "/" + databaseName + jdbcString, "sa", "pw");
+
+			// create cache table if it does not exist
+			try (Statement stmt = conn.createStatement()) {
+				stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");
+			}
+		} catch (NoSuchAlgorithmException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-        }
+		}
 	}
 	
 	public void setFreshnessInMilliseconds(long freshnessInMilliseconds) {
