@@ -18,22 +18,16 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import java.util.concurrent.TimeUnit;
-
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.semanticweb.owlapi.model.OWLClass;
-
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.semanticweb.owlapi.model.OWLClass;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -48,22 +42,11 @@ public class TimeBasedFragmentExtractor implements FragmentExtractor{
 	private long maxExecutionTimeInMilliseconds;
 	private long startTime;
 	
-	public TimeBasedFragmentExtractor(SparqlEndpointKS ks, String cacheDir, int maxExecutionTimeInMilliseconds, TimeUnit timeUnit) {
+	public TimeBasedFragmentExtractor(SparqlEndpointKS ks, int maxExecutionTimeInMilliseconds, TimeUnit timeUnit) {
 		this.ks = ks;
 		this.maxExecutionTimeInMilliseconds = timeUnit.toMillis(maxExecutionTimeInMilliseconds);
-		
-		SparqlEndpoint endpoint = ks.getEndpoint();
-		
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		if(cacheDir != null){
-				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDir, true, timeToLive);
-				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		}
-	}
-	
-	public TimeBasedFragmentExtractor(SparqlEndpointKS ks, int maxExecutionTimeInMilliseconds, TimeUnit timeUnit) {
-		this(ks, null, maxExecutionTimeInMilliseconds, timeUnit);
+
+		qef = ks.getQueryExecutionFactory();
 	}
 
 	/* (non-Javadoc)

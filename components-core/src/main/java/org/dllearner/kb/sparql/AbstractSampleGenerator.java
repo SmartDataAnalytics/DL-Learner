@@ -87,7 +87,7 @@ public abstract class AbstractSampleGenerator implements HasProgressMonitor<Abst
 		this.qef = qef;
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.addPropertiesToIgnore(Sets.newHashSet(OWL.sameAs.getURI()));
+		cbdGen.setIgnoredProperties(Sets.newHashSet(OWL.sameAs.getURI()));
 		
 		reasoner = new SPARQLReasoner(qef);
 	}
@@ -97,19 +97,19 @@ public abstract class AbstractSampleGenerator implements HasProgressMonitor<Abst
 	}
 	
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
-		cbdGen.addAllowedObjectNamespaces(namespaces);
+		cbdGen.setAllowedObjectNamespaces(namespaces);
 	}
 	
 	public void addIgnoredProperties(Set<String> ignoredProperties) {
-		cbdGen.addPropertiesToIgnore(ignoredProperties);
+		cbdGen.setIgnoredProperties(ignoredProperties);
 	}
 
 	public void addIgnoredClasses(Set<String> ignoredProperties) {
-		cbdGen.addPropertiesToIgnore(ignoredProperties);
+		cbdGen.setIgnoredProperties(ignoredProperties);
 	}
 
 	public void addAllowedClassNamespaces(Set<String> ignoredProperties) {
-		cbdGen.addPropertiesToIgnore(ignoredProperties);
+		cbdGen.setIgnoredProperties(ignoredProperties);
 	}
 
 	public void setLoadRelatedSchema(boolean loadRelatedSchema) {

@@ -33,6 +33,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,26 +54,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
 	private Set<String> allowedObjectNamespaces = new TreeSet<>();
+	private Set<String> allowedClassNamespaces = new TreeSet<>();
+	private Set<String> ignoredProperties = new TreeSet<>();
 	
 	private QueryExecutionFactory qef;
-	
-	private Set<String> propertyBlacklist = new TreeSet<>();
 
 	private boolean useSingleQuery = false;
-	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
-		qef = FluentQueryExecutionFactory
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
-				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
-						.setModelContentType(WebContent.contentTypeRDFXML))
-				.end()
-				.create();
-
-		if(cache != null){
-			qef = new QueryExecutionFactoryCacheEx(qef, cache);
-		}
-		qef = new QueryExecutionFactoryPaginated(qef, 10000);
-	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(QueryExecutionFactory qef) {
 		this.qef = qef;
@@ -95,7 +82,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	}
 
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
-		this(endpoint, (String)null);
+		this(endpoint, null);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(Model model) {
@@ -148,12 +135,21 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 
 	@Override
 	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
-		this.allowedPropertyNamespaces.addAll(namespaces);
+		this.allowedPropertyNamespaces = namespaces;
 	}
 	
 	@Override
-	public void addAllowedObjectNamespaces(Set<String> namespaces) {
-		this.allowedObjectNamespaces.addAll(namespaces);
+	public void setAllowedObjectNamespaces(Set<String> namespaces) {
+		this.allowedObjectNamespaces = namespaces;
+	}
+
+	public void setAllowedClassNamespaces(Set<String> allowedClassNamespaces) {
+		this.allowedClassNamespaces = allowedClassNamespaces;
+	}
+
+	@Override
+	public void setIgnoredProperties(Set<String> properties) {
+		this.ignoredProperties = properties;
 	}
 	
 	/**
@@ -186,16 +182,14 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			sb.append("VALUES ?s {%VALUES%}");
 		}
 		sb.append(triplePattern("?s", "?p0", "?o0"));
-		sb.append(createPropertyNamespacesFilter("?p0"));
 		sb.append(createPropertyFilter(Var.alloc("p0")));
-		sb.append(createObjectNamespacesFilter("?o0"));
+		sb.append(createObjectFilter(Var.alloc("p0"), Var.alloc("o0")));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append(triplePattern("?o" + (i-1), "?p" + i, "?o" + i));
-			sb.append(createPropertyNamespacesFilter("?p" + i));
-			sb.append(createObjectNamespacesFilter("?o" + i));
 			sb.append(createPropertyFilter(Var.alloc("p" + i)));
+			sb.append(createObjectFilter(Var.alloc("p" + i), Var.alloc("o" + i)));
 		}
 		if(withTypesForLeafs){
 			sb.append("OPTIONAL{?o").append(lastIndex).append(" a ?type.}\n");
@@ -220,53 +214,67 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private String createPropertyFilter(final Var var) {
 		String filter = "";
 		
-		if(!propertyBlacklist.isEmpty()) {
+		if(!ignoredProperties.isEmpty()) {
 			filter += "FILTER(";
 			if(USE_FILTER_IN) {
 				filter += String.format(
 						FILTER_NOT_IN_CLAUSE,
 						var.toString(),
-						propertyBlacklist.stream()
+						ignoredProperties.stream()
 								.map(p -> "<" + p + ">")
 								.collect(Collectors.joining(",")));
 			} else {
-				filter += propertyBlacklist.stream()
+				filter += ignoredProperties.stream()
 						.map(input -> var.toString() + " != <" + input + ">")
 						.collect(Collectors.joining(" && "));
 			}
+			filter += ")\n";
+		}
+
+		if(!allowedPropertyNamespaces.isEmpty()){
+			filter += "FILTER(" + var + " = <" + RDF.type.getURI() + "> || ";
+			filter += allowedPropertyNamespaces.stream()
+					.map(ns -> "(STRSTARTS(STR(" + var + "),'" + ns + "'))")
+					.collect(Collectors.joining(" || "));
 			filter += ")\n";
 		}
 		
 		return filter;
 	}
 	
-	private String createPropertyNamespacesFilter(String targetVar){
+	private String createObjectFilter(Var predicateVar, Var targetVar){
 		String filter = "";
-		if(!allowedPropertyNamespaces.isEmpty()){
-			filter += "FILTER(" + targetVar + " = <" + RDF.type.getURI() + "> || ";
-			filter += allowedPropertyNamespaces.stream()
-					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
-					.collect(Collectors.joining(" || "));
-			filter += ")\n";
+		if(!allowedObjectNamespaces.isEmpty() || !allowedClassNamespaces.isEmpty()) {
+			filter += "FILTER(ISLITERAL(" + targetVar + ")";
 		}
-		return filter;
-	}
-	
-	private String createObjectNamespacesFilter(String targetVar){
-		String filter = "";
+
 		if(!allowedObjectNamespaces.isEmpty()){
-			filter += "FILTER(ISLITERAL(" + targetVar + ") || ";
+			filter += " || (" + predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " && ";
 			filter += allowedObjectNamespaces.stream()
 					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
 					.collect(Collectors.joining(" || "));
 			filter += ")\n";
+		} else {
+			filter += predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " || ";
+		}
+
+		if(!allowedClassNamespaces.isEmpty()){
+//			if(allowedObjectNamespaces.isEmpty()) {
+//				filter += predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " || ";
+//			}
+			filter += "|| (" + predicateVar + " = " + FmtUtils.stringForResource(RDF.type) + " && ";
+			filter += allowedClassNamespaces.stream()
+					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
+					.collect(Collectors.joining(" || "));
+			filter += ")\n";
+		} else {
+			filter += " || " + predicateVar + " = " + FmtUtils.stringForResource(RDF.type);
+		}
+
+		if(!allowedObjectNamespaces.isEmpty() || !allowedClassNamespaces.isEmpty()) {
+			filter += ")";
 		}
 		return filter;
-	}
-	
-	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
-		propertyBlacklist.addAll(properties);
 	}
 	
 	public static void main(String[] args) {
@@ -278,8 +286,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 				"http://dbpedia.org/ontology/wikiPageID");
 
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint);
-		cbdGen.addPropertiesToIgnore(ignoredProperties);
+		cbdGen.setIgnoredProperties(ignoredProperties);
 		cbdGen.setAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+		cbdGen.setAllowedClassNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+		cbdGen.setAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/resource/"));
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
 //		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);

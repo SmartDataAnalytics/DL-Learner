@@ -112,6 +112,7 @@ public interface ConciseBoundedDescriptionGenerator {
      * @param resources         the resource URIs
      * @param depth             the max. depth of the CBDs
      * @param withTypesForLeafs whether to get the types of the leaf nodes
+     *
      * @return the CBDs in a single model
      */
     default Model getConciseBoundedDescription(Set<String> resources, int depth, boolean withTypesForLeafs) {
@@ -138,7 +139,18 @@ public interface ConciseBoundedDescriptionGenerator {
      *
      * @param namespaces the allowed namespaces
      */
-    void addAllowedObjectNamespaces(Set<String> namespaces);
+    void setAllowedObjectNamespaces(Set<String> namespaces);
+
+    /**
+     * Set the allowed namespaces for classes occuring in object position of the retrieved triples.
+     * Filtering can happen either remotely via SPARQL queries or might be implemented locally via post-processing
+     * on the retrieved triples.
+     *
+     * @param namespaces the allowed namespaces
+     */
+    default void setAllowedClassNamespaces(Set<String> namespaces){
+        throw new UnsupportedOperationException("Method not implemented for class " + this.getClass());
+    };
 
     /**
      * Set the properties allowed to occur in triples of the generated CBD. Filtering can happen either remotely
@@ -146,5 +158,7 @@ public interface ConciseBoundedDescriptionGenerator {
      *
      * @param properties the ignored properties
      */
-    void addPropertiesToIgnore(Set<String> properties);
+    void setIgnoredProperties(Set<String> properties);
+
+
 }

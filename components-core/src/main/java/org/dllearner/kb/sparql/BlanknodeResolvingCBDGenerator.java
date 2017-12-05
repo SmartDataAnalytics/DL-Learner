@@ -93,7 +93,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	}
 	
 	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
+	public void setIgnoredProperties(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)
@@ -104,10 +104,10 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#addAllowedObjectNamespaces(java.util.Set)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#setAllowedObjectNamespaces(java.util.Set)
 	 */
 	@Override
-	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+	public void setAllowedObjectNamespaces(Set<String> namespaces) {
 	}
 
 }

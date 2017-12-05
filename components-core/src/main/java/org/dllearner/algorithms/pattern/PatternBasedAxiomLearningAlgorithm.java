@@ -18,53 +18,31 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Score;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -88,19 +66,19 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	private double threshold = 0.4;
 	
 	public PatternBasedAxiomLearningAlgorithm(SparqlEndpointKS ks, FragmentExtractionStrategy extractionStrategy) {
-		this(ks, null, extractionStrategy);
-	}
-	
-	public PatternBasedAxiomLearningAlgorithm(SparqlEndpointKS ks, String cacheDir, FragmentExtractionStrategy extractionStrategy) {
 		this.ks = ks;
-		
+
 		if(extractionStrategy == FragmentExtractionStrategy.TIME){
-			fragmentExtractor = new TimeBasedFragmentExtractor(ks, cacheDir, 20, TimeUnit.SECONDS);
+			fragmentExtractor = new TimeBasedFragmentExtractor(ks, 20, TimeUnit.SECONDS);
 		} else if(extractionStrategy == FragmentExtractionStrategy.INDIVIDUALS){
-			fragmentExtractor = new IndividualBasedFragmentExtractor(ks, cacheDir, 20);
+			fragmentExtractor = new IndividualBasedFragmentExtractor(ks, 20);
 		}
 	}
 	
+	public PatternBasedAxiomLearningAlgorithm(SparqlEndpointKS ks, String cacheDir, FragmentExtractionStrategy extractionStrategy) {
+
+	}
+
 	/**
 	 * @param pattern the pattern to set
 	 */

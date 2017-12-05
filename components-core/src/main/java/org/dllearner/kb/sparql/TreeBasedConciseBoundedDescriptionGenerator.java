@@ -118,7 +118,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	}
 	
 	@Override
-	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+	public void setAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
 	}
 	
@@ -292,7 +292,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	}
 
 	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
+	public void setIgnoredProperties(Set<String> properties) {
 
 	}
 

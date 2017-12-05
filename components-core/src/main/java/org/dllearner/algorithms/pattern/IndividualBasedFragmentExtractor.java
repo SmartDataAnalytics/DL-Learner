@@ -18,11 +18,7 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -31,7 +27,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -40,7 +35,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -58,23 +52,9 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
-	public IndividualBasedFragmentExtractor(SparqlEndpointKS ks, String cacheDir, int maxNrOfIndividuals) {
-		this.maxNrOfIndividuals = maxNrOfIndividuals;
-		
-		SparqlEndpoint endpoint = ks.getEndpoint();
-		
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		if(cacheDir != null){
-				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDir, true, timeToLive);
-				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		}
-		
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir);
-	}
-	
 	public IndividualBasedFragmentExtractor(SparqlEndpointKS ks, int maxNrOfIndividuals) {
-		this(ks, null, maxNrOfIndividuals);
+		this.maxNrOfIndividuals = maxNrOfIndividuals;
+		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 	}
 
 	/* (non-Javadoc)
