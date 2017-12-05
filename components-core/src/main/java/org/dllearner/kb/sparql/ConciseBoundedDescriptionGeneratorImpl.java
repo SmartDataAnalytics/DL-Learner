@@ -254,7 +254,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
 					.collect(Collectors.joining(" || "));
 			filter += ")\n";
-		} else {
+		} else if(!allowedClassNamespaces.isEmpty()){
 			filter += predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " || ";
 		}
 
@@ -267,7 +267,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
 					.collect(Collectors.joining(" || "));
 			filter += ")\n";
-		} else {
+		} else if(!allowedObjectNamespaces.isEmpty()){
 			filter += " || " + predicateVar + " = " + FmtUtils.stringForResource(RDF.type);
 		}
 
@@ -286,10 +286,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 				"http://dbpedia.org/ontology/wikiPageID");
 
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint);
-		cbdGen.setIgnoredProperties(ignoredProperties);
-		cbdGen.setAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
-		cbdGen.setAllowedClassNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
-		cbdGen.setAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/resource/"));
+//		cbdGen.setIgnoredProperties(ignoredProperties);
+//		cbdGen.setAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+//		cbdGen.setAllowedClassNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+//		cbdGen.setAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/resource/"));
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
 //		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);
