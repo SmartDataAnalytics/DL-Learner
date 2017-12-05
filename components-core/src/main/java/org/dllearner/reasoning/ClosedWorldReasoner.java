@@ -46,6 +46,7 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -292,47 +293,66 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         individuals = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals();
 
         logger.debug("materialising concepts");
-        for (OWLClass cls : baseReasoner.getClasses()) {
-            if (!cls.getIRI().isReservedVocabulary()) {
-                SortedSet<OWLIndividual> pos = baseReasoner.getIndividuals(cls);
-                classInstancesPos.put(cls, (TreeSet<OWLIndividual>) pos);
+        baseReasoner.getClasses().stream().filter(cls -> !cls.getIRI().isReservedVocabulary()).forEach(cls -> {
+            TreeSet<OWLIndividual> pos = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(cls);
+            classInstancesPos.put(cls, pos);
 
-                if (isDefaultNegation()) {
+            if (isDefaultNegation()) {
                     /*
                      *  we should avoid this operation because it returns a new
                      *  set and thus could lead to memory issues
                      *  Instead, we could later answer '\neg A(x)' by just check
                      *  for A(x) and return the inverse.
                      */
-                    if (precomputeNegations) {
-                        classInstancesNeg.put(cls, new TreeSet<>(Sets.difference(individuals, pos)));
-                    }
-                } else {
-                    OWLObjectComplementOf negatedClass = df.getOWLObjectComplementOf(cls);
-                    classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedClass));
+                if (precomputeNegations) {
+                    classInstancesNeg.put(cls, new TreeSet<>(Sets.difference(individuals, pos)));
                 }
             } else {
-                System.err.println(cls);
+                OWLObjectComplementOf negatedClass = df.getOWLObjectComplementOf(cls);
+                classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedClass));
             }
-        }
+        });
+//        for (OWLClass cls : baseReasoner.getClasses()) {
+//            if (!cls.getIRI().isReservedVocabulary()) {
+//                SortedSet<OWLIndividual> pos = baseReasoner.getIndividuals(cls);
+//                classInstancesPos.put(cls, (TreeSet<OWLIndividual>) pos);
+//
+//                if (isDefaultNegation()) {
+//                    /*
+//                     *  we should avoid this operation because it returns a new
+//                     *  set and thus could lead to memory issues
+//                     *  Instead, we could later answer '\neg A(x)' by just check
+//                     *  for A(x) and return the inverse.
+//                     */
+//                    if (precomputeNegations) {
+//                        classInstancesNeg.put(cls, new TreeSet<>(Sets.difference(individuals, pos)));
+//                    }
+//                } else {
+//                    OWLObjectComplementOf negatedClass = df.getOWLObjectComplementOf(cls);
+//                    classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedClass));
+//                }
+//            } else {
+//                System.err.println(cls);
+//            }
+//        }
 
         // materialize the object property facts
         logger.debug("materialising object properties ...");
-        for (OWLObjectProperty objProp : baseReasoner.getObjectProperties()) {
-            opPos.put(objProp, baseReasoner.getPropertyMembers(objProp));
-        }
+        baseReasoner.getObjectProperties().forEach(p -> opPos.put(p, baseReasoner.getPropertyMembers(p)));
         logger.debug("finished materialising object properties.");
 
         // materialize the data property facts
         logger.debug("materialising datatype properties");
-        for (OWLDataProperty dp : baseReasoner.getDatatypeProperties()) {
-            dpPos.put(dp, baseReasoner.getDatatypeMembers(dp));
-        }
+        baseReasoner.getDatatypeProperties().forEach(p -> dpPos.put(p, baseReasoner.getDatatypeMembers(p)));
 
         for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
             bdPos.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getTrueDatatypeMembers(dp));
             bdNeg.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getFalseDatatypeMembers(dp));
         }
+
+//        id = baseReasoner.getIntDatatypeProperties().stream().collect(Collectors.toMap(Function.identity(), baseReasoner::getIntDatatypeMembers));
+//        dd = baseReasoner.getDoubleDatatypeProperties().stream().collect(Collectors.toMap(Function.identity(), baseReasoner::getDoubleDatatypeMembers));
+//        sd = baseReasoner.getStringDatatypeProperties().stream().collect(Collectors.toMap(Function.identity(), baseReasoner::getStringDatatypeMembers));
 
         for (OWLDataProperty dp : baseReasoner.getIntDatatypeProperties()) {
             id.put(dp, baseReasoner.getIntDatatypeMembers(dp));
@@ -705,6 +725,45 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             }
 
             return true;
+        } else if (description instanceof OWLObjectExactCardinality) {
+            OWLObjectPropertyExpression property = ((OWLObjectExactCardinality) description).getProperty();
+            OWLClassExpression fillerConcept = ((OWLObjectExactCardinality) description).getFiller();
+            int cardinality = ((OWLObjectExactCardinality) description).getCardinality();
+
+            // the mapping of instances related by r
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
+
+            int nrOfFillers = 0;
+
+            Collection<OWLIndividual> roleFillers = mapping.get(individual);
+
+            // return true if there are none or not enough role fillers
+            if (roleFillers == null || roleFillers.size() < cardinality) {
+                return false;
+            }
+
+            int index = 0;
+            for (OWLIndividual roleFiller : roleFillers) {
+                index++;
+                if (hasTypeImpl(fillerConcept, roleFiller)) {
+                    nrOfFillers++;
+
+                    // too many individuals that already belong to filler class
+                    if (nrOfFillers > cardinality) {
+                        return false;
+                    }
+                    // early abort: e.g. <= 5 hasStructure.Methyl;
+                    // if there are 6 fillers and 2 are not Methyl, the result
+                    // is false
+                } else {
+                    // not enough remaining individuals that could belong to filler class
+                    if (roleFillers.size() - index <= cardinality) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+
         } else if (description instanceof OWLObjectHasValue) {
             OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
             OWLIndividual value = ((OWLObjectHasValue) description).getFiller();
@@ -1095,6 +1154,38 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                     }
                     index++;
                 }
+            }
+
+            return returnSet;
+        } else if (description instanceof OWLObjectExactCardinality) {
+            OWLObjectPropertyExpression property = ((OWLObjectExactCardinality) description).getProperty();
+            OWLClassExpression filler = ((OWLObjectExactCardinality) description).getFiller();
+
+            // get instances of filler concept
+            SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+
+            // the mapping of instances related by r
+            Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
+
+            SortedSet<OWLIndividual> returnSet = new TreeSet<>();
+
+            int number = ((OWLObjectExactCardinality) description).getCardinality();
+
+            for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
+                Collection<OWLIndividual> inds = entry.getValue();
+
+                // we do not need to run tests if there are not sufficiently many fillers
+                if (inds.size() < number) {
+                    continue;
+                }
+
+                // check for all fillers that belong to target set
+                int matchCnt = Sets.intersection((Set)inds, targetSet).size();
+
+                if(matchCnt == number) {
+                    returnSet.add(entry.getKey());
+                }
+
             }
 
             return returnSet;
@@ -1589,7 +1680,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
     public static void main(String[] args) throws Exception{
 
-        StringRenderer.setRenderer(StringRenderer.Rendering.OWL_XML_SYNTAX);
+        StringRenderer.setRenderer(StringRenderer.Rendering.DL_SYNTAX);
 
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
         OWLOntology ontology = man.createOntology();
@@ -1639,6 +1730,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         reasoner.init();
 
 
+        OWLClassExpression ce;
+
         SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(
                 df.getOWLDataSomeValuesFrom(
                         dp,
@@ -1685,6 +1778,18 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 df.getOWLObjectMaxCardinality(8, op, cls1)
         );
         System.out.println(individuals);
+
+        individuals = reasoner.getIndividuals(
+                df.getOWLObjectMaxCardinality(3, op, cls1)
+        );
+        System.out.println(individuals);
+
+        ce = df.getOWLObjectExactCardinality(5, op, cls1);
+        individuals = reasoner.getIndividuals(ce);
+        System.out.println(ce + ": " + individuals);
+
+        System.out.println(reasoner.hasType(ce, df.getOWLNamedIndividual("s", pm)));
+        System.out.println(reasoner.hasType(ce, df.getOWLNamedIndividual("o1", pm)));
 
     }
 
