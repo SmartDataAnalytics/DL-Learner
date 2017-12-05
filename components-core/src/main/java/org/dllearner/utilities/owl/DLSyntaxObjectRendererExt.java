@@ -73,6 +73,15 @@ implements OWLObjectRenderer, OWLObjectVisitor {
 	}
 
 	@Override
+	public void visit(OWLObjectHasSelf ce) {
+		write(EXISTS);
+		writeSpace();
+		ce.getProperty().accept(this);
+		write(".");
+		write(SELF);
+	}
+
+	@Override
 	public void visit(@Nonnull OWLFacetRestriction node) {
 		switch (node.getFacet()) {
 			case MIN_INCLUSIVE: write("\u2265"); /* >= */ break;
