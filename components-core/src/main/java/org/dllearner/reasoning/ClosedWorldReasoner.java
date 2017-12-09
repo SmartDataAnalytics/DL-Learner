@@ -1539,6 +1539,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
+    protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual) throws ReasoningMethodUnsupportedException {
+        return baseReasoner.getDataPropertyRelationships(individual);
+    }
+
+    @Override
     public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
         return dpPos.get(datatypeProperty);
 //		return rc.getDatatypeMembersImpl(OWLDataProperty);

@@ -23,10 +23,7 @@ import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
@@ -866,6 +863,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         return map;
     }
+
+	@Override
+	protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual) throws ReasoningMethodUnsupportedException {
+		Map<OWLDataProperty, Set<OWLLiteral>> map = new HashMap<>();
+
+		for (OWLDataProperty prop : ontology.getDataPropertiesInSignature(Imports.INCLUDED)) {
+			map.put(prop, getRelatedValuesImpl(individual, prop));
+		}
+
+		return map;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
