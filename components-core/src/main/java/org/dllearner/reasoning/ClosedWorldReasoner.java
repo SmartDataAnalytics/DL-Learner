@@ -1385,32 +1385,32 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) {
         return baseReasoner.getSuperClassesImpl(concept);
     }
 
     @Override
-    protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) {
         return baseReasoner.getSubClassesImpl(concept);
     }
 
     @Override
-    protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) {
         return baseReasoner.getSuperPropertiesImpl(role);
     }
 
     @Override
-    protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) {
         return baseReasoner.getSubPropertiesImpl(role);
     }
 
     @Override
-    protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) {
         return baseReasoner.getSuperPropertiesImpl(role);
     }
 
     @Override
-    protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
+    protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) {
         return baseReasoner.getSubPropertiesImpl(role);
     }
 
@@ -1539,7 +1539,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual) throws ReasoningMethodUnsupportedException {
+    protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual) {
         return baseReasoner.getDataPropertyRelationships(individual);
     }
 
@@ -1550,7 +1550,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+    public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) {
         return baseReasoner.getRelatedIndividuals(individual, objectProperty);
     }
 
@@ -1560,7 +1560,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+    public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) {
         return baseReasoner.getRelatedValues(individual, datatypeProperty);
     }
 
@@ -1570,7 +1570,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    public Set<OWLLiteral> getLabelImpl(OWLEntity entity) throws ReasoningMethodUnsupportedException {
+    public Set<OWLLiteral> getLabelImpl(OWLEntity entity) {
         return baseReasoner.getLabel(entity);
     }
 
@@ -1614,7 +1614,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      * @see org.dllearner.core.AbstractReasonerComponent#getInconsistentClassesImpl()
      */
     @Override
-    protected Set<OWLClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
+    protected Set<OWLClass> getInconsistentClassesImpl() {
         return baseReasoner.getInconsistentClasses();
     }
 
