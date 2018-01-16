@@ -52,6 +52,11 @@ import java.util.Set;
  */
 public interface ConciseBoundedDescriptionGenerator {
 
+    String TP = "%s %s %s .\n";
+    default String triplePattern(String s, String p, String o) {
+        return String.format(TP, s, p, o);
+    }
+
     /**
      * Computes the CBD (of depth 1) for the given resource.
      *

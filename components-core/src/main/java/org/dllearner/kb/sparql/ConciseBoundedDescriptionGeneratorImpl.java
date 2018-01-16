@@ -48,30 +48,27 @@ import java.util.stream.Collectors;
  * @author Lorenz Buehmann
  *
  */
-public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
+public class ConciseBoundedDescriptionGeneratorImpl extends AbstractConciseBoundedDescriptionGenerator {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
-	
-	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
-	private Set<String> allowedObjectNamespaces = new TreeSet<>();
-	private Set<String> allowedClassNamespaces = new TreeSet<>();
-	private Set<String> ignoredProperties = new TreeSet<>();
-	
-	private QueryExecutionFactory qef;
-
 	private boolean useSingleQuery = false;
-	
+
 	public ConciseBoundedDescriptionGeneratorImpl(QueryExecutionFactory qef) {
-		this.qef = qef;
+		super(qef);
 	}
-	
+
+	/**
+	 * @deprecated Will be removed in next release as it is redundant. Please use {@link ConciseBoundedDescriptionGeneratorImpl#ConciseBoundedDescriptionGeneratorImpl(QueryExecutionFactory)}
+	 * @param endpoint
+	 * @param cacheDir
+	 */
+	@Deprecated()
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
-		qef = FluentQueryExecutionFactory
+		this(FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
 				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
 						.setModelContentType(WebContent.contentTypeRDFXML))
 				.end()
-				.create();
+				.create());
 
 		if(cacheDir != null){
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
@@ -89,75 +86,39 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this(new QueryExecutionFactoryModel(model));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
-	 */
-	@Override
-	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
-		logger.trace("Computing CBD for {} ...", resource);
-		long start = System.currentTimeMillis();
-		String query = generateQuery(resource, depth, withTypesForLeafs);
-		logger.info(query);
-		try(QueryExecution qe = qef.createQueryExecution(query)) {
-			Model model = qe.execConstruct();
-			logger.trace("Got {} triples in {} ms.", model.size(), (System.currentTimeMillis() - start));
-			return model;
-		} catch (Exception e) {
-			logger.error("Failed to computed CBD for resource {}", resource );
-			throw new RuntimeException("Failed to computed CBD for resource " + resource, e);
-		}
-	}
-
 	@Override
 	public Model getConciseBoundedDescription(Set<String> resources, int depth, boolean withTypesForLeafs) {
 		if (useSingleQuery) {
-			logger.trace("Computing CBDs for {} ...", resources);
+			log.trace("Computing CBDs for {} ...", resources);
 			long start = System.currentTimeMillis();
 			// build the template
 			ParameterizedSparqlString template = generateQueryTemplate(depth, withTypesForLeafs, true);
 
 			// set the VALUES clause
 			String query = template.toString().replace("%VALUES%", resources.stream().map(r -> "<" + r + ">").collect(Collectors.joining(" ")));
-			logger.trace(query);
+			log.trace(query);
+			System.out.println(query);
 
 			try (QueryExecution qe = qef.createQueryExecution(query)) {
 				Model model = qe.execConstruct();
-				logger.trace("Got {} triples in {} ms.", model.size(), (System.currentTimeMillis() - start));
+				log.trace("Got {} triples in {} ms.", model.size(), (System.currentTimeMillis() - start));
 				return model;
 			} catch (Exception e) {
-				logger.error("Failed to computed CBD for resources {}", resources);
+				log.error("Failed to computed CBD for resources {}", resources);
 				throw new RuntimeException("Failed to computed CBD for resource " + resources, e);
 			}
 		} else {
-			return ConciseBoundedDescriptionGenerator.super.getConciseBoundedDescription(resources, depth, withTypesForLeafs);
+			return super.getConciseBoundedDescription(resources, depth, withTypesForLeafs);
 		}
 	}
 
-	@Override
-	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
-		this.allowedPropertyNamespaces = namespaces;
-	}
-	
-	@Override
-	public void setAllowedObjectNamespaces(Set<String> namespaces) {
-		this.allowedObjectNamespaces = namespaces;
-	}
 
-	public void setAllowedClassNamespaces(Set<String> allowedClassNamespaces) {
-		this.allowedClassNamespaces = allowedClassNamespaces;
-	}
-
-	@Override
-	public void setIgnoredProperties(Set<String> properties) {
-		this.ignoredProperties = properties;
-	}
-	
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
 	 * @param resource The example resource for which a CONSTRUCT query is created.
 	 * @return the SPARQL query
 	 */
-	private String generateQuery(String resource, int depth, boolean withTypesForLeafs){
+	protected String generateQuery(String resource, int depth, boolean withTypesForLeafs){
 		ParameterizedSparqlString template = generateQueryTemplate(depth, withTypesForLeafs, false);
 		template.setIri("s", resource);
 		return template.toString();
@@ -182,13 +143,13 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			sb.append("VALUES ?s {%VALUES%}");
 		}
 		sb.append(triplePattern("?s", "?p0", "?o0"));
-		sb.append(createPropertyFilter(Var.alloc("p0")));
+		sb.append(createPredicateFilter(Var.alloc("p0")));
 		sb.append(createObjectFilter(Var.alloc("p0"), Var.alloc("o0")));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append(triplePattern("?o" + (i-1), "?p" + i, "?o" + i));
-			sb.append(createPropertyFilter(Var.alloc("p" + i)));
+			sb.append(createPredicateFilter(Var.alloc("p" + i)));
 			sb.append(createObjectFilter(Var.alloc("p" + i), Var.alloc("o" + i)));
 		}
 		if(withTypesForLeafs){
@@ -202,83 +163,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return new ParameterizedSparqlString(sb.toString());
 	}
 
-	private static final String TP = "%s %s %s .\n";
-	private String triplePattern(String s, String p, String o) {
-		return String.format(TP, s, p, o);
-	}
-
-	private boolean USE_FILTER_IN = true;
-	private static final String FILTER_NOT_IN_CLAUSE = "%s NOT IN (%s)";
-	private static final String FILTER_IN_CLAUSE = "%s IN (%s)";
-	
-	private String createPropertyFilter(final Var var) {
-		String filter = "";
-		
-		if(!ignoredProperties.isEmpty()) {
-			filter += "FILTER(";
-			if(USE_FILTER_IN) {
-				filter += String.format(
-						FILTER_NOT_IN_CLAUSE,
-						var.toString(),
-						ignoredProperties.stream()
-								.map(p -> "<" + p + ">")
-								.collect(Collectors.joining(",")));
-			} else {
-				filter += ignoredProperties.stream()
-						.map(input -> var.toString() + " != <" + input + ">")
-						.collect(Collectors.joining(" && "));
-			}
-			filter += ")\n";
-		}
-
-		if(!allowedPropertyNamespaces.isEmpty()){
-			filter += "FILTER(" + var + " = <" + RDF.type.getURI() + "> || ";
-			filter += allowedPropertyNamespaces.stream()
-					.map(ns -> "(STRSTARTS(STR(" + var + "),'" + ns + "'))")
-					.collect(Collectors.joining(" || "));
-			filter += ")\n";
-		}
-		
-		return filter;
-	}
-	
-	private String createObjectFilter(Var predicateVar, Var targetVar){
-		String filter = "";
-		if(!allowedObjectNamespaces.isEmpty() || !allowedClassNamespaces.isEmpty()) {
-			filter += "FILTER(ISLITERAL(" + targetVar + ")";
-		}
-
-		if(!allowedObjectNamespaces.isEmpty()){
-			filter += " || (" + predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " && ";
-			filter += allowedObjectNamespaces.stream()
-					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
-					.collect(Collectors.joining(" || "));
-			filter += ")\n";
-		} else if(!allowedClassNamespaces.isEmpty()){
-			filter += predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " || ";
-		}
-
-		if(!allowedClassNamespaces.isEmpty()){
-//			if(allowedObjectNamespaces.isEmpty()) {
-//				filter += predicateVar + " != " + FmtUtils.stringForResource(RDF.type) + " || ";
-//			}
-			filter += "|| (" + predicateVar + " = " + FmtUtils.stringForResource(RDF.type) + " && ";
-			filter += allowedClassNamespaces.stream()
-					.map(ns -> "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))")
-					.collect(Collectors.joining(" || "));
-			filter += ")\n";
-		} else if(!allowedObjectNamespaces.isEmpty()){
-			filter += " || " + predicateVar + " = " + FmtUtils.stringForResource(RDF.type);
-		}
-
-		if(!allowedObjectNamespaces.isEmpty() || !allowedClassNamespaces.isEmpty()) {
-			filter += ")";
-		}
-		return filter;
-	}
-	
 	public static void main(String[] args) {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		Set<String> ignoredProperties = Sets.newHashSet(
 				"http://dbpedia.org/ontology/abstract",
 				"http://dbpedia.org/ontology/wikiPageID",
@@ -292,7 +178,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 //		cbdGen.setAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/resource/"));
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
 //		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
-		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);
+		Model cbd = cbdGen.getConciseBoundedDescription(Sets.newHashSet("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Dresden"),2);
 
 		System.out.println(cbd.size());
 	}
