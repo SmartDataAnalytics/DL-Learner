@@ -672,7 +672,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 
 		Set<Triple> tps = utils.extractTriplePattern(query);
 
-		DirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<Node, LabeledEdge>(LabeledEdge.class);
+		DirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<>(LabeledEdge.class);
 
 		tps.forEach(tp -> {
 			g.addVertex(tp.getSubject());
@@ -849,7 +849,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		return triple2Parent.get(triple);
 	}
 
-	static class LabeledEdge extends DefaultEdge {
+	public static class LabeledEdge extends DefaultEdge {
 		private final Node s;
 		private final Node t;
 		private final Node edge;

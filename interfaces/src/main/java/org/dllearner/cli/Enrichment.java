@@ -504,7 +504,7 @@ public class Enrichment {
 	}
 
 	private Model getFragment(SparqlEndpointKS ks, Set<OWLIndividual> individuals){
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache");
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		Model model = ModelFactory.createDefaultModel();
 		for(OWLIndividual ind : individuals){
 			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
@@ -521,7 +521,7 @@ public class Enrichment {
 			futures.add(threadPool.submit(new Callable<Model>() {
 				@Override
 				public Model call() throws Exception {
-					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache");
+					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 					return cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
 				}
 			}));
