@@ -42,6 +42,10 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOperation, TimeoutableOperation {
+
+	public enum BlankNodeScope {
+		TREE, DATASET
+	}
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -55,6 +59,8 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 	protected volatile boolean stop = false;
 
 	private boolean complete = true;
+
+	private BlankNodeScope blankNodeScope = BlankNodeScope.TREE;
 	
 
 	private void reset() {
@@ -110,6 +116,12 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 		// d) else create new empty tree
 		RDFResourceTree lgg = new RDFResourceTree();
+
+		// keep name if both blank nodes
+		//TODO workaround for anchor nodes that are used for tuples
+		if(tree1.getData().isBlank() && tree1.getData().matches(tree2.getData())) {
+			lgg.setData(tree1.getData());
+		}
 
 		// 2. compare the edges
 		// we only have to compare edges which are
@@ -265,6 +277,10 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 	public boolean isComplete() {
 		return complete;
+	}
+
+	public void setBlankNodeScope(BlankNodeScope blankNodeScope) {
+		this.blankNodeScope = blankNodeScope;
 	}
 
 	private void addNumbering(int nodeId, RDFResourceTree tree){

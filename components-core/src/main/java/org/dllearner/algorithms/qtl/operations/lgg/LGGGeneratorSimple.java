@@ -133,23 +133,23 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 //		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
 //		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
 
-		Node edge = NodeFactory.createURI("urn:p");
-		Node edgeInv = new NodeInv(edge);
-
-		RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("urn:a"));
-		tree1.addChild(new RDFResourceTree(NodeFactory.createURI("urn:c")), edge);
-		tree1.addChild(new RDFResourceTree(NodeFactory.createURI("urn:d")), edgeInv);
-		System.out.println(tree1.getStringRepresentation());
-
-		RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("urn:b"));
-		tree2.addChild(new RDFResourceTree(NodeFactory.createURI("urn:c")), edge);
-		tree2.addChild(new RDFResourceTree(NodeFactory.createURI("urn:d")), edgeInv);
-		System.out.println(tree2.getStringRepresentation());
-
-		RDFResourceTree lgg = lggGen.getLGG(tree1, tree2);
-		System.out.println("LGG");
-		System.out.println(lgg.getStringRepresentation());
-		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
+//		Node edge = NodeFactory.createURI("urn:p");
+//		Node edgeInv = new NodeInv(edge);
+//
+//		RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("urn:a"));
+//		tree1.addChild(new RDFResourceTree(NodeFactory.createURI("urn:c")), edge);
+//		tree1.addChild(new RDFResourceTree(NodeFactory.createURI("urn:d")), edgeInv);
+//		System.out.println(tree1.getStringRepresentation());
+//
+//		RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("urn:b"));
+//		tree2.addChild(new RDFResourceTree(NodeFactory.createURI("urn:c")), edge);
+//		tree2.addChild(new RDFResourceTree(NodeFactory.createURI("urn:d")), edgeInv);
+//		System.out.println(tree2.getStringRepresentation());
+//
+//		RDFResourceTree lgg = lggGen.getLGG(tree1, tree2);
+//		System.out.println("LGG");
+//		System.out.println(lgg.getStringRepresentation());
+//		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
 	}
 
 }

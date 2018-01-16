@@ -22,16 +22,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -71,7 +63,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
 	
-	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
+	private Map<RDFResourceTree, Node> child2Edge = new IdentityHashMap<>();//HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparatorInv());
 
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
@@ -147,7 +139,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		super(tree.getData());
 		this.id = getID();
 		
-		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
+		for (Entry<Node, List<RDFResourceTree>> entry : tree.edge2Children.entrySet()) {
 			Node edge = entry.getKey();
 			List<RDFResourceTree> children = entry.getValue();
 			
@@ -166,23 +158,15 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public void addChild(RDFResourceTree child, Node edge) {
 		super.addChild(child);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.add(child);
-		
+
 		child2Edge.put(child, edge);
 	}
 	
 	public void addChildren(List<RDFResourceTree> children, Node edge) {
 		super.addChildren(children);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.addAll(children);
 	}
 	
@@ -205,6 +189,11 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 
 		child2Edge.remove(child);
+	}
+
+	public void replaceChild(RDFResourceTree oldChild, RDFResourceTree newChild, Node edge) {
+		removeChild(oldChild, edge);
+		addChild(newChild, edge);
 	}
 	
 	@Override
@@ -405,7 +394,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		
 		// render current node
 		String ren;
-		if(isLiteralNode() && !isLiteralValueNode()) {
+		if(isLiteralNode() && !isLiteralValueNode() && getDatatype() != null) {
 			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
 		} else {
 			ren = FmtUtils.stringForNode(this.getData(), context);

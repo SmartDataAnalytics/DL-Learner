@@ -24,6 +24,7 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -39,7 +40,13 @@ public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
 	
 
 	private Set<Node> existentialMeaninglessProperties = new HashSet<>();
-	
+
+	private Set<Node> nodes2Keep = new HashSet<>();
+
+	public void setNodes2Keep(Collection<Node> nodes2Keep) {
+		this.nodes2Keep = new HashSet<>(nodes2Keep);
+	}
+
 	public PredicateExistenceFilter() {
 	}
 
@@ -53,6 +60,10 @@ public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
 	public void setExistentialMeaninglessProperties(Set<Node> existentialMeaninglessProperties) {
 		this.existentialMeaninglessProperties = existentialMeaninglessProperties;
 	}
+
+	public boolean isMeaningless(Node predicate) {
+		return existentialMeaninglessProperties.contains(predicate);
+	}
 	
 	@Override
 	public RDFResourceTree apply(RDFResourceTree tree) {
@@ -60,15 +71,16 @@ public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
 		if(tree.isLiteralNode() && !tree.isLiteralValueNode()) {
 			newTree = new RDFResourceTree(tree.getDatatype());
 		} else {
-			newTree = new RDFResourceTree(0, tree.getData());
+			newTree = new RDFResourceTree(0);
+			newTree.setData(tree.getData());
 		}
 
 		for(Node edge : tree.getEdges()) {
-			if(existentialMeaninglessProperties.contains(edge)) {
+			if(isMeaningless(edge)) {
 				// if the edge is meaningless
 				// 1. process all children
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					if(child.isResourceNode() || child.isLiteralValueNode()) {
+					if(child.isResourceNode() || child.isLiteralValueNode() || nodes2Keep.contains(child.getData())) {
 						RDFResourceTree newChild = apply(child);
 						newTree.addChild(newChild, edge);
 					} else {
