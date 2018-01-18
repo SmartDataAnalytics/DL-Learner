@@ -24,8 +24,7 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.shared.PrefixMapping;
@@ -61,6 +60,8 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 
 	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/lubm_queries.txt";
 
+	private static final String CACHE_DIR = "/tmp/qtl/benchmark/lubm/cache";
+
 	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		super("LUBM");
 		// set KS
@@ -82,7 +83,6 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		}
 
 		// read SPARQL queries
-		sparqlQueries = new HashMap<>();
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(QUERIES_FILE));
 
@@ -140,13 +140,24 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 	}
 
 	public static void main(String[] args) throws Exception{
-		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
-														"http://lubm.org");
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred-owlhorst", Lists.newArrayList());
 		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
+		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());
-		queries.entrySet().forEach(entry -> System.out.println(entry.getValue()));
-		queries.entrySet().forEach(entry -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(entry.getValue()).execSelect().hasNext()));
+		queries.entrySet().forEach(entry -> {
+			Query query = entry.getValue();
+			System.out.println(query);
+			query.setLimit(1);
+			try(QueryExecution qe = qef.createQueryExecution(query)) {
+			    ResultSet rs = qe.execSelect();
+				System.out.println(rs.hasNext());
+			    while(rs.hasNext()) {
+			        QuerySolution qs = rs.next();
+					System.out.println(qs);
+			    }
+			}
+		});
 
 
 	}

@@ -25,6 +25,7 @@ WHERE
 # Query3
 # This query is similar to Query 1 but class Publication has a wide hierarchy.
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X
 WHERE
@@ -36,6 +37,7 @@ WHERE
 # between Professor and its subclasses. Class Professor has a wide hierarchy. Another
 # feature is that it queries about multiple properties of a single class.
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X ?Y1 ?Y2 ?Y3
 WHERE
@@ -67,6 +69,7 @@ WHERE
 # implicit one between GraduateStudent and Student. In addition, it has large
 # input and low selectivity.
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X WHERE {?X rdf:type ub:Student}
 

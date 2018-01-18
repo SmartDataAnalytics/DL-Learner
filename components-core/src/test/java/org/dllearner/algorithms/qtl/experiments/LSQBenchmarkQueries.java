@@ -32,7 +32,6 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.QueryUtils;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.isomorphism.VF2GraphIsomorphismInspector;
-import org.jgrapht.alg.isomorphism.VF2SubgraphIsomorphismInspector;
 import org.jgrapht.experimental.GraphTests;
 
 import java.io.File;
@@ -113,7 +112,7 @@ public class LSQBenchmarkQueries {
                 List<List<RDFNode>> examples = getExamples(query, qef);
 
                 if(!examples.isEmpty()) {
-                    List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.computeLGG(examples);
+                    List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.run(examples);
 
                     solutions.forEach(sol -> {
                         RDFResourceTree tree = sol.getKey();

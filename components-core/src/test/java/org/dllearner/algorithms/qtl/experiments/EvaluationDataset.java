@@ -34,9 +34,7 @@ import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -55,7 +53,7 @@ public abstract class EvaluationDataset {
 	
 	AbstractReasonerComponent reasoner;
 
-	Map<String, Query> sparqlQueries;
+	Map<String, Query> sparqlQueries = new TreeMap<>();
 	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
 
 	private PredicateExistenceFilter predicateFilter;
