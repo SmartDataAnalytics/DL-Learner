@@ -19,7 +19,7 @@
         <solr.version>7.1.0</solr.version>
         <owlapi.version>4.5.0</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
-        <jena.sparql.api.version>3.4.0-2-SNAPSHOT</jena.sparql.api.version>
+        <jena.sparql.api.version>3.5.0-2</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
