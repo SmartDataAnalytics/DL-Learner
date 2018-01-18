@@ -122,6 +122,10 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		if(tree1.getData().isBlank() && tree1.getData().matches(tree2.getData())) {
 			lgg.setData(tree1.getData());
 		}
+		if(tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar())) {
+			lgg.setAnchorVar(tree1.getAnchorVar());
+		}
+
 
 		// 2. compare the edges
 		// we only have to compare edges which are

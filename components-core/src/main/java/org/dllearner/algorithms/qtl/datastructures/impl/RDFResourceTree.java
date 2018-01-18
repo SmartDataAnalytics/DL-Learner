@@ -24,6 +24,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -66,6 +69,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private Map<RDFResourceTree, Node> child2Edge = new IdentityHashMap<>();//HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparatorInv());
 
+    private Node anchorVar;
+	public void setAnchorVar(Node anchorVar) {
+		this.anchorVar = anchorVar;
+	}
+	public Node getAnchorVar() {
+		return anchorVar;
+	}
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
 
@@ -133,6 +143,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public RDFResourceTree(int id, RDFDatatype datatype, Set<Literal> literals) {
 		super(DEFAULT_LITERAL_NODE);
 		this.id = id;
+		this.datatype = datatype;
 	}
 	
 	public RDFResourceTree(RDFResourceTree tree) {
@@ -530,4 +541,22 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
 			result();
 	}
+
+//	static class NodeRenderer implements Function<Node, String>{
+//		@Override
+//		public String apply(Node node) {
+//			return null;
+//		}
+//	}
+//
+//	static class TreeRenderer {
+//
+//		private Function<Node, String> nodeRenderer;
+//
+//		public String render(RDFResourceTree tree) {
+//
+//		}
+//
+//
+//	}
 }

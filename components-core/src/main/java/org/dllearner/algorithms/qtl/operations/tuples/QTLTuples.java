@@ -11,7 +11,6 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.vocabulary.RDFS;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -68,61 +67,61 @@ public class QTLTuples {
     private int maxTreeDepth = 1;
 
     private Set<TreeFilter<RDFResourceTree>> treeFilters = new LinkedHashSet<>();
+    public boolean addTreeFilter(TreeFilter<RDFResourceTree> treeFilter) {
+        return treeFilters.add(treeFilter);
+    }
+    public boolean removeTreeFilter(TreeFilter<RDFResourceTree> treeFilter) {
+        return treeFilters.remove(treeFilter);
+    }
+
 
     public QTLTuples(QueryExecutionFactory qef) {
         this.qef = qef;
 
-        treeFactory = new QueryTreeFactoryBase();
         cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+        treeFactory = new QueryTreeFactoryBase();
         lggGenerator = new LGGGeneratorSimple();
     }
 
-    public void setMaxTreeDepth(int maxTreeDepth) {
-        this.maxTreeDepth = maxTreeDepth;
-    }
-
-    public void computeLGG(List<RDFNode> tuple1, List<RDFNode> tuple2) {
+    /**
+     * Run the QTL algorithm given the 2 tuples as input example.
+     *
+     * @param tuple1 the first example
+     * @param tuple2 the second example
+     */
+    public void run(List<RDFNode> tuple1, List<RDFNode> tuple2) {
         Objects.requireNonNull(tuple1,"First tuple must not be null");
         Objects.requireNonNull(tuple2,"Second tuple must not be null");
-        computeLGG(Lists.newArrayList(tuple1, tuple2));
+
+        run(Lists.newArrayList(tuple1, tuple2));
     }
 
-    public List<Map.Entry<RDFResourceTree, List<Node>>> computeLGG(List<List<RDFNode>> tuples) {
-        Objects.requireNonNull(tuples,"Tuples must not be null");
-
-        // check for at least 2 tuples
-        if(tuples.size() < 2) {
-            log.warn("Min. number of input tuples is 2.");
-            throw new IllegalArgumentException("Min. number of input tuples is 2.");
-        }
-
-        // check for all tuples having same length
-        int sizeFirstTuple = tuples.get(0).size();
-        boolean sameTupleLength = tuples.stream().mapToInt(List::size).distinct().count() == 1;
-        if(!sameTupleLength) {
-            log.warn("Not all tuples have the same length. Currently, this is required!");
-            throw new IllegalArgumentException("Not all tuples have the same length. Currently, this is required!");
-        }
+    /**
+     * Run the QTL algorithm given the list of tuples as input examples.
+     *
+     * The elements of a tuple <code>t = (e_1, ..., e_n)</code> represent arbitrary RDF terms, i.e. each <code>e_i</code> can be
+     * either an IRI, a literal, or a blank node.
+     *
+     * <p>
+     *  Requirements:
+     *  <ul>
+     *      <li>at least 2 tuples </li>
+     *      <li>a tuple must contain at least one element</li>
+     *      <li>for all tuples the number of elements must be the same</li>
+     *  </ul>
+     * </p>
+     *
+     * @param tuples the examples
+     */
+    public List<Map.Entry<RDFResourceTree, List<Node>>> run(List<List<RDFNode>> tuples) {
+        // sanity check first
+        checkInput(tuples);
 
         log.debug("input tuples {}", tuples.stream().map(Object::toString).collect(Collectors.joining("||")));
 
         // handle case with tuples of length separately -> just use the LGG of the trees
-        if(sizeFirstTuple == 1) {
-            // map nodes to trees
-            List<RDFResourceTree> trees = tuples.stream()
-                    .flatMap(Collection::stream) // flatten list of lists
-                    .map(this::asTree)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-
-            trees.forEach(t -> System.out.println(t.getStringRepresentation()));
-
-            // compute LGG
-            RDFResourceTree lgg = lggGenerator.getLGG(trees);
-            log.debug("LGG (before filtering):\n{}", lgg.getStringRepresentation());
-            lgg = applyFilters(lgg, Collections.emptyList());
-
-            return Collections.singletonList(Maps.immutableEntry(lgg, Collections.emptyList()));
+        if(tuples.get(0).size() == 1) {
+            return runSingleNodeTuples(tuples);
         }
 
 
@@ -161,7 +160,7 @@ public class QTLTuples {
 //                    trees.forEach(t -> System.out.println(t.getStringRepresentation()));
 
                     RDFResourceTree lgg = lggGenerator.getLGG(trees);
-                    log.info("LGG (before filtering)\n {}", lgg.getStringRepresentation());
+                    log.debug("LGG (before filtering)\n {}", lgg.getStringRepresentation());
                     lgg = applyFilters(lgg, nodes2Select);
 
 //            System.out.println("LGG\n" + lgg.getStringRepresentation());
@@ -171,6 +170,39 @@ public class QTLTuples {
                 }).collect(Collectors.toList());
 
         return solutions;
+    }
+
+    private List<Map.Entry<RDFResourceTree, List<Node>>> runSingleNodeTuples(List<List<RDFNode>> tuples) {
+        // map nodes to trees
+        List<RDFResourceTree> trees = tuples.stream()
+                .flatMap(Collection::stream) // flatten list of lists
+                .map(this::asTree)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        // compute LGG
+        RDFResourceTree lgg = lggGenerator.getLGG(trees);
+        log.debug("LGG (before filtering):\n{}", lgg.getStringRepresentation());
+        lgg = applyFilters(lgg, Collections.emptyList());
+
+        return Collections.singletonList(Maps.immutableEntry(lgg, Collections.emptyList()));
+    }
+
+    private void checkInput(List<List<RDFNode>> tuples) {
+        Objects.requireNonNull(tuples,"Tuples must not be null");
+
+        // check for at least 2 tuples
+        if(tuples.size() < 2) {
+            log.warn("Min. number of input tuples is 2.");
+            throw new IllegalArgumentException("Min. number of input tuples is 2.");
+        }
+
+        // check for all tuples having same length
+        boolean sameTupleLength = tuples.stream().mapToInt(List::size).distinct().count() == 1;
+        if(!sameTupleLength) {
+            log.warn("Not all tuples have the same length. Currently, this is required!");
+            throw new IllegalArgumentException("Not all tuples have the same length. Currently, this is required!");
+        }
     }
 
     private RDFResourceTree applyFilters(RDFResourceTree tree, List<Node> nodes2Keep) {
@@ -222,7 +254,8 @@ public class QTLTuples {
                                 RDFResourceTree newChild = new RDFResourceTree(otherTree.get());
                                 // replace the data with some anchor
                                 Node newData = NodeFactory.createBlankNode("var" + tuple.indexOf(otherNode));
-                                newChild.setData(newData);
+//                                newChild.setData(newData);
+                                newChild.setAnchorVar(newData);
 
                                 // attach the tree as child node
                                 parent.replaceChild(treeNode, newChild, edge);
@@ -246,7 +279,7 @@ public class QTLTuples {
                     }
                 });
                 if(modified.get() == 1) {
-                    log.info("connected tree({}):\n{}", key, newTree.getStringRepresentation());
+                    log.debug("connected tree({}):\n{}", key, newTree.getStringRepresentation());
                     key2Trees.put(key.toString(), Maps.immutableEntry(newTree, nodes2Select));
                 }
             }
@@ -269,12 +302,6 @@ public class QTLTuples {
         });
 
         return treeNodes;
-    }
-
-    private boolean useIncomingTriples = false;
-
-    public boolean isUseIncomingTriples() {
-        return useIncomingTriples;
     }
 
     private Optional<RDFResourceTree> asTree(RDFNode node) {
@@ -321,15 +348,38 @@ public class QTLTuples {
         );
     }
 
-    public boolean addTreeFilter(TreeFilter<RDFResourceTree> treeFilter) {
-        return treeFilters.add(treeFilter);
+    private boolean useIncomingTriples = false;
+
+    public boolean isUseIncomingTriples() {
+        return useIncomingTriples;
     }
+
+    /**
+     * @param cbdGen the generator used to create the CBD for each resource in an input tuple
+     */
     public void setCBDGenerator(ConciseBoundedDescriptionGenerator cbdGen) {
         this.cbdGen = cbdGen;
     }
 
+    /**
+     * @param treeFactory the factory used to create a tree from a resource and its set of triples (CBD)
+     */
     public void setTreeFactory(QueryTreeFactory treeFactory) {
         this.treeFactory = treeFactory;
+    }
+
+    /**
+     * @param lggGenerator the LGG generator used during the QTL algorithm
+     */
+    public void setLggGenerator(LGGGenerator lggGenerator) {
+        this.lggGenerator = lggGenerator;
+    }
+
+    /**
+     * @param maxTreeDepth max. tree depth used for data retrieval and query tree generation of the input examples.
+     */
+    public void setMaxTreeDepth(int maxTreeDepth) {
+        this.maxTreeDepth = maxTreeDepth;
     }
 
     public static void main(String[] args) throws Exception {
@@ -509,7 +559,7 @@ public class QTLTuples {
 //            qtl.addTreeFilter(filter);
         }
 
-        List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.computeLGG(tuples);
+        List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.run(tuples);
 
         solutions.forEach(sol -> {
             RDFResourceTree tree = sol.getKey();
