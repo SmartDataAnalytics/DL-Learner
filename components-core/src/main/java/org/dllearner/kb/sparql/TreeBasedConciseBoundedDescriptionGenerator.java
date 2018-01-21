@@ -21,6 +21,8 @@ package org.dllearner.kb.sparql;
 import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Literal;
@@ -86,7 +88,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		this.endpoint = endpoint;
 	}
 
-	public Model getConciseBoundedDescription(Literal literal, CBDStructureTree structureTree) throws Exception {
+	public Model getConciseBoundedDescription(LiteralLabel literal, CBDStructureTree structureTree) throws Exception {
 		logger.trace("Computing CBD for {} ...", literal);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(literal, structureTree);
@@ -150,14 +152,14 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	 * @param literal The example resource for which a CONSTRUCT query is created.
 	 * @return the SPARQL query
 	 */
-	private String generateQuery(Literal literal, CBDStructureTree structureTree){
+	private String generateQuery(LiteralLabel literal, CBDStructureTree structureTree){
 		reset();
 
 		// get paths to leaf nodes
 		List<List<CBDStructureTree>> pathsToLeafs = QueryTreeUtils.getPathsToLeafs(structureTree);
 
 		StringBuilder query = new StringBuilder();
-		String rootToken = FmtUtils.stringForNode(literal.asNode());
+		String rootToken = FmtUtils.stringForNode(NodeFactory.createLiteral(literal));
 
 		query.append("CONSTRUCT {\n");
 		// the CONSTRUCT template

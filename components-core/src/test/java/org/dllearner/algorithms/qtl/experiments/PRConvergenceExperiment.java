@@ -469,12 +469,12 @@ public class PRConvergenceExperiment {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(Query::toString).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
 		queries = queries.stream().filter(q -> queriesToProcessTokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
-		queries = queries.stream().filter(q -> queriesToOmitTokens.stream().noneMatch(t -> q.contains(t))).collect(Collectors.toList());
+		queries = queries.stream().filter(q -> queriesToOmitTokens.stream().noneMatch(q::contains)).collect(Collectors.toList());
 
 
 
@@ -496,7 +496,7 @@ public class PRConvergenceExperiment {
 		// check for queries that do not return any result (should not happen, but we never know)
 		Set<String> emptyQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.isEmpty())
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} empty queries.", emptyQueries.size());
 		queries.removeAll(emptyQueries);
@@ -505,7 +505,7 @@ public class PRConvergenceExperiment {
 		int min = 3;
 		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.size() < min)
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} queries with < {} pos. examples.", emptyQueries.size(), min);
 		queries.removeAll(lowNrOfExamplesQueries);
@@ -592,7 +592,7 @@ public class PRConvergenceExperiment {
 						queriesToProcess.retainAll(
 								query2Examples.entrySet().stream()
 								.filter(e -> e.getValue().correctPosExampleCandidates.size() >= nrOfExamples)
-								.map(e -> e.getKey())
+								.map(Map.Entry::getKey)
 								.collect(Collectors.toSet()));
 
 						// loop over SPARQL queries
@@ -937,12 +937,9 @@ public class PRConvergenceExperiment {
 					types.add(child.getData());
 				}
 			}
-			Node mostFrequentType = Ordering.natural().onResultOf(new Function<Multiset.Entry<Node>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Node> entry) {
-				    return entry.getCount();
-				  }
-				}).max(types.entrySet()).getElement();
+			Node mostFrequentType = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Node>, Integer>) Multiset.Entry::getCount)
+					.max(types.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
 			break;
@@ -957,12 +954,9 @@ public class PRConvergenceExperiment {
 					}
 				}
 			}
-			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(new Function<Multiset.Entry<Pair<Node, Node>>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Pair<Node, Node>> entry) {
-				    return entry.getCount();
-				  }
-				}).max(pairs.entrySet()).getElement();
+			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Pair<Node, Node>>, Integer>) Multiset.Entry::getCount)
+					.max(pairs.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
 			break;
@@ -1244,7 +1238,7 @@ public class PRConvergenceExperiment {
 		// get CBD
 		logger.info("loading data for {} ...", resource);
 		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, cbdStructure);
 		mon.stop();
 		logger.info("got {} triples in {}ms.", cbd.size(), mon.getLastValue());
 
@@ -1321,7 +1315,7 @@ public class PRConvergenceExperiment {
 		List<Query> queries = QueryRewriter.split(query);
 
 		List<String> resources = getResult(queries.remove(0).toString());
-		queries.stream().map(q -> getResult(q.toString())).forEach(l -> resources.retainAll(l));
+		queries.stream().map(q -> getResult(q.toString())).forEach(resources::retainAll);
 
 		return resources;
 	}

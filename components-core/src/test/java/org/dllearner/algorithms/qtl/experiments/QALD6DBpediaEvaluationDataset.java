@@ -120,9 +120,7 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 
 		sparqlQueries = new LinkedHashMap<>();
 
-		DATASET_FILES.entrySet().forEach(entry -> {
-			process(entry.getKey(), entry.getValue());
-		});
+		DATASET_FILES.forEach(this::process);
 
 		reasoner = new SPARQLReasoner(ks);
 		try {
@@ -169,7 +167,7 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 
 			// map to SPARQL queries
 			sparqlQueries.putAll(filteredQuestions.stream()
-					.collect(LinkedHashMap<String, Query>::new,
+					.collect(LinkedHashMap::new,
 							(m, q) -> m.put(datasetPrefix + "_" + String.valueOf(q.getId()), QueryFactory.create(q.getQuery().getSparql())),
 							(m, u) -> {}));
 

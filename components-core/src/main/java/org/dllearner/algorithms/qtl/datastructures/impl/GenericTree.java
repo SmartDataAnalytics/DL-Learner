@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GenericTree<T, V extends GenericTree<T, V>> {
-	
+
 	protected static int idCounter = 0;
 
     protected T data;

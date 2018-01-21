@@ -289,12 +289,15 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 		OWLLiteral max = null;
 		for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 			OWLFacet facet = facetRestriction.getFacet();
-			if(facet == OWLFacet.MIN_INCLUSIVE){
-				min = facetRestriction.getFacetValue();
-			} else if(facet == OWLFacet.MAX_INCLUSIVE){
-				max = facetRestriction.getFacetValue();
-			} else {
-				throw new IllegalArgumentException("Facet not allowed for transformation.");
+			switch (facet) {
+				case MIN_INCLUSIVE:
+					min = facetRestriction.getFacetValue();
+					break;
+				case MAX_INCLUSIVE:
+					max = facetRestriction.getFacetValue();
+					break;
+				default:
+					throw new IllegalArgumentException("Facet not allowed for transformation.");
 			}
 		}
 //		dataRanges.add(dr);

@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
@@ -200,7 +199,7 @@ public class QueryRewriter {
         // all other incoming triple patterns from target var become a new cluster
         Set<Set<Triple>> clusters = var2IncomingTPs.get(targetVar).stream()
                 .filter(tp -> !fixedTriplePatterns.contains(tp))
-                .map(tp -> Sets.newHashSet(tp))
+                .map(Sets::newHashSet)
                 .collect(Collectors.toSet());
 
         // add some fixed TPs to reduce resultset
@@ -328,7 +327,7 @@ public class QueryRewriter {
         // all other incoming triple patterns from target var become a new cluster
         Set<Set<Triple>> clusters = var2IncomingTPs.get(targetVar).stream()
                 .filter(tp -> !fixedTriplePatterns.contains(tp))
-                .map(tp -> Sets.newHashSet(tp))
+                .map(Sets::newHashSet)
                 .collect(Collectors.toSet());
 
         // add some fixed TPs to reduce resultset

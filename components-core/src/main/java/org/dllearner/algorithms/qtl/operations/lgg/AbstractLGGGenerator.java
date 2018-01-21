@@ -258,11 +258,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 		RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
+		RDFResourceTree newTree;
 		if(d1 != null && d1.equals(d2)){
-			return new RDFResourceTree(d1);
+            newTree = new RDFResourceTree(d1);
 			// TODO collect literal values
-		}
-		return RDFResourceTree.newLiteralNode();
+		} else {
+            newTree = RDFResourceTree.newLiteralNode();
+        }
+        if(tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar())) {
+            newTree.setAnchorVar(tree1.getAnchorVar());
+        }
+		return newTree;
 	}
 
 	@Override

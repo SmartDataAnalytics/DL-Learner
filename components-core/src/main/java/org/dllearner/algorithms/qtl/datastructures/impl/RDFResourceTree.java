@@ -76,6 +76,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public Node getAnchorVar() {
 		return anchorVar;
 	}
+	public boolean hasAnchor() {
+		return anchorVar != null;
+	}
+	public boolean hasAnchor(Node node) {
+		Objects.requireNonNull(node);
+		return node.matches(anchorVar);
+	}
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
 
@@ -145,17 +152,45 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		this.id = id;
 		this.datatype = datatype;
 	}
-	
+
+	/**
+	 * Copy constructor that copies
+	 * - node label
+	 * - children recursively
+	 * - datatype (if literal node)
+	 * - anchor var (if exists)
+	 * @param tree
+	 */
 	public RDFResourceTree(RDFResourceTree tree) {
+		this(tree, true);
+	}
+
+	/**
+	 * Copy constructor that copies
+	 * - node label
+	 * - datatype (if literal node)
+	 * - anchor var (if exists)
+	 *
+	 * Children are recursivly copied only if enabled.
+	 *
+	 * @param tree the tree
+	 * @param withChildren whether to copy also the children recursively
+	 */
+	public RDFResourceTree(RDFResourceTree tree, boolean withChildren) {
 		super(tree.getData());
 		this.id = getID();
-		
-		for (Entry<Node, List<RDFResourceTree>> entry : tree.edge2Children.entrySet()) {
-			Node edge = entry.getKey();
-			List<RDFResourceTree> children = entry.getValue();
-			
-			for (RDFResourceTree child : children) {
-				addChild(new RDFResourceTree(child), edge);
+
+		setDatatype(tree.getDatatype());
+		setAnchorVar(tree.getAnchorVar());
+
+		if(withChildren) {
+			for (Entry<Node, List<RDFResourceTree>> entry : tree.edge2Children.entrySet()) {
+				Node edge = entry.getKey();
+				List<RDFResourceTree> children = entry.getValue();
+
+				for (RDFResourceTree child : children) {
+					addChild(new RDFResourceTree(child), edge);
+				}
 			}
 		}
 	}
@@ -409,6 +444,9 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
 		} else {
 			ren = FmtUtils.stringForNode(this.getData(), context);
+		}
+		if(getAnchorVar() != null) {
+			ren += " (" + getAnchorVar() + ")";
 		}
 		sb.append(ren).append("\n");
 		

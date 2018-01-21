@@ -7,22 +7,19 @@ import com.google.common.io.Files;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.util.NodeComparator;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.tuples.QTLTuples;
-import org.dllearner.algorithms.qtl.util.filters.MostSpecificTypesFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.vocabulary.DBpedia;
+import org.dllearner.algorithms.qtl.util.filters.AbstractTreeFilter;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.QueryUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +31,6 @@ import java.util.*;
 public class QTLTuplesExperiment {
 
     private final EvaluationDataset dataset;
-
-    String baseIRI = DBpedia.BASE_IRI;
-    PrefixMapping pm = DBpedia.PM;
 
     AbstractReasonerComponent reasoner;
     QueryExecutionFactory qef;
@@ -69,13 +63,6 @@ public class QTLTuplesExperiment {
         qtl.setCBDGenerator(cbdGen);
         qtl.setTreeFactory(tf);
         qtl.setMaxTreeDepth(depth);
-        qtl.addTreeFilter(new MostSpecificTypesFilter(reasoner));
-        qtl.addTreeFilter(new PredicateExistenceFilter() {
-            @Override
-            public boolean isMeaningless(Node predicate) {
-                return predicate.getURI().startsWith("<http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
-            }
-        });
 //        qtl.addTreeFilter(new PredicateExistenceFilterDBpedia(ks));
 //        qtl.addTreeFilter(new MostSpecificTypesFilter(reasoner));
 //        qtl.addTreeFilter(new PredicateExistenceFilter() {
@@ -104,7 +91,7 @@ public class QTLTuplesExperiment {
                 sb.append("#####################################################");
                 sb.append("Input query:\n" + query);
 
-                List<List<RDFNode>> examples = getExamples(query, qef);
+                List<List<Node>> examples = getExamples(query, qef);
 
                 if(!examples.isEmpty()) {
                     List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.run(examples);
@@ -112,12 +99,21 @@ public class QTLTuplesExperiment {
                     solutions.forEach(sol -> {
                         RDFResourceTree tree = sol.getKey();
                         List<Node> nodes2Select = sol.getValue();
-                        System.out.println("LGG\n" + tree.getStringRepresentation());
-                        sb.append("LGG\n" + tree.getStringRepresentation());
+                        System.out.println("nodes to select: " + nodes2Select);
+                        System.out.println("LGG\n" + tree.getStringRepresentation(true));
+                        sb.append("LGG\n" + tree.getStringRepresentation(true));
 
-                        String learnedQuery = QueryTreeUtils.toSPARQLQueryString(tree, nodes2Select, baseIRI, pm);
-                        System.out.println("Learned query\n" + learnedQuery);
-                        sb.append("Learned query\n" + learnedQuery);
+                        for (AbstractTreeFilter<RDFResourceTree> filter : dataset.treeFilters) {
+                            filter.setNodes2Keep(nodes2Select);
+                            tree = filter.apply(tree);
+                        }
+                        System.out.println("LGG (filtered)\n" + tree.getStringRepresentation(true));
+
+                        String learnedQuery = QueryTreeUtils.toSPARQLQueryString(tree, nodes2Select, dataset.baseIRI, dataset.prefixMapping);
+                        Query q = QueryFactory.create(learnedQuery);
+                        QueryUtils.prunePrefixes(q);
+                        System.out.println("Learned query\n" + q);
+                        sb.append("Learned query\n" + q);
 
                         Stats stats = evaluate(learnedQuery, query.toString(), qef);
 
@@ -139,18 +135,18 @@ public class QTLTuplesExperiment {
         });
     }
 
-    private List<List<RDFNode>> getExamples(Query query, QueryExecutionFactory qef) {
-        List<List<RDFNode>> tuples = new ArrayList<>();
+    private List<List<Node>> getExamples(Query query, QueryExecutionFactory qef) {
+        List<List<Node>> tuples = new ArrayList<>();
 
         query.setLimit(numPosExamples);
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();
             while(rs.hasNext()) {
                 QuerySolution qs = rs.next();
-                List<RDFNode> tuple = new ArrayList<>();
+                List<Node> tuple = new ArrayList<>();
                 ArrayList<String> vars = Lists.newArrayList(qs.varNames());
                 Collections.sort(vars);
-                vars.forEach(var -> tuple.add(qs.get(var)));
+                vars.forEach(var -> tuple.add(qs.get(var).asNode()));
                 tuples.add(tuple);
             }
         } catch (Exception e) {

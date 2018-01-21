@@ -445,7 +445,16 @@
 						<groupId>com.clarkparsia.pellet</groupId>
 						<artifactId>pellet-test</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-pellint</artifactId>
+					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.clarkparsia.pellet</groupId>
+				<artifactId>pellet-owlapi</artifactId>
+				<version>${pellet.version}</version>
 			</dependency>
 			<!-- Trowl - no support for OWL API v4 yet -->
 			<!--<dependency> -->
@@ -813,6 +822,21 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-core</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-ext</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-io</artifactId>
+				<version>1.1.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

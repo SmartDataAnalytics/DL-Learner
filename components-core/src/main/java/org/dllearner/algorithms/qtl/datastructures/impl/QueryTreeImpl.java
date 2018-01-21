@@ -43,25 +43,16 @@ import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.utilities.PrefixCCMap;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.GraphMLExporter;
-import org.jgrapht.ext.VertexNameProvider;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.Graph;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
-import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.transform.TransformerConfigurationException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.Map.Entry;
@@ -1659,7 +1650,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return df.getOWLDatatype(IRI.create(literals.iterator().next().getDatatypeURI()));
     }
     
-    private void buildGraph(DirectedGraph<Vertex, Edge> graph, QueryTree<N> tree){
+    private void buildGraph(Graph<Vertex, Edge> graph, QueryTree<N> tree){
     	PrefixCCMap prefixes = PrefixCCMap.getInstance();
     	List<QueryTree<N>> children = tree.getChildren();
     	Vertex parent = new Vertex(tree.getId(), prefixed(prefixes, tree.getUserObject().toString()));
@@ -1724,38 +1715,4 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	return uri;
     }
-    
-	public void asGraph() {
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
-		buildGraph(graph, this);
-		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return String.valueOf(vertex.getId());
-			}
-		};
-
-		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
-
-		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return String.valueOf(edge.getId());
-			}
-		};
-
-		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
-		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
-                vertexNameProvider, edgeIDProvider, edgeLabelProvider);
-		try {
-			exporter.export(new FileWriter(new File("tree.graphml")), graph);
-		} catch (TransformerConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-
-	
-	
 }

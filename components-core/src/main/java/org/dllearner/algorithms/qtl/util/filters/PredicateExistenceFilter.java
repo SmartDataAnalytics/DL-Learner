@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2007 - 2016, Jens Lehmann
- *
+ * <p>
  * This file is part of DL-Learner.
- *
+ * <p>
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DL-Learner is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -36,71 +36,70 @@ import java.util.SortedSet;
  * @author Lorenz Buehmann
  *
  */
-public class PredicateExistenceFilter implements TreeFilter<RDFResourceTree>{
-	
+public class PredicateExistenceFilter extends AbstractTreeFilter<RDFResourceTree> {
 
-	private Set<Node> existentialMeaninglessProperties = new HashSet<>();
+    private Set<Node> existentialMeaninglessProperties = new HashSet<>();
 
-	private Set<Node> nodes2Keep = new HashSet<>();
+    public PredicateExistenceFilter() {
+    }
 
-	public void setNodes2Keep(Collection<Node> nodes2Keep) {
-		this.nodes2Keep = new HashSet<>(nodes2Keep);
-	}
+    public PredicateExistenceFilter(Set<Node> existentialMeaninglessProperties) {
+        this.existentialMeaninglessProperties = existentialMeaninglessProperties;
+    }
 
-	public PredicateExistenceFilter() {
-	}
+    /**
+     * @param existentialMeaninglessProperties the existential meaningless properties
+     */
+    public void setExistentialMeaninglessProperties(Set<Node> existentialMeaninglessProperties) {
+        this.existentialMeaninglessProperties = existentialMeaninglessProperties;
+    }
 
-	public PredicateExistenceFilter(Set<Node> existentialMeaninglessProperties) {
-		this.existentialMeaninglessProperties = existentialMeaninglessProperties;
-	}
-	
-	/**
-	 * @param existentialMeaninglessProperties the existential meaningless properties
-	 */
-	public void setExistentialMeaninglessProperties(Set<Node> existentialMeaninglessProperties) {
-		this.existentialMeaninglessProperties = existentialMeaninglessProperties;
-	}
+    public boolean isMeaningless(Node predicate) {
+        return existentialMeaninglessProperties.contains(predicate);
+    }
 
-	public boolean isMeaningless(Node predicate) {
-		return existentialMeaninglessProperties.contains(predicate);
-	}
-	
-	@Override
-	public RDFResourceTree apply(RDFResourceTree tree) {
-		RDFResourceTree newTree;
-		if(tree.isLiteralNode() && !tree.isLiteralValueNode()) {
-			newTree = new RDFResourceTree(tree.getDatatype());
-		} else {
-			newTree = new RDFResourceTree(0);
-			newTree.setData(tree.getData());
-		}
+    @Override
+    public RDFResourceTree apply(RDFResourceTree tree) {
+        RDFResourceTree newTree = new RDFResourceTree(tree, false);
 
-		for(Node edge : tree.getEdges()) {
-			if(isMeaningless(edge)) {
-				// if the edge is meaningless
-				// 1. process all children
-				for (RDFResourceTree child : tree.getChildren(edge)) {
-					if(child.isResourceNode() || child.isLiteralValueNode() || nodes2Keep.contains(child.getData())) {
-						RDFResourceTree newChild = apply(child);
-						newTree.addChild(newChild, edge);
-					} else {
-						RDFResourceTree newChild = apply(child);
-						SortedSet<Node> childEdges = newChild.getEdges();
-						if(!childEdges.isEmpty() && !(childEdges.size() == 1 && childEdges.contains(RDF.type.asNode()))) {
-							newTree.addChild(newChild, edge);
-						}
-					}
-				}
-			} else {
-				for (RDFResourceTree child : tree.getChildren(edge)) {
-					RDFResourceTree newChild = apply(child);
-					newTree.addChild(newChild, edge);
-				}
-			}
-		}
+//        if (tree.isLiteralNode() && !tree.isLiteralValueNode()) {
+//            newTree = new RDFResourceTree(tree.getDatatype());
+//        } else {
+//            newTree = new RDFResourceTree(0);
+//            newTree.setData(tree.getData());
+//        }
+//        newTree.setAnchorVar(tree.getAnchorVar());
 
-		// we have to run the subsumption check one more time to prune the tree
-		QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
-		return newTree;
-	}
+        for (Node edge : tree.getEdges()) {
+            // properties that are marked as "meaningless"
+            if (isMeaningless(edge)) {
+                // if the edge is meaningless
+                // 1. process all children
+                for (RDFResourceTree child : tree.getChildren(edge)) {
+                    // add edge if child is resource, literal or a nodes that has to be kept
+                    if (child.isResourceNode() || child.isLiteralValueNode() || nodes2Keep.contains(child.getAnchorVar())) {
+                        RDFResourceTree newChild = apply(child);
+                        newTree.addChild(newChild, edge);
+                    } else {
+                        // else recursive call and then check if there is no more child attached, i.e. it's just a leaf with a variable as label
+                        RDFResourceTree newChild = apply(child);
+                        SortedSet<Node> childEdges = newChild.getEdges();
+                        if (!childEdges.isEmpty() && !(childEdges.size() == 1 && childEdges.contains(RDF.type.asNode()))) {
+                            newTree.addChild(newChild, edge);
+                        }
+                    }
+                }
+            } else {
+                // all other properties
+                for (RDFResourceTree child : tree.getChildren(edge)) {
+                    RDFResourceTree newChild = apply(child);
+                    newTree.addChild(newChild, edge);
+                }
+            }
+        }
+
+        // we have to run the subsumption check one more time to prune the tree
+//        QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
+        return newTree;
+    }
 }

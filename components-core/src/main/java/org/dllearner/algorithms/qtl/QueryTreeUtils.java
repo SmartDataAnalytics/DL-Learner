@@ -31,11 +31,11 @@ import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.core.Vars;
 import org.apache.jena.sparql.expr.*;
 import org.apache.jena.sparql.serializer.SerializationContext;
+import org.apache.jena.sparql.syntax.ElementFilter;
+import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.util.FmtUtils;
-import org.apache.jena.sparql.util.NodeComparator;
 import org.apache.jena.sparql.util.NodeUtils;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -54,21 +54,19 @@ import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.GraphMLExporter;
-import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.io.ComponentNameProvider;
+import org.jgrapht.io.ExportException;
+import org.jgrapht.io.GraphMLExporter;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import javax.xml.transform.TransformerConfigurationException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -253,21 +251,32 @@ public class QueryTreeUtils {
     	}
     	return true;
     }
-    
-    /**
-     * Returns all nodes in the given query tree.
-     * @param tree the query tree
-     * @return the nodes
-     */
-    public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
-		List<RDFResourceTree> nodes = new ArrayList<>();
+
+	/**
+	 * Returns all nodes in the given query tree.
+	 *
+	 * @param tree the query tree
+	 * @return the nodes
+	 */
+	public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
+		List<RDFResourceTree> nodes = tree.getChildren().stream()
+											.flatMap(child -> getNodes(child).stream())
+											.collect(Collectors.toList());
 		nodes.add(tree);
-		
-		for (RDFResourceTree child : tree.getChildren()) {
-			nodes.addAll(getNodes(child));
-		}
-		
+
 		return nodes;
+	}
+
+	/**
+	 * Returns all nodes labels in the given query tree.
+	 *
+	 * @param tree the query tree
+	 * @return the node labels
+	 */
+	public static Set<Node> getNodeLabels(RDFResourceTree tree) {
+		return getNodes(tree).stream()
+				.map(RDFResourceTree::getData)
+				.collect(Collectors.toSet());
 	}
     
     /**
@@ -717,6 +726,10 @@ public class QueryTreeUtils {
 
     	// triple patterns
     	buildSPARQLQueryString(tree, targetVar, sb, filters, context, nodes2Select);
+
+		sb.append("}");
+
+		Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
         
     	// filters
     	if(!filters.isEmpty()) {
@@ -725,17 +738,15 @@ public class QueryTreeUtils {
     		while(it.hasNext()) {
     			filter = new E_LogicalAnd(filter, it.next());
     		}
-    		sb.append("FILTER(").append(filter.toString()).append(")\n");
+			((ElementGroup)query.getQueryPattern()).addElementFilter(new ElementFilter(filter));
     	}
-    	
-        sb.append("}");
-    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
-    	query.setPrefixMapping(pm);
+
+		query.setPrefixMapping(pm);
     	
     	return query.toString();
 	}
 	
-	private static int buildGraph(Integer parentId, DirectedGraph<Vertex, Edge> graph, RDFResourceTree tree, SerializationContext context){
+	private static int buildGraph(Integer parentId, Graph<Vertex, Edge> graph, RDFResourceTree tree, SerializationContext context){
     	Vertex parent = new Vertex(parentId, FmtUtils.stringForNode(tree.getData(), context));
     	graph.addVertex(parent);
     	
@@ -767,35 +778,54 @@ public class QueryTreeUtils {
 	 * @param pm the prefixes used for rendering of the nodes
 	 * @return the directed labelled graph
 	 */
-	public static DirectedGraph<Vertex, Edge> toGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+	public static Graph<Vertex, Edge> toGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
 
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
+		final Graph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
+
+//		TreeTraversal it = new PreOrderTreeTraversal(tree);
+//		while(it.hasNext()) {
+//			RDFResourceTree node = it.next();
+//			node.get
+//		}
+
 		buildGraph(0, graph, tree, context);
 
 		return graph;
 	}
-	
+
+	/**
+	 * Export the query tree as GraphML file.
+	 *
+	 * @param tree the query tree
+	 * @param baseIRI (optional) base IRI
+	 * @param pm (optional) prefix mapping
+	 * @param outputFile the output file
+	 */
 	public static void asGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm, File outputFile) {
+		Objects.requireNonNull(tree);
+		Objects.requireNonNull(outputFile);
+
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
 		
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
+		final Graph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
 		buildGraph(0, graph, tree, context);
-		VertexNameProvider<Vertex> vertexIDProvider = vertex -> String.valueOf(vertex.getId());
 
-		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
+		ComponentNameProvider<Vertex> vertexIDProvider = vertex -> String.valueOf(vertex.getId());
+		ComponentNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
-		EdgeNameProvider<Edge> edgeIDProvider = edge -> String.valueOf(edge.getId());
+		ComponentNameProvider<Edge> edgeIDProvider = edge -> String.valueOf(edge.getId());
+		ComponentNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 
-		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
-		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
-				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
+		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(
+				vertexIDProvider, vertexNameProvider,
+				edgeIDProvider, edgeLabelProvider);
 		try {
-			exporter.export(new FileWriter(outputFile), graph);
-		} catch (TransformerConfigurationException | IOException | SAXException e) {
-			e.printStackTrace();
+			exporter.exportGraph(graph, new FileWriter(outputFile));
+		} catch (IOException | ExportException e) {
+			log.error("failed to write graph to file " + outputFile, e);
 		}
 	}
     
@@ -825,6 +855,7 @@ public class QueryTreeUtils {
 					List<Node> concreteChildren =
 					children.stream()
 							.filter(t -> t.isLiteralValueNode() || t.isResourceNode())
+							.filter(t -> !t.hasAnchor())
 							.map(GenericTree::getData)
 							.filter(node -> !(node.isVariable() || node.isBlank()))
 							.collect(Collectors.toList());
@@ -838,6 +869,18 @@ public class QueryTreeUtils {
 
 						sb.append(tpStr).append("\n");
 					}
+					children.stream()
+							.filter(t -> t.hasAnchor() && (t.isLiteralValueNode() || t.isResourceNode()))
+							.forEach(child -> {
+								Var obj = Var.alloc("var" + nodes2Select.indexOf(child.getAnchorVar()));
+								String objStr = FmtUtils.stringForNode(obj, context);
+								String tpStr = (edge instanceof NodeInv)
+										?	String.format(TRIPLE_PATTERN_TEMPLATE, objStr, predicateStr, subjectStr)
+										:	String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objStr);
+
+								sb.append(tpStr).append("\n");
+								filters.add(new E_Equals(new ExprVar(obj), NodeValue.makeNode(child.getData())));
+							});
 				}
 				Stream<RDFResourceTree> childStream = children.stream();
 				if(!(edge instanceof NodeInv)) {
@@ -850,8 +893,9 @@ public class QueryTreeUtils {
 						.forEach(child -> {
 							// pre-process object
 							Node object = child.getData();
-
-							if(nodes2Select.contains(object)) {
+							if(child.hasAnchor()) {
+								object = Var.alloc("var" + nodes2Select.indexOf(child.getAnchorVar()));
+							} else if(nodes2Select.contains(object)) {
 								object = Var.alloc("var" + nodes2Select.indexOf(object));
 							} else if(child.isVarNode()) {
 								// set a fresh var in the SPARQL query
@@ -974,9 +1018,7 @@ public class QueryTreeUtils {
 		// collect the existing rdf:type nodes
 		List<RDFResourceTree> children = tree.getChildren(RDF.type.asNode());
 		if(children != null) {
-			children.forEach(child -> {
-				types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS));
-			});
+			children.forEach(child -> types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS)));
 		}
 
 		// we don't keep owl:Thing todo make this configurable

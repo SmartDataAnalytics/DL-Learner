@@ -18,17 +18,15 @@
  */
 package org.dllearner.algorithms.qtl.operations.lcs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.dllearner.exceptions.LCSException;
-
 import com.google.common.collect.Sets;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Computes the Least Common Subsumer for given rooted RDF graphs. 
@@ -53,7 +51,7 @@ public class LCS {
 				return g1;
 			} else {
 				// create fresh blank node
-				x = NodeFactory.createAnon();
+				x = NodeFactory.createBlankNode();
 				
 				// a new set of triples
 				Set<Triple> triples = new HashSet<>();

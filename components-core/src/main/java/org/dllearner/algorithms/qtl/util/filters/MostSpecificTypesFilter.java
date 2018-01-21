@@ -10,7 +10,7 @@ import org.dllearner.core.AbstractReasonerComponent;
  *
  * @author Lorenz Buehmann
  */
-public class MostSpecificTypesFilter implements TreeFilter<RDFResourceTree>{
+public class MostSpecificTypesFilter extends  AbstractTreeFilter<RDFResourceTree>{
 
     private final AbstractReasonerComponent reasoner;
 

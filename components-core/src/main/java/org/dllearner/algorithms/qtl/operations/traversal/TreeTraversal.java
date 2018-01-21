@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.operations.traversal;
 
+import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 import java.util.Iterator;
@@ -9,5 +10,5 @@ import java.util.Iterator;
  *
  * @author Lorenz Buehmann
  */
-public interface TreeTraversal extends Iterator<RDFResourceTree>{
+public interface TreeTraversal<T extends GenericTree> extends Iterator<T> {
 }

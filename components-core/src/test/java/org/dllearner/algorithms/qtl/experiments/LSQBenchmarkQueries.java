@@ -9,7 +9,6 @@ import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.util.NodeComparator;
@@ -30,9 +29,9 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.QueryUtils;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphTests;
 import org.jgrapht.alg.isomorphism.VF2GraphIsomorphismInspector;
-import org.jgrapht.experimental.GraphTests;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class LSQBenchmarkQueries {
                 sb.append("#####################################################");
                 sb.append("Input query:\n" + query);
 
-                List<List<RDFNode>> examples = getExamples(query, qef);
+                List<List<Node>> examples = getExamples(query, qef);
 
                 if(!examples.isEmpty()) {
                     List<Map.Entry<RDFResourceTree, List<Node>>> solutions = qtl.run(examples);
@@ -144,18 +143,18 @@ public class LSQBenchmarkQueries {
         });
     }
 
-    private static List<List<RDFNode>> getExamples(Query query, QueryExecutionFactory qef) {
-        List<List<RDFNode>> tuples = new ArrayList<>();
+    private static List<List<Node>> getExamples(Query query, QueryExecutionFactory qef) {
+        List<List<Node>> tuples = new ArrayList<>();
 
         query.setLimit(limit);
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();
             while(rs.hasNext()) {
                 QuerySolution qs = rs.next();
-                List<RDFNode> tuple = new ArrayList<>();
+                List<Node> tuple = new ArrayList<>();
                 ArrayList<String> vars = Lists.newArrayList(qs.varNames());
                 Collections.sort(vars);
-                vars.forEach(var -> tuple.add(qs.get(var)));
+                vars.forEach(var -> tuple.add(qs.get(var).asNode()));
                 tuples.add(tuple);
             }
         } catch (Exception e) {
@@ -249,7 +248,7 @@ public class LSQBenchmarkQueries {
     private static void dropIsomorphQueries(List<Query> queries) {
         for(Iterator<Query> it = queries.iterator(); it.hasNext();) {
             Query q1 = it.next();
-            DirectedGraph<Node, QueryUtils.LabeledEdge> g1 = QueryUtils.asJGraphT(q1);
+            Graph<Node, QueryUtils.LabeledEdge> g1 = QueryUtils.asJGraphT(q1);
             Set<Triple> tp1 = QueryUtils.getTriplePatterns(q1);
             Set<Node> nodes1 = tp1.stream().flatMap(tp -> getNodes(tp).stream()).filter(n -> !n.isVariable()).collect(Collectors.toSet());
 
@@ -264,11 +263,11 @@ public class LSQBenchmarkQueries {
                         continue;
                     }
 
-                    DirectedGraph<Node, QueryUtils.LabeledEdge> g2 = QueryUtils.asJGraphT(q2);
+                    Graph<Node, QueryUtils.LabeledEdge> g2 = QueryUtils.asJGraphT(q2);
 
                     boolean isomorph = new VF2GraphIsomorphismInspector<>(g1, g2,
-                                        (v1, v2) -> { return new NodeComparator().compare(v1, v2);},
-                                        (e1, e2) -> {return new NodeComparator().compare(e1.getEdge(), e2.getEdge());})
+                                        (v1, v2) -> new NodeComparator().compare(v1, v2),
+                                        (e1, e2) -> new NodeComparator().compare(e1.getEdge(), e2.getEdge()))
                             .isomorphismExists();
                     if(isomorph) {
 //                        System.out.println(">>>>>>>>>>>>>\n" + q1 + "\n" + q2 + "\n<<<<<<<<<<<<<<<<");
@@ -318,7 +317,7 @@ public class LSQBenchmarkQueries {
     }
 
     private static boolean isConnected(Query query) {
-        DirectedGraph<Node, QueryUtils.LabeledEdge> g = QueryUtils.asJGraphT(query);
+        Graph<Node, QueryUtils.LabeledEdge> g = QueryUtils.asJGraphT(query);
         return GraphTests.isConnected(g);
     }
 

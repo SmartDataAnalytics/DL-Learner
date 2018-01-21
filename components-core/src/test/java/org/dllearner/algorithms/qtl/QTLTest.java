@@ -227,7 +227,7 @@ public class QTLTest {
 		// get CBD
 		System.out.println("loading data for " + resource);
 		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, cbdStructure);
 		mon.stop();
 
 		// rewrite NAN to NaN to avoid parse exception

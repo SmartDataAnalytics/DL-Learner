@@ -18,8 +18,6 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Lorenz Buehmann
  */

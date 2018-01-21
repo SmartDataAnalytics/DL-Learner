@@ -29,9 +29,12 @@ import com.mxgraph.util.png.mxPngImageEncoder;
 import com.mxgraph.view.mxStylesheet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.impl.Util;
+import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.core.TriplePath;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.syntax.*;
@@ -95,6 +98,69 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Query query = QueryFactory.create(queryString);
 		query.setPrefix(prefix, namespace);
 		return query.toString();
+	}
+
+	/**
+	 * Remove unused prefix declarations from preamble.
+	 *
+	 * @param query the query
+	 */
+	public static void prunePrefixes(Query query) {
+		PrefixMapping pm = query.getPrefixMapping();
+		String baseURI = query.getBaseURI();
+		query.setBaseURI((String) null);
+
+		Set<String> usedPrefixes = Sets.newHashSet();
+		getNodes(query).forEach(node -> {
+			String ns = null;
+			if(node.isURI()) {
+				ns = node.getNameSpace();
+			} else if(node.isLiteral()) {
+				RDFDatatype dt = node.getLiteralDatatype();
+				if(dt != null) {
+					String uri = dt.getURI();
+					ns = uri.substring(0, Util.splitNamespaceXML(uri));
+				}
+			}
+
+			if(ns != null) {
+				// check if base URI has been used
+				if(ns.equals(baseURI)) {
+					query.setBaseURI(baseURI);
+				}
+				// check if one of the prefixes has been used
+				String prefix = pm.getNsURIPrefix(ns);
+				if(prefix != null) {
+					usedPrefixes.add(prefix);
+				}
+			}
+		});
+		// override prefix map
+		Map<String, String> prefixMap = pm.getNsPrefixMap();
+		prefixMap.entrySet().removeIf(mapping -> !usedPrefixes.contains(mapping.getKey()));
+		pm.clearNsPrefixMap();
+		pm.setNsPrefixes(prefixMap);
+	}
+
+	/**
+	 * @param query the query
+	 * @return all nodes that occur in triple patterns of the query
+	 */
+	public static Set<Node> getNodes(Query query) {
+		return getTriplePatterns(query).stream()
+				.map(QueryUtils::getNodes)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Convert triple pattern to a set of nodes {s, p, o}
+	 *
+	 * @param t the triple pattern
+	 * @return set of nodes {s, p, o}
+	 */
+	public static Set<Node> getNodes(Triple t) {
+		return Sets.newHashSet(t.getSubject(), t.getPredicate(), t.getObject());
 	}
 	
 	/**
@@ -310,7 +376,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				.filter(tp -> !direction.equals("in") || !tp.getObject().matches(parent))
 				.collect(Collectors.toSet());
 		if(!tmp.isEmpty()) {
-			List<CBDStructureTree> outChildren = structureTree.getChildren().stream().filter(t -> t.isOutNode()).collect(Collectors.toList());
+			List<CBDStructureTree> outChildren = structureTree.getChildren().stream().filter(CBDStructureTree::isOutNode).collect(Collectors.toList());
 			CBDStructureTree outChild;
 			if(outChildren.isEmpty()) {
 				outChild = structureTree.addOutNode();
@@ -319,7 +385,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 			}
 			tmp.stream()
 					.filter(tp -> tp.getObject().isVariable())
-					.map(tp -> tp.getObject())
+					.map(Triple::getObject)
 					.forEach(node -> getOptimalCBDStructure(query, outChild, node, current, "out"));
 		}
 		// traverse the incoming paths
@@ -332,7 +398,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 
 			tmp.stream()
 					.filter(tp -> tp.getSubject().isVariable())
-					.map(tp -> tp.getSubject())
+					.map(Triple::getSubject)
 					.forEach(node -> getOptimalCBDStructure(query, inChild, node, current, "in"));
 		}
 	}
@@ -429,13 +495,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Set<Triple> triplePatterns = extractTriplePattern(query);
 		
 		// filter by predicate
-		Iterator<Triple> iterator = triplePatterns.iterator();
-		while (iterator.hasNext()) {
-			Triple tp = iterator.next();
-			if(!tp.predicateMatches(predicate)) {
-				iterator.remove();
-			}
-		}
+		triplePatterns.removeIf(tp -> !tp.predicateMatches(predicate));
 		
 		return triplePatterns;
 	}
@@ -479,8 +539,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	public Map<Var,Set<Triple>> extractOutgoingTriplePatternsForProjectionVars(Query query){
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
+			Set<Triple> triplePatterns = new HashSet<>(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
 		return var2TriplePatterns;
@@ -501,8 +560,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	public Map<Var,Set<Triple>> extractIncomingTriplePatternsForProjectionVars(Query query){
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
+			Set<Triple> triplePatterns = new HashSet<>(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
 		return var2TriplePatterns;
@@ -516,8 +574,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	public Map<Var,Set<Triple>> extractIngoingTriplePatternsForProjectionVars(Query query){
 		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<>();
-			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
+			Set<Triple> triplePatterns = new HashSet<>(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
 		return var2TriplePatterns;
@@ -562,9 +619,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		
 		//postprocessing: triplepattern in OPTIONAL clause
 		if(!ignoreOptionals){
-			for(Triple t : optionalTriplePattern){
-				triplePattern.add(t);
-			}
+			triplePattern.addAll(optionalTriplePattern);
 		}
 		
 		return triplePattern;
@@ -694,7 +749,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(adapter);
 		layout.execute(adapter.getDefaultParent());
 
-		Map<String, Object> edgeStyle = new HashMap<String, Object>();
+		Map<String, Object> edgeStyle = new HashMap<>();
 //edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ORTHOGONAL);
 		edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);
 		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);

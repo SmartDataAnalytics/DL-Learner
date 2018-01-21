@@ -21,15 +21,13 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.operations.traversal.TreeTraversal;
-import org.dllearner.algorithms.qtl.util.filters.MostSpecificTypesFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
-import org.dllearner.algorithms.qtl.util.filters.TreeFilter;
+import org.dllearner.algorithms.qtl.util.filters.*;
 import org.dllearner.algorithms.qtl.util.vocabulary.DBpedia;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.*;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +64,11 @@ public class QTLTuples {
 
     private int maxTreeDepth = 1;
 
-    private Set<TreeFilter<RDFResourceTree>> treeFilters = new LinkedHashSet<>();
-    public boolean addTreeFilter(TreeFilter<RDFResourceTree> treeFilter) {
+    private Set<AbstractTreeFilter<RDFResourceTree>> treeFilters = new LinkedHashSet<>();
+    public boolean addTreeFilter(AbstractTreeFilter<RDFResourceTree> treeFilter) {
         return treeFilters.add(treeFilter);
     }
-    public boolean removeTreeFilter(TreeFilter<RDFResourceTree> treeFilter) {
+    public boolean removeTreeFilter(AbstractTreeFilter<RDFResourceTree> treeFilter) {
         return treeFilters.remove(treeFilter);
     }
 
@@ -89,7 +87,7 @@ public class QTLTuples {
      * @param tuple1 the first example
      * @param tuple2 the second example
      */
-    public void run(List<RDFNode> tuple1, List<RDFNode> tuple2) {
+    public void run(List<Node> tuple1, List<Node> tuple2) {
         Objects.requireNonNull(tuple1,"First tuple must not be null");
         Objects.requireNonNull(tuple2,"Second tuple must not be null");
 
@@ -113,7 +111,7 @@ public class QTLTuples {
      *
      * @param tuples the examples
      */
-    public List<Map.Entry<RDFResourceTree, List<Node>>> run(List<List<RDFNode>> tuples) {
+    public List<Map.Entry<RDFResourceTree, List<Node>>> run(List<List<Node>> tuples) {
         // sanity check first
         checkInput(tuples);
 
@@ -172,7 +170,7 @@ public class QTLTuples {
         return solutions;
     }
 
-    private List<Map.Entry<RDFResourceTree, List<Node>>> runSingleNodeTuples(List<List<RDFNode>> tuples) {
+    private List<Map.Entry<RDFResourceTree, List<Node>>> runSingleNodeTuples(List<List<Node>> tuples) {
         // map nodes to trees
         List<RDFResourceTree> trees = tuples.stream()
                 .flatMap(Collection::stream) // flatten list of lists
@@ -188,7 +186,7 @@ public class QTLTuples {
         return Collections.singletonList(Maps.immutableEntry(lgg, Collections.emptyList()));
     }
 
-    private void checkInput(List<List<RDFNode>> tuples) {
+    private void checkInput(List<List<Node>> tuples) {
         Objects.requireNonNull(tuples,"Tuples must not be null");
 
         // check for at least 2 tuples
@@ -208,25 +206,94 @@ public class QTLTuples {
     private RDFResourceTree applyFilters(RDFResourceTree tree, List<Node> nodes2Keep) {
         RDFResourceTree filteredTree = tree;
 
-        for (TreeFilter<RDFResourceTree> f : treeFilters) {
-            if(f instanceof PredicateExistenceFilter) {
-                ((PredicateExistenceFilter) f).setNodes2Keep(nodes2Keep);
-            }
+        for (AbstractTreeFilter<RDFResourceTree> f : treeFilters) {
+            f.setNodes2Keep(nodes2Keep);
             filteredTree = f.apply(filteredTree);
         }
 
         return filteredTree;
     }
 
-    private Map<String, Map.Entry<RDFResourceTree, List<Node>>> computeConnectedTrees(List<RDFNode> tuple) {
+    private Map<String, Map.Entry<RDFResourceTree, List<Node>>> connect(List<Node> tuple) {
+        log.debug("generating connected tree for tuple {}", tuple);
+        // filter URI resources
+        Set<String> resources = tuple.stream()
+                .filter(Node::isURI)
+                .map(node -> node.getURI())
+                .collect(Collectors.toSet());
+
+        // map to one large model
+        Model model = cbdGen.getConciseBoundedDescription(resources);
+
+        List<Node> nodes = new ArrayList<>(tuple);
+
+        // starting from each node, create the trees
+        Map<String, Map.Entry<RDFResourceTree, List<Node>>> result = new TreeMap<>();
+        tuple.stream()
+                .filter(Node::isURI)
+                .forEach(node -> {
+                    RDFResourceTree tree = treeFactory.getQueryTree(node.getURI(), model, tuple.size());
+                    List<Node> nodes2Select = new ArrayList<>(nodes);
+//                    nodes.remove(node);
+//                    Set<String> keys = keys(tree, asNodes(nodes));
+
+//                    System.out.println(nodes);
+//                    System.out.println(node);
+//                    System.out.println(tree.getStringRepresentation());
+//                    System.out.println(QueryTreeUtils.getNodes(tree).containsAll(nodes));
+
+                    String key = Integer.toString(nodes.indexOf(node));
+                    if(QueryTreeUtils.getNodeLabels(tree).containsAll(nodes)) {
+                        nodes2Select.remove(node);
+
+                        List<Node> nodes2Project = new ArrayList<>();
+                        nodes2Select.forEach(n -> {
+                            getMatchingTreeNodes(tree, n).forEach(child -> {
+                                Node anchor = NodeFactory.createBlankNode("var" + tuple.indexOf(n));
+                                child.setAnchorVar(anchor);
+                                nodes2Project.add(anchor);
+                            });
+                        });
+
+                        System.out.println(tree.getStringRepresentation());
+                        result.put(key, Maps.immutableEntry(tree, nodes2Project));
+                    };
+
+
+
+                });
+
+
+        log.debug("got {} possible connected trees", result.size());
+        return result;
+    }
+
+    private List<Node> asNodes(List<RDFNode> nodes) {
+        return nodes.stream().map(RDFNode::asNode).collect(toList());
+    }
+
+//    private Set<String> keys(RDFResourceTree tree, List<Node> nodes) {
+//        List<RDFResourceTree> children = tree.getChildren();
+//        String key = "" + nodes.indexOf(tree.getData());
+//        children.stream().map(child -> {
+//            int pos = nodes.indexOf(child.getData());
+//            if( pos >= 0) {
+//                key += pos + ""
+//            }
+//        });
+//
+//    }
+
+
+    private Map<String, Map.Entry<RDFResourceTree, List<Node>>> computeConnectedTrees(List<Node> tuple) {
 
         // mapping to tree for each node in tuple
-        Map<RDFNode, Optional<RDFResourceTree>> mapping = mapping(tuple);
+        Map<Node, Optional<RDFResourceTree>> mapping = mapping(tuple);
 
         Map<String, Map.Entry<RDFResourceTree, List<Node>>> key2Trees = new HashMap<>();
 
         mapping.forEach((node, tree) -> {
-            if(node.isURIResource()) {
+            if(node.isURI()) {
                 final StringBuilder key = new StringBuilder(tuple.indexOf(node));
                 List<Node> nodes2Select = new ArrayList<>();
 
@@ -268,7 +335,8 @@ public class QTLTuples {
                                 RDFResourceTree parent = treeNode.getParent();
                                 parent.removeChild(treeNode, edge);
                                 Node newData = NodeFactory.createBlankNode("var" + tuple.indexOf(otherNode));
-                                treeNode.setData(newData);
+//                                treeNode.setData(newData);
+                                treeNode.setAnchorVar(newData);
                                 parent.addChild(treeNode, edge);
                                 nodes2Select.add(newData);
                             }
@@ -291,12 +359,12 @@ public class QTLTuples {
     /**
      * Find nodes matching the data in the given tree.
      */
-    private List<RDFResourceTree> getMatchingTreeNodes(RDFResourceTree tree, RDFNode node) {
+    private List<RDFResourceTree> getMatchingTreeNodes(RDFResourceTree tree, Node node) {
         List<RDFResourceTree> treeNodes = new ArrayList<>();
 
-        TreeTraversal treeTraversal = new PreOrderTreeTraversal(tree);
+        TreeTraversal<RDFResourceTree> treeTraversal = new PreOrderTreeTraversal<>(tree);
         treeTraversal.forEachRemaining(treeNode -> {
-           if(treeNode.getData().matches(node.asNode())) {
+           if(treeNode.getData().matches(node)) {
                treeNodes.add(treeNode);
             }
         });
@@ -304,39 +372,39 @@ public class QTLTuples {
         return treeNodes;
     }
 
-    private Optional<RDFResourceTree> asTree(RDFNode node) {
-        if (node.isURIResource()) {
+    private Optional<RDFResourceTree> asTree(Node node) {
+        if (node.isURI()) {
             if(useIncomingTriples) {
                 TreeBasedConciseBoundedDescriptionGenerator treeCBDGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
                 try {
-                    Model cbd = treeCBDGen.getConciseBoundedDescription(node.asResource().getURI(), CBDStructureTree.fromTreeString("root:[in:[out:[]],out:[]]"));
+                    Model cbd = treeCBDGen.getConciseBoundedDescription(node.getURI(), CBDStructureTree.fromTreeString("root:[in:[out:[]],out:[]]"));
                     return Optional.of(treeFactory.getQueryTree(node.toString(), cbd, 2));
                 } catch (Exception e) {
                     log.error("Failed to compute CBD for " + node, e);
                 }
                 return Optional.empty();
             } else {
-                String iri = node.asResource().getURI();
+                String iri = node.getURI();
                 Model cbd = cbdGen.getConciseBoundedDescription(iri, maxTreeDepth);
-                return Optional.of(treeFactory.getQueryTree(node.asResource(), cbd, maxTreeDepth));
+                return Optional.of(treeFactory.getQueryTree(node.getURI(), cbd, maxTreeDepth));
             }
         } else {
             if(useIncomingTriples) {
                 TreeBasedConciseBoundedDescriptionGenerator treeCBDGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
                 try {
-                    Model cbd = treeCBDGen.getConciseBoundedDescription(node.asLiteral(), CBDStructureTree.fromTreeString("root:[in:[out:[]]]"));
+                    Model cbd = treeCBDGen.getConciseBoundedDescription(node.getLiteral(), CBDStructureTree.fromTreeString("root:[in:[out:[]]]"));
                     return Optional.of(treeFactory.getQueryTree(node.toString(), cbd, maxTreeDepth));
                 } catch (Exception e) {
                     log.error("Failed to compute CBD for " + node, e);
                 }
             } else {
-                return Optional.of(new RDFResourceTree(node.asNode()));
+                return Optional.of(new RDFResourceTree(node));
             }
             return Optional.empty();
         }
     }
 
-    private LinkedHashMap<RDFNode, Optional<RDFResourceTree>> mapping(List<RDFNode> tuple) {
+    private LinkedHashMap<Node, Optional<RDFResourceTree>> mapping(List<Node> tuple) {
         return tuple.stream().collect(
                 Collectors.toMap(
                         Function.identity(),
@@ -485,23 +553,23 @@ public class QTLTuples {
         System.out.println("Input query:\n" + query);
 
         SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-        endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/repo-dbpedia", Collections.emptyList());
+        endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/repo-dbpedia?infer=false", Collections.emptyList());
         SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
         ks.init();
         AbstractReasonerComponent reasoner = new SPARQLReasoner(ks);
         reasoner.init();
         reasoner.prepareSubsumptionHierarchy();
 
-        List<List<RDFNode>> tuples = new ArrayList<>();
+        List<List<Node>> tuples = new ArrayList<>();
         QueryExecutionFactory qef = ks.getQueryExecutionFactory();
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();
             while(rs.hasNext()) {
                 QuerySolution qs = rs.next();
-                List<RDFNode> tuple = new ArrayList<>();
+                List<Node> tuple = new ArrayList<>();
                 ArrayList<String> vars = Lists.newArrayList(qs.varNames());
                 Collections.sort(vars);
-                vars.forEach(var -> tuple.add(qs.get(var)));
+                vars.forEach(var -> tuple.add(qs.get(var).asNode()));
                 tuples.add(tuple);
             }
         } catch (Exception e) {
@@ -516,10 +584,8 @@ public class QTLTuples {
                                 NodeFactory.createLiteral("1963-12-18", XSDDatatype.XSDdate)),
                 Lists.newArrayList(
                         NodeFactory.createURI("http://dbpedia.org/resource/Tom_Hanks"),
-                        NodeFactory.createLiteral("1956-07-09", XSDDatatype.XSDdate))).stream().map(tuple -> tuple.stream()
-                .map(m::asRDFNode)
-                .collect(Collectors.toList()))
-                .collect(Collectors.toList());
+                        NodeFactory.createLiteral("1956-07-09", XSDDatatype.XSDdate))
+        );
 
         Set<String> ignoredProperties = Sets.newHashSet(
                 "http://dbpedia.org/ontology/abstract",
@@ -541,18 +607,19 @@ public class QTLTuples {
         QueryTreeFactory tf = new QueryTreeFactoryBaseInv();
         qtl.setTreeFactory(tf);
 
-        List<TreeFilter<RDFResourceTree>> filters = Lists.newArrayList(
-                new PredicateExistenceFilterDBpedia(ks),
-                new MostSpecificTypesFilter(reasoner),
-                new PredicateExistenceFilter() {
-                    @Override
-                    public boolean isMeaningless(Node predicate) {
-                        return predicate.getURI().startsWith("http://dbpedia.org/property/") ||
-                                predicate.getURI().startsWith("http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#")||
-                                predicate.getURI().startsWith("http://www.wikidata.org/entity/") ||
-                                predicate.getURI().startsWith(RDFS.getURI());
-                    }
-                }
+        List<AbstractTreeFilter<RDFResourceTree>> filters = Lists.newArrayList(
+                new PredicateExistenceFilterDBpedia(ks)
+//                ,
+//                new MostSpecificTypesFilter(reasoner),
+//                new PredicateExistenceFilter() {
+//                    @Override
+//                    public boolean isMeaningless(Node predicate) {
+//                        return predicate.getURI().startsWith("http://dbpedia.org/property/") ||
+//                                predicate.getURI().startsWith("http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#")||
+//                                predicate.getURI().startsWith("http://www.wikidata.org/entity/") ||
+//                                predicate.getURI().startsWith(RDFS.getURI());
+//                    }
+//                }
         );
 
         for (TreeFilter<RDFResourceTree> filter : filters) {
@@ -567,8 +634,18 @@ public class QTLTuples {
 
             System.out.println("LGG\n" + tree.getStringRepresentation());
 
+            System.out.println("nodes to select:" + nodes2Select);
+            for (AbstractTreeFilter<RDFResourceTree> filter : filters) {
+                filter.setNodes2Keep(nodes2Select);
+                tree = filter.apply(tree);
+            }
+
+            System.out.println("LGG (filtered)\n" + tree.getStringRepresentation());
+
             String learnedQuery = QueryTreeUtils.toSPARQLQueryString(tree, nodes2Select, DBpedia.BASE_IRI, DBpedia.PM);
-            System.out.println(learnedQuery);
+            Query q = QueryFactory.create(learnedQuery);
+            QueryUtils.prunePrefixes(q);
+            System.out.println(q);
 
         });
 
