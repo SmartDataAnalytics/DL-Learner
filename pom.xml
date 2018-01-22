@@ -445,10 +445,6 @@
 						<groupId>com.clarkparsia.pellet</groupId>
 						<artifactId>pellet-test</artifactId>
 					</exclusion>
-					<exclusion>
-						<groupId>com.clarkparsia.pellet</groupId>
-						<artifactId>pellet-pellint</artifactId>
-					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
