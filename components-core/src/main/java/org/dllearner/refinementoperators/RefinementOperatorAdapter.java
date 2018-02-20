@@ -18,7 +18,6 @@
  */
 package org.dllearner.refinementoperators;
 
-import org.dllearner.core.AbstractComponent;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -57,11 +56,6 @@ public abstract class RefinementOperatorAdapter extends AbstractRefinementOperat
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 			List<OWLClassExpression> knownRefinements) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		throw new UnsupportedOperationException();
 	}
 

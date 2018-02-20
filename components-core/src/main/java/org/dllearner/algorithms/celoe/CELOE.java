@@ -182,8 +182,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// option to keep track of best score during algorithm run
 	private boolean keepTrackOfBestScore = false;
 	private SortedMap<Long, Double> runtimeVsBestScore = new TreeMap<>();
+	private LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder;
 
-	
+
 	public CELOE() {}
 	
 	public CELOE(CELOE celoe){
@@ -299,20 +300,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
-		if (operator == null) {
+		if (operatorBuilder == null) {
 			// we use a default operator and inject the class hierarchy for now
-			operator = new RhoDRDown();
-			((CustomStartRefinementOperator) operator).setStartClass(startClass);
-			((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
+			operatorBuilder = new RhoDRDown.Builder()
+					.setStartClass(startClass)
+					.setReasoner(reasoner);
 		}
-		if (operator instanceof CustomHierarchyRefinementOperator) {
-			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
+		if (operatorBuilder instanceof CustomHierarchyRefinementOperator.Builder) {
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
-		
-		if (!((AbstractRefinementOperator) operator).isInitialized())
-			operator.init();
+
+		if (isEquivalenceProblem && isClassLearningProblem) {
+		}
+
+		operator = operatorBuilder.build();
 		
 		initialized = true;
 	}
@@ -385,7 +388,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 * capture all instances), but owl:Thing for learning subclasses (since it is
 	 * superfluous to add super classes in this case)
 	 */
-	private OWLClassExpression computeStartClass() {
+	private OWLClassExpression computeStartClass() throws ComponentInitException {
 		OWLClassExpression startClass = dataFactory.getOWLThing();
 		
 		if(isClassLearningProblem) {
@@ -407,11 +410,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					
 					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<>();
 					startClassCandidates.add(existingDefinition);
+
 					// hack for RhoDRDown
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(true);
+					LengthLimitedRefinementOperator op2 = operator;
+					if (operator instanceof RhoDRDown) {
+						RhoDRDown.Builder op2Builder = new RhoDRDown.Builder(operator);
+						op2Builder.setDropDisjuncts(true);
+						op2 = op2Builder.build();
 					}
-					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(op2);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -438,11 +445,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					} else {
 						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
 					}
-					
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(false);
-					}
-					
 				} else {
 					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
 					if(superClasses.size() > 1) {
@@ -895,8 +897,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	@Autowired(required=false)
-	public void setOperator(LengthLimitedRefinementOperator operator) {
+	protected void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
+	}
+
+	public void setOperatorBuilder(LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder) {
+		this.operatorBuilder = operatorBuilder;
 	}
 
 	public OWLClassExpression getStartClass() {

@@ -18,8 +18,10 @@
  */
 package org.dllearner.refinementoperators;
 
-import com.google.common.collect.*;
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
@@ -241,7 +243,62 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
-	public RhoDRDown() {}
+	private RhoDRDown() {}
+
+	public static class Builder implements org.dllearner.core.Builder<RhoDRDown>, CustomStartRefinementOperator.Builder<RhoDRDown>, CustomHierarchyRefinementOperator.Builder<RhoDRDown>, LengthLimitedRefinementOperator.Builder<RhoDRDown>, ReasoningBasedRefinementOperator.Builder<RhoDRDown> {
+		RhoDRDown op;
+		public Builder() { op = new RhoDRDown(); }
+
+		public Builder(RhoDRDown op_) {
+			this();
+			setApplyAllFilter(op_.applyAllFilter);
+			setCardinalityLimit(op_.cardinalityLimit);
+			setClassHierarchy(op_.classHierarchy);
+			setDataPropertyHierarchy(op_.dataPropertyHierarchy);
+			setDropDisjuncts(op_.dropDisjuncts);
+			setFrequencyThreshold(op_.frequencyThreshold);
+			setInstanceBasedDisjoints(op_.instanceBasedDisjoints);
+			setObjectPropertyHierarchy(op_.objectPropertyHierarchy);
+			setReasoner(op_.reasoner);
+			setStartClass(op_.startClass);
+			setUseAllConstructor(op_.useAllConstructor);
+			setUseCardinalityRestrictions(op_.useCardinalityRestrictions);
+			setUseDataHasValueConstructor(op_.useDataHasValueConstructor);
+			setUseExistsConstructor(op_.useExistsConstructor);
+			setUseHasValueConstructor(op_.useHasValueConstructor);
+			setUseNegation(op_.useNegation);
+			setUseObjectValueNegation(op_.useObjectValueNegation);
+			setUseStringDatatypes(op_.useStringDatatypes);
+			setUseNumericDatatypes(op_.useNumericDatatypes);
+			setLengthMetric(op_.lengthMetric);
+			setReasoner(op_.reasoner);
+		}
+
+		public Builder setApplyAllFilter(boolean v) { op.setApplyAllFilter(v); return this; }
+		public Builder setCardinalityLimit(int v) { op.setCardinalityLimit(v); return this; }
+		public Builder setClassHierarchy(ClassHierarchy v) { op.setClassHierarchy(v); return this; }
+		public Builder setDataPropertyHierarchy(DatatypePropertyHierarchy v) { op.setDataPropertyHierarchy(v); return this; }
+		public Builder setDropDisjuncts(boolean v) { op.setDropDisjuncts(v); return this; }
+		public Builder setFrequencyThreshold(int v) { op.setFrequencyThreshold(v); return this; }
+		public Builder setInstanceBasedDisjoints(boolean v) { op.setInstanceBasedDisjoints(v); return this; }
+		public Builder setObjectPropertyHierarchy(ObjectPropertyHierarchy v) { op.setObjectPropertyHierarchy(v); return this; }
+		public Builder setReasoner(AbstractReasonerComponent v) { op.setReasoner(v); return this; }
+		public Builder setStartClass(OWLClassExpression v) { op.setStartClass(v); return this; }
+		public Builder setSubHierarchy(ClassHierarchy v) { op.setClassHierarchy(v); return this; }
+		public Builder setUseAllConstructor(boolean v) { op.setUseAllConstructor(v); return this; }
+		public Builder setUseBooleanDatatypes(boolean v) { op.setUseBooleanDatatypes(v); return this; }
+		public Builder setUseCardinalityRestrictions(boolean v) { op.setUseCardinalityRestrictions(v); return this; }
+		public Builder setUseDataHasValueConstructor(boolean v) { op.setUseDataHasValueConstructor(v); return this; }
+		public Builder setUseExistsConstructor(boolean v) { op.setUseExistsConstructor(v); return this; }
+		public Builder setUseHasValueConstructor(boolean v) { op.setUseHasValueConstructor(v); return this; }
+		public Builder setUseNegation(boolean v) { op.setUseNegation(v); return this; }
+		public Builder setUseObjectValueNegation(boolean v) { op.setUseObjectValueNegation(v); return this; }
+		public Builder setUseStringDatatypes(boolean v) { op.setUseStringDatatypes(v); return this; }
+		public Builder setUseNumericDatatypes(boolean v) { op.setUseNumericDatatypes(v); return this; }
+		public Builder setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) { op.setLengthMetric(lengthMetric); return this; }
+		public Builder setReasoner(Reasoner reasoner) { op.setReasoner(reasoner); return this; }
+		public RhoDRDown build() throws ComponentInitException { op.init(); return op; }
+	}
 
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
@@ -1022,7 +1079,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 * refinements, which can be done by passing the parameter true to this method.
 	 * @param dropDisjuncts Whether to remove disjuncts in refinement process.
 	 */
-	public void setDropDisjuncts(boolean dropDisjuncts) {
+	protected void setDropDisjuncts(boolean dropDisjuncts) {
 		this.dropDisjuncts = dropDisjuncts;
 	}
 
@@ -1827,7 +1884,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return frequencyThreshold;
 	}
 
-	public void setFrequencyThreshold(int frequencyThreshold) {
+	protected void setFrequencyThreshold(int frequencyThreshold) {
 		this.frequencyThreshold = frequencyThreshold;
 	}
 
@@ -1835,7 +1892,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useDataHasValueConstructor;
 	}
 
-	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
+	protected void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
 		isFinal();
 		this.useDataHasValueConstructor = useDataHasValueConstructor;
 	}
@@ -1844,7 +1901,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return applyAllFilter;
 	}
 
-	public void setApplyAllFilter(boolean applyAllFilter) {
+	protected void setApplyAllFilter(boolean applyAllFilter) {
 		this.applyAllFilter = applyAllFilter;
 	}
 
@@ -1860,7 +1917,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useAllConstructor;
 	}
 
-	public void setUseAllConstructor(boolean useAllConstructor) {
+	protected void setUseAllConstructor(boolean useAllConstructor) {
 		this.useAllConstructor = useAllConstructor;
 	}
 
@@ -1868,7 +1925,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useExistsConstructor;
 	}
 
-	public void setUseExistsConstructor(boolean useExistsConstructor) {
+	protected void setUseExistsConstructor(boolean useExistsConstructor) {
 		this.useExistsConstructor = useExistsConstructor;
 	}
 
@@ -1876,7 +1933,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useHasValueConstructor;
 	}
 
-	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+	protected void setUseHasValueConstructor(boolean useHasValueConstructor) {
 		isFinal();
 		this.useHasValueConstructor = useHasValueConstructor;
 	}
@@ -1885,7 +1942,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useCardinalityRestrictions;
 	}
 
-	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+	protected void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
 		isFinal();
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 	}
@@ -1902,7 +1959,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useNegation;
 	}
 
-	public void setUseNegation(boolean useNegation) {
+	protected void setUseNegation(boolean useNegation) {
 		this.useNegation = useNegation;
 	}
 
@@ -1910,7 +1967,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useBooleanDatatypes;
 	}
 
-	public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+	protected void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 	}
 
@@ -1918,7 +1975,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useStringDatatypes;
 	}
 
-	public void setUseStringDatatypes(boolean useStringDatatypes) {
+	protected void setUseStringDatatypes(boolean useStringDatatypes) {
 		this.useStringDatatypes = useStringDatatypes;
 	}
 
@@ -1926,7 +1983,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return instanceBasedDisjoints;
 	}
 
-	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+	protected void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
 		this.instanceBasedDisjoints = instanceBasedDisjoints;
 	}
 
@@ -1935,7 +1992,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
     @Autowired
-	public void setReasoner(AbstractReasonerComponent reasoner) {
+	protected void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
 
@@ -1951,8 +2008,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return startClass;
 	}
 
-	@Override
-	public void setStartClass(OWLClassExpression startClass) {
+	protected void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 
@@ -1960,7 +2016,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return cardinalityLimit;
 	}
 
-	public void setCardinalityLimit(int cardinalityLimit) {
+	protected void setCardinalityLimit(int cardinalityLimit) {
 		this.cardinalityLimit = cardinalityLimit;
 	}
 
@@ -1968,8 +2024,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return objectPropertyHierarchy;
 	}
 
-	@Override
-    public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
+    protected void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
 		this.objectPropertyHierarchy = objectPropertyHierarchy;
 	}
 
@@ -1977,25 +2032,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return dataPropertyHierarchy;
 	}
 
-	@Override
-    public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
+    protected void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
 		this.dataPropertyHierarchy = dataPropertyHierarchy;
 	}
 
-	@Override
-	public void setReasoner(Reasoner reasoner) {
+	protected void setReasoner(Reasoner reasoner) {
 		this.reasoner = (AbstractReasonerComponent) reasoner;
 	}
 
-	@Override @NoConfigOption
-	public void setClassHierarchy(ClassHierarchy classHierarchy) {
+	@NoConfigOption
+	protected void setClassHierarchy(ClassHierarchy classHierarchy) {
 		this.classHierarchy = classHierarchy;
 	}
 
 	/**
 	 * @param useObjectValueNegation the useObjectValueNegation to set
 	 */
-	public void setUseObjectValueNegation(boolean useObjectValueNegation) {
+	protected void setUseObjectValueNegation(boolean useObjectValueNegation) {
 		this.useObjectValueNegation = useObjectValueNegation;
 	}
 
@@ -2003,7 +2056,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return useNumericDatatypes;
 	}
 
-	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
+	protected void setUseNumericDatatypes(boolean useNumericDatatypes) {
 		isFinal();
 		this.useNumericDatatypes = useNumericDatatypes;
 	}
@@ -2053,8 +2106,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return lengthMetric;
 	}
 
-	@Override
-	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+	protected void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
 
 		mMaxLength = max (

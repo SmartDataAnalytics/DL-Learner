@@ -1,9 +1,6 @@
 package org.dllearner.examples;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -12,10 +9,11 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
-
-import com.google.common.collect.Sets;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class should exemplify how to run CELOE programmatically, i.e. by
@@ -23,7 +21,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
  * experiment as the examples/father.conf does.
  */
 public class CELOEUsageExample {
-	static File familyExamplesDir = new File("../examples");
+	static File familyExamplesDir = new File("examples");
 	static String uriPrefix = "http://example.com/father#";
 
 	public static void main(String[] args) throws ComponentInitException {

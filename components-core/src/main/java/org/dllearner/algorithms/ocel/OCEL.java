@@ -229,6 +229,9 @@ public class OCEL extends AbstractCELA {
 	// dependencies
 	@ConfigOption(defaultValue = "RhoDRDown", description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
+
+	private LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder;
+
 	@ConfigOption(description = "the heuristic to guide the search", defaultValue = "MultiHeuristic")
 	private ExampleBasedHeuristic heuristic;
 
@@ -335,28 +338,29 @@ public class OCEL extends AbstractCELA {
 
 		// create a refinement operator and pass all configuration
 		// variables to it
-		if (operator == null) {
+		if (operatorBuilder == null) {
 			// we use a default operator and inject the class hierarchy for now
-			operator = new RhoDRDown();
-			if (operator instanceof CustomStartRefinementOperator) {
-				((CustomStartRefinementOperator) operator).setStartClass(startClass);
+			operatorBuilder = new RhoDRDown.Builder();
+			if (operatorBuilder instanceof CustomStartRefinementOperator.Builder) {
+				((CustomStartRefinementOperator.Builder)operatorBuilder).setStartClass(startClass);
 			}
-			if (operator instanceof ReasoningBasedRefinementOperator) {
-				((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
+			if (operatorBuilder instanceof ReasoningBasedRefinementOperator.Builder) {
+				((ReasoningBasedRefinementOperator.Builder) operatorBuilder).setReasoner(reasoner);
 			}
-			operator.init();
 		}
 		// TODO: find a better solution as this is quite difficult to debug
-		if (operator instanceof CustomHierarchyRefinementOperator) {
-			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
+		if (operatorBuilder instanceof CustomHierarchyRefinementOperator.Builder) {
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operatorBuilder).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
-
 		if (lengthMetric == null) {
 			lengthMetric = OWLClassExpressionLengthMetric.getOCELMetric();
 		}
-		operator.setLengthMetric(lengthMetric);
+		operatorBuilder.setLengthMetric(lengthMetric);
+		operator = operatorBuilder.build();
+
+
 
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -1247,8 +1251,12 @@ public class OCEL extends AbstractCELA {
 	}
 
 	@Autowired(required = false)
-	public void setOperator(LengthLimitedRefinementOperator operator) {
+	protected void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
+	}
+
+	public void setOperatorBuilder(LengthLimitedRefinementOperator.Builder operatorBuilder) {
+		this.operatorBuilder = operatorBuilder;
 	}
 
 	public boolean isWriteSearchTree() {
@@ -1416,10 +1424,10 @@ public class OCEL extends AbstractCELA {
 	}
 
 	@Autowired(required = false)
-	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+	protected void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
-		if (operator != null) {
-			operator.setLengthMetric(lengthMetric);
+		if (operatorBuilder != null) {
+			operatorBuilder.setLengthMetric(lengthMetric);
 		}
 	}
 

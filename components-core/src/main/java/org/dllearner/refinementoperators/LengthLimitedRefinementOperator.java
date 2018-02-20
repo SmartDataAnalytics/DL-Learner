@@ -56,7 +56,11 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 */
 	Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength, List<OWLClassExpression> knownRefinements);
 
-	void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric);
-
 	OWLClassExpressionLengthMetric getLengthMetric();
-}
+
+	interface Builder<T extends LengthLimitedRefinementOperator>
+			extends org.dllearner.core.Builder<T> {
+
+		Builder<T> setLengthMetric(OWLClassExpressionLengthMetric lengthMetric);
+
+	}}

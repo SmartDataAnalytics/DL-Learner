@@ -86,12 +86,14 @@ public class SynchronizedRefinementOperator extends AbstractRefinementOperator i
 		}
 	}
 
+	/*
 	@Override
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		synchronized (delegate) {
 			delegate.setLengthMetric(lengthMetric);
 		}
 	}
+	*/
 
 	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() {

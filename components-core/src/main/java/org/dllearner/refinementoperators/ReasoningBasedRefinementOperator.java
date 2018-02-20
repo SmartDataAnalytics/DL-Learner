@@ -28,7 +28,7 @@ import org.dllearner.core.Reasoner;
  *
  */
 public interface ReasoningBasedRefinementOperator extends RefinementOperator {
-
-	void setReasoner(Reasoner reasoner);
-	
+interface Builder<T extends ReasoningBasedRefinementOperator> extends org.dllearner.core.Builder<T> {
+	Builder<T> setReasoner(Reasoner reasoner);
+}
 }
