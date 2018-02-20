@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import com.mysql.cj.x.protobuf.MysqlxExpr;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -71,6 +72,8 @@ public class PCELOE extends AbstractCELA {
 	
 	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
+
+	private LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder;
 
 	private SynchronizedSearchTree<OENode> searchTree;
 	@ConfigOption(defaultValue="celoe_heuristic")
@@ -302,21 +305,17 @@ public class PCELOE extends AbstractCELA {
 
 		// create a refinement operator and pass all configuration
 		// variables to it
-		if (operator == null) {
+		if (operatorBuilder == null) {
 			// we use a default operator and inject the class hierarchy for now
-			operator = new RhoDRDown();
-			if (operator instanceof CustomStartRefinementOperator) {
-				((CustomStartRefinementOperator) operator).setStartClass(startClass);
-			}
-			if (operator instanceof ReasoningBasedRefinementOperator) {
-				((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
-			}
-			operator.init();
+			operator = new RhoDRDown.Builder()
+			.setStartClass(startClass)
+			.setReasoner(reasoner)
+			.build();
 		}
-		if (operator instanceof CustomHierarchyRefinementOperator) {
-			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
-			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
+		if (operatorBuilder instanceof CustomHierarchyRefinementOperator.Builder) {
+			((CustomHierarchyRefinementOperator.Builder) operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator.Builder) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
 
 		reasoner.setSynchronized();
@@ -925,9 +924,11 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	@Autowired(required=false)
-	public void setOperator(LengthLimitedRefinementOperator operator) {
+	protected void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
+
+	public void setOperatorBuilder(LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder) { this.operatorBuilder = operatorBuilder; }
 
 	public OWLClassExpression getStartClass() {
 		return startClass;

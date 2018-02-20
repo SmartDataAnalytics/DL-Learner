@@ -18,10 +18,7 @@
  */
 package org.dllearner.algorithms.decisiontrees.refinementoperators;
 
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.Reasoner;
+import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -72,6 +69,17 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	@ConfigOption(defaultValue = "1")
 	private int ro; // the name of a refinement operator
+
+	private DLTreesRefinementOperator(Builder builder) {
+		allConcepts = builder.allConcepts;
+		setAllRoles(builder.allRoles);
+		setLp(builder.lp);
+		generator = builder.generator;
+		setReasoner(builder.reasoner);
+		setBeam(builder.beam);
+		setRo(builder.ro);
+	}
+
 	//
 	//
 	//
@@ -83,13 +91,13 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		this.ro = ro;
 	}
 
-	public DLTreesRefinementOperator() {
+	protected DLTreesRefinementOperator() {
 		super();
 
 		generator= new Random(2);
 	}
 
-	public DLTreesRefinementOperator(PosNegLP lp, AbstractReasonerComponent reasoner, int beam) {
+	protected DLTreesRefinementOperator(PosNegLP lp, AbstractReasonerComponent reasoner, int beam) {
 		super();
 		// TODO Auto-generated constructor stub
 		this.reasoner=reasoner;
@@ -107,7 +115,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return lp;
 	}
 
-	public void setLp(PosNegLP lp) {
+	protected void setLp(PosNegLP lp) {
 		this.lp = lp;
 	}
 
@@ -115,7 +123,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return allConcepts;
 	}
 
-	public void setAllConcepts(ArrayList<OWLClass> allConcepts) {
+	protected void setAllConcepts(ArrayList<OWLClass> allConcepts) {
 		this.allConcepts = allConcepts;
 	}
 
@@ -123,7 +131,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return allRoles;
 	}
 
-	public void setAllRoles(ArrayList<OWLObjectProperty> allRoles) {
+	protected void setAllRoles(ArrayList<OWLObjectProperty> allRoles) {
 		this.allRoles = allRoles;
 	}
 
@@ -233,7 +241,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return rConcepts;
 	}
 
-	private OWLClassExpression setSeed() {
+	protected OWLClassExpression setSeed() {
 
 		//for (OWLClassExpression cl: allConcepts){
 		//if (cl.toString().compareToIgnoreCase(conceptSeed)==0){
@@ -266,7 +274,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	}
 
      //
-	public void setReasoner(AbstractReasonerComponent reasoner) {
+     protected void setReasoner(AbstractReasonerComponent reasoner) {
 		// TODO Auto-generated method stub
 		this.reasoner= reasoner;
 		if (allConcepts==null)
@@ -277,9 +285,8 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	}
 
-	
-	@Override
-	public void setReasoner(Reasoner reasoner) {
+
+	protected void setReasoner(Reasoner reasoner) {
 		// TODO Auto-generated method stub
 		this.reasoner= reasoner;
 		if (allConcepts==null)
@@ -312,32 +319,31 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		}
 
 		if (ro==RHO){
-			RhoDRDown rho = new RhoDRDown();
-
-			rho.setReasoner((AbstractReasonerComponent)reasoner);
 			ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy();
-			rho.setClassHierarchy(classHierarchy);
-			rho.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			rho.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-
-			rho.setApplyAllFilter(false);
-			rho.setUseAllConstructor(true);
-			rho.setUseExistsConstructor(true);
-			rho.setUseHasValueConstructor(false);
-			rho.setUseCardinalityRestrictions(false);
-			rho.setUseNegation(true);
-			rho.setUseBooleanDatatypes(false);
-			rho.setUseNumericDatatypes(false);
-			rho.setUseStringDatatypes(false);
-
+			RhoDRDown rho = null;
 			try {
-				rho.init();
+				rho = new RhoDRDown.Builder()
+
+				.setReasoner((AbstractReasonerComponent)reasoner)
+						.setClassHierarchy(classHierarchy)
+				.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+				.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+
+				.setApplyAllFilter(false)
+				.setUseAllConstructor(true)
+				.setUseExistsConstructor(true)
+				.setUseHasValueConstructor(false)
+				.setUseCardinalityRestrictions(false)
+				.setUseNegation(true)
+				.setUseBooleanDatatypes(false)
+				.setUseNumericDatatypes(false)
+				.setUseStringDatatypes(false)
+
+						.build();
 			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//		System.out.println("Definition: "+definition);
-			
+
 			OWLClassExpression toRefine= (n!=-1)?childrenList.get(n):def;
 			Set<OWLClassExpression> refine = rho.refine(toRefine,3);
 
@@ -365,7 +371,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		
 	}
 
-	public void setBeam(int i) {
+	protected void setBeam(int i) {
 		// TODO Auto-generated method stub
 		beam=i;
 
@@ -375,6 +381,57 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return beam;
 	}
 
-	
 
+	public static final class Builder implements org.dllearner.core.Builder<DLTreesRefinementOperator>,
+	InstanceBasedRefinementOperator.Builder<DLTreesRefinementOperator> {
+		private ArrayList<OWLClass> allConcepts;
+		private ArrayList<OWLObjectProperty> allRoles;
+		private PosNegLP lp;
+		private Random generator;
+		private Reasoner reasoner;
+		private int beam;
+		private int ro;
+
+		public Builder() {
+		}
+
+		public Builder setAllConcepts(ArrayList<OWLClass> allConcepts) {
+			this.allConcepts = allConcepts;
+			return this;
+		}
+
+		public Builder setAllRoles(ArrayList<OWLObjectProperty> allRoles) {
+			this.allRoles = allRoles;
+			return this;
+		}
+
+		public Builder setLp(PosNegLP lp) {
+			this.lp = lp;
+			return this;
+		}
+
+		public Builder setGenerator(Random generator) {
+			this.generator = generator;
+			return this;
+		}
+
+		public Builder setReasoner(Reasoner reasoner) {
+			this.reasoner = reasoner;
+			return this;
+		}
+
+		public Builder setBeam(int beam) {
+			this.beam = beam;
+			return this;
+		}
+
+		public Builder setRo(int ro) {
+			this.ro = ro;
+			return this;
+		}
+
+		public DLTreesRefinementOperator build() {
+			return new DLTreesRefinementOperator(this);
+		}
+	}
 }

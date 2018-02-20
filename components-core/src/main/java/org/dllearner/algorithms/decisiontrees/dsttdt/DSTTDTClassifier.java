@@ -18,14 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.dsttdt;
 
-import java.util.ArrayList;
-//import knowledgeBasesHandler.KnowledgeBase;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
-
 import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
 import org.dllearner.algorithms.decisiontrees.dsttdt.models.DSTDLTree;
 import org.dllearner.algorithms.decisiontrees.dsttdt.models.EvidentialModel;
@@ -34,21 +26,21 @@ import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinem
 import org.dllearner.algorithms.decisiontrees.utils.Couple;
 import org.dllearner.algorithms.decisiontrees.utils.Npla;
 import org.dllearner.algorithms.decisiontrees.utils.Split;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+//import knowledgeBasesHandler.KnowledgeBase;
 
 @ComponentAnn(name="ETDT", shortName="etdt", version=1.0, description="An Evidence-based Terminological Decision Tree")
 public class DSTTDTClassifier extends AbstractCELA{
@@ -178,10 +170,14 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 				if(operator == null) {
 					// default operator
-					operator= new DLTreesRefinementOperator((PosNegUndLP)super.learningProblem, getReasoner(), 4);
+					operator= new DLTreesRefinementOperator.Builder()
+							.setLp((PosNegLP) super.learningProblem)
+							.setReasoner(reasoner)
+							.setBeam(4)
+							.build();
 					//operator = new DLTreesRefinementOperator( this.learningProblem,reasoner,4);
-					((DLTreesRefinementOperator)operator).setReasoner(reasoner);
-					((DLTreesRefinementOperator)operator).setBeam(4); // default value
+					//((DLTreesRefinementOperator)operator).setReasoner(reasoner);
+					//((DLTreesRefinementOperator)operator).setBeam(4); // default value
 					//System.out.println("Refinement operator"+operator);
 					
 //					if(operator instanceof CustomStartRefinementOperator) {
@@ -190,7 +186,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 //					if(operator instanceof ReasoningBasedRefinementOperator) {
 //						((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
 //					}
-					operator.init();
+					//operator.init();
 				
 					
 				

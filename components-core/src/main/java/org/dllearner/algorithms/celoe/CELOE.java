@@ -272,7 +272,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		// start at owl:Thing by default
-		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, this::computeStartClass, logger);
+		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, () -> {
+			try {
+				return computeStartClass();
+			} catch (ComponentInitException e) {
+				return dataFactory.getOWLThing();
+			}
+		}, logger);
 
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
@@ -414,7 +420,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					// hack for RhoDRDown
 					LengthLimitedRefinementOperator op2 = operator;
 					if (operator instanceof RhoDRDown) {
-						RhoDRDown.Builder op2Builder = new RhoDRDown.Builder(operator);
+						RhoDRDown.Builder op2Builder = new RhoDRDown.Builder((RhoDRDown) operator);
 						op2Builder.setDropDisjuncts(true);
 						op2 = op2Builder.build();
 					}
@@ -1136,15 +1142,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		lp.setEquivalence(false);
 		lp.setClassToDescribe(classToDescribe);
 		lp.init();
-		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(rc);
-		op.setUseNegation(false);
-		op.setUseHasValueConstructor(false);
-		op.setUseCardinalityRestrictions(true);
-		op.setUseExistsConstructor(true);
-		op.setUseAllConstructor(true);
-		op.init();
+
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(rc)
+		.setUseNegation(false)
+		.setUseHasValueConstructor(false)
+		.setUseCardinalityRestrictions(true)
+		.setUseExistsConstructor(true)
+		.setUseAllConstructor(true)
+		.build();
 		
 		
 		

@@ -18,12 +18,12 @@
  */
 package org.dllearner.algorithms.decisiontrees.refinementoperators;
 
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * A reasoning based refinement operator which consider the available instances in the 
@@ -33,9 +33,9 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  */
 public interface InstanceBasedRefinementOperator extends ReasoningBasedRefinementOperator {
 	
-	
 
 	Set<OWLClassExpression> refine(OWLClassExpression definition, SortedSet<OWLIndividual> posExs,
 			SortedSet<OWLIndividual> negExs);
 
+	interface  Builder<T extends ReasoningBasedRefinementOperator> extends org.dllearner.core.Builder<T> {}
 }
