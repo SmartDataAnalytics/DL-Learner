@@ -18,26 +18,18 @@
  */
 package org.dllearner.algorithms.decisiontrees.tdt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.Stack;
-
 import org.dllearner.algorithms.decisiontrees.heuristics.TreeInductionHeuristics;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 @ComponentAnn(name="ATDT", shortName="atdt", version=1.0, description="An abstract Terminological Decision Tree")
 public abstract class AbstractTDTClassifier extends AbstractCELA {
@@ -176,9 +168,10 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		if(operator == null) {
 	System.out.println("OPERATOR:"+operator==null);
 //			// default operator
-	operator = new DLTreesRefinementOperator();
-	((DLTreesRefinementOperator)operator).setReasoner(reasoner);
-	((DLTreesRefinementOperator)operator).setBeam(10); // default value
+	operator = new DLTreesRefinementOperator.Builder()
+			.setReasoner(reasoner)
+			.setBeam(10)
+			.build();
 ////
 ////			if(operator instanceof CustomStartRefinementOperator) {
 ////				((CustomStartRefinementOperator)operator).setStartClass(startClass);
@@ -186,8 +179,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 ////			if(operator instanceof ReasoningBasedRefinementOperator) {
 ////				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
 ////			}
-       	operator.init();
-       	
+
 		//System.out.println(operator==null);
 //
 //

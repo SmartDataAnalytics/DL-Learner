@@ -74,6 +74,7 @@ public class OperatorInverter extends AbstractRefinementOperator implements Leng
 
 	@ConfigOption(description = "operator to invert", required = true)
 	private LengthLimitedRefinementOperator operator;
+	private LengthLimitedRefinementOperator.Builder<? extends LengthLimitedRefinementOperator> operatorBuilder;
 	@ConfigOption(description = "whether to apply NNF", defaultValue = "true")
 	private boolean useNegationNormalForm = true;
 	@ConfigOption(description = "Whether inverse solutions must respect the desired max length", defaultValue = "true")
@@ -125,10 +126,11 @@ public class OperatorInverter extends AbstractRefinementOperator implements Leng
 		throw new Error("Method not implemented.");
 	}
 
-	@Override
-	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+	protected void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
-		operator.setLengthMetric(lengthMetric);
+		if (operatorBuilder != null) {
+			operatorBuilder.setLengthMetric(lengthMetric);
+		}
 	}
 
 	@Override

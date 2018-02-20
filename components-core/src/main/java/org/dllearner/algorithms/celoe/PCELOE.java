@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import com.mysql.cj.x.protobuf.MysqlxExpr;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -361,15 +360,16 @@ public class PCELOE extends AbstractCELA {
 				if(operator instanceof SynchronizedRefinementOperator) {
 					operator = ((SynchronizedRefinementOperator) operator).getDelegate();
 				}
-				RhoDRDown op = new RhoDRDown((RhoDRDown) operator);
-				op.setReasoner(reasonerCopy);
 				try {
-					op.init();
+					RhoDRDown op = new RhoDRDown.Builder((RhoDRDown) operator)
+						.setReasoner(reasonerCopy)
+						.build();
+					worker = new PCELOEWorker(op);
 				} catch (ComponentInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					worker = null;
 				}
-				worker = new PCELOEWorker(op);
 			} else {
 				worker = new PCELOEWorker();
 
@@ -418,7 +418,7 @@ public class PCELOE extends AbstractCELA {
 	 * capture all instances), but owl:Thing for learning subclasses (since it is
 	 * superfluous to add super classes in this case)
 	 */
-	private OWLClassExpression computeStartClass() {
+	private OWLClassExpression computeStartClass() throws ComponentInitException {
 		OWLClassExpression startClass = dataFactory.getOWLThing();
 
 		if(isClassLearningProblem) {
@@ -441,10 +441,13 @@ public class PCELOE extends AbstractCELA {
 					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<>();
 					startClassCandidates.add(existingDefinition);
 					// hack for RhoDRDown
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(true);
+					LengthLimitedRefinementOperator op2 = operator;
+					if (operator instanceof RhoDRDown) {
+						RhoDRDown.Builder op2Builder = new RhoDRDown.Builder((RhoDRDown) operator);
+						op2Builder.setDropDisjuncts(true);
+						op2 = op2Builder.build();
 					}
-					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(op2);
 
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -470,10 +473,6 @@ public class PCELOE extends AbstractCELA {
 						logger.info("Reusing existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
 					} else {
 						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
-					}
-
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(false);
 					}
 
 				} else {
