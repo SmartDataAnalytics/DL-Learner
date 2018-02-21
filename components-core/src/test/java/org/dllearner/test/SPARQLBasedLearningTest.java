@@ -142,11 +142,11 @@ public class SPARQLBasedLearningTest {
 		lp.init();
 		
 		// setup refinement operator
-		RhoDRDown op = new RhoDRDown();
-		op.setUseTimeDatatypes(false);
-		op.setReasoner(reasoner);
-		op.setUseNegation(false);
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setUseTimeDatatypes(false)
+		.setReasoner(reasoner)
+		.setUseNegation(false)
+		.build();
 		
 		// setup learning algorithm
 //		final AbstractCELA alg;

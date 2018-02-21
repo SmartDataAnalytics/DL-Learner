@@ -61,12 +61,11 @@ public class SPARQLReasonerTest {
         SortedSet<OWLIndividual> negExamples = rc.getIndividuals();
         negExamples.removeAll(posExamples);
 		
-        RhoDRDown op = new RhoDRDown();
-        op.setReasoner(rc);
-        op.setUseAllConstructor(false);
-        op.setUseHasValueConstructor(false);
-        op.setUseNegation(false);
-        op.init();
+        RhoDRDown.Builder operatorBuilder = new RhoDRDown.Builder()
+        .setReasoner(rc)
+        .setUseAllConstructor(false)
+        .setUseHasValueConstructor(false)
+        .setUseNegation(false);
 		
 //		PosNegLP lp = new PosNegLPStandard(rc);
 //		lp.setPositiveExamples(posExamples);
@@ -78,7 +77,7 @@ public class SPARQLReasonerTest {
 		lp.init();
 		
 		CELOE alg = new CELOE(lp, rc);
-		alg.setOperator(op);
+		alg.setOperatorBuilder(operatorBuilder);
 		alg.setMaxExecutionTimeInSeconds(60);
 		alg.setWriteSearchTree(true);
 		alg.setSearchTreeFile("log/search-tree.log");

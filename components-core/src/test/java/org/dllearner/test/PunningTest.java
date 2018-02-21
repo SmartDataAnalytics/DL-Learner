@@ -116,8 +116,8 @@ public class PunningTest {
 		OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
 //		heuristic.setExpansionPenaltyFactor(0.001);
 //		la.setHeuristic(heuristic);
+		la.setOperatorBuilder(new RhoDRDown.Builder().setUseNegation(false));
 		la.init();
-		((RhoDRDown)la.getOperator()).setUseNegation(false);
 //		la.start();
 		
 		System.out.println("Classes: " + ontology.getClassesInSignature());

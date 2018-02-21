@@ -18,16 +18,12 @@
  */
 package org.dllearner.test.junit;
 
-import java.util.ArrayList;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import org.dllearner.accuracymethods.AccMethodFMeasure;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
-import org.dllearner.accuracymethods.AccMethodFMeasure;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -38,8 +34,11 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
+import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author didiers
@@ -93,16 +92,16 @@ public class SomeOnlyReasonerTest {
         lp.setNegativeExamples(negExamples);
         lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.init();
-        
+
+        RhoDRDown.Builder opBuilder = new RhoDRDown.Builder()
+        .setUseNegation(false)
+        .setUseAllConstructor(true)
+        .setUseCardinalityRestrictions(false)
+        .setUseHasValueConstructor(true);
+
         CELOE la = new CELOE(lp, rc);
+        la.setOperatorBuilder(opBuilder);
         la.setMaxExecutionTimeInSeconds(10);
-        la.init();
-        RhoDRDown op = (RhoDRDown) la.getOperator();
-        
-        op.setUseNegation(false);
-        op.setUseAllConstructor(true);
-        op.setUseCardinalityRestrictions(false);
-        op.setUseHasValueConstructor(true);
         la.setNoisePercentage(20);
         la.init();
         la.start();

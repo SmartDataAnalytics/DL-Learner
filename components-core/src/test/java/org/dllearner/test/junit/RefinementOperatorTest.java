@@ -39,7 +39,6 @@ import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -81,16 +80,16 @@ public class RefinementOperatorTest {
 			// TODO the following two lines should not be necessary
 //			rs.prepareSubsumptionHierarchy();
 //			rs.prepareRoleHierarchy();
-			
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+
 			OWLClassExpressionLengthMetric metric = new OWLClassExpressionLengthMetric();
 			metric.dataHasValueLength = 1;
-			op.setLengthMetric(metric);
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.setLengthMetric(metric)
+			.build();
 			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
 			Set<OWLClassExpression> results = op.refine(concept, 4, null);
 
@@ -111,12 +110,12 @@ public class RefinementOperatorTest {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
 		baseURI = reasoner.getBaseURI();
 		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(reasoner)
+		.setSubHierarchy(reasoner.getClassHierarchy())
+		.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+		.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+		.build();
 		
 		OWLClassExpression concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
 		Set<OWLClassExpression> results = op.refine(concept,10);
@@ -151,12 +150,12 @@ public class RefinementOperatorTest {
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
 		System.out.println(" UNIT TEST INCOMPLETE AFTER FRAMEWORK CHANGE, BECAUSE CLASS HIERARCHY IS NOT PASSED TO REFINEMENT OPERATOR ");
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(reasoner)
+		.setSubHierarchy(reasoner.getClassHierarchy())
+		.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+		.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+		.build();
 		
 		OWLClassExpression concept = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND TOP)");
 		Set<OWLClassExpression> results = op.refine(concept,8);
@@ -199,12 +198,12 @@ public class RefinementOperatorTest {
 	public void rhoDRDownTest4() throws ParseException, LearningProblemUnsupportedException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
 		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(reasoner)
+		.setSubHierarchy(reasoner.getClassHierarchy())
+		.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+		.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+		.build();
 		
 		OWLClassExpression concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
 //		Description concept = Thing.instance;
@@ -218,12 +217,12 @@ public class RefinementOperatorTest {
 	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.SWORE);
 
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(reasoner)
+		.setSubHierarchy(reasoner.getClassHierarchy())
+		.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+		.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+		.build();
 		
 //		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
 		OWLClassExpression concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
@@ -249,12 +248,12 @@ public class RefinementOperatorTest {
 			reasoner.init();
 			baseURI = reasoner.getBaseURI();
 
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.build();
 			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
 			int maxLength = 4;
 			Set<OWLClassExpression> results = op.refine(concept, maxLength, null);
@@ -285,14 +284,14 @@ public class RefinementOperatorTest {
 			reasoner.init();
 			baseURI = reasoner.getBaseURI();
 
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setUseInverse(true);
-			op.setUseHasValueConstructor(true);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setUseInverse(true)
+			.setUseHasValueConstructor(true)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.build();
 			OWLClassExpression concept = KBParser.parseConcept(uri("person"));
 			Set<OWLClassExpression> results = op.refine(concept, 5, null);
 
@@ -339,15 +338,15 @@ public class RefinementOperatorTest {
 			reasoner.init();
 			baseURI = reasoner.getBaseURI();
 
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setUseInverse(true);
-			op.setUseHasValueConstructor(true);
-			op.setFrequencyThreshold(5);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setUseInverse(true)
+			.setUseHasValueConstructor(true)
+			.setFrequencyThreshold(5)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.build();
 			OWLClassExpression concept = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
 			Set<OWLClassExpression> results = op.refine(concept, 5, null);
 
@@ -389,15 +388,15 @@ public class RefinementOperatorTest {
 			reasoner.init();
 			baseURI = reasoner.getBaseURI();
 
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setUseInverse(true);
-			op.setUseHasSelf(true);
-			op.setFrequencyThreshold(5);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setUseInverse(true)
+			.setUseHasSelf(true)
+			.setFrequencyThreshold(5)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.build();
 			OWLClassExpression concept = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
 			Set<OWLClassExpression> results = op.refine(concept, 5, null);
 
@@ -419,13 +418,13 @@ public class RefinementOperatorTest {
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
 
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.setDropDisjuncts(true);
-		op.init();
+		RhoDRDown op = new RhoDRDown.Builder()
+		.setReasoner(reasoner)
+		.setSubHierarchy(reasoner.getClassHierarchy())
+		.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+		.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+		.setDropDisjuncts(true)
+		.build();
 		
 		LengthLimitedRefinementOperator operator = new OperatorInverter(op);
 		OWLClassExpression concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
@@ -447,14 +446,14 @@ public class RefinementOperatorTest {
 			AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
 			reasoner.init();
 
-			RhoDRDown op = new RhoDRDown();
-			op.setReasoner(reasoner);
-			op.setUseSomeOnly(false);
-			op.setSubHierarchy(reasoner.getClassHierarchy());
-			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-			op.setUseSomeOnly(false);
-			op.init();
+			RhoDRDown op = new RhoDRDown.Builder()
+			.setReasoner(reasoner)
+			.setUseSomeOnly(false)
+			.setSubHierarchy(reasoner.getClassHierarchy())
+			.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy())
+			.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy())
+			.setUseSomeOnly(false)
+			.build();
 
 			OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
 			Set<OWLClassExpression> refinements = op.refine(nc, 5);

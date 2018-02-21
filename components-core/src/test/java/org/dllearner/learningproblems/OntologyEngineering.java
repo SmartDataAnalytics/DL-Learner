@@ -277,13 +277,15 @@ public class OntologyEngineering {
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					celoe.setNoisePercentage(noisePercent);
 					celoe.setMaxNrOfResults(10);
+					celoe.setOperatorBuilder(
+							new RhoDRDown.Builder()
+									.setUseNegation(false)
+									.setFrequencyThreshold(10)
+									.setUseDataHasValueConstructor(true)
+					);
 					celoe.init();
 					
-					RhoDRDown op = (RhoDRDown) celoe.getOperator();
-					op.setUseNegation(false);
-					op.setFrequencyThreshold(10);
-					op.setUseDataHasValueConstructor(true);
-					
+
 					celoe.start();
 					classExpressionTestsStat.addNumber(celoe.getClassExpressionTests());
 					

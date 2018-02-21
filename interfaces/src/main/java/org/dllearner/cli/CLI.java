@@ -31,7 +31,6 @@ import org.dllearner.confparser.ParseException;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
@@ -123,19 +122,19 @@ public class CLI extends CLIBase2 {
 				if((la instanceof TDTClassifier)||(la instanceof DSTTDTClassifier) ){
 					
 					//TODO:  verify if the quality of the code can be improved
-					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
+					DLTreesRefinementOperator.Builder opBuilder = context.getBeansOfType(DLTreesRefinementOperator.Builder.class).entrySet().iterator().next().getValue();
 					ArrayList<OWLClass> concepts = new ArrayList<>(rs.getClasses());
-					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
+					opBuilder.setAllConcepts(concepts);
 					
 					ArrayList<OWLObjectProperty> roles = new ArrayList<>(rs.getAtomicRolesList());
-					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
-					((DLTreesRefinementOperator) op).setAllRoles(roles);
-					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
+					//op.setAllConcepts(concepts);
+					opBuilder.setAllRoles(roles);
+					opBuilder.setReasoner(getMainReasonerComponent());
 					
 					if (la instanceof TDTClassifier)
-					    ((TDTClassifier)la).setOperator(op);
+					    ((TDTClassifier)la).setOperator(opBuilder.build());
 					else
-						((DSTTDTClassifier)la).setOperator(op);
+						((DSTTDTClassifier)la).setOperator(opBuilder.build());
 					new CrossValidation2(la,lp,rs,nrOfFolds,false);
 				}else {
 					new CrossValidation2(la,lp,rs,nrOfFolds,false);

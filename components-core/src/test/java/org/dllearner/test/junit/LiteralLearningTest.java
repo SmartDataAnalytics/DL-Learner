@@ -115,17 +115,16 @@ public final class LiteralLearningTest {
 					lp.setNegativeExamples(negativeExamples);
 					lp.init();
 
-					RhoDRDown op = new RhoDRDown();
-					op.setUseTimeDatatypes(true);
-					op.setUseNumericDatatypes(true);
-					op.setReasoner(rc);
-					op.setMaxNrOfSplits(maxNrOfSplits);
-					op.init();
+					RhoDRDown.Builder opBuilder = new RhoDRDown.Builder()
+					.setUseTimeDatatypes(true)
+					.setUseNumericDatatypes(true)
+					.setReasoner(rc)
+					.setMaxNrOfSplits(maxNrOfSplits);
 
 					CELOE alg = new CELOE(lp, rc);
 					alg.setMaxClassExpressionTests(1000);
 					alg.setMaxExecutionTimeInSeconds(0);
-					alg.setOperator(op);
+					alg.setOperatorBuilder(opBuilder);
 					alg.init();
 
 					alg.start();
@@ -293,15 +292,14 @@ public final class LiteralLearningTest {
 		lp.setNegativeExamples(negativeExamples);
 		lp.init();
 
-		RhoDRDown op = new RhoDRDown();
-		op.setUseDataHasValueConstructor(true);
-		op.setReasoner(reasoner);
-		op.init();
+		RhoDRDown.Builder operatorBuilder = new RhoDRDown.Builder()
+		.setUseDataHasValueConstructor(true)
+		.setReasoner(reasoner);
 
 		CELOE alg = new CELOE(lp, reasoner);
 		alg.setMaxClassExpressionTests(1000);
 		alg.setMaxExecutionTimeInSeconds(0);
-		alg.setOperator(op);
+		alg.setOperatorBuilder(operatorBuilder);
 		alg.init();
 
 		alg.start();

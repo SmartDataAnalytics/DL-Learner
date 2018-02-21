@@ -1,6 +1,5 @@
 package org.dllearner.algorithms.meta;
 
-import com.google.common.collect.Sets;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -12,14 +11,9 @@ import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Lorenz Buehmann
@@ -70,20 +64,19 @@ public class DisjunctiveCELATest {
         lp.setNegativeExamples(negExamples);
         lp.init();
 
-        RhoDRDown op = new RhoDRDown();
-        op.setReasoner(reasoner);
-        op.setUseHasValueConstructor(true);
-        op.setUseAllConstructor(false);
-        op.setUseStringDatatypes(true);
-        op.setUseDataHasValueConstructor(true);
-        op.setFrequencyThreshold(1);
-        op.setUseNegation(false);
-        op.init();
+        RhoDRDown.Builder operatorBuilder = new RhoDRDown.Builder()
+        .setReasoner(reasoner)
+        .setUseHasValueConstructor(true)
+        .setUseAllConstructor(false)
+        .setUseStringDatatypes(true)
+        .setUseDataHasValueConstructor(true)
+        .setFrequencyThreshold(1)
+        .setUseNegation(false);
 
         // create the learning algorithm
         CELOE la = new CELOE(lp, reasoner);
         la.setNoisePercentage(100.0);
-        la.setOperator(op);
+        la.setOperatorBuilder(operatorBuilder);
         la.init();
 
         DisjunctiveCELA la2 = new DisjunctiveCELA(la);

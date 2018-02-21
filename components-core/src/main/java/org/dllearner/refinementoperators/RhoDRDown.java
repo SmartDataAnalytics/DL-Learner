@@ -295,6 +295,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		public Builder setUseObjectValueNegation(boolean v) { op.setUseObjectValueNegation(v); return this; }
 		public Builder setUseStringDatatypes(boolean v) { op.setUseStringDatatypes(v); return this; }
 		public Builder setUseNumericDatatypes(boolean v) { op.setUseNumericDatatypes(v); return this; }
+		public Builder setUseTimeDatatypes(boolean v) { op.setUseTimeDatatypes(v); return this; }
+		public Builder setMaxNrOfSplits(int v) { op.setMaxNrOfSplits(v); return this; }
+		public Builder setUseInverse(boolean v) { op.setUseInverse(v); return this; }
+		public Builder setUseHasSelf(boolean v) { op.setUseHasSelf(v); return this; }
+		public Builder setUseSomeOnly(boolean v) { op.setUseSomeOnly(v); return this; }
 		public Builder setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) { op.setLengthMetric(lengthMetric); return this; }
 		public Builder setReasoner(Reasoner reasoner) { op.setReasoner(reasoner); return this; }
 		public RhoDRDown build() throws ComponentInitException { op.init(); return op; }
