@@ -72,7 +72,7 @@ import static java.util.stream.Collectors.summingInt;
  *
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
-public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
+public class RhoDRDown extends RefinementOperatorAdapter implements Component, Buildable, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
@@ -244,6 +244,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
 	private RhoDRDown() {}
+
+	@Override
+	public Builder getBuilder() {
+		return new Builder(this);
+	}
 
 	public static class Builder implements org.dllearner.core.Builder<RhoDRDown>, CustomStartRefinementOperator.Builder<RhoDRDown>, CustomHierarchyRefinementOperator.Builder<RhoDRDown>, LengthLimitedRefinementOperator.Builder<RhoDRDown>, ReasoningBasedRefinementOperator.Builder<RhoDRDown> {
 		RhoDRDown op;
