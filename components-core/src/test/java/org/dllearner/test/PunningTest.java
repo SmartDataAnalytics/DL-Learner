@@ -116,7 +116,9 @@ public class PunningTest {
 		OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
 //		heuristic.setExpansionPenaltyFactor(0.001);
 //		la.setHeuristic(heuristic);
-		la.setOperatorBuilder(new RhoDRDown.Builder().setUseNegation(false));
+		la.setOperatorBuilder(new RhoDRDown.Builder()
+				.setReasoner(rc)
+				.setUseNegation(false));
 		la.init();
 //		la.start();
 		

@@ -71,7 +71,7 @@ import static java.util.stream.Collectors.summingInt;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
+@ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8, builder = RhoDRDown.Builder.class)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, Buildable, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
@@ -307,7 +307,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, B
 		public Builder setUseSomeOnly(boolean v) { op.setUseSomeOnly(v); return this; }
 		public Builder setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) { op.setLengthMetric(lengthMetric); return this; }
 		public Builder setReasoner(Reasoner reasoner) { op.setReasoner(reasoner); return this; }
-		public RhoDRDown build() throws ComponentInitException { op.init(); return op; }
+		public RhoDRDown build() throws ComponentInitException {
+			if (op.reasoner == null) {
+				throw  new IllegalStateException("Reasoner must be set");
+			}
+			op.init();
+			return op;
+		}
 	}
 
 	public RhoDRDown(RhoDRDown op) {

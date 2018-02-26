@@ -58,4 +58,6 @@ public @interface ComponentAnn {
      * @return The OWLClassExpression of the component.
      */
     String description() default "";
+
+    Class builder() default Object.class;
 }
