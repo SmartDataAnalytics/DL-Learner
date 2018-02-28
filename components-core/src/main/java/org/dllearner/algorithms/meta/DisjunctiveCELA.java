@@ -71,6 +71,7 @@ public class DisjunctiveCELA extends AbstractCELA {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         la.setMaxExecutionTimeInSeconds(partialSolutionSearchTimeSeconds);
 
         reset();

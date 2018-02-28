@@ -27,10 +27,7 @@ import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -137,6 +134,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if(!initialized){
 			if(isRemote()) {
 				if(endpoint == null) {

@@ -18,8 +18,10 @@
  */
 package org.dllearner.algorithms.el;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "DisjunctiveHeuristic", shortName = "disjunctive_heuristic", version = 0.1)
 public class DisjunctiveHeuristic implements ELHeuristic {
@@ -44,6 +46,7 @@ public class DisjunctiveHeuristic implements ELHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 }

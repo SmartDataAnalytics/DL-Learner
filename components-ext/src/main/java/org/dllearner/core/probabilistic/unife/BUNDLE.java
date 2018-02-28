@@ -45,6 +45,7 @@ public class BUNDLE extends AbstractProbabilisticReasonerComponent implements OW
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         super.init();
         bundle.setBddFType(bddFType);
         bundle.setMaxExplanations(this.maxExplanations);

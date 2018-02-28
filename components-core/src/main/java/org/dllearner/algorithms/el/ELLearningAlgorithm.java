@@ -37,6 +37,7 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
@@ -112,6 +113,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// currently we use the stable heuristic
 		if(heuristic == null){
 			heuristic = new StableHeuristic();

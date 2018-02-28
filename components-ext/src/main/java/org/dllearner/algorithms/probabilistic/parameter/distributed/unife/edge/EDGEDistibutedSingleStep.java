@@ -24,6 +24,7 @@ public class EDGEDistibutedSingleStep extends AbstractEDGEDistributed {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         super.init();
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

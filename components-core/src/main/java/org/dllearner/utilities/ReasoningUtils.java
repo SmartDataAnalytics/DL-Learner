@@ -347,6 +347,7 @@ public class ReasoningUtils implements Component {
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 	public AbstractReasonerComponent getReasoner() {

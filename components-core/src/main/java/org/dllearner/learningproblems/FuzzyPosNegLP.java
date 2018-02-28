@@ -20,10 +20,12 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.SortedSet;
@@ -69,6 +71,7 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	 */
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// commented by Josue as now there's no need of + and - examples (more code need to be deleted in this sense)
 		// allExamples = Helper.union(positiveExamples, negativeExamples);
 		

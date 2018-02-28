@@ -18,6 +18,9 @@
  */
 package org.dllearner.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
  * 
@@ -25,6 +28,7 @@ package org.dllearner.core;
  *
  */
 public abstract class AbstractComponent implements Component {
+	protected Logger logger = LoggerFactory.getLogger(AbstractComponent.class);
 	
 	protected boolean initialized = false;
 	

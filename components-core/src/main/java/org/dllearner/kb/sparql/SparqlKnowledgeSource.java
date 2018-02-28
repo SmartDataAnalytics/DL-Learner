@@ -22,6 +22,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
@@ -42,6 +43,7 @@ import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -148,6 +150,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	 */
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		logger.info("SparqlModul: Collecting Ontology");
 		SimpleClock totalTime = new SimpleClock();
 		//SimpleClock extractionTime = new SimpleClock();

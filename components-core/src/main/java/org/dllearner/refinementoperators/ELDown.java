@@ -21,12 +21,14 @@ package org.dllearner.refinementoperators;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.*;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.*;
@@ -114,6 +116,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if(classHierarchy == null) {
 			classHierarchy = rs.getClassHierarchy();
 		}

@@ -128,6 +128,7 @@ public abstract class AbstractEDGE extends AbstractParameterLearningAlgorithm {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         try {
             edge.setAccuracy(accuracy);
             edge.setDiffLL("" + differenceLL);

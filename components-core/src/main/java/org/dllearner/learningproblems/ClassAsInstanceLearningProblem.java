@@ -76,6 +76,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		
 		initialized = true;
 	}

@@ -1,15 +1,13 @@
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -43,6 +41,7 @@ public class ExampleLoader extends AbstractComponent {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		Random r1 = randomSeed > -1 ? new Random(randomSeed) : new Random();
 		Random r2 = randomSeed > -1 ? new Random(randomSeed) : new Random();
 

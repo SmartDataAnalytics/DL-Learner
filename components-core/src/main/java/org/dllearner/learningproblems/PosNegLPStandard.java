@@ -24,6 +24,7 @@ import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.SortedSet;
 
@@ -72,6 +73,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		super.init();
 		
 		initialized = true;

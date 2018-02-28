@@ -164,6 +164,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		classPopularityMap = new HashMap<>();
 
 		// this is only done if the reasoner is setup via config file

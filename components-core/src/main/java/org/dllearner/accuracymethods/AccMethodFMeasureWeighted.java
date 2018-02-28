@@ -18,9 +18,11 @@
  */
 package org.dllearner.accuracymethods;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "Weighted FMeasure", shortName = "weighted.fmeasure", version = 0)
 public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodWithBeta {
@@ -36,6 +38,7 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodW
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 	
 	public AccMethodFMeasureWeighted() {

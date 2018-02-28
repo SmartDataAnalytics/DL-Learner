@@ -18,22 +18,22 @@
  */
 package org.dllearner.algorithms.decisiontrees.heuristics;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.learningproblems.PosNegUndLP;
+import org.dllearner.algorithms.decisiontrees.dsttdt.dst.DSTUtils;
+import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
+import org.dllearner.algorithms.decisiontrees.utils.Couple;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
+import org.dllearner.learningproblems.PosNegUndLP;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dllearner.algorithms.decisiontrees.dsttdt.dst.DSTUtils;
-import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
-import org.dllearner.algorithms.decisiontrees.utils.Couple;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 //import evaluation.Parameters;
 
@@ -93,6 +93,7 @@ public class TreeInductionHeuristics {
 	}
 
 	public void init(){
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		
 	}
 	

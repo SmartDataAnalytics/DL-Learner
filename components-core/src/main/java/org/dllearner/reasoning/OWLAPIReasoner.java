@@ -42,6 +42,7 @@ import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -125,6 +126,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public void init() throws ComponentInitException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         // reset variables (otherwise subsequent initialisation with
         // different knowledge sources will merge both)
         atomicConcepts = new TreeSet<>();

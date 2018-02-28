@@ -19,8 +19,10 @@
 package org.dllearner.algorithms.el;
 
 import com.google.common.collect.ComparisonChain;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.slf4j.LoggerFactory;
 
 /**
  * A stable comparator for search tree nodes. Stable means that the order
@@ -49,5 +51,7 @@ public class StableHeuristic implements ELHeuristic {
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() throws ComponentInitException {}
+	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
+	}
 }

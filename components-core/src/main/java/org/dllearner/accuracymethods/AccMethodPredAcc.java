@@ -18,8 +18,10 @@
  */
 package org.dllearner.accuracymethods;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.config.ConfigOption;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "Predictive Accuracy", shortName = "pred_acc", version = 0)
 public class AccMethodPredAcc implements AccMethodTwoValued, AccMethodWithBeta {
@@ -36,6 +38,7 @@ public class AccMethodPredAcc implements AccMethodTwoValued, AccMethodWithBeta {
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 	@Override

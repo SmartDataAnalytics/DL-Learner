@@ -18,9 +18,11 @@
  */
 package org.dllearner.refinementoperators;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
@@ -48,6 +50,7 @@ public class SynchronizedRefinementOperator extends AbstractRefinementOperator i
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		synchronized (delegate) {
 			delegate.init();
 		}

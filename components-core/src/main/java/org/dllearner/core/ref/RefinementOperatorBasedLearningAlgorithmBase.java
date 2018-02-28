@@ -18,10 +18,12 @@
  */
 package org.dllearner.core.ref;
 
-import java.util.SortedSet;
-
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
+import org.slf4j.LoggerFactory;
+
+import java.util.SortedSet;
 
 /**
  * @author Lorenz Buehmann
@@ -42,6 +44,7 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// compute the start node
 		startNode = computeStartNode();
 	}

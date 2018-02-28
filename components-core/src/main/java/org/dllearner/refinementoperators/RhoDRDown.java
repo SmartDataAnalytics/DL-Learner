@@ -287,7 +287,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, B
 		public Builder setFrequencyThreshold(int v) { op.setFrequencyThreshold(v); return this; }
 		public Builder setInstanceBasedDisjoints(boolean v) { op.setInstanceBasedDisjoints(v); return this; }
 		public Builder setObjectPropertyHierarchy(ObjectPropertyHierarchy v) { op.setObjectPropertyHierarchy(v); return this; }
-		public Builder setReasoner(AbstractReasonerComponent v) { op.setReasoner(v); return this; }
 		public Builder setStartClass(OWLClassExpression v) { op.setStartClass(v); return this; }
 		public Builder setSubHierarchy(ClassHierarchy v) { op.setClassHierarchy(v); return this; }
 		public Builder setUseAllConstructor(boolean v) { op.setUseAllConstructor(v); return this; }
@@ -343,6 +342,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, B
 
 	@Override
     public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		/*
 		if(initialized) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");

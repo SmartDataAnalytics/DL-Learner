@@ -25,6 +25,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -68,6 +69,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
 		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
 			logger.info("Loading examples by expression");

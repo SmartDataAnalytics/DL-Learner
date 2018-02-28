@@ -112,6 +112,7 @@ public abstract class AbstractLEAP extends AbstractPSLA {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 
         timers = new TreeMap<>();
 

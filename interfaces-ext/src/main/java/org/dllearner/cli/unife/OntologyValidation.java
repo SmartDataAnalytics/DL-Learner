@@ -61,6 +61,7 @@ public class OntologyValidation extends CLIBase2 {
 
     @Override
     public void init() throws IOException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         super.init();
     }
 

@@ -17,8 +17,10 @@
  */
 package org.dllearner.reasoning;
 
-import com.google.common.collect.*;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.common.collect.TreeMultimap;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -31,9 +33,6 @@ import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
-import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -45,8 +44,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -216,6 +213,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      */
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         if (baseReasoner == null) {
             baseReasoner = new OWLAPIReasoner(sources);
             baseReasoner.init();

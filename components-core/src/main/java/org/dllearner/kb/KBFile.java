@@ -20,6 +20,7 @@ package org.dllearner.kb;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
@@ -28,6 +29,7 @@ import org.dllearner.parser.ParseException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -77,6 +79,7 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
     	try {
     		if (url == null) {
     			/* Copyied from OWLFile */

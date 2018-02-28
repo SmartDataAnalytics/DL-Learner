@@ -19,10 +19,12 @@
 package org.dllearner.algorithms.ocel;
 
 import com.google.common.collect.ComparisonChain;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * This heuristic compares two nodes by computing a score
@@ -114,6 +116,7 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 	
 }

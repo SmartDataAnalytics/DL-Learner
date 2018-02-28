@@ -88,6 +88,7 @@ public class DummyParameterLearner extends AbstractEDGE {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         AbstractReasonerComponent rc = learningProblem.getReasoner();
         if (rc instanceof ClosedWorldReasoner) {
             sourcesOntology = ((ClosedWorldReasoner) rc).getReasonerComponent().getOntology();

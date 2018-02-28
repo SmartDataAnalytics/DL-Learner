@@ -1,7 +1,9 @@
 package org.dllearner.accuracymethods;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.learningproblems.Heuristics;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "Jaccard Coefficient", shortName = "jaccard", version = 0.1)
 public class AccMethodJaccard implements AccMethodTwoValued {
@@ -14,6 +16,7 @@ public class AccMethodJaccard implements AccMethodTwoValued {
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 	@Override

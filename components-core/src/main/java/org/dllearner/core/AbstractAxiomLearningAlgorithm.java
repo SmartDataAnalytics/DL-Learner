@@ -358,6 +358,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if(ks.isRemote()){
 			ksQef = ks.getQueryExecutionFactory();
 		} else {

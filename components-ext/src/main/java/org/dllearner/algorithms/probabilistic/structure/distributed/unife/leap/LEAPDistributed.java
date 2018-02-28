@@ -129,6 +129,7 @@ public class LEAPDistributed extends AbstractPSLA implements DistributedComponen
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         logger.debug("Start init() LEAPDistributed");
         currentIteration = 0;
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

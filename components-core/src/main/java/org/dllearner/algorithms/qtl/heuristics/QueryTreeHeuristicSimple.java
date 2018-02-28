@@ -18,14 +18,16 @@
  */
 package org.dllearner.algorithms.qtl.heuristics;
 
-import java.util.Set;
-
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 /**
  * A simple heuristic based which just takes the accuracy into account.
@@ -40,6 +42,7 @@ public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 	

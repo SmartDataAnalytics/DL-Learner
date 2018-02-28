@@ -153,6 +153,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 	@Override
 	public void init() throws ComponentInitException{
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		//inizialization
 		
 		// TODO Auto-generated method stub

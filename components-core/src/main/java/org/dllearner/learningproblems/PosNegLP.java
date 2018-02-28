@@ -26,11 +26,13 @@ import org.dllearner.accuracymethods.AccMethodPredAcc;
 import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
@@ -73,6 +75,8 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
+		logger.trace("initialising " + this);
 		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
 		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
 			logger.info("Loading examples by expression");

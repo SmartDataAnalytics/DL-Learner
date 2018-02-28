@@ -1,7 +1,9 @@
 package org.dllearner.accuracymethods;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.learningproblems.Heuristics;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "Predictive Accuracy without Weak elimination", shortName = "pred_acc.ocel", version = 0)
 public class AccMethodPredAccOCEL implements AccMethodTwoValued, AccMethodNoWeakness {
@@ -15,6 +17,7 @@ public class AccMethodPredAccOCEL implements AccMethodTwoValued, AccMethodNoWeak
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 	@Override

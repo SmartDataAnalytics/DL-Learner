@@ -18,13 +18,14 @@
  */
 package org.dllearner.kb.sparql.simple;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.*;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.annotations.OutVariable;
@@ -120,6 +121,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 
         if (endpointURL == null) {
             throw new ComponentInitException(

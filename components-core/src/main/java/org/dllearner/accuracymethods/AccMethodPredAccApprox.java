@@ -19,12 +19,14 @@
 package org.dllearner.accuracymethods;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,6 +36,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	final static Logger logger = Logger.getLogger(AccMethodPredAccApprox.class);
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
 	}
 	// approximation and F-measure

@@ -22,14 +22,15 @@
 package org.dllearner.algorithms.qtl.heuristics;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.QueryTreeScore;
-
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.ResultSet;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -52,6 +53,7 @@ public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 

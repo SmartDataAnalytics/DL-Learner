@@ -45,6 +45,7 @@ import org.dllearner.utilities.TreeUtils;
 import org.dllearner.utilities.datastructures.SynchronizedSearchTree;
 import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
@@ -237,6 +238,7 @@ public class PCELOE extends AbstractCELA {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 

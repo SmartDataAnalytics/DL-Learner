@@ -19,9 +19,11 @@
 package org.dllearner.algorithms.celoe;
 
 import org.dllearner.core.AbstractHeuristic;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.slf4j.LoggerFactory;
 
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
@@ -52,6 +54,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 
 		initialized = true;
 	}

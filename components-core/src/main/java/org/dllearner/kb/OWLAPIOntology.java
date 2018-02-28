@@ -19,12 +19,14 @@
 package org.dllearner.kb;
 
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.Component;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
@@ -69,6 +71,7 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	@Override
 	public void init()
 	{
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 

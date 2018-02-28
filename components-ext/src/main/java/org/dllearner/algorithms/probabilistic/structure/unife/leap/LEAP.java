@@ -51,6 +51,7 @@ public class LEAP extends AbstractLEAP {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         super.init();
     }
 

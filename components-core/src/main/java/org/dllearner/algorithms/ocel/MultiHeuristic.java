@@ -26,6 +26,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -130,6 +131,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// nothing to do here
 	}	
 	

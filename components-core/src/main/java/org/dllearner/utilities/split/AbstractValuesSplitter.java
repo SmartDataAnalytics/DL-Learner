@@ -18,22 +18,16 @@
  */
 package org.dllearner.utilities.split;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.Lists;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
 /**
  * Abstract class for values splitting implementation.
@@ -60,6 +54,7 @@ public abstract class AbstractValuesSplitter implements ValuesSplitter{
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 	
 	/**

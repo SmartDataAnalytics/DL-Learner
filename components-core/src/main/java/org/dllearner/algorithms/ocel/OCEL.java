@@ -273,6 +273,7 @@ public class OCEL extends AbstractCELA {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// exit with a ComponentInitException if the reasoner is unsupported for this learning algorithm
 		if (getReasoner().getReasonerType() == ReasonerType.DIG) {
 			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + AnnComponentManager.getName(this));

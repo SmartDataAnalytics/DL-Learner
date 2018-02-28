@@ -31,6 +31,7 @@ import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -138,6 +139,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		heuristic = new DisjunctiveHeuristic();
 		candidates = new TreeSet<>(heuristic);
 		trees = new TreeSet<>(new ELDescriptionTreeComparator());

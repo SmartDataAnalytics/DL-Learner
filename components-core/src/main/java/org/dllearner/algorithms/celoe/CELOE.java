@@ -243,6 +243,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 			

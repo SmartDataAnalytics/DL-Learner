@@ -2,6 +2,7 @@ package org.dllearner.confparser.json;
 
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.confparser.AbstractConfParser;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
@@ -82,6 +83,7 @@ public class ConfParserJson extends AbstractConfParser {
 	}
 
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if (isInitialized()) return;
 
 		if (jsonMap == null) {

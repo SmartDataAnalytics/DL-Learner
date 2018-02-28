@@ -1,8 +1,10 @@
 package org.dllearner.utilities.owl;
 
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.config.ConfigOption;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic configurable length metric for class expression length calculation
@@ -238,6 +240,7 @@ public class OWLClassExpressionLengthMetric extends AbstractComponent {
 
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 

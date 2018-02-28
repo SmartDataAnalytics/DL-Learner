@@ -196,6 +196,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		logger.info("Initializing...");
 		if(!(learningProblem instanceof PosNegLP)){
 			throw new IllegalArgumentException("Only PosNeg learning problems are supported");

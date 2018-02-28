@@ -18,24 +18,16 @@
  */
 package org.dllearner.algorithms;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Simple example learning algorithm exhaustively creating complex class
@@ -80,6 +72,7 @@ public class NaiveALLearner extends AbstractCELA{
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         generatedDescriptions = new HashMap<>();
         
         // start with owl:Thing

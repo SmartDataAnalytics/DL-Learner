@@ -20,11 +20,13 @@ package org.dllearner.refinementoperators;
 
 import com.google.common.collect.Lists;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -248,6 +250,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 

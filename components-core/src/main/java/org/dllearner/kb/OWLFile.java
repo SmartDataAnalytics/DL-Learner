@@ -21,6 +21,7 @@ package org.dllearner.kb;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.annotations.NoConfigOption;
@@ -30,6 +31,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -93,6 +95,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
       */
     @Override
     public void init() throws ComponentInitException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
     	setReasoning(getReasoningString());
         if (sparql != null) {
             StringBuilder sb = new StringBuilder();

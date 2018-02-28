@@ -44,6 +44,7 @@ public class EDGEDistributedDynamic extends AbstractEDGEDistributed {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         fullyInitialized = false;
         super.init();
         if (maxSenderThreads == 0) {

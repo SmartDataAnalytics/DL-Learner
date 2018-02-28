@@ -18,11 +18,11 @@
  */
 package org.dllearner.core;
 
-import java.util.Comparator;
-
-import org.dllearner.algorithms.celoe.OENode;
-
 import com.google.common.collect.ComparisonChain;
+import org.dllearner.algorithms.celoe.OENode;
+import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
 
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
@@ -38,7 +38,7 @@ public abstract class AbstractHeuristic extends AbstractComponent implements Heu
 	
 	@Override
 	public void init() throws ComponentInitException {
-
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 	

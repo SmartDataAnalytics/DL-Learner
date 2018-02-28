@@ -150,6 +150,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// TODO Auto-generated method stub
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();

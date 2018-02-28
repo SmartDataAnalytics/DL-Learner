@@ -20,15 +20,13 @@ package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.NotImplementedException;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.SortedSet;
@@ -79,6 +77,7 @@ public class PosNegLPStrict extends PosNegLP {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		super.init();
 		// compute neutral examples, i.e. those which are neither positive
 		// nor negative (we have to take care to copy sets instead of 

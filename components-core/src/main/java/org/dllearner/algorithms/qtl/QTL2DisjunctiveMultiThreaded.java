@@ -202,7 +202,7 @@ public class QTL2DisjunctiveMultiThreaded extends AbstractCELA implements Clonea
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		logger.info("Initializing...");
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if(!(learningProblem instanceof PosNegLP)){
 			throw new IllegalArgumentException("Only PosNeg learning problems are supported");
 		}

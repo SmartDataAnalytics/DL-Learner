@@ -18,8 +18,10 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "Lexicographic Heuristic", shortName = "lexheuristic", version = 0.1)
 public class LexicographicHeuristic implements ExampleBasedHeuristic {
@@ -110,6 +112,7 @@ public class LexicographicHeuristic implements ExampleBasedHeuristic {
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// nothing to do
 	}
 }

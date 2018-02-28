@@ -37,6 +37,7 @@ public class ExpressionValidation extends CLIBase2 {
 
 	@Override
 	public void init() throws IOException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if (context == null) {
 			super.init();
 

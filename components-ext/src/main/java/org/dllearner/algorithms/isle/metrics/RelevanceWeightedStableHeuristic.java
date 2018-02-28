@@ -127,6 +127,7 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+	    LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 	}
 
 }

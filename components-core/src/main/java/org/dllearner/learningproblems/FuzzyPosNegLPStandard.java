@@ -19,6 +19,7 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
@@ -82,6 +83,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	
 	@Override
 	public void init() {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		super.init();
 		
 		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {

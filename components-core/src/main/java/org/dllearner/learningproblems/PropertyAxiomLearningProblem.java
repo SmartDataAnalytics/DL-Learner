@@ -18,12 +18,10 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.*;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLPropertyAxiom;
+import org.slf4j.LoggerFactory;
 
 @ComponentAnn(name = "PropertyAxiomLearningProblem", shortName = "palp", version = 0.6)
 public class PropertyAxiomLearningProblem<T extends OWLPropertyAxiom> extends AbstractLearningProblem<AxiomScore, T, EvaluatedAxiom<T>>{
@@ -32,6 +30,7 @@ public class PropertyAxiomLearningProblem<T extends OWLPropertyAxiom> extends Ab
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// TODO Auto-generated method stub
 		throw new ComponentInitException("not implemented");
 	}

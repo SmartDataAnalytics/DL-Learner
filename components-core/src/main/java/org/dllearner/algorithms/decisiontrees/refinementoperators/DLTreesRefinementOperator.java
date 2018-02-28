@@ -260,6 +260,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		// TODO Auto-generated method stub
 
 		//		allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());

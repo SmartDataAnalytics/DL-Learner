@@ -55,6 +55,7 @@ public class EDGE extends AbstractEDGE {
 
     @Override
     public void init() throws ComponentInitException {
+	LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
         if (edge == null) {
             String msg = "Underlying EDGE class not instantiated";
             logger.error(msg);

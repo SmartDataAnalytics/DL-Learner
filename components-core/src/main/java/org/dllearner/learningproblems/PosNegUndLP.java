@@ -18,13 +18,11 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.SortedSet;
@@ -90,6 +88,7 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	
 	@Override
 	public void init() throws ComponentInitException {
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		initialized = true;
 	}
 

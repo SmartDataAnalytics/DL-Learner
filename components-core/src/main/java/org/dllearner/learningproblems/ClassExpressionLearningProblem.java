@@ -109,7 +109,7 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 
 	@Override
 	public void init() throws ComponentInitException {
-
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		if (accuracyMethod != null && accuracyMethod instanceof AccMethodPredAccApprox) {
 			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}

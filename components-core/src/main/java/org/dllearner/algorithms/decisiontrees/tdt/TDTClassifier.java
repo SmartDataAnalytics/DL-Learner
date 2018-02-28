@@ -18,29 +18,22 @@
  */
 package org.dllearner.algorithms.decisiontrees.tdt;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
-
-//import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.refinementoperators.RefinementOperator;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
 import org.dllearner.algorithms.decisiontrees.utils.Couple;
 import org.dllearner.algorithms.decisiontrees.utils.Npla;
 import org.dllearner.algorithms.decisiontrees.utils.Split;
+import org.dllearner.core.*;
 import org.dllearner.learningproblems.PosNegUndLP;
+import org.dllearner.refinementoperators.RefinementOperator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+//import org.dllearner.algorithms.celoe.CELOE;
 //import evaluation.Parameters;
 //import knowledgeBasesHandler.KnowledgeBase;
 @ComponentAnn(name="TDT", shortName="tdt", version=1.0, description="A Terminological Decision Tree")
@@ -74,6 +67,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 	
 	@Override
 	public void init() throws ComponentInitException{
+		LoggerFactory.getLogger(Component.class).trace("initialising {}", this);
 		
 		super.init();
 //		if(operator==null){
