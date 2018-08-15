@@ -368,6 +368,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 //		ksReasoner.supportsSPARQL1_1();
 		reasoner = ksReasoner;
+		
+		initialized = true;
 	}
 	
 	/**

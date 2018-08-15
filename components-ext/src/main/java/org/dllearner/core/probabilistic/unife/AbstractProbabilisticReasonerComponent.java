@@ -56,6 +56,8 @@ public abstract class AbstractProbabilisticReasonerComponent extends AbstractCom
     
     public void init() throws ComponentInitException {
         ontology = OWLUtils.mergeOntologies(sources);
+        
+        initialized = true;
     }
 
     /**

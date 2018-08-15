@@ -85,6 +85,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 //			((TDTRefinementOperatorWrapper)operator).setLp(learningProblem);
 //			((TDTRefinementOperatorWrapper)operator).setRs(reasoner);
 //		}
+		initialized = true;
 	}
 	
 	

@@ -236,6 +236,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
         kernel.setPredictProbability(predictProbability);
         kernel.init();
 
+        initialized = true;
         logger.info("Finished workflow initialization.");
     }
 

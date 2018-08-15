@@ -1,4 +1,4 @@
-package org.dllearner.learningproblems;
+package org.dllearner.accuracymethods;
 
 /**
  * Implementations of generalised measures according to method in A Note on the Evaluation of Inductive Concept Classification Procedures
