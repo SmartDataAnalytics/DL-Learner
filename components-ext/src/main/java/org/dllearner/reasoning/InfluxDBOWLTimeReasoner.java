@@ -40,6 +40,7 @@ import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
@@ -56,7 +57,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	private String dbUser = "root";
 	private String dbPassword = "root";
 	// FIXME: This is just to get started; needs to be properly refactored
-	private ClosedWorldReasoner fileReasoner;
+	protected ClosedWorldReasoner fileReasoner;
 	static final String instantTable = "instant";
 	static final String intervalTable = "interval";
 	static final String timeColumn = "time";
@@ -78,8 +79,9 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	@Override
 	public void init() throws ComponentInitException {
 		super.init();
-		influxDB = InfluxDBFactory.connect("http://" + dbHostString + ":" + dbPort, dbUser, dbPassword);
-		influxDB.createDatabase(dbName);
+
+		if (influxDB == null)
+			initInfluxDB();
 
 		try {
 			KnowledgeSource owlTimeKS = new OWLAPIOntology(OWLTimeOntology.getTimeOntology());
@@ -101,6 +103,11 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 
 		indiv2dateTimeDescription = new HashMap<OWLIndividual, OWLAnonymousIndividual>();
 		dateTimeDescription2Individual = new HashMap<OWLAnonymousIndividual, OWLIndividual>();
+	}
+
+	private void initInfluxDB() {
+		influxDB = InfluxDBFactory.connect("http://" + dbHostString + ":" + dbPort, dbUser, dbPassword);
+		influxDB.createDatabase(dbName);
 	}
 
 	/**
@@ -181,17 +188,17 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 		return objProps;
 	}
 
-	// TODO: This is a first shot. To be checked again!
-	private long literalToTimestamp(OWLLiteral literal) {
+	protected static long literalToTimestamp(OWLLiteral literal) {
 		DateTime dateTimeVal = DateTime.parse(literal.getLiteral());
 
 		return dateTimeVal.getMillis();
 	}
 
-	private OWLLiteral instant2DateTimeStampLiteral(TimeInstant instant) {
-		return df.getOWLLiteral(
-				instant.toString(),  // TODO: not sure whether this is a stable way to get an xsd:dateTimeStamp-compatible string representation
-				OWL2Datatype.XSD_DATE_TIME_STAMP);
+	protected static OWLLiteral instant2DateTimeStampLiteral(TimeInstant instant) {
+		return new OWLLiteralImpl(
+				instant.time.toString(),
+				null,
+				new OWLDatatypeImpl(OWL2Datatype.XSD_DATE_TIME_STAMP.getIRI()));
 	}
 
 	private String toString(OWLIndividual i) {
@@ -205,7 +212,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	/**
 	 * TODO: Maybe add caching here.
 	 */
-	private List<TimeInstant> queryInstants() {
+	protected List<TimeInstant> queryInstants() {
 		String command = "SELECT * FROM " + instantTable;
 		Query query = new Query(command, dbName);
 		QueryResult queryRes = influxDB.query(query);
@@ -227,6 +234,10 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 		List<TimeInterval> timeIntervals = resultMapper.toPOJO(queryRes, TimeInterval.class);
 
 		return timeIntervals;
+	}
+
+	protected void setInfluxDB(InfluxDB influxDB) {
+		this.influxDB = influxDB;
 	}
 
 	public void setDBName(String dbName) {
@@ -283,17 +294,18 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	 * be added to the set of sub classes.
 	 *
 	 * TODO: How to handle non-proper intervals, i.e. owl-time:Interval?
+	 * TODO: Handle complex class expressions
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		SortedSet<OWLClassExpression> subClss = fileReasoner.getSubClasses(concept);
 
 		// this.timeIntervallClassExpression == owl-time:Instant
-		if (timeIntervallClassExpression != null) {
-			if (concept.equals(timeIntervallClassExpression))
+		if (timeIntervalClassExpression != null) {
+			if (concept.equals(timeIntervalClassExpression))
 				subClss.add(OWLTimeOntology.properInterval);
 			else if (concept.equals(OWLTimeOntology.properInterval))
-				subClss.add(timeIntervallClassExpression);
+				subClss.add(timeIntervalClassExpression);
 		}
 
 		// this.timeInstantClassExpression == owl-time:ProperInterval
@@ -310,7 +322,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	/**
 	 * The method returns all super classes of a given class expression and
 	 * also considers the equalities
-	 * - this.timeIntervallClassExpression == owl-time:Instant
+	 * - this.timeIntervalClassExpression == owl-time:Instant
 	 * - this.timeInstantClassExpression == owl-time:ProperInterval
 	 *
 	 * So if the given class is one of those, the equivalent class has to
@@ -322,20 +334,21 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		SortedSet<OWLClassExpression> superClss = fileReasoner.getSuperClasses(concept);
 
-		// this.timeIntervallClassExpression == owl-time:Instant
-		if (timeIntervallClassExpression != null) {
-			if (concept.equals(timeIntervallClassExpression))
-				superClss.add(OWLTimeOntology.properInterval);
+		// this.timeIntervallClassExpression == owl-time:ProperInterval
+		if (timeIntervalClassExpression != null) {
+			if (concept.equals(timeIntervalClassExpression))
+				superClss.add(OWLTimeOntology.interval);
 			else if (concept.equals(OWLTimeOntology.properInterval))
-				superClss.add(timeIntervallClassExpression);
+				superClss.addAll(fileReasoner.getSuperClasses(timeIntervalClassExpression));
 		}
 
-		// this.timeInstantClassExpression == owl-time:ProperInterval
+		// this.timeInstantClassExpression == owl-time:Instant
 		if (timeInstantClassExpression != null) {
 			if (concept.equals(timeInstantClassExpression))
-				superClss.add(OWLTimeOntology.instant);
+				superClss.add(OWLTimeOntology.temporalEntity);
 			else if (concept.equals(OWLTimeOntology.instant))
-				superClss.add(timeInstantClassExpression);
+				superClss.addAll(
+						fileReasoner.getSuperClasses(timeInstantClassExpression));
 		}
 
 		return superClss;
@@ -440,12 +453,29 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	protected Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 
+		System.out.println("getDatatypeMembersImpl called");
 		Map<OWLIndividual, SortedSet<OWLLiteral>> members =
 				fileReasoner.getDatatypeMembersImpl(datatypeProperty);
 
 		// :day
 		if (datatypeProperty.equals(OWLTimeOntology.day)) {
-			throw new RuntimeException("Not implemented, yet");
+			for (TimeInstant timeInstant : queryInstants()) {
+				int dayOfMonth = DateTime.parse(timeInstant.time.toString()).dayOfMonth().get();
+				OWLIndividual indiv = df.getOWLNamedIndividual(IRI.create(timeInstant.individual));
+
+				OWLAnonymousIndividual dtimeDescr = indiv2dateTimeDescription.get(indiv);
+				if (dtimeDescr == null) {
+					dtimeDescr = addDateTimeDescriptionToIndividual(indiv);
+				}
+
+				System.out.println("###################################################");
+				updateMembersMap(
+						dtimeDescr,
+						df.getOWLLiteral(
+								Integer.toString(dayOfMonth),
+								df.getOWLDatatype(XSDVocabulary.G_DAY.getIRI())),
+						members);
+			}
 		}
 		// :dayOfYear
 		else if (datatypeProperty.equals(OWLTimeOntology.dayOfYear)) {
@@ -826,8 +856,8 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 
 		// TODO: What about time:Interval?
 		else if (concept.equals(OWLTimeOntology.properInterval) &&
-				timeIntervallClassExpression != null)
-			return fileReasoner.getIndividuals(timeIntervallClassExpression);
+				timeIntervalClassExpression != null)
+			return fileReasoner.getIndividuals(timeIntervalClassExpression);
 
 		else
 			return fileReasoner.getIndividualsImpl(concept);
@@ -846,8 +876,8 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 		if (concept.equals(OWLTimeOntology.instant) && timeInstantClassExpression != null)
 			return fileReasoner.hasTypeImpl(timeInstantClassExpression, individual);
 
-		else if (concept.equals(OWLTimeOntology.properInterval) && timeIntervallClassExpression != null)
-			return fileReasoner.hasTypeImpl(timeIntervallClassExpression, individual);
+		else if (concept.equals(OWLTimeOntology.properInterval) && timeIntervalClassExpression != null)
+			return fileReasoner.hasTypeImpl(timeIntervalClassExpression, individual);
 
 		else
 			return fileReasoner.hasTypeImpl(concept, individual);
