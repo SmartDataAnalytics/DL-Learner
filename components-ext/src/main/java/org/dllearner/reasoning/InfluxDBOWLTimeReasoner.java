@@ -94,7 +94,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 		fileReasoner.init();
 
 		// TOOD: How to handle the mixed case of time instants *and* time intervals
-		if (getTimeIntervallClassExpression() != null)
+		if (getTimeIntervalClassExpression() != null)
 			// FIXME
 			throw new RuntimeException("Not implemented, yet. Intervals will be "
 					+ "implemted when reasoning over time instants works");
@@ -287,7 +287,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	/**
 	 * The method returns all sub classes of a given class expression and
 	 * also considers the equalities
-	 * - this.timeIntervallClassExpression == owl-time:Instant
+	 * - this.timeIntervalClassExpression == owl-time:Instant
 	 * - this.timeInstantClassExpression == owl-time:ProperInterval
 	 *
 	 * So if the given class is one of those, the equivalent class has to
@@ -300,7 +300,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	public SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		SortedSet<OWLClassExpression> subClss = fileReasoner.getSubClasses(concept);
 
-		// this.timeIntervallClassExpression == owl-time:Instant
+		// this.timeIntervalClassExpression == owl-time:Instant
 		if (timeIntervalClassExpression != null) {
 			if (concept.equals(timeIntervalClassExpression))
 				subClss.add(OWLTimeOntology.properInterval);
@@ -334,7 +334,7 @@ public class InfluxDBOWLTimeReasoner extends OWLTimeReasoner implements AllenRel
 	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		SortedSet<OWLClassExpression> superClss = fileReasoner.getSuperClasses(concept);
 
-		// this.timeIntervallClassExpression == owl-time:ProperInterval
+		// this.timeIntervalClassExpression == owl-time:ProperInterval
 		if (timeIntervalClassExpression != null) {
 			if (concept.equals(timeIntervalClassExpression))
 				superClss.add(OWLTimeOntology.interval);

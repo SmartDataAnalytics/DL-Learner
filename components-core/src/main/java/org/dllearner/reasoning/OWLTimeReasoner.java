@@ -1,23 +1,16 @@
 package org.dllearner.reasoning;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * The Reasoner component that implements a virtual OWL-Time.
@@ -27,7 +20,7 @@ import org.semanticweb.owlapi.model.OWLProperty;
 @ComponentAnn(description = "OWL-Time reasoner", name = "OWL-Time Reasoner", shortName = "owltimere", version = 0.1)
 abstract class OWLTimeReasoner extends AbstractReasonerComponent implements TemporalOWLReasoner {
 	protected List<OWLProperty> dateTimePropertyPath;
-	protected OWLClassExpression timeIntervallClassExpression;
+	protected OWLClassExpression timeIntervalClassExpression;
 	protected OWLClassExpression timeInstantClassExpression;
 	
 	@Override
@@ -35,7 +28,7 @@ abstract class OWLTimeReasoner extends AbstractReasonerComponent implements Temp
 		if (dateTimePropertyPath == null)
 			throw new RuntimeException("A property path to the actual "
 					+ "date time information must be set!");
-		else if ((timeIntervallClassExpression == null) && (timeInstantClassExpression == null))
+		else if ((timeIntervalClassExpression == null) && (timeInstantClassExpression == null))
 			throw new RuntimeException("A class containing all time intervall or "
 					+ "all time instance individuals must be set!");
 	}
@@ -123,12 +116,12 @@ abstract class OWLTimeReasoner extends AbstractReasonerComponent implements Temp
 		this.dateTimePropertyPath = dateTimePropertyPath;
 	}
 
-	public OWLClassExpression getTimeIntervallClassExpression() {
-		return timeIntervallClassExpression;
+	public OWLClassExpression getTimeIntervalClassExpression() {
+		return timeIntervalClassExpression;
 	}
 
-	public void setTimeIntervallClassExpression(OWLClassExpression timeIntervallClassExpression) {
-		this.timeIntervallClassExpression = timeIntervallClassExpression;
+	public void setTimeIntervalClassExpression(OWLClassExpression timeIntervalClassExpression) {
+		this.timeIntervalClassExpression = timeIntervalClassExpression;
 	}
 
 	public OWLClassExpression getTimeInstantClassExpression() {
