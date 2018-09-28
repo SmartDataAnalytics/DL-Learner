@@ -13,6 +13,7 @@ Documentation for DL-Learner:
  * manual: http://dl-learner.org/Resources/Documents/manual.pdf
  * components & config options: http://tiny.cc/dllearner-options
  * Javadoc: http://dl-learner.org/javadoc
+ * Docker: https://github.com/SmartDataAnalytics/DL-Learner/tree/develop/docker
 
 DL-Learner is Open Source and licensed under the GNU General Public License 3.
 (Copyright (c) 2007-2018, Jens Lehmann).
