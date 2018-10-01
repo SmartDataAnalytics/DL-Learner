@@ -19,7 +19,7 @@
         <solr.version>7.1.0</solr.version>
         <owlapi.version>4.5.0</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
-        <jena.sparql.api.version>3.5.0-2</jena.sparql.api.version>
+        <jena.sparql.api.version>3.6.0-3</jena.sparql.api.version>
 		<pellet.version>2.5.0-dllearner</pellet.version>
 	</properties>
 
@@ -382,6 +382,12 @@
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>owlapi-distribution</artifactId>
 				<version>${owlapi.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpclient-cache</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
@@ -463,6 +469,12 @@
 				<groupId>org.semanticweb.elk</groupId>
 				<artifactId>elk-owlapi</artifactId>
 				<version>0.4.3-dllearner</version>
+				<exclusions>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- JFact -->
 			<dependency>
@@ -664,6 +676,12 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>23.4-jre</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>jsr305</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -799,6 +817,11 @@
 				<version>2.9.9</version>
 			</dependency>
 			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.6</version>
+			</dependency>
+			<dependency>
 				<groupId>edu.berkeley.compbio</groupId>
 				<artifactId>jlibsvm</artifactId>
 				<version>0.911</version>
@@ -807,12 +830,46 @@
 						<artifactId>google-collections</artifactId>
 						<groupId>com.google.collections</groupId>
 					</exclusion>
+					<exclusion>
+						<groupId>commons-collections</groupId>
+						<artifactId>commons-collections</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 				<version>3.20</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-httpclient</artifactId>
+						<groupId>commons-httpclient</groupId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-cli</groupId>
+						<artifactId>commons-cli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.openrdf.sesame</groupId>
+						<artifactId>sesame-runtime</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.openrdf.sesame</groupId>
+						<artifactId>sesame-rio-n3</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.openrdf.sesame</groupId>
+						<artifactId>sesame-rio-turtle</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.openrdf.sesame</groupId>
+						<artifactId>sesame-rio-rdfxml</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -828,11 +885,47 @@
 				<groupId>org.jgrapht</groupId>
 				<artifactId>jgrapht-ext</artifactId>
 				<version>1.1.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.tinyjee.jgraphx</groupId>
+						<artifactId>jgraphx</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jgrapht</groupId>
 				<artifactId>jgrapht-io</artifactId>
 				<version>1.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.8.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jsonld-java</groupId>
+				<artifactId>jsonld-java</artifactId>
+				<version>0.11.1</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.3</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.6</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
