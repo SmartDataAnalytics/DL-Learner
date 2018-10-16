@@ -219,6 +219,17 @@
                     <version>3.7.2</version>
             </dependency>
         -->
+        <!-- dependencies for spatial reasoning support -->
+        <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <!-- /dependencies for spatial reasoning support -->
     </dependencies>
     <build>
         <plugins>

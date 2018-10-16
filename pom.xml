@@ -651,7 +651,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.1.4</version>
+				<version>42.2.5</version>
 			</dependency>
 
 			<dependency>
@@ -834,6 +834,21 @@
 				<artifactId>jgrapht-io</artifactId>
 				<version>1.1.0</version>
 			</dependency>
+			<!-- dependencies for spatial reasoning support -->
+			<dependency>
+				<groupId>org.postgis</groupId>
+				<artifactId>postgis-jdbc</artifactId>
+				<version>1.3.3</version>
+				<scope>compile</scope>
+				<!-- see https://stackoverflow.com/questions/29181574/caused-by-java-lang-nosuchmethoderror-org-postgresql-core-baseconnection-geten -->
+				<exclusions>
+					<exclusion>
+						<groupId>org.postgis</groupId>
+						<artifactId>postgis-stubs</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- /dependencies for spatial reasoning support -->
 		</dependencies>
 	</dependencyManagement>
 
