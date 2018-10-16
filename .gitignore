@@ -10,3 +10,5 @@ cache
 log
 *.idea
 *.iml
+
+*catalog-v001.xml
