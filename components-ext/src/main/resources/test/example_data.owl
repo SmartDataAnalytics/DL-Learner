@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://dl-learner.org/ont/spatial-test#"
+     xml:base="http://dl-learner.org/ont/spatial-test"
+     xmlns:geosparql="http://www.opengis.net/ont/geosparql#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://dl-learner.org/ont/spatial-test#">
+        <owl:imports rdf:resource="http://www.opengis.net/ont/geosparql"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#AreaFeature -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial-test#AreaFeature">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#Building -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial-test#Building">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial-test#AreaFeature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#LineFeature -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial-test#LineFeature">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#PointFeature -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial-test#PointFeature">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#StationBuilding -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial-test#StationBuilding">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial-test#Building"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#StationBuilding"/>
+        <rdfs:label>Building of Bahnhof Dresden Neustadt</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#building_bhf_neustadt_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#building_bhf_neustadt_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">MULTIPOLYGON (((13.7402960 51.0662938, 13.7408276 51.0666403, 13.7411104 51.0664646, 13.7414645 51.0662446, 13.7414351 51.0662267, 13.7416151 51.0661131, 13.7402102 51.0652186, 13.7400899 51.0651327, 13.7400881 51.0651317, 13.7400572 51.0651557, 13.7400380 51.0651711, 13.7399744 51.0652213, 13.7399527 51.0652397, 13.7399070 51.0652756, 13.7398873 51.0652920, 13.7398248 51.0653416, 13.7397929 51.0653670, 13.7397554 51.0653969, 13.7396414 51.0654872, 13.7394854 51.0656130, 13.7394344 51.0656542, 13.7393881 51.0656915, 13.7393710 51.0657043, 13.7402960 51.0662938, 13.7402960 51.0662938)), ((13.7414559 51.0656063, 13.7416576 51.0657348, 13.7418413 51.0658517, 13.7418546 51.0658435, 13.7418611 51.0658476, 13.7418691 51.0658426, 13.7418770 51.0658476, 13.7418805 51.0658455, 13.7419615 51.0658970, 13.7419583 51.0658990, 13.7419665 51.0659041, 13.7419578 51.0659095, 13.7419650 51.0659141, 13.7419502 51.0659232, 13.7420517 51.0659879, 13.7420479 51.0659902, 13.7421557 51.0660588, 13.7421589 51.0660568, 13.7421644 51.0660603, 13.7419084 51.0662191, 13.7416793 51.0660733, 13.7416425 51.0660961, 13.7416575 51.0661056, 13.7416422 51.0661151, 13.7416272 51.0661056, 13.7416151 51.0661131, 13.7402102 51.0652186, 13.7400899 51.0651327, 13.7401000 51.0651282, 13.7401102 51.0651279, 13.7401154 51.0651243, 13.7401347 51.0651122, 13.7403746 51.0649634, 13.7404201 51.0649352, 13.7404349 51.0649446, 13.7404411 51.0649407, 13.7404558 51.0649501, 13.7404621 51.0649463, 13.7404840 51.0649602, 13.7405090 51.0649762, 13.7405038 51.0649794, 13.7405244 51.0649925, 13.7405174 51.0649968, 13.7405318 51.0650060, 13.7405272 51.0650088, 13.7406927 51.0651142, 13.7408943 51.0652425, 13.7408992 51.0652395, 13.7409139 51.0652488, 13.7409273 51.0652405, 13.7409615 51.0652622, 13.7409598 51.0652672, 13.7409610 51.0652715, 13.7409533 51.0652763, 13.7409813 51.0652941, 13.7410231 51.0653207, 13.7410312 51.0653156, 13.7410390 51.0653206, 13.7410447 51.0653170, 13.7410793 51.0653391, 13.7410732 51.0653428, 13.7410935 51.0653557, 13.7410814 51.0653632, 13.7411273 51.0653924, 13.7411394 51.0653849, 13.7411718 51.0654055, 13.7411592 51.0654133, 13.7412071 51.0654438, 13.7412194 51.0654362, 13.7412529 51.0654576, 13.7412400 51.0654656, 13.7412816 51.0654921, 13.7412875 51.0654884, 13.7413065 51.0655005, 13.7413185 51.0654931, 13.7413510 51.0655138, 13.7413584 51.0655185, 13.7413576 51.0655252, 13.7413618 51.0655280, 13.7413530 51.0655335, 13.7413792 51.0655502, 13.7414137 51.0655721, 13.7414206 51.0655675, 13.7414246 51.0655679, 13.7414292 51.0655700, 13.7414384 51.0655704, 13.7414756 51.0655941, 13.7414559 51.0656063)))</geosparql:asWKT>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
