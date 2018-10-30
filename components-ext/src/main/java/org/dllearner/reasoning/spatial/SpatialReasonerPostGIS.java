@@ -227,6 +227,32 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsWhichAreNonTangentialProperPartOf(OWLIndividual individual) {
         throw new RuntimeException("Not implemented, yet");
+
+    }
+
+    @Override
+    public boolean isSpatialSumOf(OWLIndividual sum, Set<OWLIndividual> parts) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isEquivalentToUniversalSpatialRegion(OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isComplementOf(OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isIntersectionOf(OWLIndividual intersection, OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isDifferenceOf(OWLIndividual difference, OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
     }
 
     @Override
