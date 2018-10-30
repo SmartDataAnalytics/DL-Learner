@@ -1,9 +1,13 @@
 package org.dllearner.reasoning.spatial;
 
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.annotations.Unstable;
+import org.dllearner.reasoning.spatial.model.SpatialIndividual;
+import org.dllearner.reasoning.spatial.model.SpatialSum;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.sql.ResultSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -44,6 +48,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      *
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getConnectedIndividuals(OWLIndividual individual);
 
     /**
@@ -54,6 +59,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      *
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areConnected(OWLIndividual individual1, OWLIndividual individual2);
 
     // DC
@@ -65,6 +71,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * Disconnected(x, y) iff. not Connected(x, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getDisconnectedIndividuals(OWLIndividual individual);
 
     /**
@@ -76,6 +83,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * Disconnected(x, y) iff. not Connected(x, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areDisconnected(OWLIndividual individual1, OWLIndividual individual2);
 
     // P
@@ -87,6 +95,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getIndividualsWhichArePartOf(OWLIndividual individual);
 
     /**
@@ -99,6 +108,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean isPartOf(OWLIndividual part, OWLIndividual whole);
 
     // PP
@@ -111,6 +121,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getIndividualsWhichAreProperPartOf(OWLIndividual individual);
 
     /**
@@ -124,6 +135,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean isProperPartOf(OWLIndividual part, OWLIndividual whole);
 
     // EQ
@@ -136,6 +148,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getSpatiallyEqualIndividuals(OWLIndividual individual);
 
     /**
@@ -148,6 +161,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areSpatiallyEqual(OWLIndividual individual1, OWLIndividual individual2);
 
     // O
@@ -160,6 +174,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getOverlappingIndividuals(OWLIndividual individual);
 
     /**
@@ -172,6 +187,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areOverlapping(OWLIndividual individual1, OWLIndividual individual2);
 
     // DC
@@ -185,6 +201,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getIndividualsDiscreteFrom(OWLIndividual individual);
 
     /**
@@ -198,6 +215,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areDiscreteFromEachOther(OWLIndividual individual1, OWLIndividual individual2);
 
     // PO
@@ -213,6 +231,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getPartiallyOverlappingIndividuals(OWLIndividual individual);
 
     /**
@@ -228,6 +247,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean arePartiallyOverlapping(OWLIndividual individual1, OWLIndividual individual2);
 
     // EC
@@ -241,6 +261,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual individual);
 
     /**
@@ -254,6 +275,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean areExternallyConnected(OWLIndividual individual1, OWLIndividual individual2);
 
     // TPP
@@ -271,6 +293,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getIndividualsWhichAreTangentialProperPartOf(OWLIndividual individual);
 
     /**
@@ -288,9 +311,29 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     boolean isTangentialProperPartOf(OWLIndividual part, OWLIndividual whole);
 
+
     // NTPP
+    /**
+     * Returns `true` if the first input OWL individual is a non-tangential
+     * proper part of the second input OWL individual in terms of their
+     * respective spatial extension and w.r.t. the Region Connection Calculus
+     * (https://en.wikipedia.org/wiki/Region_connection_calculus), and `false`
+     * otherwise.
+     *
+     * NonTangentialProperPartOf(x, y) iff. ProperPartOf(x, y) and
+     *   not exists z: (ExternallyConnected(z, x) and ExternallyConnected(z, y))
+     * ProperPartOf(x, y) iff. PartOf(x, y) and not PartOf(y, x) .
+     * ExternallyConnected(x, y) iff. Connected(x, y) and not Overlaps(x, y) .
+     * Overlaps(x, y) iff. exists z: PartOf(z, x) and PartOf(z, y) .
+     * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y)
+     * Connected(x, y) iff. x and y have at least one point in common .
+     */
+    @Unstable
+    boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole);
+
     /**
      * Returns a stream of OWL individuals which are a non-tangential proper
      * part of the input OWL individual in terms of their spatial extension and
@@ -305,23 +348,74 @@ public interface SpatialReasoner extends ReasonerComponent {
      * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
      * Connected(x, y) iff. x and y have at least one point in common .
      */
+    @Unstable
     Stream<OWLIndividual> getIndividualsWhichAreNonTangentialProperPartOf(OWLIndividual individual);
+    // </RCC area feature relations>
 
+    // <RANDELL relations/functions>
+    /*
+     * Spatial relations and functions mentioned in the paper
+     * 'A Spatial Logic based on Regions and Connection', Randell, Cui, Cohn,
+     * 1992
+     */
+
+    // sum
     /**
-     * Returns `true` if the first input OWL individual is a non-tangential
-     * proper part of the second input OWL individual in terms of their
-     * respective spatial extension and w.r.t. the Region Connection Calculus
-     * (https://en.wikipedia.org/wiki/Region_connection_calculus), and `false`
+     * Returns `true` if the first input parameter is the spatial sum of the
+     * whole set of OWL individuals given as second parameter and `false`
      * otherwise.
      *
-     * NonTangentialProperPartOf(x, y) iff. ProperPartOf(x, y) and
-     *   not exists z: (ExternallyConnected(z, x) and ExternallyConnected(z, y))
-     * ProperPartOf(x, y) iff. PartOf(x, y) and not PartOf(y, x) .
-     * ExternallyConnected(x, y) iff. Connected(x, y) and not Overlaps(x, y) .
-     * Overlaps(x, y) iff. exists z: PartOf(z, x) and PartOf(z, y) .
-     * PartOf(x, y) iff. forall z: Connected(z, x) --> Connected(z, y) .
-     * Connected(x, y) iff. x and y have at least one point in common .
+     * sum(x, y) = the unique z such that
+     *      forall w ( C(w, z) <--> (C(w, x) or C(w, y)) )
      */
-    boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole);
-    // </RCC area feature relations>
+    @Unstable
+    boolean isSpatialSumOf(OWLIndividual sum, Set<OWLIndividual> parts);
+
+    // universal spatial relation
+    /**
+     * Returns `true` if the input OWL individual is *equivalent* to the
+     * universal spatial region and `false` otherwise.
+     *
+     * us = the unique y such that
+     *      forall z ( C(z, y) )
+     */
+    @Unstable
+    boolean isEquivalentToUniversalSpatialRegion(OWLIndividual individual);
+
+    // complement of
+    /**
+     * Returns `true` if the first input OWL individual is the complement of
+     * the second input OWL individual and `false` otherwise.
+     *
+     * compl(x) = the unique y such that
+     *      forall z ( ( C(z, y) <--> not NTPP(z, x) ) and
+     *          ( O(z, y) <--> not P(z, x) ) )
+     */
+    @Unstable
+    boolean isComplementOf(OWLIndividual individual1, OWLIndividual individual2);
+
+    // product/intersection
+    /**
+     * Returns `true` if the first input OWL individual is the intersection of
+     * the second and third input OWL individual and `false` otherwise.
+     *
+     * TODO: Generalize to Set<OWLIndividual> as second parameter
+     */
+    @Unstable
+    boolean isIntersectionOf(
+            OWLIndividual intersection,
+            OWLIndividual individual1,
+            OWLIndividual individual2);
+
+    // difference
+    /**
+     * Returns `true` if the first input OWL individual is the difference of
+     * the second and third OWL individual and `false` otherwise.
+     */
+    @Unstable
+    boolean isDifferenceOf(
+            OWLIndividual difference,
+            OWLIndividual individual1,
+            OWLIndividual individual2);
+    // </RANDELL relations/functions>
 }
