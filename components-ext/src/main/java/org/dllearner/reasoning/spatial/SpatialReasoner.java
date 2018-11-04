@@ -100,7 +100,7 @@ public interface SpatialReasoner extends ReasonerComponent {
 
     /**
      * Returns `true` if the first input OWL individual is part of the second
-     * input individual in terms of their respective spatial extension and
+     * input OWL individual in terms of their respective spatial extension and
      * w.r.t. the Region Connection Calculus
      * (https://en.wikipedia.org/wiki/Region_connection_calculus), and `false`
      * otherwise.
@@ -418,4 +418,68 @@ public interface SpatialReasoner extends ReasonerComponent {
             OWLIndividual individual1,
             OWLIndividual individual2);
     // </RANDELL relations/functions>
+
+    /**
+     * Returns `true` if the input OWL individuals are near to each other (by
+     * some measure not defined here) and `false` otherwise.
+     */
+    @Unstable
+    boolean isNear(OWLIndividual individual1, OWLIndividual individual2);
+
+    /**
+     * Returns a set of OWL individuals that are near the input OWL individual
+     * (by some measure not defined here).
+     */
+    @Unstable
+    Set<OWLIndividual> getNearSpatialIndividuals(OWLIndividual individual);
+
+    /**
+     * Returns `true` if the first input OWL individual is spatially inside the
+     * second input OWL individual and `false` otherwise.
+     */
+    @Unstable
+    boolean isInside(OWLIndividual containedIndividual, OWLIndividual containingIndividual);
+
+    /**
+     * Returns a set of OWL individuals that are contained in the input OWL
+     * individual.
+     */
+    @Unstable
+    Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual);
+
+    /**
+     * Returns `true` if the first input OWL individual (being a line feature)
+     * runs along the second input OWL individual (also being a line feature)
+     * and `false` otherwise.
+     */
+    @Unstable
+    boolean runsAlong(OWLIndividual individual1, OWLIndividual individual2);
+
+    /**
+     * Returns a set of OWL individuals (all being line features) which run
+     * along the input OWL individual (which is a line feature as well).
+     */
+    @Unstable
+    Set<OWLIndividual> getSpatialIndividualsRunningAlong(OWLIndividual individual);
+
+    /**
+     * Returns `true` if the first input OWL individual (being a line feature
+     * describing e.g. a route) passes the second input OWL individual.
+     */
+    @Unstable
+    boolean passes(OWLIndividual passingIndividual, OWLIndividual passedIndividual);
+
+    /**
+     * Returns a set of OWL individuals which are passed by the input OWL
+     * individual (being a line feature and representing e.g. a route).
+     */
+    @Unstable
+    Set<OWLIndividual> getPassedSpatialIndividuals(OWLIndividual passingIndividual);
+
+    /**
+     * Returns a set of OWL individuals (being line features representing e.g.
+     * routes) which are passing the input OWL individuals.
+     */
+    @Unstable
+    Set<OWLIndividual> getPassingSpatialIndividuals(OWLIndividual passedIndividual);
 }

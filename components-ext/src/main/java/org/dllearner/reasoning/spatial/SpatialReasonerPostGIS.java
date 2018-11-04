@@ -1,5 +1,6 @@
 package org.dllearner.reasoning.spatial;
 
+import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -9,17 +10,15 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.postgis.PGgeometry;
 import org.postgresql.util.PGobject;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.*;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.io.File;
 import java.net.URL;
 import java.sql.*;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements SpatialReasoner {
@@ -227,7 +226,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsWhichAreNonTangentialProperPartOf(OWLIndividual individual) {
         throw new RuntimeException("Not implemented, yet");
-
     }
 
     @Override
@@ -252,6 +250,51 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isDifferenceOf(OWLIndividual difference, OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isNear(OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getNearSpatialIndividuals(OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean isInside(OWLIndividual containedIndividual, OWLIndividual containingIndividual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean runsAlong(OWLIndividual individual1, OWLIndividual individual2) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getSpatialIndividualsRunningAlong(OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public boolean passes(OWLIndividual passingIndividual, OWLIndividual passedIndividual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getPassedSpatialIndividuals(OWLIndividual passingIndividual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getPassingSpatialIndividuals(OWLIndividual passedIndividual) {
         throw new RuntimeException("Not implemented, yet");
     }
 
