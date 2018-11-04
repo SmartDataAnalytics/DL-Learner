@@ -27,7 +27,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private DBConnectionSetting dbConnectionSetting;
     private Connection conn;
 
+    private double nearRadiusInMeters = 5; // meters
+    private Set<List<OWLProperty>> geometryPropertyPaths;
+
     private AbstractReasonerComponent reasoner;
+    // TODO: replace with more accepted IRIs
+    private OWLClass areaFeatureClass = new OWLClassImpl(
+            IRI.create("http://dl-learner.org/ont/spatial-test#AreaFeature"));
+    private String areaFeatureTableName = "area_feature";
+    private OWLClass lineFeatureClass = new OWLClassImpl(
+            IRI.create("http://dl-learner.org/ont/spatial-test#LineFeature"));
+    private String lineFeatureTableName = "line_feature";
+    private OWLClass pointFeatureClass = new OWLClassImpl(
+            IRI.create("http://dl-learner.org/ont/spatial-test#PointFeature"));
+    private String pointFeatureTableName = "point_feature";
 
     public SpatialReasonerPostGIS() {
         super();
@@ -48,6 +61,53 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
+    }
+
+    public void setNearRadiusInMeters(double nearRadiusInMeters) {
+        this.nearRadiusInMeters = nearRadiusInMeters;
+    }
+
+    public void addGeometryPropertyPath(List<OWLProperty> propertyPath) {
+        assert propertyPath.size() > 0;
+        int i = 0;
+        int len = propertyPath.size();
+
+        while (i < (len-1)) {
+            assert propertyPath.get(i) instanceof OWLObjectProperty;
+            i++;
+        }
+
+        assert propertyPath.get(i) instanceof OWLDataProperty;
+
+        geometryPropertyPaths.add(propertyPath);
+    }
+
+    protected void clearGeometryPropertyPaths() {
+        geometryPropertyPaths = new HashSet<>();
+    }
+
+    public void setAreaFeatureClass(OWLClass areaFeatureClass) {
+        this.areaFeatureClass = areaFeatureClass;
+    }
+
+    public void setAreaFeatureClass(String iriString) {
+        this.areaFeatureClass = new OWLClassImpl(IRI.create(iriString));
+    }
+
+    public void setLineFeatureClass(OWLClass lineFeatureClass) {
+        this.lineFeatureClass = lineFeatureClass;
+    }
+
+    public void setLineFeatureClass(String iriString) {
+        this.lineFeatureClass = new OWLClassImpl(IRI.create(iriString));
+    }
+
+    public void setPointFeatureClass(OWLClass pointFeatureClass) {
+        this.pointFeatureClass = pointFeatureClass;
+    }
+
+    public void setPointFeatureClass(String iriString) {
+        this.pointFeatureClass = new OWLClassImpl(IRI.create(iriString));
     }
     // </getter/setter>
 
@@ -81,6 +141,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ClassNotFoundException e) {
             throw new ComponentInitException(e);
         }
+
+        geometryPropertyPaths = new HashSet<>();
     }
 
     @Override
@@ -265,7 +327,32 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isInside(OWLIndividual containedIndividual, OWLIndividual containingIndividual) {
-        throw new RuntimeException("Not implemented, yet");
+        String containedTable = getTable(containedIndividual);
+        String containerTable = getTable(containingIndividual);
+
+        OWLIndividual containedGeometryIndividual =
+                getGeometryIndividual(containedIndividual);
+        OWLIndividual containingGeometryIndividual =
+                getGeometryIndividual(containingIndividual);
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(
+                    "SELECT ST_CONTAINS(" + containerTable + ".the_geom, " +
+                            containedTable + ".the_geom) " +
+                        "FROM " + containerTable + ", " + containedTable + " " +
+                        "WHERE " + containedTable + ".iri=? " +
+                            "AND " + containerTable + ".iri=?");
+            statement.setString(1, containedGeometryIndividual.toStringID());
+            statement.setString(2, containingGeometryIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+            resSet.next();
+            return resSet.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     @Override
@@ -304,6 +391,68 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
     // </implemented interface/base class methods>
 
+
+    private String getTable(OWLIndividual individual) {
+        if (reasoner.hasType(areaFeatureClass, individual)) {
+            return areaFeatureTableName;
+        } else if (reasoner.hasType(lineFeatureClass, individual)) {
+            return lineFeatureTableName;
+        } else if (reasoner.hasType(pointFeatureClass, individual)) {
+            return pointFeatureTableName;
+        } else {
+            throw new RuntimeException("Individual " + individual + " is " +
+                    "neither an area feature, nor a line feature, nor a " +
+                    "point feature");
+        }
+    }
+
+    /**
+     * Gets the geo:Geometry OWL individual assigned to the input OWL individual
+     * via the geometry property path. In case there are multiple geometry
+     * OWL individuals assigned, I'll just pick the first one.
+     */
+    private OWLIndividual getGeometryIndividual(OWLIndividual individual) {
+        for (List<OWLProperty> propPath : geometryPropertyPaths) {
+            int pathLen = propPath.size();
+
+            // In case the geometry property path just contains one entry, one
+            // can assume it's a data property pointing to the geometry literal.
+            // So the input geometry individual is already what's requested
+            // here.
+            if (pathLen == 1) {
+                assert propPath.get(0).isOWLDataProperty();
+
+                return individual;
+            }
+
+            // Strip off the last entry of the property path, which is a data
+            // property. All the preceding properties are assumed to be object
+            // properties.
+            List<OWLObjectProperty> objProps = propPath.stream()
+                    .limit(pathLen-1)
+                    .map(OWLProperty::asOWLObjectProperty)
+                    .collect(Collectors.toList());
+
+            Set<OWLIndividual> tmpS = Sets.newHashSet(individual);
+            Set<OWLIndividual> tmpO = new HashSet<>();
+
+            for (OWLObjectProperty objProp : objProps) {
+                for (OWLIndividual i : tmpS) {
+                    tmpO.addAll(reasoner.getRelatedIndividuals(i, objProp));
+                }
+
+                tmpS = tmpO;
+                tmpO = new HashSet<>();
+            }
+
+            if (!tmpS.isEmpty()) {
+                return tmpS.iterator().next();
+            }
+        }
+
+        return null;
+    }
+
     /** Example/debug set-up */
     public static void main(String[] args) throws Exception {
         String exampleFilePath =
@@ -313,7 +462,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         ClosedWorldReasoner cwr = new ClosedWorldReasoner(ks);
         SpatialReasonerPostGIS spatialReasoner = new SpatialReasonerPostGIS(
                 cwr, new DBConnectionSetting(
-                "localhost",5432, "trial1",
+                "localhost",5432, "dllearner",
                 "postgres", "postgres"));
         spatialReasoner.init();
     }
