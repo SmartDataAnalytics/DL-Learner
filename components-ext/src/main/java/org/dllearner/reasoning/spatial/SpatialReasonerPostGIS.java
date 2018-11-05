@@ -359,12 +359,117 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual) {
-        throw new RuntimeException("Not implemented, yet");
+        return getContainedSpatialIndividuals(individual, false);
     }
 
     @Override
     public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual, boolean includeSelf) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual geometryIndividual = getGeometryIndividual(individual);
+        String containerTableName = getTable(individual);
+        Set<String> containedGeomIndividualIRIStrings = new HashSet<>();
+
+        StringBuilder queryStr = new StringBuilder();
+
+        if (containerTableName.equals(pointFeatureTableName)) {
+            // Point feature cannot contain anything but
+            // - itself (should be filtered if `includeSelf` is false!)
+            queryStr.append("SELECT l.iri ")
+                    .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                    .append(pointFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                                    .append("AND r.iri=?");
+
+        } else if (containerTableName.equals(lineFeatureTableName)) {
+            // Line feature may contain
+            // - itself (should be filtered if `includeSelf` is false!)
+            // - other line features comprised of a subset of consecutive points
+            //   --> cross product with `lineFeatureTableName`
+            // - point features which lie right on a line, i.e. being one of the
+            //   line string points
+            //   --> cross product with `pointFeatureTableName`
+            // ==> UNION required to find all lines and points
+
+            // e.g.
+            // SELECT l.iri
+            // FROM line_feature l, line_feature r
+            // WHERE ST_Contains(r.the_geom, l.the_geom)
+            //   AND r.iri='http://dl-learner.org/ont/spatial-test#turnerweg_geometry'
+            // UNION
+            // SELECT l.iri
+            // FROM point_feature l, line_feature r
+            // WHERE ST_Contains(r.the_geom, l.the_geom)
+            //   AND r.iri='http://dl-learner.org/ont/spatial-test#turnerweg_geometry';
+
+            // line-line comparison
+            queryStr.append("SELECT l.iri ")
+                    .append("FROM ").append(lineFeatureTableName).append(" l, ")
+                                    .append(lineFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                                    .append("AND r.iri=? ")
+            // line-point comparison
+                    .append("UNION ")
+                    .append("SELECT l.iri ")
+                    .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                    .append(lineFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                                    .append("AND r.iri=?");
+
+        } else if (containerTableName.equals(areaFeatureTableName)) {
+            // Area feature may contain
+            // - itself (should be filtered if `includeSelf` is false!)
+            // - other area features
+            //   --> cross product with `areaFeatureTableName`
+            // - line features
+            //   --> cross product with `lineFeatureTableName`
+            // - point features
+            //   --> cross product with `pointFeatureTableName`
+            // ==> UNION required
+
+            // area-area comparison
+            queryStr.append("SELECT l.iri ")
+                    .append("FROM ").append(areaFeatureTableName).append(" l, ")
+                                    .append(areaFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                    .append("AND r.iri=? ")
+            // area-line comparison
+                    .append("UNION ")
+                    .append("SELECT l.iri ")
+                    .append("FROM ").append(lineFeatureTableName).append(" l, ")
+                                    .append(areaFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                    .append("AND r.iri=? ")
+            // area-point comparison
+                    .append("UNION ")
+                    .append("SELECT l.iri ")
+                    .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                    .append(areaFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                    .append("AND r.iri=?");
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr.toString());
+            for (int i=1; i<=statement.getParameterMetaData().getParameterCount(); i++) {
+                statement.setString(i, geometryIndividual.toStringID());
+            }
+            ResultSet resSet = statement.executeQuery();
+            while (resSet.next()) {
+                String indivIRIStr = resSet.getString(1);
+                containedGeomIndividualIRIStrings.add(indivIRIStr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Stream<OWLIndividual> containedIndividuals =
+                containedGeomIndividualIRIStrings.stream()
+                        .map((String iriStr) -> new OWLNamedIndividualImpl(IRI.create(iriStr)))
+                        .map((OWLIndividual i) -> getFeatureIndividual(i))
+                        .filter(Objects::nonNull)
+                        // if `includeSelf` is set, do not filter; otherwise filter out input `individual`
+                        .filter((OWLIndividual i) -> includeSelf ? true : !i.equals(individual));
+
+        return containedIndividuals.collect(Collectors.toSet());
     }
 
     @Override
@@ -418,18 +523,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
      * via the geometry property path. In case there are multiple geometry
      * OWL individuals assigned, I'll just pick the first one.
      */
-    private OWLIndividual getGeometryIndividual(OWLIndividual individual) {
+    private OWLIndividual getGeometryIndividual(OWLIndividual featureIndividual) {
         for (List<OWLProperty> propPath : geometryPropertyPaths) {
             int pathLen = propPath.size();
 
             // In case the geometry property path just contains one entry, one
             // can assume it's a data property pointing to the geometry literal.
-            // So the input geometry individual is already what's requested
+            // So the input feature individual is already what's requested
             // here.
             if (pathLen == 1) {
                 assert propPath.get(0).isOWLDataProperty();
 
-                return individual;
+                return featureIndividual;
             }
 
             // Strip off the last entry of the property path, which is a data
@@ -440,7 +545,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     .map(OWLProperty::asOWLObjectProperty)
                     .collect(Collectors.toList());
 
-            Set<OWLIndividual> tmpS = Sets.newHashSet(individual);
+            Set<OWLIndividual> tmpS = Sets.newHashSet(featureIndividual);
             Set<OWLIndividual> tmpO = new HashSet<>();
 
             for (OWLObjectProperty objProp : objProps) {
@@ -454,6 +559,126 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             if (!tmpS.isEmpty()) {
                 return tmpS.iterator().next();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the geo:Feature OWL individual to which the input geo:Geometry OWL
+     * individual was assigned via the geometry property path. In case there are
+     * multiple feature OWL individuals to which the geometry OWL individual was
+     * assigned, I'll just pick the first one.
+     */
+    private OWLIndividual getFeatureIndividual(OWLIndividual geometryIndividual) {
+        for (List<OWLProperty> propPath : geometryPropertyPaths) {
+            int pathLen = propPath.size();
+
+            // In case the geometry property path just contains one entry, one
+            // can assume it's a data property pointing to the geometry literal.
+            // So the input geometry individual is already what's requested
+            // here.
+            if (pathLen == 1) {
+                assert propPath.get(0).isOWLDataProperty();
+
+                return geometryIndividual;
+            }
+
+            // Strip off the last entry of the property path, which is a data
+            // property. All the preceding properties are assumed to be object
+            // properties.
+            List<OWLObjectProperty> objProps = propPath.stream()
+                    .limit(pathLen-1)
+                    .map(OWLProperty::asOWLObjectProperty)
+                    .collect(Collectors.toList());
+
+            List<OWLObjectProperty> revObjProps = Lists.reverse(objProps);
+
+            // S --> subject, O --> object (from RDF triple view)
+            Set<OWLIndividual> tmpS = new HashSet<>();
+            Set<OWLIndividual> tmpO = Sets.newHashSet(geometryIndividual);
+
+            for (OWLObjectProperty objProp : revObjProps) {
+                /**
+                 * Looks sth like this:
+                 * {
+                 *   :bahnhof_dresden_neustadt_building : [
+                 *          :building_bhf_neustadt_geometry],
+                 *   :building_bhf_neustadt_geometry : [],
+                 *   :inside_building_bhf_neustadt_geometry : [],
+                 *   :on_turnerweg_geometry : [],
+                 *   :outside_building_bhf_neustadt_1_geometry : [],
+                 *   :outside_building_bhf_neustadt_2_geometry : [],
+                 *   :pos_inside_bhf_neustadt : [
+                 *          :inside_building_bhf_neustadt_geometry],
+                 *   :pos_on_turnerweg : [
+                 *          :on_turnerweg_geometry],
+                 *   :pos_outside_bhf_neustadt_1 : [
+                 *          :outside_building_bhf_neustadt_1_geometry],
+                 *   :pos_outside_bhf_neustadt_2 : [
+                 *          :outside_building_bhf_neustadt_2_geometry],
+                 *   :turnerweg : [
+                 *          :turnerweg_geometry],
+                 *   :turnerweg_geometry : [],
+                 *   :turnerweg_part : [
+                 *          :turnerweg_part_geometry],
+                 *   :turnerweg_part_geometry : []
+                 * }
+                 *
+                 * i.e. all geometry entries have an empty set as values and
+                 * all the feature entries have a non-empty set as values
+                 */
+                Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                        reasoner.getPropertyMembers(objProp);
+
+                /**
+                 * `members` keys which have a non-empty value, i.e. all feature
+                 * OWL individuals
+                 *
+                 * [
+                 *   :bahnhof_dresden_neustadt_building,
+                 *   :pos_inside_bhf_neustadt,
+                 *   :pos_on_turnerweg,
+                 *   :pos_outside_bhf_neustadt_1,
+                 *   :pos_outside_bhf_neustadt_2,
+                 *   :turnerweg,
+                 *   :turnerweg_part
+                 * ]
+                 */
+                List<OWLIndividual> sMembers = members.entrySet().stream()
+                        .filter((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> !e.getValue().isEmpty())
+                        .map((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> e.getKey())
+                        .collect(Collectors.toList());
+
+                for (OWLIndividual s : sMembers) {
+                    // - `tmpO` contains all the OWL individuals on object
+                    //   position (viewed from an RDF triple perspective)
+                    // - `sMembers` contains all those OWL individuals that
+                    //   actually have values for property `objProp`
+                    // - `s` is an OWL individual that actually has values for
+                    //   property `objProp`
+
+                    // The values of the current OWL individual
+                    SortedSet<OWLIndividual> os = members.get(s);
+
+                    // If any of the values of the current OWL individual is
+                    // contained in the set of value OWL individuals we're
+                    // interested in...
+                    if (os.stream().anyMatch(tmpO::contains)) {
+                        // ...then we'll consider this current OWL individual in
+                        // the next round (or in the final result set if this is
+                        // the last round)
+                        tmpS.add(s);
+                    }
+                }
+
+                tmpO = tmpS;
+                tmpS = new HashSet<>();
+            }
+
+            if (!tmpO.isEmpty()) {
+                return tmpO.iterator().next();
             }
         }
 

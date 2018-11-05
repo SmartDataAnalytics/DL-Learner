@@ -147,4 +147,82 @@ public class SpatialReasonerPostGISTest {
         assertFalse(reasoner.isInside(pointOutsideBuildung1, building));
         assertFalse(reasoner.isInside(pointOutsideBuildung2, building));
     }
+
+    @Ignore
+    @Test
+    public void testGetContainedSpatialIndividuals() throws ComponentInitException {
+        SpatialReasoner reasoner = getReasoner();
+
+        OWLIndividual somePoint = new OWLNamedIndividualImpl(
+                IRI.create("http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_2"));
+
+        // Getting all features contained inside a point feature without
+        // considering the point feature itself --> should be empty
+        Set<OWLIndividual> containedIndividuals =
+                reasoner.getContainedSpatialIndividuals(somePoint);
+        assertTrue(containedIndividuals.isEmpty());
+
+        // Getting all features contained inside a point feature, including the
+        // point feature itself into the result set --> should just contain the
+        // point feature
+        containedIndividuals =
+                reasoner.getContainedSpatialIndividuals(somePoint, true);
+        assertEquals(1, containedIndividuals.size());
+        assertTrue(containedIndividuals.contains(somePoint));
+
+        // -
+        OWLIndividual turnerweg = new OWLNamedIndividualImpl(IRI.create(
+                "http://dl-learner.org/ont/spatial-test#turnerweg"));
+        OWLIndividual turnerwegPart = new OWLNamedIndividualImpl(IRI.create(
+                "http://dl-learner.org/ont/spatial-test#turnerweg_part"));
+        OWLIndividual pointOnTurnerWeg = new OWLNamedIndividualImpl(IRI.create(
+                "http://dl-learner.org/ont/spatial-test#pos_on_turnerweg"));
+
+        // Getting all features contained inside a line feature without
+        // considering the line feature itself --> should be :turnerweg_part and
+        // :pos_on_turnerweg
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(turnerweg);
+        assertEquals(2, containedIndividuals.size());
+        assertTrue(containedIndividuals.contains(turnerwegPart));
+        assertTrue(containedIndividuals.contains(pointOnTurnerWeg));
+
+        // Getting all features contained inside a line feature, including the
+        // line feature itself into the result set --> should be
+        // :turnerweg_part, :pos_on_turnerweg and :turnerweg itself
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(turnerweg, true);
+        assertEquals(3, containedIndividuals.size());
+        assertTrue(containedIndividuals.contains(turnerwegPart));
+        assertTrue(containedIndividuals.contains(pointOnTurnerWeg));
+        assertTrue(containedIndividuals.contains(turnerweg));
+
+        // -
+        OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
+                IRI.create("http://dl-learner.org/ont/spatial-test#pos_inside_bhf_neustadt"));
+        OWLIndividual areaInsideBuilding = new OWLNamedIndividualImpl(IRI.create(
+                "http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt"));
+        OWLIndividual wayInsideBuilding = new OWLNamedIndividualImpl(IRI.create(
+                "http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt"));
+        OWLIndividual building = new OWLNamedIndividualImpl(
+                IRI.create("http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building"));
+
+        // Getting all features contained in an area feature without considering
+        // the area feature itself --> should be :area_inside_bhf_neustadt,
+        // :way_inside_bhf_neustadt, and :pos_inside_bhf_neustadt
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(building);
+        assertEquals(3, containedIndividuals.size());
+        assertTrue(containedIndividuals.contains(pointInsideBuilding));
+        assertTrue(containedIndividuals.contains(wayInsideBuilding));
+        assertTrue(containedIndividuals.contains(areaInsideBuilding));
+
+        // Getting all features contained in an area feature, including the area
+        // feature itself --> should be :area_inside_bhf_neustadt,
+        // :way_inside_bhf_neustadt, :pos_inside_bhf_neustadt, and
+        // :bahnhof_dresden_neustadt_building itself
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(building, true);
+        assertEquals(4, containedIndividuals.size());
+        assertTrue(containedIndividuals.contains(pointInsideBuilding));
+        assertTrue(containedIndividuals.contains(wayInsideBuilding));
+        assertTrue(containedIndividuals.contains(areaInsideBuilding));
+        assertTrue(containedIndividuals.contains(building));
+    }
 }
