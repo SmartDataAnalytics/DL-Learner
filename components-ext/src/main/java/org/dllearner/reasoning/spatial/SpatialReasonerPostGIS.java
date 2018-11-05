@@ -1,5 +1,6 @@
 package org.dllearner.reasoning.spatial;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -13,6 +14,7 @@ import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.io.File;
 import java.net.URL;
@@ -357,6 +359,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
+
+    @Override
+    public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual, boolean includeSelf) {
         throw new RuntimeException("Not implemented, yet");
     }
 
