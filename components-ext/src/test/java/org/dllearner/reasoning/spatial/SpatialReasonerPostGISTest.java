@@ -14,9 +14,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SpatialReasonerPostGISTest {
     private SpatialReasonerPostGIS spatialReasoner = null;
@@ -37,7 +37,7 @@ public class SpatialReasonerPostGISTest {
         if (spatialReasoner == null) {
             String exampleFilePath =
                     SpatialReasonerPostGIS.class.getClassLoader()
-                            .getResource("test/example_data.owl").getFile();
+                            .getResource("example_data.owl").getFile();
             KnowledgeSource ks = new OWLFile(exampleFilePath);
             ks.init();
             ClosedWorldReasoner cwr = new ClosedWorldReasoner(ks);
@@ -136,8 +136,15 @@ public class SpatialReasonerPostGISTest {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
                 IRI.create("http://dl-learner.org/ont/spatial-test#pos_inside_bhf_neustadt"));
+        OWLIndividual pointOutsideBuildung1 = new OWLNamedIndividualImpl(
+                IRI.create("http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_1"));
+        OWLIndividual pointOutsideBuildung2 = new OWLNamedIndividualImpl(
+                IRI.create("http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_2"));
         OWLIndividual building = new OWLNamedIndividualImpl(
                 IRI.create("http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building"));
+
         assertTrue(reasoner.isInside(pointInsideBuilding, building));
+        assertFalse(reasoner.isInside(pointOutsideBuildung1, building));
+        assertFalse(reasoner.isInside(pointOutsideBuildung2, building));
     }
 }
