@@ -78,6 +78,24 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#AreaFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#area_inside_bhf_neustadt_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.740863576531412 51.06544419622321,13.740907162427906 51.065415541238536,13.740968853235245 51.06545220275984,13.740916550159458 51.065476222361525,13.740863576531412 51.06544419622321))</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#bahnhof_dresden_neustadt_building">
@@ -106,11 +124,119 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial-test#on_turnerweg_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#on_turnerweg_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.7454537 51.0668113)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_1_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_1_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.741702437400816 51.06613780999933)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_2_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_2_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.73886466026306 51.06613106775265)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial-test#pos_inside_bhf_neustadt -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#pos_inside_bhf_neustadt">
         <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#PointFeature"/>
         <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#inside_building_bhf_neustadt_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#pos_on_turnerweg -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#pos_on_turnerweg">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#on_turnerweg_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_1">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_1_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#pos_outside_bhf_neustadt_2">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#outside_building_bhf_neustadt_2_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#turnerweg -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#turnerweg">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#LineFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#turnerweg_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#turnerweg_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#turnerweg_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7459620 51.0675517, 13.7454537 51.0668113, 13.7450542 51.0662294)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#turnerweg_part -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#turnerweg_part">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#LineFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#turnerweg_part_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#turnerweg_part_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#turnerweg_part_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7454537 51.0668113, 13.7450542 51.0662294)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial-test#LineFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial-test#way_inside_bhf_neustadt_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.74077707529068 51.06542144079566,13.741168677806854 51.06567090709416)</geosparql:asWKT>
     </owl:NamedIndividual>
 </rdf:RDF>
 
