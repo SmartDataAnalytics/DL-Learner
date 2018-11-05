@@ -1,5 +1,8 @@
 package org.dllearner.reasoning.spatial;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -16,10 +19,13 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,6 +37,210 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     private double nearRadiusInMeters = 5; // meters
     private Set<List<OWLProperty>> geometryPropertyPaths;
+
+    // TODO: make this configurable
+    // "Specifies the maximum number of entries the cache may contain"
+    private int maxFeatureGeometryCacheSize = 1000000;
+    private LoadingCache<OWLIndividual, OWLIndividual> feature2geom =
+            CacheBuilder.newBuilder().maximumSize(maxFeatureGeometryCacheSize)
+                    .build(new CacheLoader<OWLIndividual, OWLIndividual>() {
+                        @Override
+                        public OWLIndividual load(
+                                @Nonnull OWLIndividual featureIndividual) throws Exception {
+                            /*
+                             * Gets the geo:Geometry OWL individual assigned to
+                             * the input OWL individual via the geometry
+                             * property path. In case there are multiple
+                             * geometry OWL individuals assigned, I'll just pick
+                             * the first one.
+                             */
+                            for (List<OWLProperty> propPath : geometryPropertyPaths) {
+                                int pathLen = propPath.size();
+
+                                // In case the geometry property path just
+                                // contains one entry, one can assume it's a
+                                // data property pointing to the geometry
+                                // literal. So the input feature individual is
+                                // already what's requested here.
+                                if (pathLen == 1) {
+                                    assert propPath.get(0).isOWLDataProperty();
+
+                                    return featureIndividual;
+                                }
+
+                                // Strip off the last entry of the property
+                                // path, which is a data property. All the
+                                // preceding properties are assumed to be object
+                                // properties.
+                                List<OWLObjectProperty> objProps = propPath.stream()
+                                        .limit(pathLen-1)
+                                        .map(OWLProperty::asOWLObjectProperty)
+                                        .collect(Collectors.toList());
+
+                                // S --> subject position, O --> object position
+                                // from an RDF triple point of view
+                                Set<OWLIndividual> tmpS =
+                                        Sets.newHashSet(featureIndividual);
+                                Set<OWLIndividual> tmpO = new HashSet<>();
+
+                                for (OWLObjectProperty objProp : objProps) {
+                                    for (OWLIndividual i : tmpS) {
+                                        tmpO.addAll(
+                                                reasoner.getRelatedIndividuals(i, objProp));
+                                    }
+
+                                    tmpS = tmpO;
+                                    tmpO = new HashSet<>();
+                                }
+
+                                if (!tmpS.isEmpty()) {
+                                    return tmpS.iterator().next();
+                                }
+                            }
+                            return null;
+                        }
+                    });
+    
+    private LoadingCache<OWLIndividual, OWLIndividual> geom2feature =
+            CacheBuilder.newBuilder().maximumSize(maxFeatureGeometryCacheSize)
+                    .build(new CacheLoader<OWLIndividual, OWLIndividual>() {
+                        @Override
+                        public OWLIndividual load(
+                                @Nonnull OWLIndividual geometryIndividual) throws Exception {
+                            /*
+                             * Gets the geo:Feature OWL individual to which the
+                             * input geo:Geometry OWL individual was assigned
+                             * via the geometry property path. In case there are
+                             * multiple feature OWL individuals to which the
+                             * geometry OWL individual was assigned, I'll just
+                             * pick the first one.
+                             */
+                            for (List<OWLProperty> propPath : geometryPropertyPaths) {
+                                int pathLen = propPath.size();
+
+                                // In case the geometry property path just
+                                // contains one entry, one can assume it's a
+                                // data property pointing to the geometry
+                                // literal. So the input geometry individual is
+                                // already what's requested here.
+                                if (pathLen == 1) {
+                                    assert propPath.get(0).isOWLDataProperty();
+
+                                    return geometryIndividual;
+                                }
+
+                                // Strip off the last entry of the property
+                                // path, which is a data property. All the
+                                // preceding properties are assumed to be object
+                                // properties.
+                                List<OWLObjectProperty> objProps = propPath.stream()
+                                        .limit(pathLen-1)
+                                        .map(OWLProperty::asOWLObjectProperty)
+                                        .collect(Collectors.toList());
+
+                                List<OWLObjectProperty> revObjProps =
+                                        Lists.reverse(objProps);
+
+                                // S --> subject, O --> object (from RDF triple
+                                // view)
+                                Set<OWLIndividual> tmpS = new HashSet<>();
+                                Set<OWLIndividual> tmpO =
+                                        Sets.newHashSet(geometryIndividual);
+
+                                for (OWLObjectProperty objProp : revObjProps) {
+                                    /**
+                                     * Looks sth like this:
+                                     * {
+                                     *   :bahnhof_dresden_neustadt_building : [
+                                     *          :building_bhf_neustadt_geometry],
+                                     *   :building_bhf_neustadt_geometry : [],
+                                     *   :inside_building_bhf_neustadt_geometry : [],
+                                     *   :on_turnerweg_geometry : [],
+                                     *   :outside_building_bhf_neustadt_1_geometry : [],
+                                     *   :outside_building_bhf_neustadt_2_geometry : [],
+                                     *   :pos_inside_bhf_neustadt : [
+                                     *          :inside_building_bhf_neustadt_geometry],
+                                     *   :pos_on_turnerweg : [
+                                     *          :on_turnerweg_geometry],
+                                     *   :pos_outside_bhf_neustadt_1 : [
+                                     *          :outside_building_bhf_neustadt_1_geometry],
+                                     *   :pos_outside_bhf_neustadt_2 : [
+                                     *          :outside_building_bhf_neustadt_2_geometry],
+                                     *   :turnerweg : [
+                                     *          :turnerweg_geometry],
+                                     *   :turnerweg_geometry : [],
+                                     *   :turnerweg_part : [
+                                     *          :turnerweg_part_geometry],
+                                     *   :turnerweg_part_geometry : []
+                                     * }
+                                     *
+                                     * i.e. all geometry entries have an empty
+                                     * set as values and all the feature entries
+                                     * have a non-empty set as values
+                                     */
+                                    Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                                            reasoner.getPropertyMembers(objProp);
+
+                                    /**
+                                     * `members` keys which have a non-empty
+                                     * value, i.e. all feature OWL individuals
+                                     *
+                                     * [
+                                     *   :bahnhof_dresden_neustadt_building,
+                                     *   :pos_inside_bhf_neustadt,
+                                     *   :pos_on_turnerweg,
+                                     *   :pos_outside_bhf_neustadt_1,
+                                     *   :pos_outside_bhf_neustadt_2,
+                                     *   :turnerweg,
+                                     *   :turnerweg_part
+                                     * ]
+                                     */
+                                    List<OWLIndividual> sMembers = members.entrySet().stream()
+                                            .filter((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> !e.getValue().isEmpty())
+                                            .map((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> e.getKey())
+                                            .collect(Collectors.toList());
+
+                                    for (OWLIndividual s : sMembers) {
+                                        // - `tmpO` contains all the OWL
+                                        //   individuals on object position
+                                        //   (viewed from an RDF triple
+                                        //   perspective)
+                                        // - `sMembers` contains all those OWL
+                                        //   individuals that actually have
+                                        //   values for property `objProp`
+                                        // - `s` is an OWL individual that
+                                        //   actually has values for property
+                                        //   `objProp`
+
+                                        // The values of the current OWL individual
+                                        SortedSet<OWLIndividual> os = members.get(s);
+
+                                        // If any of the values of the current
+                                        // OWL individual is contained in the
+                                        // set of value OWL individuals we're
+                                        // interested in...
+                                        if (os.stream().anyMatch(tmpO::contains)) {
+                                            // ...then we'll consider this
+                                            // current OWL individual in the
+                                            // next round (or in the final
+                                            // result set if this is the last
+                                            // round)
+                                            tmpS.add(s);
+                                        }
+                                    }
+
+                                    tmpO = tmpS;
+                                    tmpS = new HashSet<>();
+                                }
+
+                                if (!tmpO.isEmpty()) {
+                                    return tmpO.iterator().next();
+                                }
+                            }
+
+                            return null;
+                        }
+                    });
 
     private AbstractReasonerComponent reasoner;
     // TODO: replace with more accepted IRIs
@@ -332,10 +542,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         String containedTable = getTable(containedIndividual);
         String containerTable = getTable(containingIndividual);
 
-        OWLIndividual containedGeometryIndividual =
-                getGeometryIndividual(containedIndividual);
-        OWLIndividual containingGeometryIndividual =
-                getGeometryIndividual(containingIndividual);
+//        OWLIndividual containedGeometryIndividual =
+//                getGeometryIndividual(containedIndividual);
+//        OWLIndividual containingGeometryIndividual =
+//                getGeometryIndividual(containingIndividual);
+        OWLIndividual containedGeometryIndividual = null;
+        OWLIndividual containingGeometryIndividual = null;
+        try {
+            containedGeometryIndividual = feature2geom.get(containedIndividual);
+            containingGeometryIndividual = feature2geom.get(containingIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             PreparedStatement statement = conn.prepareStatement(
@@ -364,7 +582,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual, boolean includeSelf) {
-        OWLIndividual geometryIndividual = getGeometryIndividual(individual);
+//        OWLIndividual geometryIndividual = getGeometryIndividual(individual);
+        OWLIndividual geometryIndividual = null;
+        try {
+            geometryIndividual = feature2geom.get(individual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
         String containerTableName = getTable(individual);
         Set<String> containedGeomIndividualIRIStrings = new HashSet<>();
 
@@ -464,7 +688,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         Stream<OWLIndividual> containedIndividuals =
                 containedGeomIndividualIRIStrings.stream()
                         .map((String iriStr) -> new OWLNamedIndividualImpl(IRI.create(iriStr)))
-                        .map((OWLIndividual i) -> getFeatureIndividual(i))
+//                        .map((OWLIndividual i) -> getFeatureIndividual(i))
+                        .map((OWLIndividual i) -> {
+                            try {
+                                return geom2feature.get(i);
+                            } catch (ExecutionException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
                         .filter(Objects::nonNull)
                         // if `includeSelf` is set, do not filter; otherwise filter out input `individual`
                         .filter((OWLIndividual i) -> includeSelf ? true : !i.equals(individual));
@@ -518,172 +749,172 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
-    /**
-     * Gets the geo:Geometry OWL individual assigned to the input OWL individual
-     * via the geometry property path. In case there are multiple geometry
-     * OWL individuals assigned, I'll just pick the first one.
-     */
-    private OWLIndividual getGeometryIndividual(OWLIndividual featureIndividual) {
-        for (List<OWLProperty> propPath : geometryPropertyPaths) {
-            int pathLen = propPath.size();
+//    /**
+//     * Gets the geo:Geometry OWL individual assigned to the input OWL individual
+//     * via the geometry property path. In case there are multiple geometry
+//     * OWL individuals assigned, I'll just pick the first one.
+//     */
+//    private OWLIndividual getGeometryIndividual(OWLIndividual featureIndividual) {
+//        for (List<OWLProperty> propPath : geometryPropertyPaths) {
+//            int pathLen = propPath.size();
+//
+//            // In case the geometry property path just contains one entry, one
+//            // can assume it's a data property pointing to the geometry literal.
+//            // So the input feature individual is already what's requested
+//            // here.
+//            if (pathLen == 1) {
+//                assert propPath.get(0).isOWLDataProperty();
+//
+//                return featureIndividual;
+//            }
+//
+//            // Strip off the last entry of the property path, which is a data
+//            // property. All the preceding properties are assumed to be object
+//            // properties.
+//            List<OWLObjectProperty> objProps = propPath.stream()
+//                    .limit(pathLen-1)
+//                    .map(OWLProperty::asOWLObjectProperty)
+//                    .collect(Collectors.toList());
+//
+//            Set<OWLIndividual> tmpS = Sets.newHashSet(featureIndividual);
+//            Set<OWLIndividual> tmpO = new HashSet<>();
+//
+//            for (OWLObjectProperty objProp : objProps) {
+//                for (OWLIndividual i : tmpS) {
+//                    tmpO.addAll(reasoner.getRelatedIndividuals(i, objProp));
+//                }
+//
+//                tmpS = tmpO;
+//                tmpO = new HashSet<>();
+//            }
+//
+//            if (!tmpS.isEmpty()) {
+//                return tmpS.iterator().next();
+//            }
+//        }
+//
+//        return null;
+//    }
 
-            // In case the geometry property path just contains one entry, one
-            // can assume it's a data property pointing to the geometry literal.
-            // So the input feature individual is already what's requested
-            // here.
-            if (pathLen == 1) {
-                assert propPath.get(0).isOWLDataProperty();
-
-                return featureIndividual;
-            }
-
-            // Strip off the last entry of the property path, which is a data
-            // property. All the preceding properties are assumed to be object
-            // properties.
-            List<OWLObjectProperty> objProps = propPath.stream()
-                    .limit(pathLen-1)
-                    .map(OWLProperty::asOWLObjectProperty)
-                    .collect(Collectors.toList());
-
-            Set<OWLIndividual> tmpS = Sets.newHashSet(featureIndividual);
-            Set<OWLIndividual> tmpO = new HashSet<>();
-
-            for (OWLObjectProperty objProp : objProps) {
-                for (OWLIndividual i : tmpS) {
-                    tmpO.addAll(reasoner.getRelatedIndividuals(i, objProp));
-                }
-
-                tmpS = tmpO;
-                tmpO = new HashSet<>();
-            }
-
-            if (!tmpS.isEmpty()) {
-                return tmpS.iterator().next();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets the geo:Feature OWL individual to which the input geo:Geometry OWL
-     * individual was assigned via the geometry property path. In case there are
-     * multiple feature OWL individuals to which the geometry OWL individual was
-     * assigned, I'll just pick the first one.
-     */
-    private OWLIndividual getFeatureIndividual(OWLIndividual geometryIndividual) {
-        for (List<OWLProperty> propPath : geometryPropertyPaths) {
-            int pathLen = propPath.size();
-
-            // In case the geometry property path just contains one entry, one
-            // can assume it's a data property pointing to the geometry literal.
-            // So the input geometry individual is already what's requested
-            // here.
-            if (pathLen == 1) {
-                assert propPath.get(0).isOWLDataProperty();
-
-                return geometryIndividual;
-            }
-
-            // Strip off the last entry of the property path, which is a data
-            // property. All the preceding properties are assumed to be object
-            // properties.
-            List<OWLObjectProperty> objProps = propPath.stream()
-                    .limit(pathLen-1)
-                    .map(OWLProperty::asOWLObjectProperty)
-                    .collect(Collectors.toList());
-
-            List<OWLObjectProperty> revObjProps = Lists.reverse(objProps);
-
-            // S --> subject, O --> object (from RDF triple view)
-            Set<OWLIndividual> tmpS = new HashSet<>();
-            Set<OWLIndividual> tmpO = Sets.newHashSet(geometryIndividual);
-
-            for (OWLObjectProperty objProp : revObjProps) {
-                /**
-                 * Looks sth like this:
-                 * {
-                 *   :bahnhof_dresden_neustadt_building : [
-                 *          :building_bhf_neustadt_geometry],
-                 *   :building_bhf_neustadt_geometry : [],
-                 *   :inside_building_bhf_neustadt_geometry : [],
-                 *   :on_turnerweg_geometry : [],
-                 *   :outside_building_bhf_neustadt_1_geometry : [],
-                 *   :outside_building_bhf_neustadt_2_geometry : [],
-                 *   :pos_inside_bhf_neustadt : [
-                 *          :inside_building_bhf_neustadt_geometry],
-                 *   :pos_on_turnerweg : [
-                 *          :on_turnerweg_geometry],
-                 *   :pos_outside_bhf_neustadt_1 : [
-                 *          :outside_building_bhf_neustadt_1_geometry],
-                 *   :pos_outside_bhf_neustadt_2 : [
-                 *          :outside_building_bhf_neustadt_2_geometry],
-                 *   :turnerweg : [
-                 *          :turnerweg_geometry],
-                 *   :turnerweg_geometry : [],
-                 *   :turnerweg_part : [
-                 *          :turnerweg_part_geometry],
-                 *   :turnerweg_part_geometry : []
-                 * }
-                 *
-                 * i.e. all geometry entries have an empty set as values and
-                 * all the feature entries have a non-empty set as values
-                 */
-                Map<OWLIndividual, SortedSet<OWLIndividual>> members =
-                        reasoner.getPropertyMembers(objProp);
-
-                /**
-                 * `members` keys which have a non-empty value, i.e. all feature
-                 * OWL individuals
-                 *
-                 * [
-                 *   :bahnhof_dresden_neustadt_building,
-                 *   :pos_inside_bhf_neustadt,
-                 *   :pos_on_turnerweg,
-                 *   :pos_outside_bhf_neustadt_1,
-                 *   :pos_outside_bhf_neustadt_2,
-                 *   :turnerweg,
-                 *   :turnerweg_part
-                 * ]
-                 */
-                List<OWLIndividual> sMembers = members.entrySet().stream()
-                        .filter((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> !e.getValue().isEmpty())
-                        .map((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> e.getKey())
-                        .collect(Collectors.toList());
-
-                for (OWLIndividual s : sMembers) {
-                    // - `tmpO` contains all the OWL individuals on object
-                    //   position (viewed from an RDF triple perspective)
-                    // - `sMembers` contains all those OWL individuals that
-                    //   actually have values for property `objProp`
-                    // - `s` is an OWL individual that actually has values for
-                    //   property `objProp`
-
-                    // The values of the current OWL individual
-                    SortedSet<OWLIndividual> os = members.get(s);
-
-                    // If any of the values of the current OWL individual is
-                    // contained in the set of value OWL individuals we're
-                    // interested in...
-                    if (os.stream().anyMatch(tmpO::contains)) {
-                        // ...then we'll consider this current OWL individual in
-                        // the next round (or in the final result set if this is
-                        // the last round)
-                        tmpS.add(s);
-                    }
-                }
-
-                tmpO = tmpS;
-                tmpS = new HashSet<>();
-            }
-
-            if (!tmpO.isEmpty()) {
-                return tmpO.iterator().next();
-            }
-        }
-
-        return null;
-    }
+//    /**
+//     * Gets the geo:Feature OWL individual to which the input geo:Geometry OWL
+//     * individual was assigned via the geometry property path. In case there are
+//     * multiple feature OWL individuals to which the geometry OWL individual was
+//     * assigned, I'll just pick the first one.
+//     */
+//    private OWLIndividual getFeatureIndividual(OWLIndividual geometryIndividual) {
+//        for (List<OWLProperty> propPath : geometryPropertyPaths) {
+//            int pathLen = propPath.size();
+//
+//            // In case the geometry property path just contains one entry, one
+//            // can assume it's a data property pointing to the geometry literal.
+//            // So the input geometry individual is already what's requested
+//            // here.
+//            if (pathLen == 1) {
+//                assert propPath.get(0).isOWLDataProperty();
+//
+//                return geometryIndividual;
+//            }
+//
+//            // Strip off the last entry of the property path, which is a data
+//            // property. All the preceding properties are assumed to be object
+//            // properties.
+//            List<OWLObjectProperty> objProps = propPath.stream()
+//                    .limit(pathLen-1)
+//                    .map(OWLProperty::asOWLObjectProperty)
+//                    .collect(Collectors.toList());
+//
+//            List<OWLObjectProperty> revObjProps = Lists.reverse(objProps);
+//
+//            // S --> subject, O --> object (from RDF triple view)
+//            Set<OWLIndividual> tmpS = new HashSet<>();
+//            Set<OWLIndividual> tmpO = Sets.newHashSet(geometryIndividual);
+//
+//            for (OWLObjectProperty objProp : revObjProps) {
+//                /**
+//                 * Looks sth like this:
+//                 * {
+//                 *   :bahnhof_dresden_neustadt_building : [
+//                 *          :building_bhf_neustadt_geometry],
+//                 *   :building_bhf_neustadt_geometry : [],
+//                 *   :inside_building_bhf_neustadt_geometry : [],
+//                 *   :on_turnerweg_geometry : [],
+//                 *   :outside_building_bhf_neustadt_1_geometry : [],
+//                 *   :outside_building_bhf_neustadt_2_geometry : [],
+//                 *   :pos_inside_bhf_neustadt : [
+//                 *          :inside_building_bhf_neustadt_geometry],
+//                 *   :pos_on_turnerweg : [
+//                 *          :on_turnerweg_geometry],
+//                 *   :pos_outside_bhf_neustadt_1 : [
+//                 *          :outside_building_bhf_neustadt_1_geometry],
+//                 *   :pos_outside_bhf_neustadt_2 : [
+//                 *          :outside_building_bhf_neustadt_2_geometry],
+//                 *   :turnerweg : [
+//                 *          :turnerweg_geometry],
+//                 *   :turnerweg_geometry : [],
+//                 *   :turnerweg_part : [
+//                 *          :turnerweg_part_geometry],
+//                 *   :turnerweg_part_geometry : []
+//                 * }
+//                 *
+//                 * i.e. all geometry entries have an empty set as values and
+//                 * all the feature entries have a non-empty set as values
+//                 */
+//                Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+//                        reasoner.getPropertyMembers(objProp);
+//
+//                /**
+//                 * `members` keys which have a non-empty value, i.e. all feature
+//                 * OWL individuals
+//                 *
+//                 * [
+//                 *   :bahnhof_dresden_neustadt_building,
+//                 *   :pos_inside_bhf_neustadt,
+//                 *   :pos_on_turnerweg,
+//                 *   :pos_outside_bhf_neustadt_1,
+//                 *   :pos_outside_bhf_neustadt_2,
+//                 *   :turnerweg,
+//                 *   :turnerweg_part
+//                 * ]
+//                 */
+//                List<OWLIndividual> sMembers = members.entrySet().stream()
+//                        .filter((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> !e.getValue().isEmpty())
+//                        .map((Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e) -> e.getKey())
+//                        .collect(Collectors.toList());
+//
+//                for (OWLIndividual s : sMembers) {
+//                    // - `tmpO` contains all the OWL individuals on object
+//                    //   position (viewed from an RDF triple perspective)
+//                    // - `sMembers` contains all those OWL individuals that
+//                    //   actually have values for property `objProp`
+//                    // - `s` is an OWL individual that actually has values for
+//                    //   property `objProp`
+//
+//                    // The values of the current OWL individual
+//                    SortedSet<OWLIndividual> os = members.get(s);
+//
+//                    // If any of the values of the current OWL individual is
+//                    // contained in the set of value OWL individuals we're
+//                    // interested in...
+//                    if (os.stream().anyMatch(tmpO::contains)) {
+//                        // ...then we'll consider this current OWL individual in
+//                        // the next round (or in the final result set if this is
+//                        // the last round)
+//                        tmpS.add(s);
+//                    }
+//                }
+//
+//                tmpO = tmpS;
+//                tmpS = new HashSet<>();
+//            }
+//
+//            if (!tmpO.isEmpty()) {
+//                return tmpO.iterator().next();
+//            }
+//        }
+//
+//        return null;
+//    }
 
     /** Example/debug set-up */
     public static void main(String[] args) throws Exception {
