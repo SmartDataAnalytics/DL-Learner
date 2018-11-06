@@ -743,6 +743,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
     // </implemented interface/base class methods>
 
+    // <base reasoner interface methods>
+    public boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
+        return reasoner.isSuperClassOf(superClass, subClass);
+    }
+
+    // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
         if (reasoner.hasType(areaFeatureClass, individual)) {

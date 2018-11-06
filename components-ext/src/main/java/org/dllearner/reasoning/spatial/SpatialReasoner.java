@@ -5,6 +5,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.annotations.Unstable;
 import org.dllearner.reasoning.spatial.model.SpatialIndividual;
 import org.dllearner.reasoning.spatial.model.SpatialSum;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.sql.ResultSet;
@@ -495,4 +496,6 @@ public interface SpatialReasoner extends ReasonerComponent {
     Set<OWLIndividual> getPassingSpatialIndividuals(OWLIndividual passedIndividual);
 
     AbstractReasonerComponent getBaseReasoner();
+
+    boolean isSuperClassOf(OWLClassExpression superClassExpression, OWLClassExpression subClassExpression);
 }
