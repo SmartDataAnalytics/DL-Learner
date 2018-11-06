@@ -12,12 +12,17 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.vocabulary.spatial.SpatialVocabulary;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.postgis.PGgeometry;
 import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,6 +31,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,7 +42,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private Connection conn;
 
     private double nearRadiusInMeters = 5; // meters
-    private Set<List<OWLProperty>> geometryPropertyPaths;
+    private Set<List<OWLProperty>> geometryPropertyPaths = new HashSet<>();
 
     // TODO: make this configurable
     // "Specifies the maximum number of entries the cache may contain"
@@ -100,7 +106,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                             return null;
                         }
                     });
-    
+
     private LoadingCache<OWLIndividual, OWLIndividual> geom2feature =
             CacheBuilder.newBuilder().maximumSize(maxFeatureGeometryCacheSize)
                     .build(new CacheLoader<OWLIndividual, OWLIndividual>() {
@@ -245,13 +251,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private AbstractReasonerComponent reasoner;
     // TODO: replace with more accepted IRIs
     private OWLClass areaFeatureClass = new OWLClassImpl(
-            IRI.create("http://dl-learner.org/ont/spatial-test#AreaFeature"));
+            IRI.create("http://dl-learner.org/ont/spatial#AreaFeature"));
     private String areaFeatureTableName = "area_feature";
     private OWLClass lineFeatureClass = new OWLClassImpl(
-            IRI.create("http://dl-learner.org/ont/spatial-test#LineFeature"));
+            IRI.create("http://dl-learner.org/ont/spatial#LineFeature"));
     private String lineFeatureTableName = "line_feature";
     private OWLClass pointFeatureClass = new OWLClassImpl(
-            IRI.create("http://dl-learner.org/ont/spatial-test#PointFeature"));
+            IRI.create("http://dl-learner.org/ont/spatial#PointFeature"));
     private String pointFeatureTableName = "point_feature";
 
     public SpatialReasonerPostGIS() {
@@ -353,8 +359,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ClassNotFoundException e) {
             throw new ComponentInitException(e);
         }
-
-        geometryPropertyPaths = new HashSet<>();
     }
 
     @Override
