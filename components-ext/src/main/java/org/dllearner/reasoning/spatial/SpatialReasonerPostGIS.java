@@ -736,6 +736,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
         throw new RuntimeException("Not implemented, yet");
     }
+
+    @Override
+    public AbstractReasonerComponent getBaseReasoner() {
+        return reasoner;
+    }
     // </implemented interface/base class methods>
 
 

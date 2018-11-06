@@ -1,5 +1,6 @@
 package org.dllearner.reasoning.spatial;
 
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.annotations.Unstable;
 import org.dllearner.reasoning.spatial.model.SpatialIndividual;
@@ -492,4 +493,6 @@ public interface SpatialReasoner extends ReasonerComponent {
      */
     @Unstable
     Set<OWLIndividual> getPassingSpatialIndividuals(OWLIndividual passedIndividual);
+
+    AbstractReasonerComponent getBaseReasoner();
 }
