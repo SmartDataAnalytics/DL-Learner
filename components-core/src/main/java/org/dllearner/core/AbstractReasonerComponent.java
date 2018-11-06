@@ -263,7 +263,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
+	public boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		if(precomputeClassHierarchy) {
