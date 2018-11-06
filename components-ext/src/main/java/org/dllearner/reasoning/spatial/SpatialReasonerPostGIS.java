@@ -388,7 +388,84 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public SortedSet<OWLIndividual> getIndividuals() {
-        throw new RuntimeException("Not implemented, yet");
+        return reasoner.getIndividuals();
+    }
+
+    @Override
+    protected SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) {
+        if (!containsSpatialExpressions(concept)) {
+            return reasoner.getIndividuals(concept);
+        } else {
+            if (concept instanceof OWLObjectIntersectionOf) {
+                SortedSet<OWLIndividual> individuals = null;
+
+                for (OWLClassExpression ce : ((OWLObjectIntersectionOf) concept).getOperands()) {
+                    SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
+
+                    if (individuals == null) {
+                        individuals = opIndividuals;
+                    } else {
+                        individuals.addAll(opIndividuals);
+                    }
+                }
+
+                return individuals;
+
+            } else if (concept instanceof OWLObjectSomeValuesFrom) {
+                OWLObjectPropertyExpression prop = ((OWLObjectSomeValuesFrom) concept).getProperty();
+                OWLClassExpression filler = ((OWLObjectSomeValuesFrom) concept).getFiller();
+
+                if ((prop instanceof OWLObjectProperty)
+                        && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+                    SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+
+                    // isInside
+                    if (prop.equals(SpatialVocabulary.isInside)) {
+                        Set<OWLIndividual> individuals = new HashSet<>();
+
+                        for (OWLIndividual fillerIndiv : fillerIndivs) {
+                            Set<OWLIndividual> indivsInsideFillerIndiv =
+                                    getContainedSpatialIndividuals(fillerIndiv);
+                            individuals.addAll(indivsInsideFillerIndiv);
+                        }
+
+                        return new TreeSet<>(individuals);
+                    } else {
+                        throw new RuntimeException(
+                                "spatial object property " + prop + " not supported, yet");
+                    }
+                } else {
+                    if (prop instanceof OWLObjectInverseOf) {
+                        throw new RuntimeException("Not implemented, yet");
+                    } else {
+                        // TODO: consider super properties!
+                        SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+                        Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
+                                reasoner.getPropertyMembers((OWLObjectProperty) prop);
+
+                        Set<OWLIndividual> resultIndividuals = new HashSet<>();
+                        assert propIndividuals != null;
+                        for (Map.Entry e : propIndividuals.entrySet()) {
+                            OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
+                            SortedSet<OWLIndividual> values = (SortedSet<OWLIndividual>) e.getValue();
+
+                            values.retainAll(fillerIndivs);
+
+                            if (!values.isEmpty()) {
+                                resultIndividuals.add(keyIndiv);
+                            }
+                        }
+
+                        return new TreeSet<>(resultIndividuals);
+                    }
+                }
+
+            } else {
+                throw new RuntimeException(
+                        "Support for class expression of type " + concept.getClass() +
+                                " not implemented, yet");
+            }
+        }
     }
 
     @Override
@@ -761,6 +838,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException("Individual " + individual + " is " +
                     "neither an area feature, nor a line feature, nor a " +
                     "point feature");
+        }
+    }
+
+    private boolean containsSpatialExpressions(OWLClassExpression ce) {
+        if (ce instanceof OWLClass) {
+            return false;
+        } else if (ce instanceof OWLObjectIntersectionOf) {
+            return ((OWLObjectIntersectionOf) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
+        } else if (ce instanceof OWLObjectSomeValuesFrom) {
+            OWLObjectPropertyExpression prop = ((OWLObjectSomeValuesFrom) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
+            return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
+                    || containsSpatialExpressions(filler);
+
+        } else {
+            throw new RuntimeException(
+                    "Support for class expression of type " + ce.getClass() +
+                            " not implemented, yet");
         }
     }
 
