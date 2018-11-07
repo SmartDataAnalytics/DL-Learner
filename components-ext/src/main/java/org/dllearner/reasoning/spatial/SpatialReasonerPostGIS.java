@@ -914,6 +914,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return reasoner.getRange(objectProperty);
         }
     }
+
+    @Override
+    protected OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+        if (objectProperty.equals(SpatialVocabulary.isInside)) {
+            return SpatialVocabulary.SpatialFeature;
+
+            // TODO: Add further spatial object properties here
+        } else {
+            return reasoner.getDomain(objectProperty);
+        }
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
