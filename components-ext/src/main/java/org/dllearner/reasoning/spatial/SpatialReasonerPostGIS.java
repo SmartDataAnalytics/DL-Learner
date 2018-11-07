@@ -833,6 +833,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return domainsMap;
     }
+
+    @Override
+    protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression ce) {
+        SortedSet<OWLClassExpression> subClasses = reasoner.getSubClasses(ce);
+
+        // TODO: Add spatial aspect-specific stuff here
+
+        return subClasses;
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
