@@ -842,6 +842,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return subClasses;
     }
+
+    @Override
+    protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression ce) {
+        SortedSet<OWLClassExpression> superClasses = reasoner.getSubClasses(ce);
+
+        // TODO: Add spatial aspect-specific stuff here
+
+        return superClasses;
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
