@@ -393,7 +393,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return reasoner.getIndividuals(concept);
         } else {
             if (concept instanceof OWLObjectIntersectionOf) {
-                SortedSet<OWLIndividual> individuals = null;
+                Set<OWLIndividual> individuals = null;
 
                 for (OWLClassExpression ce : ((OWLObjectIntersectionOf) concept).getOperands()) {
                     SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
@@ -401,11 +401,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     if (individuals == null) {
                         individuals = opIndividuals;
                     } else {
-                        individuals.addAll(opIndividuals);
+                        individuals = Sets.intersection(individuals, opIndividuals);
                     }
                 }
 
-                return individuals;
+                return new TreeSet<>(individuals);
 
             } else if (concept instanceof OWLObjectSomeValuesFrom) {
                 OWLObjectPropertyExpression prop = ((OWLObjectSomeValuesFrom) concept).getProperty();
