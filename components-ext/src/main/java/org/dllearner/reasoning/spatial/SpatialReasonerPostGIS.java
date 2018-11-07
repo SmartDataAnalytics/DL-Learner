@@ -932,6 +932,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return reasoner.getDomain(dataProperty);
     }
+
+    @Override
+    protected Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
+        // TODO: Add spatial int data properties here
+
+        return reasoner.getIntDatatypeProperties();
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
