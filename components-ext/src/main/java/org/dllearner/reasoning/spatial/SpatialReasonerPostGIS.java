@@ -623,11 +623,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 //                getGeometryIndividual(containingIndividual);
         OWLIndividual containedGeometryIndividual = null;
         OWLIndividual containingGeometryIndividual = null;
+
         try {
             containedGeometryIndividual = feature2geom.get(containedIndividual);
             containingGeometryIndividual = feature2geom.get(containingIndividual);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
+        }
+
+        // TODO: Think about this again. Not sure whether this test should be applied to features or geometries
+        if (containedGeometryIndividual.equals(containingGeometryIndividual)) {
+            return isContainmentRelationReflexive;
         }
 
         try {
