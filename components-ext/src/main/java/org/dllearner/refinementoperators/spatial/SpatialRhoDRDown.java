@@ -63,12 +63,12 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection) {
         Set<OWLClassExpression> refinements = new HashSet<>();
-        if (reasoner.isSuperClassOf(SpatialVocabulary.spatialFeature, intersection)) {
+        if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, intersection)) {
             // isInside
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     intersection,
                     new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isInside, SpatialVocabulary.spatialFeature))));
+                            SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature))));
         }
 
         return refinements;
@@ -76,12 +76,12 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
     private Set<OWLClassExpression> spatiallyRefineOWLClass(OWLClass cls) {
         Set<OWLClassExpression> refinements = new HashSet<>();
-        if (reasoner.isSuperClassOf(SpatialVocabulary.spatialFeature, cls)) {
+        if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, cls)) {
             // isInside
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     cls,
                     new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isInside, SpatialVocabulary.spatialFeature))));
+                            SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature))));
 
         }
 
@@ -107,7 +107,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
         System.out.println("============================================\nRefinements:");
         Set<OWLClassExpression> refinements =
-                refinementOperator.refine(SpatialVocabulary.spatialFeature, maxLength);
+                refinementOperator.refine(SpatialVocabulary.SpatialFeature, maxLength);
         refinements.forEach(System.out::println);
 
         for (OWLClassExpression ce : refinements) {
