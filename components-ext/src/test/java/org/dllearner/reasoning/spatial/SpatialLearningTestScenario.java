@@ -32,6 +32,7 @@ public class SpatialLearningTestScenario {
                         "http://www.opengis.net/ont/geosparql#asWKT"))
         ));
         spatialReasoner.init();
+//        spatialReasoner.setIsContainmentRelationReflexive(true);
 
         SpatialRhoDRDown refinementOperator = new SpatialRhoDRDown();
         refinementOperator.setReasoner((SpatialReasoner) spatialReasoner);

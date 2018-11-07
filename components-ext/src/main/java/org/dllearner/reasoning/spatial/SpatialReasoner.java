@@ -445,16 +445,6 @@ public interface SpatialReasoner extends ReasonerComponent {
     /**
      * Returns a set of OWL individuals that are contained in the input OWL
      * individual.
-     *
-     * @param includeSelf A boolean flag indicating whether the input indivudual
-     *                    should be part of the result set.
-     */
-    @Unstable
-    Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual, boolean includeSelf);
-
-    /**
-     * Returns a set of OWL individuals that are contained in the input OWL
-     * individual.
      */
     @Unstable
     Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual);

@@ -10,28 +10,17 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.postgis.PGgeometry;
 import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
-import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.File;
-import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +31,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private Connection conn;
 
     private double nearRadiusInMeters = 5; // meters
+    private boolean isContainmentRelationReflexive = false;
     private Set<List<OWLProperty>> geometryPropertyPaths = new HashSet<>();
 
     // TODO: make this configurable
@@ -326,6 +316,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     public void setPointFeatureClass(String iriString) {
         this.pointFeatureClass = new OWLClassImpl(IRI.create(iriString));
+    }
+
+    public void setIsContainmentRelationReflexive(boolean isContainmentRelationReflexive) {
+        this.isContainmentRelationReflexive = isContainmentRelationReflexive;
     }
     // </getter/setter>
 
@@ -658,11 +652,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual) {
-        return getContainedSpatialIndividuals(individual, false);
-    }
-
-    @Override
-    public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual, boolean includeSelf) {
 //        OWLIndividual geometryIndividual = getGeometryIndividual(individual);
         OWLIndividual geometryIndividual = null;
         try {
@@ -677,7 +666,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (containerTableName.equals(pointFeatureTableName)) {
             // Point feature cannot contain anything but
-            // - itself (should be filtered if `includeSelf` is false!)
+            // - itself (should be filtered if `isContainmentRelationReflexive`
+            //   is false!)
             queryStr.append("SELECT l.iri ")
                     .append("FROM ").append(pointFeatureTableName).append(" l, ")
                                     .append(pointFeatureTableName).append(" r ")
@@ -686,7 +676,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         } else if (containerTableName.equals(lineFeatureTableName)) {
             // Line feature may contain
-            // - itself (should be filtered if `includeSelf` is false!)
+            // - itself (should be filtered if `isContainmentRelationReflexive`
+            //   is false!)
             // - other line features comprised of a subset of consecutive points
             //   --> cross product with `lineFeatureTableName`
             // - point features which lie right on a line, i.e. being one of the
@@ -721,7 +712,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         } else if (containerTableName.equals(areaFeatureTableName)) {
             // Area feature may contain
-            // - itself (should be filtered if `includeSelf` is false!)
+            // - itself (should be filtered if `isContainmentRelationReflexive`
+            //   is false!)
             // - other area features
             //   --> cross product with `areaFeatureTableName`
             // - line features
@@ -778,8 +770,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                             }
                         })
                         .filter(Objects::nonNull)
-                        // if `includeSelf` is set, do not filter; otherwise filter out input `individual`
-                        .filter((OWLIndividual i) -> includeSelf ? true : !i.equals(individual));
+                        // if `isContainmentRelationReflexive` is set, do not filter; otherwise filter out input `individual`
+                        .filter((OWLIndividual i) -> isContainmentRelationReflexive ? true : !i.equals(individual));
 
         return containedIndividuals.collect(Collectors.toSet());
     }

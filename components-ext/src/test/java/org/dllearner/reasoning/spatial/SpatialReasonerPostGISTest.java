@@ -165,8 +165,9 @@ public class SpatialReasonerPostGISTest {
         // Getting all features contained inside a point feature, including the
         // point feature itself into the result set --> should just contain the
         // point feature
+        ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(true);
         containedIndividuals =
-                reasoner.getContainedSpatialIndividuals(somePoint, true);
+                reasoner.getContainedSpatialIndividuals(somePoint);
         assertEquals(1, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(somePoint));
 
@@ -181,6 +182,7 @@ public class SpatialReasonerPostGISTest {
         // Getting all features contained inside a line feature without
         // considering the line feature itself --> should be :turnerweg_part and
         // :pos_on_turnerweg
+        ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(false);
         containedIndividuals = reasoner.getContainedSpatialIndividuals(turnerweg);
         assertEquals(2, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(turnerwegPart));
@@ -189,7 +191,8 @@ public class SpatialReasonerPostGISTest {
         // Getting all features contained inside a line feature, including the
         // line feature itself into the result set --> should be
         // :turnerweg_part, :pos_on_turnerweg and :turnerweg itself
-        containedIndividuals = reasoner.getContainedSpatialIndividuals(turnerweg, true);
+        ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(true);
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(turnerweg);
         assertEquals(3, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(turnerwegPart));
         assertTrue(containedIndividuals.contains(pointOnTurnerWeg));
@@ -208,6 +211,7 @@ public class SpatialReasonerPostGISTest {
         // Getting all features contained in an area feature without considering
         // the area feature itself --> should be :area_inside_bhf_neustadt,
         // :way_inside_bhf_neustadt, and :pos_inside_bhf_neustadt
+        ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(false);
         containedIndividuals = reasoner.getContainedSpatialIndividuals(building);
         assertEquals(3, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(pointInsideBuilding));
@@ -218,11 +222,15 @@ public class SpatialReasonerPostGISTest {
         // feature itself --> should be :area_inside_bhf_neustadt,
         // :way_inside_bhf_neustadt, :pos_inside_bhf_neustadt, and
         // :bahnhof_dresden_neustadt_building itself
-        containedIndividuals = reasoner.getContainedSpatialIndividuals(building, true);
+        ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(true);
+        containedIndividuals = reasoner.getContainedSpatialIndividuals(building);
         assertEquals(4, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(pointInsideBuilding));
         assertTrue(containedIndividuals.contains(wayInsideBuilding));
         assertTrue(containedIndividuals.contains(areaInsideBuilding));
         assertTrue(containedIndividuals.contains(building));
+
+        // reset default value
+        spatialReasoner.setIsContainmentRelationReflexive(false);
     }
 }
