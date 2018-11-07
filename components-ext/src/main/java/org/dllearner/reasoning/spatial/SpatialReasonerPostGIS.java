@@ -897,6 +897,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return superProperties;
     }
 
+    @Override
+    protected Set<OWLObjectProperty> getObjectPropertiesImpl() {
+        return Sets.union(
+                reasoner.getObjectProperties(),
+                SpatialVocabulary.spatialObjectProperties);
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
