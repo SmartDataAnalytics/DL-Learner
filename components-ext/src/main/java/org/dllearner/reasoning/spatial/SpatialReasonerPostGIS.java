@@ -825,6 +825,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return reasoner.isSuperClassOf(superClass, subClass);
     }
 
+    @Override
+    public Map<OWLObjectProperty,OWLClassExpression> getObjectPropertyDomains() {
+        Map<OWLObjectProperty, OWLClassExpression> domainsMap = reasoner.getObjectPropertyDomains();
+
+        domainsMap.put(SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature);
+
+        return domainsMap;
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
