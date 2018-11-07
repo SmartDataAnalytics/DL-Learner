@@ -379,7 +379,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLClass> getClasses() {
-        throw new RuntimeException("Not implemented, yet");
+        return Sets.union(reasoner.getClasses(), SpatialVocabulary.spatialClasses);
     }
 
     @Override
