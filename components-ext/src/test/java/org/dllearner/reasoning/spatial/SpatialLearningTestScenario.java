@@ -15,7 +15,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 public class SpatialLearningTestScenario {
-    public static void main(String[] args) throws ComponentInitException {
+    /**
+     * Target class expression: Feature and (isInside some AreaFeature)
+     */
+    private static void runScenario1() throws ComponentInitException {
         String exampleFilePath =
                 SpatialLearningTestScenario.class.getClassLoader()
                         .getResource("example_data.owl").getFile();
@@ -58,5 +61,8 @@ public class SpatialLearningTestScenario {
         alg.setExpandAccuracy100Nodes(true);
         alg.init();
         alg.start();
+    }
+    public static void main(String[] args) throws ComponentInitException {
+        runScenario1();
     }
 }
