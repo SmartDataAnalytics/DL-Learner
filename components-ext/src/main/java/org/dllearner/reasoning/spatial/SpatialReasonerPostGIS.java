@@ -946,7 +946,127 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return reasoner.getDoubleDatatypeProperties();
     }
+
+    @Override
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(
+            OWLObjectProperty objectProperty) {
+        if (objectProperty.equals(SpatialVocabulary.isInside)) {
+            // isInside
+            return getIsInsideMembers();
+            // TODO: Add further spatial object properties here
+        } else {
+            return reasoner.getPropertyMembers(objectProperty);
+        }
+    }
     // </base reasoner interface methods>
+
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsInsideMembers() {
+        StringBuilder queryString = new StringBuilder();
+        /*
+         * Expensive query which has to cover all those combinations
+         *                --(contained in/is inside)-->
+         * 1) `pointFeatureTableName` - `pointFeatureTableName`  (can be skipped if
+         *    isContainmentRelationReflexive == false)
+         * 2) `pointFeatureTableName` - `lineFeatureTableName`
+         * 3) `pointFeatureTableName` - `areaFeatureTableName`
+         * 4) `lineFeatureTableName` - `lineFeatureTableName`
+         * 5) `lineFeatureTableName` - `areaFeatureTableName`
+         * 6) `areaFeatureTableName` - `areaFeatureTableName`
+         *
+         */
+
+        if (isContainmentRelationReflexive) {
+            // 1) `pointFeatureTableName` - `pointFeatureTableName`
+            queryString
+                    .append("SELECT l.iri contained, r.iri container ")
+                    .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                    .append(pointFeatureTableName).append(" r ")
+                    .append("WHERE ST_Contains(r.the_geom, l.the_geom) ")
+                    .append("UNION ");
+        }
+
+        // 2) `pointFeatureTableName` - `lineFeatureTableName`
+        queryString
+                .append("SELECT l.iri contained, r.iri container ")
+                .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                .append(lineFeatureTableName).append(" r ")
+                .append("WHERE ST_Contains(r.the_geom, l.the_geom) ");
+
+        queryString.append("UNION ");
+
+        // 3) `pointFeatureTableName` - `areaFeatureTableName`
+        queryString
+                .append("SELECT l.iri contained, r.iri container ")
+                .append("FROM ").append(pointFeatureTableName).append(" l, ")
+                                .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ST_Contains(r.the_geom, l.the_geom) ");
+
+        queryString.append("UNION ");
+
+        // 4) `lineFeatureTableName` - `lineFeatureTableName`
+        queryString
+                .append("SELECT l.iri contained, r.iri container ")
+                .append("FROM ").append(lineFeatureTableName).append(" l, ")
+                                .append(lineFeatureTableName).append(" r ")
+                .append("WHERE ST_Contains(r.the_geom, l.the_geom) ");
+        if (!isContainmentRelationReflexive) {
+            queryString.append("AND NOT l.iri=r.iri ");
+        }
+
+        queryString.append("UNION ");
+
+        // 5) `lineFeatureTableName` - `areaFeatureTableName`
+        queryString
+                .append("SELECT l.iri contained, r.iri container ")
+                .append("FROM ").append(lineFeatureTableName).append(" l, ")
+                                .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ST_Contains(r.the_geom, l.the_geom) ");
+
+        queryString.append("UNION ");
+
+        // 6) `areaFeatureTableName` - `areaFeatureTableName`
+        queryString
+                .append("SELECT l.iri contained, r.iri container ")
+                .append("FROM ").append(areaFeatureTableName).append(" l, ")
+                                .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ST_Contains(r.the_geom, l.the_geom) ");
+        if (!isContainmentRelationReflexive) {
+            queryString.append("AND NOT l.iri=r.iri");
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryString.toString());
+
+            while (resultSet.next()) {
+                String containedIndivIRIStr = resultSet.getString("contained");
+                String containerIndivIRIStr = resultSet.getString("container");
+
+                OWLIndividual containedGeometryIndividual =
+                        new OWLNamedIndividualImpl(IRI.create(containedIndivIRIStr));
+                OWLIndividual containerGeometryIndividual =
+                        new OWLNamedIndividualImpl(IRI.create(containerIndivIRIStr));
+
+                OWLIndividual containedFeatureIndividual =
+                        geom2feature.get(containedGeometryIndividual);
+                OWLIndividual containerFeatureIndividual =
+                        geom2feature.get(containerGeometryIndividual);
+
+                // convert geometries to features
+                if (!members.containsKey(containedFeatureIndividual)) {
+                    members.put(containedFeatureIndividual, new TreeSet<>());
+                }
+                members.get(containedFeatureIndividual).add(containerFeatureIndividual);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
 
     private String getTable(OWLIndividual individual) {
         if (reasoner.hasType(areaFeatureClass, individual)) {
