@@ -158,6 +158,20 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
         }
     }
 
+    private void showIfBetterSolutionsFound() {
+        if(bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
+            currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+            long durationInMillis = getCurrentRuntimeInMilliSeconds();
+            String durationStr = getDurationAsString(durationInMillis);
+
+            logger.info("more accurate (" +
+                    dfPercent.format(currentHighestAccuracy) + ") class " +
+                    "expression found after " + durationStr + ": " +
+                    descriptionToString(bestEvaluatedDescriptions.getBest()
+                            .getDescription()));
+        }
+    }
+
     @Override
     public void start() {
         currentHighestAccuracy = 0.0;
@@ -170,6 +184,8 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
         addNode(startClass, null);
 
         while (!terminationCriteriaSatisfied()) {
+            showIfBetterSolutionsFound();
+
             nextNode = getNextNodeToExpand();
 
             int horizExp = nextNode.getHorizontalExpansion();
