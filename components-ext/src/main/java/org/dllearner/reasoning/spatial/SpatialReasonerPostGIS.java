@@ -367,7 +367,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public OWLDatatype getDatatype(OWLDataProperty dp) {
-        throw new RuntimeException("Not implemented, yet");
+        // TODO: Add spatial data property handling here
+
+        return reasoner.getDatatype(dp);
     }
 
     @Override
