@@ -1,6 +1,7 @@
 package org.dllearner.refinementoperators.spatial;
 
 import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
@@ -23,7 +24,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
     // <getter/setter>
     public void setReasoner(SpatialReasoner reasoner) {
-        super.setReasoner(reasoner.getBaseReasoner());
+        super.setReasoner((AbstractReasonerComponent) reasoner);
         this.reasoner = reasoner;
     }
     // </getter/setter>
@@ -31,10 +32,6 @@ public class SpatialRhoDRDown extends RhoDRDown {
     // <interface methods>
     @Override
     public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
-        System.out.println("Curr ce: " + description + " w/ maxLen " + maxLength);
-        if (maxLength == 5) {
-            int a = 23;
-        }
         Set<OWLClassExpression> refinements = super.refine(description, maxLength);
         refinements.addAll(spatiallyRefine(description));
 
