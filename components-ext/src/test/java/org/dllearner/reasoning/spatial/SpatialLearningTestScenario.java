@@ -55,7 +55,7 @@ public class SpatialLearningTestScenario {
         alg.setLearningProblem(lp);
         alg.setOperator(refinementOperator);
         alg.setMaxExecutionTimeInSeconds(20);
-//        alg.se
+        alg.setExpandAccuracy100Nodes(true);
         alg.init();
         alg.start();
     }

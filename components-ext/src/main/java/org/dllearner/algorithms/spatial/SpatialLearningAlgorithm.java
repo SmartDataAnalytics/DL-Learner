@@ -37,11 +37,19 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
     @ConfigOption(description = "the refinement operator instance to use")
     private LengthLimitedRefinementOperator operator;
 
-    @ConfigOption(defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+    @ConfigOption(defaultValue="0", description="The maximum number of " +
+            "candidate hypothesis the algorithm is allowed to test (0 = no " +
+            "limit). The algorithm will stop afterwards. (The real number of " +
+            "tests can be slightly higher, because this criterion usually " +
+            "won't be checked after each single test.)")
     private int maxClassExpressionTests = 0;
 
     @ConfigOption(defaultValue="7", description="The maximum depth of a description")
     private double maxDepth = 7;
+
+    @ConfigOption(defaultValue = "false",  description = "whether to try and " +
+            "refine solutions which already have accuracy value of 1")
+    private boolean expandAccuracy100Nodes = false;
 
     // <getter/setter>
     public void setOperator(LengthLimitedRefinementOperator operator) {
@@ -50,6 +58,10 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
     public void setStartClass(OWLClassExpression startClass) {
         this.startClass = startClass;
+    }
+
+    public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
+        this.expandAccuracy100Nodes = expandAccuracy100Nodes;
     }
     // </getter/setter>
 
@@ -100,7 +112,11 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
         while(it.hasNext()) {
             OENode node = it.next();
-            if (node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+            if (expandAccuracy100Nodes &&
+                    node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+                return node;
+
+            } else if (node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
                 return node;
             }
         }
@@ -189,15 +205,15 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
             nextNode = getNextNodeToExpand();
 
             int horizExp = nextNode.getHorizontalExpansion();
-            logger.info("Refining class expression " + nextNode.getDescription());
-            // FIXME: 'virtual properties' from `SpatialVocabulary` are unknown to the reasoner, thus will get a null as domain/range and will cause a NPE in L637 in RhoDRDown
+            logger.debug("Refining class expression " + nextNode.getDescription());
             TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
 
             while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
                 OWLClassExpression refinement = refinements.pollFirst();
                 int length = OWLClassExpressionUtils.getLength(refinement);
 
-                if (length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
+                if (length > horizExp &&
+                        OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
                     addNode(refinement, nextNode);
                 }
             }
