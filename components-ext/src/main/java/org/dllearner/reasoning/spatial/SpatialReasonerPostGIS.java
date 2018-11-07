@@ -939,6 +939,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return reasoner.getIntDatatypeProperties();
     }
+
+    @Override
+    protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
+        // TODO: Add spatial double data properties here
+
+        return reasoner.getDoubleDatatypeProperties();
+    }
     // </base reasoner interface methods>
 
     private String getTable(OWLIndividual individual) {
