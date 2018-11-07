@@ -958,6 +958,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return reasoner.getPropertyMembers(objectProperty);
         }
     }
+
+    @Override
+    protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
+        // TODO: Add spatial boolean data properties here
+
+        return reasoner.getBooleanDatatypeProperties();
+    }
     // </base reasoner interface methods>
 
     private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsInsideMembers() {
