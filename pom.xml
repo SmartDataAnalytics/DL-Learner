@@ -120,6 +120,9 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<useSystemClassLoader>false</useSystemClassLoader>
+					</configuration>
 					<version>2.20.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
