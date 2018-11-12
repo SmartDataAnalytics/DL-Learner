@@ -61,9 +61,31 @@ public class SpatialRhoDRDown extends RhoDRDown {
             refinements.addAll(
                     spatiallyRefineOWLObjectIntersectionOf((OWLObjectIntersectionOf) ce, maxLength));
 
+        else if (ce instanceof OWLObjectSomeValuesFrom)
+            refinements.addAll(
+                    spatiallyRefineOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) ce, maxLength));
+
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom ce, int maxLength) {
+        // TODO: handle spatial sub object properties
+        OWLObjectPropertyExpression property = ce.getProperty();
+        OWLClassExpression filler = ce.getFiller();
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+
+        Set<OWLClassExpression> fillerRefinements = refine(
+                filler,
+                maxLength-lengthMetric.objectProperyLength);
+
+        for (OWLClassExpression fillerRefinement : fillerRefinements) {
+            refinements.add(new OWLObjectSomeValuesFromImpl(property, fillerRefinement));
+        }
 
         return refinements;
     }
