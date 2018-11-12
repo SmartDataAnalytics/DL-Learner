@@ -129,6 +129,37 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     intersection,
                     new OWLObjectSomeValuesFromImpl(
                             SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature))));
+
+            // isNear
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
+        }
+
+        List<OWLClassExpression> operandsList = intersection.getOperandsAsList();
+        assert operandsList.size() == 2;
+
+        OWLClassExpression firstOperand = operandsList.get(0);
+        OWLClassExpression secondOperand = operandsList.get(1);
+
+        int tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(secondOperand);
+        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength)) {
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    refinement1, secondOperand)));
+        }
+
+        tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(firstOperand);
+        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength)) {
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    firstOperand, refinement2)));
+        }
+
+        refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+
+        )));
+        for (OWLClassExpression ce : intersection.getOperands()) {
+            refinements.addAll(refine(ce, maxLength-1));
         }
 
         return refinements;
@@ -142,6 +173,12 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     cls,
                     new OWLObjectSomeValuesFromImpl(
                             SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature))));
+
+            // isNear
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    cls,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
 
         }
 
