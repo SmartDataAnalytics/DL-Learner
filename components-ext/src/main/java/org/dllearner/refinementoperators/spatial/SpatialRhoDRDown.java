@@ -10,17 +10,25 @@ import org.dllearner.reasoning.spatial.DBConnectionSetting;
 import org.dllearner.reasoning.spatial.SpatialReasoner;
 import org.dllearner.reasoning.spatial.SpatialReasonerPostGIS;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * TODO: Check handling of max expression length
+ */
 public class SpatialRhoDRDown extends RhoDRDown {
     private SpatialReasoner reasoner;
+    private OWLClassExpressionLengthMetric lengthMetric =
+            OWLClassExpressionLengthMetric.getDefaultMetric();
 
     // <getter/setter>
     public void setReasoner(SpatialReasoner reasoner) {
@@ -33,7 +41,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
     @Override
     public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
         Set<OWLClassExpression> refinements = super.refine(description, maxLength);
-        refinements.addAll(spatiallyRefine(description));
+        refinements.addAll(spatiallyRefine(description, maxLength));
 
         return refinements;
     }
@@ -44,13 +52,15 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
     // </interface methods>
 
-    private Set<OWLClassExpression> spatiallyRefine(OWLClassExpression ce) {
+    private Set<OWLClassExpression> spatiallyRefine(OWLClassExpression ce, int maxLength) {
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (ce instanceof OWLClass)
             refinements.addAll(spatiallyRefineOWLClass((OWLClass) ce));
+
         else if (ce instanceof OWLObjectIntersectionOf)
             refinements.addAll(
-                    spatiallyRefineOWLObjectIntersectionOf((OWLObjectIntersectionOf) ce));
+                    spatiallyRefineOWLObjectIntersectionOf((OWLObjectIntersectionOf) ce, maxLength));
+
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
@@ -58,7 +68,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
         return refinements;
     }
 
-    private Set<OWLClassExpression> spatiallyRefineOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection) {
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection, int maxLength) {
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, intersection)) {
             // isInside
