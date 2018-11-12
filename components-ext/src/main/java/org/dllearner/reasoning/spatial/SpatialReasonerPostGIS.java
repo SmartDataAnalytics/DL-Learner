@@ -1045,6 +1045,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return reasoner.getBooleanDatatypeProperties();
     }
+
+    @Override
+    protected Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
+        return reasoner.getDatatypeProperties();
+    }
     // </base reasoner interface methods>
 
     private SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
