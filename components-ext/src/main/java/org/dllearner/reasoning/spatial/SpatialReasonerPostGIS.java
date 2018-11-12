@@ -8,14 +8,18 @@ import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 
 import javax.annotation.Nonnull;
 import java.sql.*;
@@ -408,53 +412,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 return new TreeSet<>(individuals);
 
             } else if (concept instanceof OWLObjectSomeValuesFrom) {
-                OWLObjectPropertyExpression prop = ((OWLObjectSomeValuesFrom) concept).getProperty();
-                OWLClassExpression filler = ((OWLObjectSomeValuesFrom) concept).getFiller();
+                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
 
-                if ((prop instanceof OWLObjectProperty)
-                        && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
-                    SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
-
-                    // isInside
-                    if (prop.equals(SpatialVocabulary.isInside)) {
-                        Set<OWLIndividual> individuals = new HashSet<>();
-
-                        for (OWLIndividual fillerIndiv : fillerIndivs) {
-                            Set<OWLIndividual> indivsInsideFillerIndiv =
-                                    getContainedSpatialIndividuals(fillerIndiv);
-                            individuals.addAll(indivsInsideFillerIndiv);
-                        }
-
-                        return new TreeSet<>(individuals);
-                    } else {
-                        throw new RuntimeException(
-                                "spatial object property " + prop + " not supported, yet");
-                    }
-                } else {
-                    if (prop instanceof OWLObjectInverseOf) {
-                        throw new RuntimeException("Not implemented, yet");
-                    } else {
-                        // TODO: consider super properties!
-                        SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
-                        Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                                reasoner.getPropertyMembers((OWLObjectProperty) prop);
-
-                        Set<OWLIndividual> resultIndividuals = new HashSet<>();
-                        assert propIndividuals != null;
-                        for (Map.Entry e : propIndividuals.entrySet()) {
-                            OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
-                            SortedSet<OWLIndividual> values = (SortedSet<OWLIndividual>) e.getValue();
-
-                            values.retainAll(fillerIndivs);
-
-                            if (!values.isEmpty()) {
-                                resultIndividuals.add(keyIndiv);
-                            }
-                        }
-
-                        return new TreeSet<>(resultIndividuals);
-                    }
-                }
 
             } else {
                 throw new RuntimeException(
@@ -966,6 +925,83 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return reasoner.getBooleanDatatypeProperties();
     }
     // </base reasoner interface methods>
+
+    private SortedSet<OWLIndividual> getIndividualsOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom concept) {
+        OWLObjectPropertyExpression prop = concept.getProperty();
+        OWLClassExpression filler = concept.getFiller();
+
+        if ((prop instanceof OWLObjectProperty)
+                && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+            SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+
+            // isInside
+            if (prop.equals(SpatialVocabulary.isInside)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> indivsInsideFillerIndiv =
+                            getContainedSpatialIndividuals(fillerIndiv);
+                    individuals.addAll(indivsInsideFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
+                // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> individualsNearFillerIndiv =
+                            getNearSpatialIndividuals(fillerIndiv);
+                    individuals.addAll(individualsNearFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
+            } else {
+                throw new RuntimeException(
+                        "spatial object property " + prop + " not supported, yet");
+            }
+        } else {
+            if (prop instanceof OWLObjectInverseOf) {
+                throw new RuntimeException(
+                        "Handling of object property expressions not implemented, yet");
+
+            } else {
+                // TODO: consider super properties!
+                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+                Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
+                        reasoner.getPropertyMembers((OWLObjectProperty) prop);
+
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+                assert propIndividuals != null;
+
+                for (Map.Entry e : propIndividuals.entrySet()) {
+                    // e: an entry of the shape
+                    //   OWLIndividual -> SortedSet<OWLIndividual>
+
+                    OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
+                    SortedSet<OWLIndividual> values =
+                            (SortedSet<OWLIndividual>) e.getValue();
+
+                    // set intersection with filler individuals
+                    values.retainAll(fillerIndivs);
+
+                    // now values only contains those OWL individuals,
+                    // that
+                    // - are instances of the filler class expressions
+                    // - are assigned to another OWL individual through
+                    //   the property `prop`
+
+                    if (!values.isEmpty()) {
+                        resultIndividuals.add(keyIndiv);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+            }
+        }
+    }
 
     private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsInsideMembers() {
         StringBuilder queryString = new StringBuilder();
