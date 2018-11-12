@@ -1504,6 +1504,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
                     || containsSpatialExpressions(filler);
 
+        } else if (ce instanceof OWLObjectUnionOfImpl) {
+            return ((OWLObjectUnionOf) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
+        } else if (ce instanceof OWLObjectUnionOfImplExt) {
+            return ((OWLObjectUnionOfImplExt) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
         } else if (ce instanceof OWLObjectAllValuesFrom) {
             OWLObjectPropertyExpression prop = ((OWLObjectAllValuesFrom) ce).getProperty();
             OWLClassExpression filler = ((OWLObjectAllValuesFrom) ce).getFiller();
