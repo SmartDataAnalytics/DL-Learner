@@ -565,12 +565,124 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNear(OWLIndividual individual1, OWLIndividual individual2) {
-        throw new RuntimeException("Not implemented, yet");
+        String table1 = getTable(individual1);
+        String table2 = getTable(individual2);
+
+        OWLIndividual geometryIndividual1 = null;
+        OWLIndividual geometryIndividual2 = null;
+
+        try {
+            geometryIndividual1 = feature2geom.get(individual1);
+            geometryIndividual2 = feature2geom.get(individual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (geometryIndividual1.equals(geometryIndividual2)) {
+            return true;
+        }
+
+        StringBuilder queryStr = new StringBuilder();
+
+        queryStr.append("SELECT ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
+                .append("FROM ")
+                    .append(table1).append(" l, ").append(table2).append(" r ")
+                .append("WHERE ")
+                    .append("l.iri=? AND r.iri=?");
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr.toString());
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geometryIndividual1.toStringID());
+            statement.setString(3, geometryIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+            resSet.next();
+
+            return resSet.getBoolean(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public Set<OWLIndividual> getNearSpatialIndividuals(OWLIndividual individual) {
-        throw new RuntimeException("Not implemented, yet");
+    public Set<OWLIndividual> getNearSpatialIndividuals(OWLIndividual featureIndividual) {
+        // Non-feature individuals by definition aren't near anything
+        if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, featureIndividual))
+            return new HashSet<>();
+
+        OWLIndividual geometryIndividual;
+        String indivTable = getTable(featureIndividual);
+
+        try {
+            geometryIndividual = feature2geom.get(featureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        StringBuilder queryStr = new StringBuilder();
+
+        queryStr.append("SELECT ")
+                    .append("l.iri ")
+                .append("FROM ")
+                    .append(pointFeatureTableName).append(" l, ")
+                    .append(indivTable).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
+                .append("AND ")
+                    .append("r.iri=? ");
+
+        queryStr.append("UNION ");
+
+        queryStr.append("SELECT ")
+                    .append("l.iri ")
+                .append("FROM ")
+                    .append(lineFeatureTableName).append(" l, ")
+                    .append(indivTable).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
+                .append("AND ")
+                    .append("r.iri=? ");
+
+        queryStr.append("UNION ");
+
+        queryStr.append("SELECT ")
+                    .append("l.iri ")
+                .append("FROM ")
+                    .append(areaFeatureTableName).append(" l, ")
+                    .append(indivTable).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
+                .append("AND ")
+                    .append("r.iri=?");
+
+        Set<OWLIndividual> featureIndividuals = new HashSet<>();
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr.toString());
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geometryIndividual.toStringID());
+            statement.setDouble(3, nearRadiusInMeters);
+            statement.setString(4, geometryIndividual.toStringID());
+            statement.setDouble(5, nearRadiusInMeters);
+            statement.setString(6, geometryIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            while (resSet.next()) {
+                String indivIRIStr = resSet.getString(1);
+                featureIndividuals.add(
+                        geom2feature.get(new OWLNamedIndividualImpl(
+                                IRI.create(indivIRIStr))));
+            }
+
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return featureIndividuals;
     }
 
     @Override
@@ -869,6 +981,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (objectProperty.equals(SpatialVocabulary.isInside)) {
             return SpatialVocabulary.SpatialFeature;
 
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+            return SpatialVocabulary.SpatialFeature;
+
             // TODO: Add further spatial object properties here
         } else {
             return reasoner.getRange(objectProperty);
@@ -878,6 +993,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     protected OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
         if (objectProperty.equals(SpatialVocabulary.isInside)) {
+            return SpatialVocabulary.SpatialFeature;
+
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
             return SpatialVocabulary.SpatialFeature;
 
             // TODO: Add further spatial object properties here
@@ -913,6 +1031,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (objectProperty.equals(SpatialVocabulary.isInside)) {
             // isInside
             return getIsInsideMembers();
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+            return getIsNearMembers();
             // TODO: Add further spatial object properties here
         } else {
             return reasoner.getPropertyMembers(objectProperty);
@@ -957,6 +1077,36 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 }
 
                 return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                Map<OWLIndividual, Integer> indivsNearFillerIndivWCount =
+                        new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> individualsNearFillerIndiv =
+                            getNearSpatialIndividuals(fillerIndiv);
+
+                    for (OWLIndividual i : individualsNearFillerIndiv) {
+                        if (!indivsNearFillerIndivWCount.containsKey(i)) {
+                            indivsNearFillerIndivWCount.put(i, 1);
+
+                        } else {
+                            int tmpCnt = indivsNearFillerIndivWCount.get(i);
+                            tmpCnt++;
+
+                            indivsNearFillerIndivWCount.put(i, tmpCnt);
+                        }
+                    }
+                }
+
+                return indivsNearFillerIndivWCount.entrySet()
                         .stream()
                         .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
                         .map(Map.Entry::getKey)
@@ -1181,6 +1331,121 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 members.get(containedFeatureIndividual).add(containerFeatureIndividual);
             }
 
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
+
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNearMembers() {
+        StringBuilder queryStr = new StringBuilder();
+
+        /*
+         * Expensive query which has to cover all those combinations
+         *                      --(isNear)-->
+         * 1) `pointFeatureTableName` - `pointFeatureTableName`
+         * 2) `pointFeatureTableName` - `lineFeatureTableName`
+         * 3) `pointFeatureTableName` - `areaFeatureTableName`
+         * 4) `lineFeatureTableName` - `lineFeatureTableName`
+         * 5) `lineFeatureTableName` - `areaFeatureTableName`
+         * 6) `areaFeatureTableName` - `areaFeatureTableName`
+         */
+
+        // 1) `pointFeatureTableName` - `pointFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(pointFeatureTableName).append(" l, ")
+                    .append(pointFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        queryStr.append("UNION ");
+
+        // 2) `pointFeatureTableName` - `lineFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(pointFeatureTableName).append(" l, ")
+                    .append(lineFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        queryStr.append("UNION ");
+
+        // 3) `pointFeatureTableName` - `areaFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(pointFeatureTableName).append(" l, ")
+                    .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        queryStr.append("UNION ");
+
+        // 4) `lineFeatureTableName` - `lineFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(lineFeatureTableName).append(" l, ")
+                    .append(lineFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        queryStr.append("UNION ");
+
+        // 5) `lineFeatureTableName` - `areaFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(lineFeatureTableName).append(" l, ")
+                    .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        queryStr.append("UNION ");
+
+        // 6) `areaFeatureTableName` - `areaFeatureTableName`
+        queryStr.append("SELECT l.iri, r.iri ")
+                .append("FROM ")
+                    .append(areaFeatureTableName).append(" l, ")
+                    .append(areaFeatureTableName).append(" r ")
+                .append("WHERE ")
+                    .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
+                        .append(nearRadiusInMeters).append(") ");
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr.toString());
+
+            while (resultSet.next()) {
+                String individual1Str = resultSet.getString(1);
+                String individual2Str = resultSet.getString(2);
+
+                OWLIndividual geometryIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(individual1Str));
+                OWLIndividual geometryIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(individual2Str));
+
+                OWLIndividual featureIndividual1 = geom2feature.get(geometryIndividual1);
+                OWLIndividual featureInfividual2 = geom2feature.get(geometryIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+
+                if (!members.containsKey(featureInfividual2)) {
+                    members.put(featureInfividual2, new TreeSet<>());
+                }
+
+                // Since isNear is symmetric
+                members.get(featureIndividual1).add(featureInfividual2);
+                members.get(featureInfividual2).add(featureIndividual1);
+            }
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
