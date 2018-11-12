@@ -611,22 +611,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             resSet.next();
             return resSet.getBoolean(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return false;
     }
 
     @Override
-    public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual individual) {
-//        OWLIndividual geometryIndividual = getGeometryIndividual(individual);
+    public Set<OWLIndividual> getContainedSpatialIndividuals(OWLIndividual featureIndividual) {
+        // Non-feature individuals by definition aren't spatially contained anywhere
+        if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, featureIndividual))
+            return new HashSet<>();
+
         OWLIndividual geometryIndividual = null;
         try {
-            geometryIndividual = feature2geom.get(individual);
+            geometryIndividual = feature2geom.get(featureIndividual);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
-        String containerTableName = getTable(individual);
+        String containerTableName = getTable(featureIndividual);
         Set<String> containedGeomIndividualIRIStrings = new HashSet<>();
 
         StringBuilder queryStr = new StringBuilder();
@@ -737,8 +738,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                             }
                         })
                         .filter(Objects::nonNull)
-                        // if `isContainmentRelationReflexive` is set, do not filter; otherwise filter out input `individual`
-                        .filter((OWLIndividual i) -> isContainmentRelationReflexive ? true : !i.equals(individual));
+                        // if `isContainmentRelationReflexive` is set, do not filter; otherwise filter out input `featureIndividual`
+                        .filter((OWLIndividual i) -> isContainmentRelationReflexive ? true : !i.equals(featureIndividual));
 
         return containedIndividuals.collect(Collectors.toSet());
     }
@@ -1168,12 +1169,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 OWLIndividual containerGeometryIndividual =
                         new OWLNamedIndividualImpl(IRI.create(containerIndivIRIStr));
 
+                // convert geometries to features
                 OWLIndividual containedFeatureIndividual =
                         geom2feature.get(containedGeometryIndividual);
                 OWLIndividual containerFeatureIndividual =
                         geom2feature.get(containerGeometryIndividual);
 
-                // convert geometries to features
                 if (!members.containsKey(containedFeatureIndividual)) {
                     members.put(containedFeatureIndividual, new TreeSet<>());
                 }
