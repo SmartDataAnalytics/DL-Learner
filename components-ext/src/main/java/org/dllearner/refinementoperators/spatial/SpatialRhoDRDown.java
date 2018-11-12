@@ -65,9 +65,40 @@ public class SpatialRhoDRDown extends RhoDRDown {
             refinements.addAll(
                     spatiallyRefineOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) ce, maxLength));
 
+        else if (ce instanceof OWLObjectMinCardinality)
+            refinements.addAll(
+                    spatiallyRefineOWLObjectMinCardinality((OWLObjectMinCardinality) ce, maxLength));
+
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectMinCardinality(OWLObjectMinCardinality ce, int maxLength) {
+        // TODO: Handle spatial sub object properties
+        OWLObjectPropertyExpression property = ce.getProperty();
+        OWLClassExpression filler = ce.getFiller();
+        int minCardinality = ce.getCardinality();
+
+        Set<OWLClassExpression> fillerRefinements =
+                refine(filler,
+                        maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength);
+        int refinedCardinality = minCardinality + 1;
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+        refinements.add(new OWLObjectMinCardinalityImpl(
+                property, refinedCardinality, filler));
+
+        for (OWLClassExpression fillerRefinement : fillerRefinements) {
+            // First take the original cardinality...
+            refinements.add(new OWLObjectMinCardinalityImpl(
+                    property, minCardinality, fillerRefinement));
+            // ...then the refined cardinality
+            refinements.add(new OWLObjectMinCardinalityImpl(
+                    property, refinedCardinality, fillerRefinement));
+        }
 
         return refinements;
     }
