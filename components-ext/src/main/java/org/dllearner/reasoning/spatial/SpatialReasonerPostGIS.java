@@ -415,6 +415,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (concept instanceof OWLObjectMinCardinality) {
                 return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
 
+            } else if (concept instanceof OWLObjectAllValuesFrom) {
+                return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
             } else {
                 throw new RuntimeException(
                         "Support for class expression of type " + concept.getClass() +
@@ -1052,6 +1054,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
     // </base reasoner interface methods>
 
+
+    private SortedSet<OWLIndividual> getIndividualsOWLObjectAllValuesFrom(OWLObjectAllValuesFrom concept) {
+        OWLObjectPropertyExpression prop = concept.getProperty();
+        OWLClassExpression filler = concept.getFiller();
+
+        // FIXME: Go on here
+        return new TreeSet<>();
+    }
+
     private SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
         OWLClassExpression filler = concept.getFiller();
@@ -1492,6 +1503,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
                     || containsSpatialExpressions(filler);
+
+        } else if (ce instanceof OWLObjectAllValuesFrom) {
+            OWLObjectPropertyExpression prop = ((OWLObjectAllValuesFrom) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectAllValuesFrom) ce).getFiller();
 
             return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
                     || containsSpatialExpressions(filler);
