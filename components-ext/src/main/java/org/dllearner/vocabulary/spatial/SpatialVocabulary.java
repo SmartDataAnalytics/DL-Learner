@@ -19,9 +19,11 @@ public class SpatialVocabulary {
     // ---- object properties ----
     public static final OWLObjectProperty isInside =
             df.getOWLObjectProperty(IRI.create(prefix + "isInside"));
+    public static final OWLObjectProperty isNear =
+            df.getOWLObjectProperty(IRI.create(prefix + "isNear"));
 
     public static Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
-            isInside);
+            isInside, isNear);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
