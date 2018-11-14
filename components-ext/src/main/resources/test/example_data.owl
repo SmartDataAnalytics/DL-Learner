@@ -146,6 +146,15 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.740912191569807 51.06544588180998)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_geometry -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_geometry">
@@ -174,6 +183,7 @@
     <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_03 -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_03">
+        <nonSpatialObjectProperty01 rdf:resource="http://dl-learner.org/ont/spatial#nonspatial_individual_01"/>
         <nonSpatialObjectProperty01 rdf:resource="http://dl-learner.org/ont/spatial#nonspatial_individual_02"/>
     </owl:NamedIndividual>
     
@@ -211,6 +221,15 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pos_inside_bhf_neustadt">
         <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
         <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#pos_inside_bhf_neustadt_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pos_inside_bhf_neustadt_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry"/>
     </owl:NamedIndividual>
     
 
