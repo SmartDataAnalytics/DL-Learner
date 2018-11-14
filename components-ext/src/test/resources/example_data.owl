@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://dl-learner.org/ont/spatial-test#"
-     xml:base="http://dl-learner.org/ont/spatial-test"
+<rdf:RDF xmlns="http://dl-learner.org/ont/spatial#"
+     xml:base="http://dl-learner.org/ont/spatial"
      xmlns:geosparql="http://www.opengis.net/ont/geosparql#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:terms="http://purl.org/dc/terms/"
@@ -13,6 +13,23 @@
     <owl:Ontology rdf:about="http://dl-learner.org/ont/spatial#">
         <owl:imports rdf:resource="http://www.opengis.net/ont/geosparql"/>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#nonSpatialObjectProperty01 -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/ont/spatial#nonSpatialObjectProperty01"/>
     
 
 
@@ -56,6 +73,20 @@
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#PointFeature">
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
     </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#SomethingMoreSpecialButStillNonSpatial -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SomethingMoreSpecialButStillNonSpatial">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#SomethingNonSpatial"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#SomethingNonSpatial -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SomethingNonSpatial"/>
     
 
 
@@ -120,6 +151,30 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_geometry">
         <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.74110 51.06550)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#SomethingMoreSpecialButStillNonSpatial"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#SomethingNonSpatial"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_03 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_03">
+        <nonSpatialObjectProperty01 rdf:resource="http://dl-learner.org/ont/spatial#nonspatial_individual_02"/>
     </owl:NamedIndividual>
     
 
