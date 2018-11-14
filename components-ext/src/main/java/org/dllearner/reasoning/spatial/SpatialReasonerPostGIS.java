@@ -240,7 +240,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         }
                     });
 
-    private AbstractReasonerComponent reasoner;
+    protected AbstractReasonerComponent reasoner;
     // TODO: replace with more accepted IRIs
     private OWLClass areaFeatureClass = new OWLClassImpl(
             IRI.create("http://dl-learner.org/ont/spatial#AreaFeature"));
@@ -395,19 +395,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return reasoner.getIndividuals(concept);
         } else {
             if (concept instanceof OWLObjectIntersectionOf) {
-                Set<OWLIndividual> individuals = null;
-
-                for (OWLClassExpression ce : ((OWLObjectIntersectionOf) concept).getOperands()) {
-                    SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
-
-                    if (individuals == null) {
-                        individuals = opIndividuals;
-                    } else {
-                        individuals = Sets.intersection(individuals, opIndividuals);
-                    }
-                }
-
-                return new TreeSet<>(individuals);
+                return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
 
             } else if (concept instanceof OWLObjectSomeValuesFrom) {
                 return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
@@ -1142,7 +1130,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 // TODO: consider super properties!
                 SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                        reasoner.getPropertyMembers((OWLObjectProperty) prop);
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 Set<OWLIndividual> resultIndividuals = new HashSet<>();
                 assert propIndividuals != null;
@@ -1214,7 +1202,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 // TODO: consider super properties!
                 SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                        reasoner.getPropertyMembers((OWLObjectProperty) prop);
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 Set<OWLIndividual> resultIndividuals = new HashSet<>();
                 assert propIndividuals != null;
@@ -1244,6 +1232,28 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 return new TreeSet<>(resultIndividuals);
             }
         }
+    }
+
+    /**
+     * Called in the getIndividualsImpl method in case the class expression to
+     * get the instances for is an OWLObjectIntersection. The unraveling is
+     * needed to recusively call getIndividualsImpl on all parts such that we
+     * can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection) {
+        Set<OWLIndividual> individuals = null;
+
+        for (OWLClassExpression ce : intersection.getOperands()) {
+            SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
+
+            if (individuals == null) {
+                individuals = opIndividuals;
+            } else {
+                individuals = Sets.intersection(individuals, opIndividuals);
+            }
+        }
+
+        return new TreeSet<>(individuals);
     }
 
     private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsInsideMembers() {
