@@ -5,6 +5,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -136,6 +137,13 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
+    public void testGetClasses() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        assertTrue(reasoner.getClasses().containsAll(SpatialVocabulary.spatialClasses));
+    }
+
+    @Ignore
+    @Test
     public void testIsInside() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
@@ -152,7 +160,11 @@ public class SpatialReasonerPostGISTest {
         assertFalse(reasoner.isInside(pointOutsideBuildung2, building));
     }
 
-    @Ignore
+    @Test
+    public void testRunsAlong() {
+        fail();
+    }
+
     @Test
     public void testGetContainedSpatialIndividuals() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
@@ -236,5 +248,30 @@ public class SpatialReasonerPostGISTest {
 
         // reset default value
         spatialReasoner.setIsContainmentRelationReflexive(false);
+    }
+
+    @Test
+    public void testGetSpatialIndividualsRunningAlong() {
+        fail();
+    }
+
+    @Test
+    public void testPasses() {
+        fail();
+    }
+
+    @Test
+    public void testGetPassedSpatialIndividuals() {
+        fail();
+    }
+
+    @Test
+    public void testGetPassingSpatialIndividuals() {
+        fail();
+    }
+
+    @Test
+    public void testIsNonTangentialProperPartOf() {
+        fail();
     }
 }
