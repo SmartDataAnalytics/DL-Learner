@@ -7,6 +7,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
@@ -20,6 +21,9 @@ import static org.junit.Assert.*;
 
 public class SpatialReasonerPostGISTest {
     private SpatialReasonerPostGIS spatialReasoner = null;
+
+    private OWLDataFactory df = OWLManager.getOWLDataFactory();
+    private String defaultPrefix = "http://dl-learner.org/ont/spatial#";
 
     private void initGeomPropertyPath(SpatialReasonerPostGIS reasoner) {
         reasoner.clearGeometryPropertyPaths();
@@ -57,15 +61,15 @@ public class SpatialReasonerPostGISTest {
     public void testAddGeometryPropertyPath() throws ComponentInitException {
         SpatialReasonerPostGIS reasoner = getReasoner();
         OWLObjectProperty op1 = new OWLObjectPropertyImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#dummy_obj_prop1"));
+                IRI.create(defaultPrefix + "dummy_obj_prop1"));
         OWLObjectProperty op2 = new OWLObjectPropertyImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#dummy_obj_prop2"));
+                IRI.create(defaultPrefix + "dummy_obj_prop2"));
         OWLObjectProperty op3 = new OWLObjectPropertyImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#dummy_obj_prop3"));
+                IRI.create(defaultPrefix + "dummy_obj_prop3"));
         OWLDataProperty dp1 = new OWLDataPropertyImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#dummy_data_prop1"));
+                IRI.create(defaultPrefix + "dummy_data_prop1"));
         OWLDataProperty dp2 = new OWLDataPropertyImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#dummy_data_prop2"));
+                IRI.create(defaultPrefix + "dummy_data_prop2"));
 
         List<OWLProperty> emptyPropertyPath = new ArrayList<>();
         try {
@@ -135,13 +139,13 @@ public class SpatialReasonerPostGISTest {
     public void testIsInside() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#pos_inside_bhf_neustadt"));
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
         OWLIndividual pointOutsideBuildung1 = new OWLNamedIndividualImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#pos_outside_bhf_neustadt_1"));
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
         OWLIndividual pointOutsideBuildung2 = new OWLNamedIndividualImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#pos_outside_bhf_neustadt_2"));
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_2"));
         OWLIndividual building = new OWLNamedIndividualImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#bahnhof_dresden_neustadt_building"));
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
 
         assertTrue(reasoner.isInside(pointInsideBuilding, building));
         assertFalse(reasoner.isInside(pointOutsideBuildung1, building));
@@ -154,7 +158,7 @@ public class SpatialReasonerPostGISTest {
         SpatialReasoner reasoner = getReasoner();
 
         OWLIndividual somePoint = new OWLNamedIndividualImpl(
-                IRI.create("http://dl-learner.org/ont/spatial#pos_outside_bhf_neustadt_2"));
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_2"));
 
         // Getting all features contained inside a point feature without
         // considering the point feature itself --> should be empty
@@ -172,12 +176,12 @@ public class SpatialReasonerPostGISTest {
         assertTrue(containedIndividuals.contains(somePoint));
 
         // -
-        OWLIndividual turnerweg = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#turnerweg"));
-        OWLIndividual turnerwegPart = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#turnerweg_part"));
-        OWLIndividual pointOnTurnerWeg = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#pos_on_turnerweg"));
+        OWLIndividual turnerweg = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "turnerweg"));
+        OWLIndividual turnerwegPart = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "turnerweg_part"));
+        OWLIndividual pointOnTurnerWeg = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "pos_on_turnerweg"));
 
         // Getting all features contained inside a line feature without
         // considering the line feature itself --> should be :turnerweg_part and
@@ -199,14 +203,14 @@ public class SpatialReasonerPostGISTest {
         assertTrue(containedIndividuals.contains(turnerweg));
 
         // -
-        OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#pos_inside_bhf_neustadt"));
-        OWLIndividual areaInsideBuilding = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#area_inside_bhf_neustadt"));
-        OWLIndividual wayInsideBuilding = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#way_inside_bhf_neustadt"));
-        OWLIndividual building = new OWLNamedIndividualImpl(IRI.create(
-                "http://dl-learner.org/ont/spatial#bahnhof_dresden_neustadt_building"));
+        OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual areaInsideBuilding = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
+        OWLIndividual wayInsideBuilding = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
+        OWLIndividual building = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
 
         // Getting all features contained in an area feature without considering
         // the area feature itself --> should be :area_inside_bhf_neustadt,
