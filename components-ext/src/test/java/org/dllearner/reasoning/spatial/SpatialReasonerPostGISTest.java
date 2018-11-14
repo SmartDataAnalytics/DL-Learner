@@ -181,6 +181,61 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
+    public void testGetIndividualsOWLObjectSomeValuesFrom() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLObjectSomeValuesFrom nonSpatialCE = df.getOWLObjectSomeValuesFrom(
+                df.getOWLObjectProperty(
+                        IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingNonSpatial")));
+        OWLIndividual expectedIndividual = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "nonspatial_individual_03"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual),
+                reasoner.getIndividualsOWLObjectSomeValuesFrom(nonSpatialCE));
+
+        // -----------------------------------
+
+        // :isNear
+        reasoner.setNearRadiusInMeters(50);
+        OWLObjectSomeValuesFrom spatialCE = df.getOWLObjectSomeValuesFrom(
+                SpatialVocabulary.isNear,
+                df.getOWLClass(IRI.create(defaultPrefix + "StationBuilding")));
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
+        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
+
+        assertEquals(
+                Sets.newHashSet(
+                        expectedIndividual1, expectedIndividual2,
+                        expectedIndividual3, expectedIndividual4,
+                        expectedIndividual5),
+                reasoner.getIndividualsOWLObjectSomeValuesFrom(spatialCE));
+
+        // :isInside
+        spatialCE = df.getOWLObjectSomeValuesFrom(
+                SpatialVocabulary.isInside,
+                df.getOWLClass(IRI.create(defaultPrefix + "StationBuilding")));
+
+        assertEquals(
+                Sets.newHashSet(
+                        expectedIndividual1, expectedIndividual3,
+                        expectedIndividual5),
+                reasoner.getIndividualsOWLObjectSomeValuesFrom(spatialCE));
+    }
+
+
+    @Ignore
+    @Test
     public void testIsInside() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(

@@ -1157,10 +1157,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
-    private SortedSet<OWLIndividual> getIndividualsOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom concept) {
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is OWLObjectSomeValuesFrom. The unraveling is
+     * needed to recursively call getIndividualsImpl on all parts such that we
+     * can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
         OWLClassExpression filler = concept.getFiller();
 
+        // There are four cases to consider
+        // 1) The property expression is atomic and a spatial property
+        //    --> query property members through PostGIS and recurse to get
+        //        filler instances
+        // 2) The property expression is not atomic but contains a spatial
+        //    property
+        //    --> not implemented, yet
+        // 3) The property expression is non-spatial
+        //    --> recurse
+
+        // 1) The property expression is atomic and a spatial property
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
             SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
@@ -1177,7 +1194,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-                // isNear
+            // isNear
             } else if (prop.equals(SpatialVocabulary.isNear)) {
                 Set<OWLIndividual> individuals = new HashSet<>();
 
@@ -1199,7 +1216,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         "Handling of object property expressions not implemented, yet");
 
             } else {
-                // TODO: consider super properties!
+                // TODO: Check whether super properties are covered already!
                 SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
@@ -1209,7 +1226,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 for (Map.Entry e : propIndividuals.entrySet()) {
                     // e: an entry of the shape
-                    //   OWLIndividual -> SortedSet<OWLIndividual>
+                    //    OWLIndividual -> SortedSet<OWLIndividual>
 
                     OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
                     SortedSet<OWLIndividual> values =
