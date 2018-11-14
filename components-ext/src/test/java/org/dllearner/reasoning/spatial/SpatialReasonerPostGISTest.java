@@ -1,6 +1,7 @@
 package org.dllearner.reasoning.spatial;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
@@ -160,6 +161,22 @@ public class SpatialReasonerPostGISTest {
         assertEquals(
                 reasoner.reasoner.getIndividuals(notSpatial2),
                 reasoner.getIndividualsImpl(notSpatial2));
+    }
+
+    @Ignore
+    @Test
+    public void testGetIndividualsOWLObjectIntersectionOf() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLObjectIntersectionOf intersectionWithoutSpatialPart = df.getOWLObjectIntersectionOf(
+                df.getOWLClass(IRI.create(defaultPrefix + "SomethingNonSpatial")),
+                df.getOWLClass(IRI.create(defaultPrefix + "SomethingMoreSpecialButStillNonSpatial")));
+        OWLIndividual expectedIndividual = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "nonspatial_individual_01"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual),
+                reasoner.getIndividualsOWLObjectIntersectionOf(intersectionWithoutSpatialPart));
     }
 
     @Ignore
