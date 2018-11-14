@@ -144,6 +144,26 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
+    public void testGetIndividuals() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        OWLClass notSpatial = df.getOWLClass(
+                IRI.create(defaultPrefix + "SomethingNonSpatial"));
+        OWLClass notSpatial2 = df.getOWLClass(
+                IRI.create(defaultPrefix + "SomethingMoreSpecialButStillNonSpatial"));
+
+        // For non-spatial class expressions the getIndividualsImpl call should
+        // be delegated to the base reasoner
+        assertEquals(
+                reasoner.reasoner.getIndividuals(notSpatial),
+                reasoner.getIndividualsImpl(notSpatial));
+
+        assertEquals(
+                reasoner.reasoner.getIndividuals(notSpatial2),
+                reasoner.getIndividualsImpl(notSpatial2));
+    }
+
+    @Ignore
+    @Test
     public void testIsInside() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
