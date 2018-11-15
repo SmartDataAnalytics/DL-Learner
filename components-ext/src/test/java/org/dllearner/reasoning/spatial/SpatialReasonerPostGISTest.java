@@ -233,6 +233,52 @@ public class SpatialReasonerPostGISTest {
                 reasoner.getIndividualsOWLObjectSomeValuesFrom(spatialCE));
     }
 
+    @Ignore
+    @Test
+    public void testGetIndividualsOWLObjectMinCardinality() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLObjectMinCardinality nonSpatialCE = df.getOWLObjectMinCardinality(
+                2,
+                df.getOWLObjectProperty(
+                        IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingNonSpatial")));
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "nonspatial_individual_03"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual1),
+                reasoner.getIndividualsOWLObjectMinCardinality(nonSpatialCE));
+
+        // -------------------------------------
+
+        // :isInside
+        OWLObjectMinCardinality spatialCE = df.getOWLObjectMinCardinality(
+                2,
+                SpatialVocabulary.isInside,
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature")));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual2),
+                reasoner.getIndividualsOWLObjectMinCardinality(spatialCE));
+
+        // :isNear
+        reasoner.setNearRadiusInMeters(50);
+        spatialCE = df.getOWLObjectMinCardinality(
+                3,
+                SpatialVocabulary.isNear,
+                df.getOWLClass(IRI.create(defaultPrefix + "PointFeature")));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+
+        assertEquals(Sets.newHashSet(
+                expectedIndividual3),
+                reasoner.getIndividualsOWLObjectMinCardinality(spatialCE));
+    }
+
 
     @Ignore
     @Test

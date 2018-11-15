@@ -1047,17 +1047,35 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         OWLObjectPropertyExpression prop = concept.getProperty();
         OWLClassExpression filler = concept.getFiller();
 
-        // FIXME: Go on here
-        return new TreeSet<>();
     }
 
-    private SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
+    private void updateCounterMap(Map<OWLIndividual, Integer> counterMap, Set<OWLIndividual> individuals) {
+        for (OWLIndividual indivInsideFillerIndiv : individuals) {
+            if (!counterMap.containsKey(indivInsideFillerIndiv)) {
+                counterMap.put(indivInsideFillerIndiv, 1);
+
+            } else {
+                int tmpCnt = counterMap.get(indivInsideFillerIndiv);
+                tmpCnt++;
+                counterMap.put(indivInsideFillerIndiv, tmpCnt);
+            }
+        }
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is OWLObjectMinCardinality. The unraveling is
+     * needed to recursively call getIndividualsImpl on all parts such that we
+     * can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
         OWLClassExpression filler = concept.getFiller();
         int minCardinality = concept.getCardinality();
 
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+
             SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
 
             // isInside
@@ -1068,16 +1086,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     Set<OWLIndividual> indivsInsideFillerIndiv =
                             getContainedSpatialIndividuals(fillerIndiv);
 
-                    for (OWLIndividual indivInsideFillerIndiv : indivsInsideFillerIndiv) {
-                        if (!individualsWCounts.containsKey(indivInsideFillerIndiv)) {
-                            individualsWCounts.put(indivInsideFillerIndiv, 1);
-
-                        } else {
-                            int tmpCnt = individualsWCounts.get(indivInsideFillerIndiv);
-                            tmpCnt++;
-                            individualsWCounts.put(indivInsideFillerIndiv, tmpCnt);
-                        }
-                    }
+                    updateCounterMap(individualsWCounts, indivsInsideFillerIndiv);
                 }
 
                 return individualsWCounts.entrySet()
@@ -1088,8 +1097,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             // isNear
             } else if (prop.equals(SpatialVocabulary.isNear)) {
-                Set<OWLIndividual> individuals = new HashSet<>();
-
                 Map<OWLIndividual, Integer> indivsNearFillerIndivWCount =
                         new HashMap<>();
 
@@ -1097,17 +1104,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     Set<OWLIndividual> individualsNearFillerIndiv =
                             getNearSpatialIndividuals(fillerIndiv);
 
-                    for (OWLIndividual i : individualsNearFillerIndiv) {
-                        if (!indivsNearFillerIndivWCount.containsKey(i)) {
-                            indivsNearFillerIndivWCount.put(i, 1);
-
-                        } else {
-                            int tmpCnt = indivsNearFillerIndivWCount.get(i);
-                            tmpCnt++;
-
-                            indivsNearFillerIndivWCount.put(i, tmpCnt);
-                        }
-                    }
+                    updateCounterMap(indivsNearFillerIndivWCount, individualsNearFillerIndiv);
                 }
 
                 return indivsNearFillerIndivWCount.entrySet()
@@ -1127,8 +1124,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         "Handling of object property expressions not implemented, yet");
 
             } else {
-                // TODO: consider super properties!
-                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+                // TODO: Check whether sub-properties covered already!
+                SortedSet<OWLIndividual> fillerIndivs = reasoner.getIndividuals(filler);
+
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
@@ -1217,7 +1215,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             } else {
                 // TODO: Check whether super properties are covered already!
-                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+
+                SortedSet<OWLIndividual> fillerIndivs = reasoner.getIndividuals(filler);
+
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
