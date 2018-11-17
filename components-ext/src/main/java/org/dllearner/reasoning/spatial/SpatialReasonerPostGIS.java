@@ -1104,10 +1104,147 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         throw new RuntimeException("Not implemented, yet");
     }
 
-    private SortedSet<OWLIndividual> getIndividualsOWLObjectAllValuesFrom(OWLObjectAllValuesFrom concept) {
+    private boolean areAllValuesFromFiller(
+            SortedSet<OWLIndividual> propertyValues,
+            SortedSet<OWLIndividual> fillerIndividuals) {
+
+        // Check if there is any individual i2 with
+        // <property>(<individual>, i2) and not <filler>(i2), i.e.
+        // i2 not in `propertyValues` .
+
+        if (propertyValues.isEmpty()) {
+            // Trivial case where individual has no values assigned via
+            // <property> and thus there are no values not being an instance of
+            // <filler> --> all values are an instance of <filler>
+            return true;
+        }
+
+        // Create copy, since remove is called on it, later
+        TreeSet<OWLIndividual> propertyValuesCopy = new TreeSet<>(propertyValues);
+
+        propertyValuesCopy.removeAll(fillerIndividuals);
+        // Now, `propertyValuesCopy` only contains individuals that are not of
+        // filler-type. If `propertyValuesCopy` is empty all property members
+        // were of filler-type and <individual> is an instance of the overall
+        // OWLObjectAllValuesFrom class expression
+        if (propertyValuesCopy.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is OWLObjectAllValuesFrom. The unraveling is
+     * needed to recursively call getIndividualsImpl on all parts such that we
+     * can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectAllValuesFrom(OWLObjectAllValuesFrom concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
         OWLClassExpression filler = concept.getFiller();
 
+        // There are three cases to consider:
+        // 1) `prop` is a known spatial property that requires special treatment
+        // 2) `prop` is a non-atomic property --> still TODO
+        // 3) `prop` ia a non-spatial atomic property and the filler contains
+        //    spatial components
+
+        // 1) `prop` is a known spatial property
+        if ((prop instanceof OWLObjectProperty)
+                && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+
+            SortedSet<OWLIndividual> fillerIndividuals = reasoner.getIndividuals(filler);
+
+            // isInside
+            if (prop.equals(SpatialVocabulary.isInside)) {
+                // All individuals are instances of \forall :isInside <filler>
+                // as long as they aren't inside something not being of type
+                // <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsInsideMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                // All individuals are instances of \forall :isNear <filler>
+                // as long as they aren't near something not being of type
+                // <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsNearMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
+            } else {
+                throw new RuntimeException("No implementation for " + prop + ", yet");
+            }
+
+        } else {
+            // 2) `prop` is a non-atomic property
+            if (prop instanceof OWLObjectInverseOf) {
+                // TODO: Implement
+                throw new RuntimeException(
+                        "Handling of object property expressions not implemented, yet");
+
+            // 3) `prop` ia a non-spatial atomic property
+            } else {
+                // Get filler individuals and property members and check whether
+                // all the property member values (i.e. objects viewed from a
+                // triple perspective) are contained in the filler individuals
+                // set
+
+                // TODO: Consider sub-properties
+                Set<OWLIndividual> fillerIndividuals = getIndividuals(filler);
+                Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers =
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                assert propertyMembers != null;
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> e : propertyMembers.entrySet()) {
+                    // s --> subject in triple view; o --> object in triple view
+                    OWLIndividual s = e.getKey();
+                    Set<OWLIndividual> os = new HashSet<>(e.getValue());
+
+                    if (os.isEmpty()) {
+                        // Trivial case where `s` has no values assigned via
+                        // `prop` and thus there are no values not being an
+                        // instance of `filler` --> all values are an instance
+                        // of `filler`
+                        resultIndividuals.add(s);
+                        continue;
+                    }
+
+                    os.removeAll(fillerIndividuals);
+                    // Now, `os` only contains individuals that are not of
+                    // filler-type. If `os` is empty all property members were
+                    // of filler-type and `s` is an instance of the overall
+                    // OWLObjectAllValuesFrom class expression
+                    if (os.isEmpty()) {
+                        resultIndividuals.add(s);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+            }
+        }
     }
 
     private void updateCounterMap(Map<OWLIndividual, Integer> counterMap, Set<OWLIndividual> individuals) {

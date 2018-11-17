@@ -281,6 +281,68 @@ public class SpatialReasonerPostGISTest {
                 reasoner.getIndividualsOWLObjectMinCardinality(spatialCE));
     }
 
+    @Ignore
+    @Test
+    public void testGetIndividualsOWLObjectAllValuesFrom() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        OWLObjectAllValuesFrom nonSpatialCE = df.getOWLObjectAllValuesFrom(
+                df.getOWLObjectProperty(
+                        IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingNonSpatial")));
+        OWLIndividual expectedIndividual = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "nonspatial_individual_03"));
+
+        assertTrue(
+                reasoner.getIndividualsOWLObjectAllValuesFrom(nonSpatialCE)
+                        .contains(expectedIndividual)
+                /* + also contains all other individuals not having a value
+                 *   assigned via :nonSpatialObjectProperty01 */);
+
+
+        nonSpatialCE = df.getOWLObjectAllValuesFrom(
+                df.getOWLObjectProperty(IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingMoreSpecialButStillNonSpatial")));
+
+        assertFalse(reasoner.getIndividualsOWLObjectAllValuesFrom(nonSpatialCE)
+                .contains(expectedIndividual));
+
+        // ----------------------------------
+
+        // :isInside
+        OWLObjectAllValuesFrom spatialCE = df.getOWLObjectAllValuesFrom(
+                SpatialVocabulary.isInside,
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature"))
+        );
+        expectedIndividual = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
+
+        assertEquals(
+                Sets.newHashSet(
+                        expectedIndividual, expectedIndividual2,
+                        expectedIndividual3, expectedIndividual4),
+                reasoner.getIndividualsOWLObjectAllValuesFrom(spatialCE));
+
+        // :isNear
+        reasoner.setNearRadiusInMeters(50);
+        reasoner.setIsIsNearRelationReflexive(false);
+        spatialCE = df.getOWLObjectAllValuesFrom(
+                SpatialVocabulary.isNear,
+                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")));
+        expectedIndividual = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_on_turnerweg"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual),
+                reasoner.getIndividualsOWLObjectAllValuesFrom(spatialCE));
+    }
 
     @Ignore
     @Test
