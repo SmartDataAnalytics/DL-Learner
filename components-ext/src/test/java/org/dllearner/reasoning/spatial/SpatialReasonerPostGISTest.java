@@ -282,6 +282,32 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
+    public void testIsNear() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        OWLIndividual point1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual point2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
+        OWLIndividual point3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_on_turnerweg"));
+
+        reasoner.setNearRadiusInMeters(50);
+        reasoner.setIsIsNearRelationReflexive(true);
+        assertTrue(reasoner.isNear(point1, point1));
+
+        reasoner.setIsIsNearRelationReflexive(false);
+        assertFalse(reasoner.isNear(point1, point1));
+
+        assertTrue(reasoner.isNear(point1, point2));
+
+        assertFalse(reasoner.isNear(point1, point3));
+
+        // reset to default value
+        reasoner.setIsIsNearRelationReflexive(true);
+    }
+
+    @Ignore
+    @Test
     public void testIsInside() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(

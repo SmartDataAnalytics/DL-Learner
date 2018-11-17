@@ -34,6 +34,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     private double nearRadiusInMeters = 5; // meters
     private boolean isContainmentRelationReflexive = false;
+    private boolean isIsNearRelationReflexive = true;
     private Set<List<OWLProperty>> geometryPropertyPaths = new HashSet<>();
 
     // TODO: make this configurable
@@ -323,6 +324,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public void setIsContainmentRelationReflexive(boolean isContainmentRelationReflexive) {
         this.isContainmentRelationReflexive = isContainmentRelationReflexive;
     }
+
+    public void setIsIsNearRelationReflexive(boolean isIsNearRelationReflexive) {
+        this.isIsNearRelationReflexive = isIsNearRelationReflexive;
+    }
     // </getter/setter>
 
     // <implemented interface/base class methods>
@@ -569,7 +574,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         if (geometryIndividual1.equals(geometryIndividual2)) {
-            return true;
+            return isIsNearRelationReflexive;
         }
 
         StringBuilder queryStr = new StringBuilder();
@@ -623,6 +628,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
                 .append("AND ")
                     .append("r.iri=? ");
+        if (!isIsNearRelationReflexive) {
+            queryStr.append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -635,6 +643,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
                 .append("AND ")
                     .append("r.iri=? ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -647,6 +659,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ?) ")
                 .append("AND ")
                     .append("r.iri=?");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         Set<OWLIndividual> featureIndividuals = new HashSet<>();
         try {
