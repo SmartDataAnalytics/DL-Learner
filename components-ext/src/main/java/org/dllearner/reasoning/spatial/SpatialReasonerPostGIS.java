@@ -1056,12 +1056,21 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(
             OWLObjectProperty objectProperty) {
-        if (objectProperty.equals(SpatialVocabulary.isInside)) {
-            // isInside
-            return getIsInsideMembers();
-        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
-            return getIsNearMembers();
-            // TODO: Add further spatial object properties here
+        if (SpatialVocabulary.spatialObjectProperties.contains(objectProperty)) {
+            if (objectProperty.equals(SpatialVocabulary.isInside)) {
+                // isInside
+                return getIsInsideMembers();
+
+            } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+                // isNear
+                return getIsNearMembers();
+
+                // TODO: Add further spatial object properties here
+            } else {
+                throw new RuntimeException(
+                        "Spatial object property " + objectProperty + "not " +
+                                "handled in getPropertyMembersImpl( )");
+            }
         } else {
             return reasoner.getPropertyMembers(objectProperty);
         }
@@ -1076,6 +1085,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
+        // TODO: Add spatial string data properties here
+
         return reasoner.getDatatypeProperties();
     }
     // </base reasoner interface methods>
