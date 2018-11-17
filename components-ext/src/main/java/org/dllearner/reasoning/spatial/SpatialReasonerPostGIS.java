@@ -926,6 +926,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
+    public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
+        Map<OWLDataProperty, OWLClassExpression> domainsMap = reasoner.getDataPropertyDomains();
+
+        // TODO: Add spatial aspect-specific stuff here
+
+        return domainsMap;
+    }
+
+    @Override
     protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression ce) {
         SortedSet<OWLClassExpression> subClasses = reasoner.getSubClasses(ce);
 
