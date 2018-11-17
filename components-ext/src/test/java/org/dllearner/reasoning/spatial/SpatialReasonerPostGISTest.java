@@ -206,19 +206,21 @@ public class SpatialReasonerPostGISTest {
         OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
         OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
         OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
         OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
+                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
         OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
+        OWLIndividual expectedIndividual6 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
 
         assertEquals(
                 Sets.newHashSet(
                         expectedIndividual1, expectedIndividual2,
                         expectedIndividual3, expectedIndividual4,
-                        expectedIndividual5),
+                        expectedIndividual5, expectedIndividual6),
                 reasoner.getIndividualsOWLObjectSomeValuesFrom(spatialCE));
 
         // :isInside
@@ -228,8 +230,8 @@ public class SpatialReasonerPostGISTest {
 
         assertEquals(
                 Sets.newHashSet(
-                        expectedIndividual1, expectedIndividual3,
-                        expectedIndividual5),
+                        expectedIndividual1, expectedIndividual2,
+                        expectedIndividual4, expectedIndividual6),
                 reasoner.getIndividualsOWLObjectSomeValuesFrom(spatialCE));
     }
 
@@ -409,6 +411,8 @@ public class SpatialReasonerPostGISTest {
         // -
         OWLIndividual pointInsideBuilding = new OWLNamedIndividualImpl(
                 IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual pointInsideBuilding2 = new OWLNamedIndividualImpl(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
         OWLIndividual areaInsideBuilding = new OWLNamedIndividualImpl(
                 IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
         OWLIndividual wayInsideBuilding = new OWLNamedIndividualImpl(
@@ -418,13 +422,17 @@ public class SpatialReasonerPostGISTest {
 
         // Getting all features contained in an area feature without considering
         // the area feature itself --> should be :area_inside_bhf_neustadt,
-        // :way_inside_bhf_neustadt, and :pos_inside_bhf_neustadt
+        // :way_inside_bhf_neustadt, :pos_inside_bhf_neustadt and
+        // :pos_inside_bhf_neustadt_02
         ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(false);
         containedIndividuals = reasoner.getContainedSpatialIndividuals(building);
-        assertEquals(3, containedIndividuals.size());
+
+        assertEquals(4, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(pointInsideBuilding));
+        assertTrue(containedIndividuals.contains(pointInsideBuilding2));
         assertTrue(containedIndividuals.contains(wayInsideBuilding));
         assertTrue(containedIndividuals.contains(areaInsideBuilding));
+        assertFalse(containedIndividuals.contains(building));
 
         // Getting all features contained in an area feature, including the area
         // feature itself --> should be :area_inside_bhf_neustadt,
@@ -432,8 +440,10 @@ public class SpatialReasonerPostGISTest {
         // :bahnhof_dresden_neustadt_building itself
         ((SpatialReasonerPostGIS) reasoner).setIsContainmentRelationReflexive(true);
         containedIndividuals = reasoner.getContainedSpatialIndividuals(building);
-        assertEquals(4, containedIndividuals.size());
+
+        assertEquals(5, containedIndividuals.size());
         assertTrue(containedIndividuals.contains(pointInsideBuilding));
+        assertTrue(containedIndividuals.contains(pointInsideBuilding2));
         assertTrue(containedIndividuals.contains(wayInsideBuilding));
         assertTrue(containedIndividuals.contains(areaInsideBuilding));
         assertTrue(containedIndividuals.contains(building));
