@@ -1174,7 +1174,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             } else {
                 // TODO: Check whether sub-properties covered already!
-                SortedSet<OWLIndividual> fillerIndivs = reasoner.getIndividuals(filler);
+                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
@@ -1265,7 +1265,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else {
                 // TODO: Check whether super properties are covered already!
 
-                SortedSet<OWLIndividual> fillerIndivs = reasoner.getIndividuals(filler);
+                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
