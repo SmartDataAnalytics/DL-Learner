@@ -1089,8 +1089,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return reasoner.getDatatypeProperties();
     }
+
+    @Override
+    public boolean hasTypeImpl(OWLClassExpression ce, OWLIndividual individual) {
+        if (containsSpatialExpressions(ce)) {
+            return hasTypeSpatial(ce, individual);
+        } else {
+            return reasoner.hasType(ce, individual);
+        }
+    }
     // </base reasoner interface methods>
 
+    protected boolean hasTypeSpatial(OWLClassExpression ce, OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
+    }
 
     private SortedSet<OWLIndividual> getIndividualsOWLObjectAllValuesFrom(OWLObjectAllValuesFrom concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
