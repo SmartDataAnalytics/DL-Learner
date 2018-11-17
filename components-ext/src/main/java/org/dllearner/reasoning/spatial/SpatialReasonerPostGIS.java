@@ -915,6 +915,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
+    public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyRanges() {
+        Map<OWLObjectProperty, OWLClassExpression> rangesMap = reasoner.getObjectPropertyRanges();
+
+        // TODO: Add spatial aspect-specific stuff here
+        rangesMap.put(SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature);
+
+        return rangesMap;
+    }
+
+    @Override
     protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression ce) {
         SortedSet<OWLClassExpression> subClasses = reasoner.getSubClasses(ce);
 
