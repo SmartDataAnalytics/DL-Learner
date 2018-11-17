@@ -904,10 +904,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public Map<OWLObjectProperty,OWLClassExpression> getObjectPropertyDomains() {
+    public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
         Map<OWLObjectProperty, OWLClassExpression> domainsMap = reasoner.getObjectPropertyDomains();
 
+        // TODO: Add spatial aspect-specific stuff here
         domainsMap.put(SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature);
+        domainsMap.put(SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature);
 
         return domainsMap;
     }
