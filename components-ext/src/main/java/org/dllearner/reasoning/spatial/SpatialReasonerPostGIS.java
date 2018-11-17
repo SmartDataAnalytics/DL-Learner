@@ -1464,6 +1464,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -1475,6 +1479,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -1486,6 +1494,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -1497,6 +1509,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -1508,6 +1524,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         queryStr.append("UNION ");
 
@@ -1519,6 +1539,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 .append("WHERE ")
                     .append("ST_DWithin(l.the_geom::geography, r.the_geom::geography, ")
                         .append(nearRadiusInMeters).append(") ");
+        if (!isIsNearRelationReflexive) {
+            queryStr
+                .append("AND NOT l.iri=r.iri ");
+        }
 
         Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
 
