@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.spatial.DBConnectionSetting;
@@ -14,10 +15,9 @@ import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.semanticweb.owlapi.model.*;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,9 +69,60 @@ public class SpatialRhoDRDown extends RhoDRDown {
             refinements.addAll(
                     spatiallyRefineOWLObjectMinCardinality((OWLObjectMinCardinality) ce, maxLength));
 
+        else if (ce instanceof OWLObjectUnionOfImplExt)
+            refinements.addAll(
+                    spatiallyRefineOWLObjectUnionOf(
+                            ((OWLObjectUnionOfImplExt) ce).getOperands(), maxLength));
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
+
+        return refinements;
+    }
+
+    /**
+     * I'm using the operands set instead of the union class expression object
+     * here since we have two different union types: {@link OWLObjectUnionOfImplExt}
+     * and {@link OWLObjectUnionOf}.
+     */
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectUnionOf(
+            Set<OWLClassExpression> unionOperands, int maxLength) {
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+
+        if (reasoner.isSuperClassOf(
+                SpatialVocabulary.SpatialFeature, new OWLObjectUnionOfImpl(unionOperands))) {
+
+            // isInside
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isInside, SpatialVocabulary.SpatialFeature))));
+
+            // isNear
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
+        }
+
+        List<OWLClassExpression> unionOperandsList = new ArrayList<>(unionOperands);
+        assert unionOperandsList.size() == 2;
+
+        OWLClassExpression firstOperand = unionOperandsList.get(0);
+        OWLClassExpression secondOperand = unionOperandsList.get(1);
+
+        int tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(secondOperand);
+        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength)) {
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    refinement1, secondOperand)));
+        }
+
+        tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(firstOperand);
+        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength)) {
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    firstOperand, refinement2)));
+        }
 
         return refinements;
     }
