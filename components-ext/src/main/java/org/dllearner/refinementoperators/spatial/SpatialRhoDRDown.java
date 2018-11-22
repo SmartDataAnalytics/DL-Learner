@@ -155,13 +155,6 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     firstOperand, refinement2)));
         }
 
-        refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-
-        )));
-        for (OWLClassExpression ce : intersection.getOperands()) {
-            refinements.addAll(refine(ce, maxLength-1));
-        }
-
         return refinements;
     }
 
