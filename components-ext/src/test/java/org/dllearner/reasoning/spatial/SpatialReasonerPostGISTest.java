@@ -237,6 +237,79 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
+    public void testGetIndividualsOWLObjectMaxCardinality() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLObjectMaxCardinality nonSpatialCE = df.getOWLObjectMaxCardinality(
+                2,
+                df.getOWLObjectProperty(
+                        IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingNonSpatial")));
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "nonspatial_individual_03"));
+
+        assertTrue(
+                reasoner.getIndividualsOWLObjectMaxCardinality(nonSpatialCE)
+                        .contains(expectedIndividual1));
+
+        nonSpatialCE = df.getOWLObjectMaxCardinality(
+                1,
+                df.getOWLObjectProperty(
+                        IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
+                df.getOWLClass(
+                        IRI.create(defaultPrefix + "SomethingNonSpatial")));
+
+        assertFalse(
+                reasoner.getIndividualsOWLObjectMaxCardinality(nonSpatialCE)
+                        .contains(expectedIndividual1));
+
+        // -------------------------------------
+
+        // :isInside
+        OWLObjectMaxCardinality spatialCE = df.getOWLObjectMaxCardinality(
+                1,
+                SpatialVocabulary.isInside,
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature")));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
+        assertFalse(
+                reasoner.getIndividualsOWLObjectMaxCardinality(spatialCE)
+                        .contains(expectedIndividual2));
+
+        spatialCE = df.getOWLObjectMaxCardinality(
+                2,
+                SpatialVocabulary.isInside,
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature")));
+        assertTrue(
+                reasoner.getIndividualsOWLObjectMaxCardinality(spatialCE)
+                        .contains(expectedIndividual2));
+
+        // :isNear
+        reasoner.setNearRadiusInMeters(50);
+        spatialCE = df.getOWLObjectMaxCardinality(
+                1,
+                SpatialVocabulary.isNear,
+                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_on_turnerweg"));
+
+        assertFalse(
+                reasoner.getIndividualsOWLObjectMaxCardinality(spatialCE)
+                        .contains(expectedIndividual3));
+
+        spatialCE = df.getOWLObjectMaxCardinality(
+                2,
+                SpatialVocabulary.isNear,
+                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")));
+
+        assertTrue(
+                reasoner.getIndividualsOWLObjectMaxCardinality(spatialCE)
+                        .contains(expectedIndividual3));
+    }
+
+    @Ignore
+    @Test
     public void testGetIndividualsOWLObjectMinCardinality() throws ComponentInitException {
         SpatialReasonerPostGIS reasoner = getReasoner();
 
