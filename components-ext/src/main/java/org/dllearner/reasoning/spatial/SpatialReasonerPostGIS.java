@@ -1110,9 +1110,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     /**
      * Called from the getIndividualsImpl method in case the class expression
-     * to get the instances for is OWLObjectMaxCardinality. The unraveling is
-     * needed to recursively call getIndividualsImpl on all parts such that
-     * we can handle inner spatial expressions.
+     * to get the instances for is {@link OWLObjectMaxCardinality}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
      */
     protected SortedSet<OWLIndividual> getIndividualsOWLObjectMaxCardinality(OWLObjectMaxCardinality concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
@@ -1242,9 +1242,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     /**
      * Called from the getIndividualsImpl method in case the class expression
-     * to get the instances for is OWLObjectAllValuesFrom. The unraveling is
-     * needed to recursively call getIndividualsImpl on all parts such that we
-     * can handle inner spatial expressions.
+     * to get the instances for is {@link OWLObjectAllValuesFrom}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
      */
     protected SortedSet<OWLIndividual> getIndividualsOWLObjectAllValuesFrom(OWLObjectAllValuesFrom concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
@@ -1367,9 +1367,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     /**
      * Called from the getIndividualsImpl method in case the class expression
-     * to get the instances for is OWLObjectMinCardinality. The unraveling is
-     * needed to recursively call getIndividualsImpl on all parts such that we
-     * can handle inner spatial expressions.
+     * to get the instances for is {@link OWLObjectMinCardinality}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
      */
     protected SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
@@ -1459,9 +1459,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     /**
      * Called from the getIndividualsImpl method in case the class expression
-     * to get the instances for is OWLObjectSomeValuesFrom. The unraveling is
-     * needed to recursively call getIndividualsImpl on all parts such that we
-     * can handle inner spatial expressions.
+     * to get the instances for is {@link OWLObjectSomeValuesFrom}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
      */
     protected SortedSet<OWLIndividual> getIndividualsOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom concept) {
         OWLObjectPropertyExpression prop = concept.getProperty();
@@ -1555,9 +1555,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     /**
      * Called in the getIndividualsImpl method in case the class expression to
-     * get the instances for is an OWLObjectIntersection. The unraveling is
-     * needed to recusively call getIndividualsImpl on all parts such that we
-     * can handle inner spatial expressions.
+     * get the instances for is an {@link OWLObjectIntersectionOf}. The
+     * unraveling is needed to recusively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
      */
     protected SortedSet<OWLIndividual> getIndividualsOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection) {
         Set<OWLIndividual> individuals = null;
