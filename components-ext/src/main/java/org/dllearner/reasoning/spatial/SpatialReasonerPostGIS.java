@@ -1154,7 +1154,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
 
-            SortedSet<OWLIndividual> fillerIndividuals = reasoner.getIndividuals(filler);
+            SortedSet<OWLIndividual> fillerIndividuals = getIndividualsImpl(filler);
 
             // isInside
             if (prop.equals(SpatialVocabulary.isInside)) {
@@ -1170,7 +1170,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         OWLIndividual resultIndividual = entry.getKey();
                         resultIndividuals.add(resultIndividual);
                     }
-
                 }
 
                 return new TreeSet<>(resultIndividuals);
@@ -1212,7 +1211,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 // set
 
                 // TODO: Consider sub-properties
-                Set<OWLIndividual> fillerIndividuals = getIndividuals(filler);
+                Set<OWLIndividual> fillerIndividuals = getIndividualsImpl(filler);
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
                 Set<OWLIndividual> resultIndividuals = new HashSet<>();
@@ -1274,7 +1273,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
 
-            SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+            SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
             // isInside
             if (prop.equals(SpatialVocabulary.isInside)) {
@@ -1323,7 +1322,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             } else {
                 // TODO: Check whether sub-properties covered already!
-                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+                SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
@@ -1337,8 +1336,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     // set intersection with filler individuals
                     values.retainAll(fillerIndivs);
 
-                    // now values only contains those OWL individuals,
-                    // that
+                    // now `values` only contains those OWL individuals, that
                     // - are instances of the filler class expressions
                     // - are assigned to another OWL individual through
                     //   the property `prop`
@@ -1376,7 +1374,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         // 1) The property expression is atomic and a spatial property
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
-            SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+            SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
             // isInside
             if (prop.equals(SpatialVocabulary.isInside)) {
@@ -1414,7 +1412,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else {
                 // TODO: Check whether super properties are covered already!
 
-                SortedSet<OWLIndividual> fillerIndivs = getIndividuals(filler);
+                SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
                         reasoner.getPropertyMembers(prop.asOWLObjectProperty());
