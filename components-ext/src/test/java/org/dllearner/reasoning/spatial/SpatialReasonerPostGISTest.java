@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
@@ -177,6 +178,33 @@ public class SpatialReasonerPostGISTest {
         assertEquals(
                 Sets.newHashSet(expectedIndividual),
                 reasoner.getIndividualsOWLObjectIntersectionOf(intersectionWithoutSpatialPart));
+    }
+
+    @Ignore
+    @Test
+    public void testGetIndividualsOWLObjectUnionOfImplExt() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLObjectUnionOfImplExt union = new OWLObjectUnionOfImplExt(Sets.newHashSet(
+                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")),
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature"))));
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "turnerweg"));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "turnerweg_part"));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+
+        assertEquals(
+                Sets.newHashSet(
+                        expectedIndividual1, expectedIndividual2,
+                        expectedIndividual3, expectedIndividual4,
+                        expectedIndividual5),
+                reasoner.getIndividualsOWLObjectUnionOfImplExt(union));
     }
 
     @Ignore
