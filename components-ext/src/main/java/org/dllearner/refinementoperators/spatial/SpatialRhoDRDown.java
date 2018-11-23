@@ -77,9 +77,47 @@ public class SpatialRhoDRDown extends RhoDRDown {
         else if (ce instanceof OWLObjectAllValuesFrom)
             refinements.addAll(
                     spatiallyRefineOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) ce, maxLength));
+        else if (ce instanceof OWLObjectMaxCardinality)
+            refinements.addAll(
+                    spatiallyRefineOWLObjectMaxCardinality((OWLObjectMaxCardinality) ce, maxLength));
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectMaxCardinality(OWLObjectMaxCardinality ce, int maxLength) {
+        OWLObjectPropertyExpression property = ce.getProperty();
+        // FIXME: extend this to also support general object property expressions
+        assert !property.isAnonymous();
+
+        Set<OWLObjectProperty> properties =
+                // FIXME: Should be part of the spatial reasoner interface
+                reasoner.getBaseReasoner().getSubProperties(property.asOWLObjectProperty());
+        properties.add(property.asOWLObjectProperty());
+
+        OWLClassExpression filler = ce.getFiller();
+        int maxCardinality = ce.getCardinality();
+        int refinedMaxCardinality = Math.max(0, maxCardinality - 1);
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+        refinements.add(
+                new OWLObjectMaxCardinalityImpl(property, refinedMaxCardinality, filler));
+
+        // FIXME: replace lengthMetric.objectProperyLength with actual prop length
+        Set<OWLClassExpression> fillerRefinements = refine(
+                filler,
+                maxLength-lengthMetric.objectProperyLength);
+
+        for (OWLObjectProperty p : properties) {
+            for (OWLClassExpression fillerRefinement : fillerRefinements) {
+                refinements.add(
+                        new OWLObjectMaxCardinalityImpl(p, maxCardinality, fillerRefinement));
+                refinements.add(
+                        new OWLObjectMaxCardinalityImpl(p, refinedMaxCardinality, fillerRefinement));
+            }
+        }
 
         return refinements;
     }
