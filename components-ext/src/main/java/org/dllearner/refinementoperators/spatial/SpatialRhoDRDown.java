@@ -17,10 +17,7 @@ import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * TODO: Check handling of max expression length
@@ -32,7 +29,11 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
     // <getter/setter>
     public void setReasoner(SpatialReasoner reasoner) {
+        // The spatial reasoner needs to be set here, since RhoDRDown won't be
+        // able to get the domains/ranges of the virtual spatial properties
+        // otherwise.
         super.setReasoner((AbstractReasonerComponent) reasoner);
+
         this.reasoner = reasoner;
     }
     // </getter/setter>
@@ -128,11 +129,20 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectMinCardinality(OWLObjectMinCardinality ce, int maxLength) {
-        // TODO: Handle spatial sub object properties
         OWLObjectPropertyExpression property = ce.getProperty();
+
+        // FIXME: extend this to also support general object property expressions
+        assert !property.isAnonymous();
+
+        SortedSet<OWLObjectProperty> properties =
+                // FIXME: Should be part of the spatial reasoner interface
+                reasoner.getBaseReasoner().getSubProperties(property.asOWLObjectProperty());
+        properties.add(property.asOWLObjectProperty());
+
         OWLClassExpression filler = ce.getFiller();
         int minCardinality = ce.getCardinality();
 
+        // FIXME: replace lengthMetric.objectProperyLength with actual prop length
         Set<OWLClassExpression> fillerRefinements =
                 refine(filler,
                         maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength);
@@ -142,31 +152,43 @@ public class SpatialRhoDRDown extends RhoDRDown {
         refinements.add(new OWLObjectMinCardinalityImpl(
                 property, refinedCardinality, filler));
 
-        for (OWLClassExpression fillerRefinement : fillerRefinements) {
-            // First take the original cardinality...
-            refinements.add(new OWLObjectMinCardinalityImpl(
-                    property, minCardinality, fillerRefinement));
-            // ...then the refined cardinality
-            refinements.add(new OWLObjectMinCardinalityImpl(
-                    property, refinedCardinality, fillerRefinement));
+        for (OWLObjectProperty p : properties) {
+            for (OWLClassExpression fillerRefinement : fillerRefinements) {
+                // First take the original cardinality...
+                refinements.add(new OWLObjectMinCardinalityImpl(
+                        p, minCardinality, fillerRefinement));
+                // ...then the refined cardinality
+                refinements.add(new OWLObjectMinCardinalityImpl(
+                        p, refinedCardinality, fillerRefinement));
+            }
         }
 
         return refinements;
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectSomeValuesFrom(OWLObjectSomeValuesFrom ce, int maxLength) {
-        // TODO: handle spatial sub object properties
         OWLObjectPropertyExpression property = ce.getProperty();
+        // FIXME: extend this to also support general object property expressions
+        assert !property.isAnonymous();
+
+        SortedSet<OWLObjectProperty> properties =
+                // FIXME: Should be part of the spatial reasoner interface
+                reasoner.getBaseReasoner().getSubProperties(property.asOWLObjectProperty());
+        properties.add(property.asOWLObjectProperty());
+
         OWLClassExpression filler = ce.getFiller();
 
         Set<OWLClassExpression> refinements = new HashSet<>();
 
+        // FIXME: replace lengthMetric.objectProperyLength with actual prop length
         Set<OWLClassExpression> fillerRefinements = refine(
                 filler,
                 maxLength-lengthMetric.objectProperyLength);
 
-        for (OWLClassExpression fillerRefinement : fillerRefinements) {
-            refinements.add(new OWLObjectSomeValuesFromImpl(property, fillerRefinement));
+        for (OWLObjectProperty p : properties) {
+            for (OWLClassExpression fillerRefinement : fillerRefinements) {
+                refinements.add(new OWLObjectSomeValuesFromImpl(p, fillerRefinement));
+            }
         }
 
         return refinements;
@@ -223,7 +245,6 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     cls,
                     new OWLObjectSomeValuesFromImpl(
                             SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
-
         }
 
         return refinements;
