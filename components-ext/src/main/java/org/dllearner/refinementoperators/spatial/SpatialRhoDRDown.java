@@ -74,9 +74,40 @@ public class SpatialRhoDRDown extends RhoDRDown {
             refinements.addAll(
                     spatiallyRefineOWLObjectUnionOf(
                             ((OWLObjectUnionOfImplExt) ce).getOperands(), maxLength));
+        else if (ce instanceof OWLObjectAllValuesFrom)
+            refinements.addAll(
+                    spatiallyRefineOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) ce, maxLength));
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> spatiallyRefineOWLObjectAllValuesFrom(OWLObjectAllValuesFrom ce, int maxLength) {
+        OWLObjectPropertyExpression property = ce.getProperty();
+        // FIXME: extend this to also support general object property expressions
+        assert !property.isAnonymous();
+
+        Set<OWLObjectProperty> properties =
+                // FIXME: Should be part of the spatial reasoner interface
+                reasoner.getBaseReasoner().getSubProperties(property.asOWLObjectProperty());
+        properties.add(property.asOWLObjectProperty());
+
+        OWLClassExpression filler = ce.getFiller();
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+
+        // FIXME: replace lengthMetric.objectProperyLength with actual prop length
+        Set<OWLClassExpression> fillerRefinements = refine(
+                filler,
+                maxLength-lengthMetric.objectProperyLength);
+
+        for (OWLObjectProperty p : properties) {
+            for (OWLClassExpression fillerRefinement : fillerRefinements) {
+                refinements.add(new OWLObjectAllValuesFromImpl(p, fillerRefinement));
+            }
+        }
 
         return refinements;
     }
