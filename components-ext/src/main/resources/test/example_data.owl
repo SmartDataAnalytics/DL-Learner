@@ -60,6 +60,15 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#Footway -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Footway">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Minor pathways which are used mainly or exclusively by pedestrians.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#LineFeature -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#LineFeature">
@@ -68,10 +77,53 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#LivingStreet -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#LivingStreet">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Type of roads which have lower speed limits, and special traffic and parking rules compared to other residential roads.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#Move -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Move">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#LineFeature"/>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#PointFeature -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#PointFeature">
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#ResidentialRoad -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#ResidentialRoad">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Roads accessing or around residential areas.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#Road -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Road">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#LineFeature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#ServiceRoad -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#ServiceRoad">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Generally for access to a building, service station, beach, campsite, industrial estate, business park, etc. This is also commonly used for access to parking, driveways, and alleys.</rdfs:comment>
     </owl:Class>
     
 
@@ -94,6 +146,32 @@
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#StationBuilding">
         <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Building"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#TertiaryLink -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#TertiaryLink">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#TertiaryRoad -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#TertiaryRoad">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Roads connecting smaller settlements, and within large settlements roads connecting local centres.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#UnclassifiedRoad -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#UnclassifiedRoad">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Road"/>
+        <rdfs:comment>Minor public roads typically at the lowest level of the interconnecting grid network.</rdfs:comment>
     </owl:Class>
     
 
@@ -137,6 +215,240 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7886576 51.0399724, 13.7886612 51.0400660, 13.7887231 51.0413745, 13.7887244 51.0414022, 13.7887306 51.0415342, 13.7887682 51.0423393, 13.7887828 51.0427698)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_02_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7886108 51.0431619, 13.7885596 51.0423433, 13.7885158 51.0414062, 13.7884490 51.0399763)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_03 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_03">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_03_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_03_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_03_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7887828 51.0427698, 13.7887908 51.0431608, 13.7887331 51.0432713, 13.7887211 51.0432907)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_04 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_04">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_04_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_04_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_04_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7887482 51.0438475, 13.7887360 51.0437450, 13.7887229 51.0435766, 13.7887220 51.0434436, 13.7887212 51.0433119, 13.7887211 51.0432907)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_05 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_05">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_05_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_05_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_05_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7921876 51.0475328, 13.7916735 51.0470574, 13.7915301 51.0469294, 13.7913025 51.0467236, 13.7899656 51.0454746, 13.7898516 51.0453719, 13.7897499 51.0452586, 13.7888056 51.0439734, 13.7887704 51.0439159, 13.7887482 51.0438475)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_06 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_06">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryLink"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_06_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_06_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_06_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7923015 51.0476793, 13.7922368 51.0476193, 13.7921896 51.0475761, 13.7921876 51.0475328)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_07 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_07">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryLink"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_07_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_07_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_07_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7921876 51.0475328, 13.7922580 51.0475358, 13.7923129 51.0475863, 13.7923814 51.0476489)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_08 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_08">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_08_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_08_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_08_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7923015 51.0476793, 13.7923357 51.0476605, 13.7923814 51.0476489)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_09 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_09">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_09_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_09_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_09_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7924536 51.0478202, 13.7924243 51.0478240, 13.7923948 51.0478239, 13.7923588 51.0478183, 13.7923287 51.0478081, 13.7923042 51.0477942, 13.7922860 51.0477777, 13.7922749 51.0477607, 13.7922707 51.0477486, 13.7922693 51.0477332, 13.7922801 51.0477016, 13.7923015 51.0476793)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_10 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_10">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_10_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_10_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_10_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7923814 51.0476489, 13.7924355 51.0476485, 13.7924708 51.0476556, 13.7924887 51.0476620, 13.7925044 51.0476696, 13.7925317 51.0476905, 13.7925484 51.0477174, 13.7925512 51.0477348, 13.7925486 51.0477534, 13.7925275 51.0477852)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_11 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_11">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryLink"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_11_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_11_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_11_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7925275 51.0477852, 13.7926010 51.0478573, 13.7926531 51.0479095, 13.7926525 51.0479568)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_12 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_12">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryLink"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_12_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_12_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_12_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7926525 51.0479568, 13.7925766 51.0479344, 13.7925239 51.0478857, 13.7924536 51.0478202)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_13 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_13">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_13_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_13_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_13_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7934090 51.0486295, 13.7926525 51.0479568)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#building_bhf_neustadt_geometry -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#building_bhf_neustadt_geometry">
@@ -164,6 +476,278 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ServiceRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8129237 51.0354588, 13.8117175 51.0359142)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_02_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8126529 51.0352561, 13.8142533 51.0346606, 13.8144118 51.0346008)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_03 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_03">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_03_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_03_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_03_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8107136 51.0359873, 13.8110425 51.0358690, 13.8110634 51.0358615, 13.8114943 51.0357065)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_04 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_04">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#LivingStreet"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_04_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_04_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_04_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7954818 51.0413277, 13.7954563 51.0412901, 13.7952482 51.0411993, 13.7951775 51.0410923, 13.7950309 51.0408726)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_05 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_05">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_05_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_05_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_05_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8095152 51.0364331, 13.8103849 51.0361101, 13.8107136 51.0359873)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_06 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_06">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_06_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_06_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_06_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8157340 51.0341008, 13.8159257 51.0340279, 13.8159860 51.0340050, 13.8164580 51.0338256, 13.8173033 51.0334977, 13.8173202 51.0334912, 13.8174751 51.0334323, 13.8178602 51.0332905)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_07 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_07">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_07_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_07_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_07_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8222677 51.0316292, 13.8223483 51.0315989, 13.8224241 51.0315710)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_08 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_08">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ServiceRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_08_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_08_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_08_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7992489 51.0394321, 13.7993540 51.0393972, 13.8003770 51.0390379)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_09 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_09">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_09_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_09_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_09_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8065493 51.0374272, 13.8066063 51.0374337, 13.8068797 51.0373737, 13.8071339 51.0372943, 13.8077047 51.0371170, 13.8077270 51.0371092, 13.8082361 51.0369232, 13.8084748 51.0368302, 13.8085935 51.0367832, 13.8090750 51.0365925)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_10 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_10">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_10_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_10_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_10_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7959163 51.0405926, 13.7969894 51.0402133, 13.7978746 51.0398910)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_11 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_11">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#Footway"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_11_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_11_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_11_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8004095 51.0389874, 13.8005115 51.0389525, 13.8005429 51.0389377)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_12 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_12">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_12_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_12_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_12_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8006889 51.0389637, 13.8009095 51.0388856, 13.8011613 51.0387973)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_13 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_13">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#UnclassifiedRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#kipsdorfer_str_13_geometry"/>
+        <rdfs:comment>This is where move 01 sould run along.</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#kipsdorfer_str_13_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_13_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8178602 51.0332905, 13.8196378 51.0326208, 13.8197461 51.0325799, 13.8199902 51.0324880, 13.8200217 51.0324751, 13.8202864 51.0323763, 13.8205664 51.0322709, 13.8206040 51.0322567, 13.8208317 51.0321709, 13.8217537 51.0318235)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#move_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#move_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#Move"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#move_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#move_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#move_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.82108 51.03221, 13.82099 51.03222, 13.8209 51.03218, 13.82083 51.03219, 13.82076 51.03222, 13.82069 51.03223, 13.82062 51.03225, 13.82053 51.03228, 13.82047 51.03231, 13.8204 51.03235, 13.82032 51.03239, 13.82025 51.03241, 13.8202 51.03245, 13.82014 51.03247, 13.82007 51.03249, 13.82001 51.03251)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#move_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#move_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#Move"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#move_02_geometry"/>
+        <rdfs:comment>Generally for access to a building, service station, beach, campsite, industrial estate, business park, etc. This is also commonly used for access to parking, driveways, and alleys.</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#move_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#move_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.78981 51.04495, 13.78976 51.04499, 13.78977 51.04504, 13.78978 51.04508, 13.78984 51.04507, 13.78988 51.04507, 13.78985 51.04512, 13.78982 51.04516, 13.78982 51.04518, 13.78954 51.04541, 13.78948 51.04552, 13.78944 51.04553, 13.7894 51.04554, 13.78932 51.04557, 13.78934 51.04553, 13.78932 51.04551, 13.78921 51.04549, 13.78916 51.04549, 13.7891 51.04552, 13.78903 51.04555, 13.7889 51.04559, 13.78878 51.04562, 13.78872 51.04558, 13.78857 51.04563, 13.78846 51.04568, 13.78836 51.04572, 13.78825 51.04577, 13.78815 51.04579, 13.78807 51.04579, 13.78801 51.0458, 13.78797 51.04581, 13.78794 51.04581, 13.78787 51.04582, 13.78783 51.04584, 13.78779 51.04585, 13.78773 51.04586, 13.78766 51.04589, 13.7876 51.04591, 13.78751 51.04592, 13.78746 51.04594, 13.78741 51.04596, 13.78736 51.04599, 13.78721 51.04604, 13.78718 51.04605, 13.78713 51.04607, 13.78708 51.04608, 13.787 51.04609, 13.78691 51.04612, 13.78689 51.04616, 13.7868 51.04618, 13.78671 51.0462, 13.78662 51.04622, 13.78652 51.04624, 13.78643 51.04626, 13.78636 51.04627, 13.78634 51.04627, 13.78629 51.04629, 13.78622 51.04631, 13.78617 51.04632, 13.78612 51.04634, 13.78603 51.04637, 13.78598 51.04638, 13.78589 51.04641, 13.78579 51.04644, 13.7857 51.04648, 13.78559 51.04651, 13.78549 51.04654, 13.7854 51.04657, 13.78529 51.0466, 13.78519 51.04663, 13.78508 51.04667, 13.78497 51.04672, 13.78483 51.04677, 13.78468 51.04679, 13.78455 51.04684, 13.7844 51.04687, 13.78422 51.04691, 13.78405 51.04696, 13.78389 51.04702, 13.78376 51.04706, 13.78366 51.04709, 13.78361 51.04712, 13.78349 51.04721, 13.78346 51.04723, 13.7834 51.04725, 13.78321 51.04729, 13.78314 51.04731, 13.78305 51.04734, 13.78297 51.04737, 13.78288 51.04739, 13.78282 51.04741, 13.78275 51.04742, 13.78268 51.04744, 13.78261 51.04743, 13.78255 51.04743, 13.78247 51.04743, 13.78242 51.04741, 13.7824 51.04736, 13.78236 51.04731, 13.78233 51.04724, 13.78228 51.0472, 13.78226 51.04714, 13.78222 51.04709, 13.78218 51.04704, 13.78215 51.04698, 13.78215 51.0469, 13.78213 51.04685, 13.78216 51.04679, 13.78215 51.04674, 13.7821 51.04669, 13.78213 51.04662, 13.78205 51.04661, 13.78199 51.04661, 13.78198 51.04662, 13.78192 51.04661, 13.78187 51.04658, 13.78178 51.04657, 13.78172 51.04655, 13.78165 51.04652, 13.7816 51.04649, 13.78155 51.04647, 13.78148 51.04643)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_01 -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_01">
@@ -183,6 +767,7 @@
     <!-- http://dl-learner.org/ont/spatial#nonspatial_individual_03 -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#nonspatial_individual_03">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#SomethingNonSpatial"/>
         <nonSpatialObjectProperty01 rdf:resource="http://dl-learner.org/ont/spatial#nonspatial_individual_01"/>
         <nonSpatialObjectProperty01 rdf:resource="http://dl-learner.org/ont/spatial#nonspatial_individual_02"/>
     </owl:NamedIndividual>
@@ -261,6 +846,114 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7800686 51.0445489, 13.7799677 51.0443954, 13.7798959 51.0442913, 13.7798880 51.0442800)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_02_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7810142 51.0458343, 13.7808089 51.0455592, 13.7807481 51.0454776, 13.7803254 51.0449112, 13.7802171 51.0447622, 13.7800686 51.0445489)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_03 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_03">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_03_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_03_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_03_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7823775 51.0476781, 13.7822633 51.0475221, 13.7817436 51.0468123, 13.7813544 51.0462830, 13.7810142 51.0458343)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_04 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_04">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_04_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_04_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_04_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7823775 51.0476781, 13.7835319 51.0487071)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_05 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_05">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_05_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_05_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_05_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7858817 51.0507305, 13.7856255 51.0505078, 13.7847152 51.0497165, 13.7835319 51.0487071)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_06 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_06">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#TertiaryRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#tittmannstr_06_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#tittmannstr_06_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_06_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7874745 51.0521511, 13.7873511 51.0519960, 13.7873175 51.0519537, 13.7870609 51.0517253, 13.7868213 51.0515222, 13.7861189 51.0509304, 13.7858817 51.0507305)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#turnerweg -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#turnerweg">
@@ -311,6 +1004,204 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#way_inside_bhf_neustadt_geometry">
         <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.74077707529068 51.06542144079566,13.741168677806854 51.06567090709416)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7757007 51.0508041, 13.7757186 51.0507954, 13.7758543 51.0507277, 13.7762856 51.0505145)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_02_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7762856 51.0505145, 13.7770335 51.0501728)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_03 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_03">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_03_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_03_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_03_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7770335 51.0501728, 13.7771909 51.0501009, 13.7773290 51.0500378, 13.7780864 51.0496917)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_04 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_04">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_04_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_04_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_04_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7780864 51.0496917, 13.7786880 51.0494137, 13.7787276 51.0493954, 13.7789157 51.0493084, 13.7790601 51.0492417, 13.7795087 51.0490344)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_05 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_05">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_05_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_05_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_05_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7795087 51.0490344, 13.7796255 51.0489804)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_06 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_06">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_06_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_06_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_06_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7796255 51.0489804, 13.7799092 51.0488462, 13.7800914 51.0487599, 13.7802650 51.0486778, 13.7803437 51.0486406, 13.7804410 51.0485945, 13.7806244 51.0485077, 13.7809358 51.0483603)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_07 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_07">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_07_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_07_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_07_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7809358 51.0483603, 13.7815474 51.0480709, 13.7822682 51.0477298, 13.7823775 51.0476781)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_08 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_08">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_08_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_08_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_08_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7823775 51.0476781, 13.7824905 51.0476410, 13.7830157 51.0474687, 13.7840254 51.0471373, 13.7853062 51.0467170, 13.7856438 51.0466062, 13.7859969 51.0464903, 13.7872289 51.0460860, 13.7877566 51.0459128, 13.7880008 51.0458327)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_09 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_09">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_09_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_09_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_09_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7880008 51.0458327, 13.7897499 51.0452586)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_10 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_10">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_10_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_10_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_10_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7897499 51.0452586, 13.7908703 51.0449139, 13.7914133 51.0447386, 13.7916055 51.0446753)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_11 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_11">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#ResidentialRoad"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#wormser_str_11_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#wormser_str_11_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#wormser_str_11_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7916055 51.0446753, 13.7917193 51.0446379, 13.7917877 51.0446142, 13.7929168 51.0442453, 13.7939804 51.0439239, 13.7941453 51.0438741)</geosparql:asWKT>
     </owl:NamedIndividual>
 </rdf:RDF>
 
