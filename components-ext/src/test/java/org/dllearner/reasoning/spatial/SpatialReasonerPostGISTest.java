@@ -186,24 +186,19 @@ public class SpatialReasonerPostGISTest {
         SpatialReasonerPostGIS reasoner = getReasoner();
 
         OWLObjectUnionOfImplExt union = new OWLObjectUnionOfImplExt(Sets.newHashSet(
-                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")),
+                df.getOWLClass(IRI.create(defaultPrefix + "Footway")),
                 df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature"))));
         OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "turnerweg"));
+                IRI.create(defaultPrefix + "kipsdorfer_str_11"));
         OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "turnerweg_part"));
-        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
-        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
-        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
 
         assertEquals(
                 Sets.newHashSet(
                         expectedIndividual1, expectedIndividual2,
-                        expectedIndividual3, expectedIndividual4,
-                        expectedIndividual5),
+                        expectedIndividual3),
                 reasoner.getIndividualsOWLObjectUnionOfImplExt(union));
     }
 
@@ -436,9 +431,9 @@ public class SpatialReasonerPostGISTest {
         reasoner.setIsIsNearRelationReflexive(false);
         spatialCE = df.getOWLObjectAllValuesFrom(
                 SpatialVocabulary.isNear,
-                df.getOWLClass(IRI.create(defaultPrefix + "LineFeature")));
+                df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature")));
         expectedIndividual = df.getOWLNamedIndividual(
-                IRI.create(defaultPrefix + "pos_on_turnerweg"));
+                IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
 
         assertEquals(
                 Sets.newHashSet(expectedIndividual),
