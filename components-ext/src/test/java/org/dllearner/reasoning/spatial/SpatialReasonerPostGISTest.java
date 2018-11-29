@@ -517,11 +517,51 @@ public class SpatialReasonerPostGISTest {
         assertFalse(reasoner.isInside(pointOutsideBuildung2, building));
     }
 
+    @Ignore
     @Test
-    public void testRunsAlong() {
-        fail();
+    public void testRunsAlong() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLIndividual street_01 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "kipsdorfer_str_13"));
+        OWLIndividual move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_01"));
+
+        reasoner.setRunsAlongToleranceInMeters(20);
+        assertTrue(reasoner.runsAlong(move, street_01));
+
+        // -----
+        OWLIndividual street_02 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bergmannstr_05"));
+        // wormser_str_07 --> not
+        OWLIndividual street_03 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_07"));
+        OWLIndividual street_04 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_08"));
+        OWLIndividual street_05 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_09"));
+        // wormser_str_10 --> not
+        OWLIndividual street_06 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_10"));
+        OWLIndividual street_07 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "tittmannstr_03"));
+        // tittmannstr_04 --> not
+        OWLIndividual street_08 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "tittmannstr_04"));
+
+        move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_02"));
+
+        assertTrue(reasoner.runsAlong(move, street_02));
+        assertFalse(reasoner.runsAlong(move, street_03));
+        assertTrue(reasoner.runsAlong(move, street_04));
+        assertTrue(reasoner.runsAlong(move, street_05));
+        assertFalse(reasoner.runsAlong(move, street_06));
+        assertTrue(reasoner.runsAlong(move, street_07));
+        assertFalse(reasoner.runsAlong(move, street_08));
     }
 
+    @Ignore
     @Test
     public void testGetContainedSpatialIndividuals() throws ComponentInitException {
         SpatialReasoner reasoner = getReasoner();

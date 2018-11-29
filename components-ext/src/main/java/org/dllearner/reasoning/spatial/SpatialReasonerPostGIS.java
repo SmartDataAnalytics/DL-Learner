@@ -33,6 +33,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private Connection conn;
 
     private double nearRadiusInMeters = 5; // meters
+    private double runsAlongToleranceInMeters = 20; // meters
     private boolean isContainmentRelationReflexive = false;
     private boolean isIsNearRelationReflexive = true;
     private Set<List<OWLProperty>> geometryPropertyPaths = new HashSet<>();
@@ -276,6 +277,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     public void setNearRadiusInMeters(double nearRadiusInMeters) {
         this.nearRadiusInMeters = nearRadiusInMeters;
+    }
+
+    public void setRunsAlongToleranceInMeters(double runsAlongToleranceInMeters) {
+        this.runsAlongToleranceInMeters = runsAlongToleranceInMeters;
     }
 
     public void addGeometryPropertyPath(List<OWLProperty> propertyPath) {
@@ -869,9 +874,85 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return containedIndividuals.collect(Collectors.toSet());
     }
 
+    /**
+     * Returns `true` if the first input OWL individual runs along the second
+     * input OWL individual, and `false` otherwise.
+     * To let the PostGIS database do the heavy lifting the approach to get this
+     * information is as follows:
+     * a) Build a polygon representing the hull around the first OWL
+     *    individual's geometry with a margin of `runsAlongToleranceInMeters`
+     *    meters.
+     * b) Build the intersection of the polygon built in a) and the second
+     *    input OWL individual's geometry (which is again a line feature)
+     * c) Check whether the length of the line feature built in b) is longer
+     *    than 2.5 times the `runsAlongToleranceInMeters` tolerance (to
+     *    eliminate line features crossing the first input OWL individual's
+     *    geometry in more or less 90 degrees).
+     *
+     * Example query:
+     *
+     * SELECT
+     *    ST_Length(
+     *        ST_Intersection(  -- b)
+     *            ST_Buffer(move.the_geom::geography, 20, 'endcap=flat'),  -- a)
+     *            street.the_geom)::geography) > 50  -- c)
+     * FROM
+     *    line_feature move, line_feature street
+     * WHERE
+     *    move.iri='http://dl-learner.org/ont/spatial#move_02_geometry'
+     * AND
+     *    street.iri='http://dl-learner.org/ont/spatial#bergmannstr_05_geometry';
+     *
+     */
     @Override
     public boolean runsAlong(OWLIndividual individual1, OWLIndividual individual2) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+        try {
+            geomIndividual1 = feature2geom.get(individual1);
+            geomIndividual2 = feature2geom.get(individual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = new StringBuilder()
+                .append("SELECT ")
+                    .append("ST_Length(")
+                        .append("ST_Intersection(")
+                            .append("ST_Buffer(move.the_geom::geography, ?, 'endcap=flat'),")  // 1
+                            .append("street.the_geom)::geography) > ? ") // 2
+                .append("FROM ")
+                    .append(lineFeatureTableName).append(" move, ")
+                    .append(lineFeatureTableName).append(" street ")
+                .append("WHERE ")
+                    .append("move.iri=? ") // 3
+                .append("AND ")
+                    .append("street.iri=?").toString(); // 4
+
+        boolean runsAlong;
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            // tolerance for the hull (ST_Buffer)
+            statement.setDouble(1, runsAlongToleranceInMeters);
+            // min expected length
+            statement.setDouble(2, 2.5 * runsAlongToleranceInMeters);
+            // move IRI
+            statement.setString(3, geomIndividual1.toStringID());
+            // street IRI
+            statement.setString(4, geomIndividual2.toStringID());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            resultSet.next();
+            runsAlong = resultSet.getBoolean(1);
+
+            assert !resultSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return runsAlong;
     }
 
     @Override
