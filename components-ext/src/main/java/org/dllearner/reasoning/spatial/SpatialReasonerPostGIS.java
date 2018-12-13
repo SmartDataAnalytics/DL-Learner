@@ -903,6 +903,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
      * AND
      *    street.iri='http://dl-learner.org/ont/spatial#bergmannstr_05_geometry';
      *
+     * TODO: First get all candidates having ST_Distance( , ) < threshold and then run the above procedure
      */
     @Override
     public boolean runsAlong(OWLIndividual individual1, OWLIndividual individual2) {
@@ -955,9 +956,70 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return runsAlong;
     }
 
+    /**
+     * Returns all spatial OWL individuals on which the input OWL individual
+     * runs along.
+     *
+     * To let the PostGIS database do the heavy lifting the approach to get this
+     * information is as follows:
+     * a) Build a polygon representing the hull around the input OWL
+     *    individual's geometry with a margin of `runsAlongToleranceInMeters`
+     *    meters.
+     * b) Build the intersection of the polygon built in a) and all other OWL
+     *    individual's geometries (which is again a line feature)
+     * c) Check whether the length of the line feature built in b) is longer
+     *    than 2.5 times the `runsAlongToleranceInMeters` tolerance (to
+     *    eliminate line features crossing the first input OWL individual's
+     *    geometry in more or less 90 degrees).
+     *
+     * TODO: First get all candidates having ST_Distance( , ) < threshold and then run the above procedure
+     */
     @Override
     public Set<OWLIndividual> getSpatialIndividualsOnWhichRunsAlong(OWLIndividual individual) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual geometryIndividual;
+        try {
+            geometryIndividual = feature2geom.get(individual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = new StringBuilder()
+                .append("SELECT ")
+                    .append("street.iri ")
+                .append("FROM ")
+                    .append(lineFeatureTableName).append(" move, ")
+                    .append(lineFeatureTableName).append(" street ")
+                .append("WHERE ")
+                    .append("move.iri=? ")
+                .append("AND ")
+                    .append("NOT street.iri=? ")
+                .append("AND ")
+                    .append("ST_Length(")
+                        .append("ST_Intersection(")
+                            .append("ST_Buffer(move.the_geom::geography, ?, 'endcap=flat'), ")
+                            .append("street.the_geom)::geography) > ?").toString();
+
+        Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geometryIndividual.toStringID());
+            statement.setString(2, geometryIndividual.toStringID());
+            statement.setDouble(3, runsAlongToleranceInMeters);
+            statement.setDouble(4, 2.5 * runsAlongToleranceInMeters);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String iriStr = resultSet.getString(1);
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                new OWLNamedIndividualImpl(IRI.create(iriStr))));
+            }
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return resultFeatureIndividuals;
     }
 
     @Override

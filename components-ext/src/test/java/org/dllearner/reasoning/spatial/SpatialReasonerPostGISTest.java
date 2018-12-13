@@ -650,11 +650,43 @@ public class SpatialReasonerPostGISTest {
         spatialReasoner.setIsContainmentRelationReflexive(false);
     }
 
+    @Ignore
     @Test
-    public void testGetSpatialIndividualsRunningAlong() {
-        fail();
+    public void testGetSpatialIndividualsOnWhichRunsAlong() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+
+        OWLIndividual move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_01"));
+
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "kipsdorfer_str_13"));
+
+        assertEquals(
+                Sets.newHashSet(expectedIndividual1),
+                reasoner.getSpatialIndividualsOnWhichRunsAlong(move));
+
+        // ----
+
+        move = df.getOWLNamedIndividual(IRI.create(defaultPrefix + "move_02"));
+        OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bergmannstr_05"));
+        OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_08"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "wormser_str_09"));
+        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "tittmannstr_03"));
+
+        assertEquals(
+                Sets.newHashSet(
+                        expectedIndividual2,
+                        expectedIndividual3,
+                        expectedIndividual4,
+                        expectedIndividual5),
+                reasoner.getSpatialIndividualsOnWhichRunsAlong(move));
     }
 
+    @Ignore
     @Test
     public void testPasses() {
         fail();
