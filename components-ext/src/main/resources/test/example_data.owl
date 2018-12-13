@@ -44,6 +44,14 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#Amenity -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Amenity">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#AreaFeature -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#AreaFeature">
@@ -98,6 +106,14 @@
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#PointFeature">
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#Pub -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Pub">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Amenity"/>
     </owl:Class>
     
 
@@ -842,6 +858,24 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pos_outside_bhf_neustadt_2">
         <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
         <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#outside_building_bhf_neustadt_2_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#pub_fritz -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pub_fritz">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#Pub"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#pub_fritz_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#pub_fritz_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pub_fritz_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.7878003 51.0458286)</geosparql:asWKT>
     </owl:NamedIndividual>
     
 

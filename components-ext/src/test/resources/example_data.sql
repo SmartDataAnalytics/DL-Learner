@@ -159,6 +159,7 @@ http://dl-learner.org/ont/spatial#outside_building_bhf_neustadt_1_geometry	01010
 http://dl-learner.org/ont/spatial#outside_building_bhf_neustadt_2_geometry	0101000000FFFFFF774C7A2B40A49F9AFB76884940
 http://dl-learner.org/ont/spatial#on_turnerweg_geometry	0101000000495D7C1BAC7D2B406A40CE458D884940
 http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry	01010000000100C0D7587B2B401004D98760884940
+http://dl-learner.org/ont/spatial#pub_fritz_geometry	0101000000D88E988F5A932B40591C29B6DD854940
 \.
 
 

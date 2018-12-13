@@ -688,8 +688,18 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore
     @Test
-    public void testPasses() {
-        fail();
+    public void testPasses() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(20);
+        OWLIndividual move = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "move_02"));
+        OWLIndividual pub_fitz = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix  + "pub_fritz"));
+        OWLIndividual bhf_neustadt = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "bahnhof_dresden_neustadt_building"));
+
+        assertTrue(reasoner.passes(move, pub_fitz));
+        assertFalse(reasoner.passes(move, bhf_neustadt));
     }
 
     @Test

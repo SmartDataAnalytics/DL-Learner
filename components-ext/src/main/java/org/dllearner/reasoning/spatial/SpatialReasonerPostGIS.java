@@ -1022,9 +1022,54 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return resultFeatureIndividuals;
     }
 
+    /**
+     * Returns true if the line feature OWL individual `passingIndividual`
+     * passes the spatial OWL individual `passedIndividual`. 'Passing' here
+     * means that at least one point of the line feature OWL individual
+     * `passingIndividual` is near the spatial OWL individual `passedIndividual`
+     */
     @Override
     public boolean passes(OWLIndividual passingIndividual, OWLIndividual passedIndividual) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual passingGeometryIndividual;
+        OWLIndividual passedGeometryIndividual;
+        try {
+            passingGeometryIndividual = feature2geom.get(passingIndividual);
+            passedGeometryIndividual = feature2geom.get(passedIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String targetTableName = getTable(passedIndividual);
+
+        String queryStr =
+                "SELECT " +
+                    "true " +
+                "FROM " +
+                    lineFeatureTableName + " p_line, " +
+                    targetTableName + " passed " +
+                "WHERE " +
+                    "ST_Distance(" +
+                        "p_line.the_geom::geography, " +
+                        "passed.the_geom::geography) <= ? " +
+                "AND " +
+                    "p_line.iri=? " +
+                "AND " +
+                    "passed.iri=?";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, passingGeometryIndividual.toStringID());
+            statement.setString(3, passedGeometryIndividual.toStringID());
+
+            System.out.println(statement);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            return resultSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
