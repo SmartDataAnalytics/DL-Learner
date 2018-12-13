@@ -956,7 +956,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public Set<OWLIndividual> getSpatialIndividualsRunningAlong(OWLIndividual individual) {
+    public Set<OWLIndividual> getSpatialIndividualsOnWhichRunsAlong(OWLIndividual individual) {
         throw new RuntimeException("Not implemented, yet");
     }
 

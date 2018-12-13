@@ -462,7 +462,7 @@ public interface SpatialReasoner extends ReasonerComponent {
      * along the input OWL individual (which is a line feature as well).
      */
     @Unstable
-    Set<OWLIndividual> getSpatialIndividualsRunningAlong(OWLIndividual individual);
+    Set<OWLIndividual> getSpatialIndividualsOnWhichRunsAlong(OWLIndividual individual);
 
     /**
      * Returns `true` if the first input OWL individual (being a line feature
