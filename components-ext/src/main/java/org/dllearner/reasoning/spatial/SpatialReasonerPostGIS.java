@@ -1154,9 +1154,58 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return passedIndividuals;
     }
 
+    /**
+     * Returns the set of feature OWL individuals that are passing the input
+     * spatial OWL individual `passedIndividual`. 'Passing' here
+     * means that at least one point of the feature OWL individual
+     * `passedIndividual` is near the result spatial OWL individual.
+     */
     @Override
     public Set<OWLIndividual> getPassingSpatialIndividuals(OWLIndividual passedIndividual) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual passedGeometryIndividual;
+        try {
+            passedGeometryIndividual = feature2geom.get(passedIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Set<OWLIndividual> passingIndividuals = new HashSet<>();
+        String inputIndivTable = getTable(passedIndividual);
+
+        String queryStr =
+                "SELECT " +
+                    "p_line.iri " +
+                "FROM " +
+                    lineFeatureTableName + " p_line, " +
+                    inputIndivTable + " passed " +
+                "WHERE " +
+                    "ST_Distance(" +
+                        "p_line.the_geom::geography, " +
+                        "passed.the_geom::geography) " +
+                        "<= ? " +
+                "AND " +
+                    "passed.iri=? " +
+                "AND " +
+                    "NOT passed.iri=p_line.iri";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, passedGeometryIndividual.toStringID());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String iriStr = resultSet.getString(1);
+                passingIndividuals.add(
+                        geom2feature.get(
+                                new OWLNamedIndividualImpl(IRI.create(iriStr))));
+            }
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return passingIndividuals;
     }
 
     @Override
@@ -2108,17 +2157,21 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return members;
     }
 
-    private String getTable(OWLIndividual individual) {
-        if (reasoner.hasType(areaFeatureClass, individual)) {
+    /**
+     * @param featureIndividual The feature OWL individual to get the PostGIS
+     *                          table for, not the geometry OWL individual
+     */
+    private String getTable(OWLIndividual featureIndividual) {
+        if (reasoner.hasType(areaFeatureClass, featureIndividual)) {
             return areaFeatureTableName;
-        } else if (reasoner.hasType(lineFeatureClass, individual)) {
+        } else if (reasoner.hasType(lineFeatureClass, featureIndividual)) {
             return lineFeatureTableName;
-        } else if (reasoner.hasType(pointFeatureClass, individual)) {
+        } else if (reasoner.hasType(pointFeatureClass, featureIndividual)) {
             return pointFeatureTableName;
         } else {
-            throw new RuntimeException("Individual " + individual + " is " +
-                    "neither an area feature, nor a line feature, nor a " +
-                    "point feature");
+            throw new RuntimeException(
+                    "Individual " + featureIndividual + " is neither an area " +
+                    "feature, nor a line feature, nor a point feature");
         }
     }
 

@@ -734,10 +734,26 @@ public class SpatialReasonerPostGISTest {
 
     @Ignore 
     @Test
-    public void testGetPassingSpatialIndividuals() {
-        fail();
+    public void testGetPassingSpatialIndividuals() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(20);
+
+        OWLIndividual move = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "move_02"));
+        OWLIndividual bergmannstr_05 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "bergmannstr_05"));
+        OWLIndividual tittmannstr_03 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "tittmannstr_03"));
+
+        Set<OWLIndividual> passing =
+                reasoner.getPassingSpatialIndividuals(bergmannstr_05);
+        assertTrue(passing.contains(move));
+
+        passing = reasoner.getPassingSpatialIndividuals(tittmannstr_03);
+        assertTrue(passing.contains(move));
     }
 
+    @Ignore 
     @Test
     public void testIsNonTangentialProperPartOf() {
         fail();
