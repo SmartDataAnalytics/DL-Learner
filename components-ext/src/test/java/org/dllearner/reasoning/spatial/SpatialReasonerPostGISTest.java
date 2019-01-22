@@ -194,11 +194,20 @@ public class SpatialReasonerPostGISTest {
                 IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
         OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "toeplerpark_soccer_field"));
+        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix +
+                        "toeplerpark_soccer_field_eighteen_yard_area"));
+        OWLIndividual expectedIndividual6 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix +
+                        "toeplerpark_soccer_field_center_circle"));
 
         assertEquals(
                 Sets.newHashSet(
                         expectedIndividual1, expectedIndividual2,
-                        expectedIndividual3),
+                        expectedIndividual3, expectedIndividual4,
+                        expectedIndividual5, expectedIndividual6),
                 reasoner.getIndividualsOWLObjectUnionOfImplExt(union));
     }
 
@@ -386,12 +395,12 @@ public class SpatialReasonerPostGISTest {
                         IRI.create(defaultPrefix + "nonSpatialObjectProperty01")),
                 df.getOWLClass(
                         IRI.create(defaultPrefix + "SomethingNonSpatial")));
-        OWLIndividual expectedIndividual = df.getOWLNamedIndividual(
+        OWLIndividual expectedIndividual1 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "nonspatial_individual_03"));
 
         assertTrue(
                 reasoner.getIndividualsOWLObjectAllValuesFrom(nonSpatialCE)
-                        .contains(expectedIndividual)
+                        .contains(expectedIndividual1)
                 /* + also contains all other individuals not having a value
                  *   assigned via :nonSpatialObjectProperty01 */);
 
@@ -402,7 +411,7 @@ public class SpatialReasonerPostGISTest {
                         IRI.create(defaultPrefix + "SomethingMoreSpecialButStillNonSpatial")));
 
         assertFalse(reasoner.getIndividualsOWLObjectAllValuesFrom(nonSpatialCE)
-                .contains(expectedIndividual));
+                .contains(expectedIndividual1));
 
         // ----------------------------------
 
@@ -411,7 +420,7 @@ public class SpatialReasonerPostGISTest {
                 SpatialVocabulary.isInside,
                 df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature"))
         );
-        expectedIndividual = df.getOWLNamedIndividual(
+        expectedIndividual1 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "area_inside_bhf_neustadt"));
         OWLIndividual expectedIndividual2 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
@@ -419,11 +428,18 @@ public class SpatialReasonerPostGISTest {
                 IRI.create(defaultPrefix + "pos_inside_bhf_neustadt_02"));
         OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "way_inside_bhf_neustadt"));
+        OWLIndividual expectedIndividual5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix +
+                        "toeplerpark_soccer_field_eighteen_yard_area"));
+        OWLIndividual expectedIndividual6 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "" +
+                        "toeplerpark_soccer_field_center_circle"));
 
         assertEquals(
                 Sets.newHashSet(
-                        expectedIndividual, expectedIndividual2,
-                        expectedIndividual3, expectedIndividual4),
+                        expectedIndividual1, expectedIndividual2,
+                        expectedIndividual3, expectedIndividual4,
+                        expectedIndividual5, expectedIndividual6),
                 reasoner.getIndividualsOWLObjectAllValuesFrom(spatialCE));
 
         // :isNear
@@ -432,11 +448,21 @@ public class SpatialReasonerPostGISTest {
         spatialCE = df.getOWLObjectAllValuesFrom(
                 SpatialVocabulary.isNear,
                 df.getOWLClass(IRI.create(defaultPrefix + "AreaFeature")));
-        expectedIndividual = df.getOWLNamedIndividual(
+        expectedIndividual1 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "pos_outside_bhf_neustadt_1"));
+        expectedIndividual2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "toeplerpark_soccer_field"));
+        expectedIndividual3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix +
+                        "toeplerpark_soccer_field_eighteen_yard_area"));
+        expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix +
+                        "toeplerpark_soccer_field_center_circle"));
 
         assertEquals(
-                Sets.newHashSet(expectedIndividual),
+                Sets.newHashSet(
+                        expectedIndividual1, expectedIndividual2,
+                        expectedIndividual3, expectedIndividual4),
                 reasoner.getIndividualsOWLObjectAllValuesFrom(spatialCE));
     }
 

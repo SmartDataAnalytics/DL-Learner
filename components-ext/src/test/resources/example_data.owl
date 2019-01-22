@@ -118,6 +118,14 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#RecreationalArea -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#RecreationalArea">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#AreaFeature"/>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#ResidentialRoad -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#ResidentialRoad">
@@ -144,6 +152,14 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#SoccerField -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SoccerField">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#SportsField"/>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#SomethingMoreSpecialButStillNonSpatial -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SomethingMoreSpecialButStillNonSpatial">
@@ -155,6 +171,14 @@
     <!-- http://dl-learner.org/ont/spatial#SomethingNonSpatial -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SomethingNonSpatial"/>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#SportsField -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#SportsField">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#RecreationalArea"/>
+    </owl:Class>
     
 
 
@@ -983,6 +1007,60 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#tittmannstr_06_geometry">
         <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.7874745 51.0521511, 13.7873511 51.0519960, 13.7873175 51.0519537, 13.7870609 51.0517253, 13.7868213 51.0515222, 13.7861189 51.0509304, 13.7858817 51.0507305)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#SoccerField"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_center_circle -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_center_circle">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#AreaFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_center_circle_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_center_circle_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_center_circle_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.822914361953732 51.028951194196964,13.822929114103314 51.02895541148516,13.822946548461912 51.02895794185784,13.822969347238535 51.0289570984003,13.822986781597134 51.02895035073928,13.823000192642207 51.02894022924593,13.823005557060236 51.02892504700179,13.823000192642207 51.02891070821107,13.822984099388119 51.028900586709085,13.822954595088953 51.02889636941592,13.822922408580775 51.02890143016768,13.822906315326687 51.02891576896124,13.82290497422218 51.0289301077504,13.822914361953732 51.028951194196964))</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_eighteen_yard_area -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_eighteen_yard_area">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#AreaFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_eighteen_yard_area_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_eighteen_yard_area_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_eighteen_yard_area_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.82260791957378 51.02875593333479,13.822673633694645 51.02880443232982,13.822794333100315 51.02874032929955,13.822727277874945 51.028692673699794,13.82260791957378 51.02875593333479))</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#toeplerpark_soccer_field_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.822560310363771 51.02878081543426,13.82309138774872 51.02917555339448,13.823322057724003 51.02905409591861,13.822782933712007 51.02866104384992,13.822560310363771 51.02878081543426))</geosparql:asWKT>
     </owl:NamedIndividual>
     
 
