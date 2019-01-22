@@ -702,11 +702,37 @@ public class SpatialReasonerPostGISTest {
         assertFalse(reasoner.passes(move, bhf_neustadt));
     }
 
+    @Ignore 
     @Test
-    public void testGetPassedSpatialIndividuals() {
-        fail();
+    public void testGetPassedSpatialIndividuals() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(20);
+        OWLIndividual move = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "move_02"));
+        OWLIndividual bergmannstr_05 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "bergmannstr_05"));
+        OWLIndividual wormser_str_08 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "wormser_str_08"));
+        OWLIndividual pub_fitz = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix  + "pub_fritz"));
+        OWLIndividual wormser_str_09 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "wormser_str_09"));
+        OWLIndividual wormser_str_10 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "wormser_str_10"));
+        OWLIndividual tittmannstr_03 = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "tittmannstr_03"));
+
+        Set<OWLIndividual> passed = reasoner.getPassedSpatialIndividuals(move);
+        assertTrue(passed.contains(bergmannstr_05));
+        assertTrue(passed.contains(wormser_str_08));
+        assertTrue(passed.contains(pub_fitz));
+        assertTrue(passed.contains(wormser_str_09));
+        assertTrue(passed.contains(wormser_str_10));
+        assertTrue(passed.contains(tittmannstr_03));
+        assertEquals(6, passed.size());
     }
 
+    @Ignore 
     @Test
     public void testGetPassingSpatialIndividuals() {
         fail();

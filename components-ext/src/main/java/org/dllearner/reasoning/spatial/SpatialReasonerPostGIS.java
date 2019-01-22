@@ -1026,7 +1026,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
      * Returns true if the line feature OWL individual `passingIndividual`
      * passes the spatial OWL individual `passedIndividual`. 'Passing' here
      * means that at least one point of the line feature OWL individual
-     * `passingIndividual` is near the spatial OWL individual `passedIndividual`
+     * `passingIndividual` is near the spatial OWL individual
+     * `passedIndividual`.
      */
     @Override
     public boolean passes(OWLIndividual passingIndividual, OWLIndividual passedIndividual) {
@@ -1062,8 +1063,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             statement.setString(2, passingGeometryIndividual.toStringID());
             statement.setString(3, passedGeometryIndividual.toStringID());
 
-            System.out.println(statement);
-
             ResultSet resultSet = statement.executeQuery();
 
             return resultSet.next();
@@ -1072,9 +1071,87 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    /**
+     * Returns the set of line feature OWL individuals that pass the input
+     * spatial OWL individual `passingIndividual`. 'Passing' here
+     * means that at least one point of the line feature OWL individual
+     * `passingIndividual` is near the result spatial OWL individual.
+     */
     @Override
     public Set<OWLIndividual> getPassedSpatialIndividuals(OWLIndividual passingIndividual) {
-        throw new RuntimeException("Not implemented, yet");
+        OWLIndividual passingGeometryIndividual;
+        try {
+            passingGeometryIndividual = feature2geom.get(passingIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Set<OWLIndividual> passedIndividuals = new HashSet<>();
+
+        String queryStr =
+                "SELECT " +
+                    "passed.iri " +
+                "FROM " +
+                    lineFeatureTableName + " p_line, " +
+                    pointFeatureTableName + " passed " +
+                "WHERE " +
+                    "ST_Distance(" +
+                        "p_line.the_geom::geography, " +
+                        "passed.the_geom::geography) " +
+                        "<= ? " +  // 1)
+                "AND " +
+                    "p_line.iri=? " +  // 2)
+                "UNION " +
+                "SELECT " +
+                    "passed.iri " +
+                "FROM " +
+                    lineFeatureTableName + " p_line, " +
+                    lineFeatureTableName + " passed " +
+                "WHERE " +
+                    "ST_Distance(" +
+                        "p_line.the_geom::geography, " +
+                        "passed.the_geom::geography) " +
+                        "<= ?" +  // 3)
+                "AND " +
+                    "NOT p_line.iri=passed.iri " +
+                "AND " +
+                    "p_line.iri=? " +  // 4)
+                "UNION " +
+                "SELECT " +
+                    "passed.iri " +
+                "FROM " +
+                    lineFeatureTableName + " p_line, " +
+                    areaFeatureTableName + " passed " +
+                "WHERE " +
+                    "ST_Distance(" +
+                        "p_line.the_geom::geography, " +
+                        "passed.the_geom::geography) " +
+                        "<= ? " +  // 5)
+                "AND " +
+                    "p_line.iri=?";  // 6)
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, passingGeometryIndividual.toStringID());
+            statement.setDouble(3, nearRadiusInMeters);
+            statement.setString(4, passingGeometryIndividual.toStringID());
+            statement.setDouble(5, nearRadiusInMeters);
+            statement.setString(6, passingGeometryIndividual.toStringID());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String iriStr = resultSet.getString(1);
+                passedIndividuals.add(
+                        geom2feature.get(
+                                new OWLNamedIndividualImpl(IRI.create(iriStr))));
+            }
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return passedIndividuals;
     }
 
     @Override
