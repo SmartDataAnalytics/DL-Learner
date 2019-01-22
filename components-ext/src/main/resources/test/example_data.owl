@@ -750,7 +750,6 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#move_02">
         <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#Move"/>
         <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#move_02_geometry"/>
-        <rdfs:comment>Generally for access to a building, service station, beach, campsite, industrial estate, business park, etc. This is also commonly used for access to parking, driveways, and alleys.</rdfs:comment>
     </owl:NamedIndividual>
     
 
