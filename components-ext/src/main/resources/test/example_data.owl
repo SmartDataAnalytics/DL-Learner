@@ -489,6 +489,24 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_no_31 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_no_31">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#bergmannstr_no_31_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#bergmannstr_no_31_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#bergmannstr_no_31_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.789781033992764 51.04466720608187)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#building_bhf_neustadt_geometry -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#building_bhf_neustadt_geometry">
