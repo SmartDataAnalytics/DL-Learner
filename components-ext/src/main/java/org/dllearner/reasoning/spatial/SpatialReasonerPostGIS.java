@@ -2624,7 +2624,48 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean endsNear(OWLIndividual lineFeature, OWLIndividual nearFeature) {
-        throw new NotImplementedException();
+        if (!getTable(lineFeature).equals(lineFeatureTableName)) {
+            return false;
+        }
+
+        OWLIndividual lineGeometryIndividual;
+        OWLIndividual nearGeometryIndividual;
+        try {
+            lineGeometryIndividual = feature2geom.get(lineFeature);
+            nearGeometryIndividual = feature2geom.get(nearFeature);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String otherTable = getTable(nearFeature);
+
+        String queryStr =
+                "SELECT " +
+                        "ST_DWithin(" +
+                            "ST_EndPoint(l.the_geom)::geography, " +
+                            "near.the_geom::geography, ?) " + // #1
+                "FROM " +
+                        "line_feature l, " +
+                        otherTable + " near " +
+                "WHERE " +
+                        "l.iri=?" + // #2
+                "AND " +
+                        "near.iri=?"; // #3
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, lineGeometryIndividual.toStringID());
+            statement.setString(3, nearGeometryIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+            resSet.next();
+
+            return resSet.getBoolean(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** Example/debug set-up */

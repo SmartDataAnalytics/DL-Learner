@@ -837,4 +837,21 @@ public class SpatialReasonerPostGISTest {
         assertTrue(reasoner.startsNear(move, pointNearStartPoint));
         assertFalse(reasoner.startsNear(move, pointNotNearStartPoint));
     }
+
+    @Ignore
+    @Test
+    public void testEndsNear() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(20);
+
+        OWLIndividual pointNotNearEndPoint = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bergmannstr_no_31"));
+        OWLIndividual pointNearEndPoint = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "recycling_container_xyz"));
+        OWLIndividual move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_02"));
+
+        assertTrue(reasoner.endsNear(move, pointNearEndPoint));
+        assertFalse(reasoner.endsNear(move, pointNotNearEndPoint));
+    }
 }
