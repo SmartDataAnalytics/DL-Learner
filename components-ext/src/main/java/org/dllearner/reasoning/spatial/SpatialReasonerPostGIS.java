@@ -2396,7 +2396,92 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLIndividual> getIndividualsNearStartPoint(OWLIndividual lineFeature) {
-        throw new NotImplementedException();
+        if (!getTable(lineFeature).equals(lineFeatureTableName)) {
+            return new HashSet<>();
+        }
+
+        OWLIndividual geometryIndividual;
+        try {
+            geometryIndividual = feature2geom.get(lineFeature);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*
+         * SELECT
+         *      line.iri, area.iri
+         * FROM
+         *      line_feature line, area_feature area
+         * WHERE
+         *      ST_DWithin(ST_StartPoint(line.the_geom)::geography, area.the_geom::geography, 20);
+         */
+
+        String queryStr =
+                "SELECT " +
+                        "near.iri " +
+                "FROM " +
+                        "line_feature l, " +
+                        "point_feature near " +
+                "WHERE " +
+                        "ST_DWithin(" +
+                            "ST_StartPoint(l.the_geom)::geography, " +
+                            "near.the_geom::geography, ?) " + // #1
+                "AND " +
+                        "l.iri=? " + // #2
+                "UNION " +
+                "SELECT " +
+                        "near.iri " +
+                "FROM " +
+                        "line_feature l, " +
+                        "line_feature near " +
+                "WHERE " +
+                        "ST_DWithin(" +
+                            "ST_StartPoint(l.the_geom)::geography, " +
+                            "near.the_geom::geography, ?) " + // #3
+                "AND " +
+                        "l.iri=? " + // #4
+                "AND " +
+                        "NOT near.iri=? " + // #5
+                "UNION " +
+                "SELECT " +
+                        "near.iri " +
+                "FROM " +
+                        "line_feature l, " +
+                        "area_feature near " +
+                "WHERE " +
+                        "ST_DWithin(" +
+                        "ST_StartPoint(l.the_geom)::geography, " +
+                        "near.the_geom::geography, ?) " + // #6;
+                "AND " +
+                        "l.iri=?";  // #7
+
+        PreparedStatement statement = null;
+        Set<OWLIndividual> nearFeatureIndividuals = new HashSet<>();
+
+        try {
+            statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geometryIndividual.toStringID());
+            statement.setDouble(3, nearRadiusInMeters);
+            statement.setString(4, geometryIndividual.toStringID());
+            statement.setString(5, geometryIndividual.toStringID());
+            statement.setDouble(6, nearRadiusInMeters);
+            statement.setString(7, geometryIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            while (resSet.next()) {
+                String indivIRIStr = resSet.getString(1);
+                nearFeatureIndividuals.add(
+                        geom2feature.get(new OWLNamedIndividualImpl(
+                                IRI.create(indivIRIStr))));
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return nearFeatureIndividuals;
     }
 
     @Override

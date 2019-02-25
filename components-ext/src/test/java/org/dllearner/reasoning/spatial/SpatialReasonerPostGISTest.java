@@ -784,4 +784,23 @@ public class SpatialReasonerPostGISTest {
     public void testIsNonTangentialProperPartOf() {
         fail();
     }
+
+    @Ignore 
+    @Test
+    public void testGetIndividualsNearStartPoint() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(35);
+
+        OWLIndividual pointNearStartpoint = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bergmannstr_no_31"));
+        OWLIndividual move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_02"));
+        Set<OWLIndividual> indivsNearStartPoint =
+                reasoner.getIndividualsNearStartPoint(move);
+
+        System.out.println(indivsNearStartPoint);
+        // 4: pointNearStartpoint + two Bergmannstr segments + Wormster Str. segment
+        assertEquals(4, indivsNearStartPoint.size());
+        assertTrue(indivsNearStartPoint.contains(pointNearStartpoint));
+    }
 }
