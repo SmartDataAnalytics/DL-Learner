@@ -380,9 +380,11 @@ public class SpatialReasonerPostGISTest {
                 df.getOWLClass(IRI.create(defaultPrefix + "PointFeature")));
         OWLIndividual expectedIndividual3 = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+        OWLIndividual expectedIndividual4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_02"));
 
         assertEquals(Sets.newHashSet(
-                expectedIndividual3),
+                expectedIndividual3, expectedIndividual4),
                 reasoner.getIndividualsOWLObjectMinCardinality(spatialCE));
     }
 
@@ -747,6 +749,8 @@ public class SpatialReasonerPostGISTest {
                 defaultPrefix + "wormser_str_10"));
         OWLIndividual tittmannstr_03 = df.getOWLNamedIndividual(IRI.create(
                 defaultPrefix + "tittmannstr_03"));
+        OWLIndividual recyclingContainer = df.getOWLNamedIndividual(IRI.create(
+                defaultPrefix + "recycling_container_xyz"));
 
         Set<OWLIndividual> passed = reasoner.getPassedSpatialIndividuals(move);
         assertTrue(passed.contains(bergmannstr_05));
@@ -755,7 +759,8 @@ public class SpatialReasonerPostGISTest {
         assertTrue(passed.contains(wormser_str_09));
         assertTrue(passed.contains(wormser_str_10));
         assertTrue(passed.contains(tittmannstr_03));
-        assertEquals(6, passed.size());
+        assertTrue(passed.contains(recyclingContainer));
+        assertEquals(7, passed.size());
     }
 
     @Ignore 
