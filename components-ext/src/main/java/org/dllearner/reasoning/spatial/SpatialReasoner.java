@@ -487,5 +487,37 @@ public interface SpatialReasoner extends ReasonerComponent {
 
     AbstractReasonerComponent getBaseReasoner();
 
+    /**
+     * Returns a set of OWL individuals (which can be point, line or area
+     * features) which are near the start point of the input line feature OWL
+     * individual.
+     */
+    @Unstable
+    Set<OWLIndividual> getIndividualsNearStartPoint(OWLIndividual lineFeature);
+
+    /**
+     * Returns `true` if the second input OWL individual (which can be a point,
+     * line or area feature) is near the start point of the first input OWL
+     * individual being a line feature and `false` otherwise.
+     */
+    @Unstable
+    boolean startsNear(OWLIndividual lineFeature, OWLIndividual nearFeature);
+
+    /**
+     * Returns a set of OWL individuals (which can be point, line or area
+     * features) which are near the end point of the input line feature OWL
+     * individual.
+     */
+    @Unstable
+    Set<OWLIndividual> getIndividualsNearEndPoint(OWLIndividual lineFeature);
+
+    /**
+     * Returns `true` if the second input OWL individual (which can be a point,
+     * line or area feature) is near the end point of the first input OWL
+     * individual being a line feature and `false` otherwise.
+     */
+    @Unstable
+    boolean endsNear(OWLIndividual lineFeature, OWLIndividual nearFeature);
+
     boolean isSuperClassOf(OWLClassExpression superClassExpression, OWLClassExpression subClassExpression);
 }
