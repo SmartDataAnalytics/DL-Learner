@@ -791,16 +791,33 @@ public class SpatialReasonerPostGISTest {
         SpatialReasonerPostGIS reasoner = getReasoner();
         reasoner.setNearRadiusInMeters(35);
 
-        OWLIndividual pointNearStartpoint = df.getOWLNamedIndividual(
+        OWLIndividual pointNearStartPoint = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "bergmannstr_no_31"));
         OWLIndividual move = df.getOWLNamedIndividual(
                 IRI.create(defaultPrefix + "move_02"));
         Set<OWLIndividual> indivsNearStartPoint =
                 reasoner.getIndividualsNearStartPoint(move);
 
-        System.out.println(indivsNearStartPoint);
-        // 4: pointNearStartpoint + two Bergmannstr segments + Wormster Str. segment
+        // 4: pointNearStartPoint + two Bergmannstr segments + Wormster Str. segment
         assertEquals(4, indivsNearStartPoint.size());
-        assertTrue(indivsNearStartPoint.contains(pointNearStartpoint));
+        assertTrue(indivsNearStartPoint.contains(pointNearStartPoint));
+    }
+
+    @Ignore 
+    @Test
+    public void testGetIndividualsNearEndPoint() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        reasoner.setNearRadiusInMeters(20);
+
+        OWLIndividual pointNearEndPoint = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "recycling_container_xyz"));
+        OWLIndividual move = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "move_02"));
+        Set<OWLIndividual> indivsNearEndPoint =
+                reasoner.getIndividualsNearEndPoint(move);
+
+        // 2: pointNearEndPoint + Tittmannstr segment
+        assertEquals(2, indivsNearEndPoint.size());
+        assertTrue(indivsNearEndPoint.contains(pointNearEndPoint));
     }
 }
