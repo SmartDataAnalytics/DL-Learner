@@ -164,6 +164,7 @@ http://dl-learner.org/ont/spatial#on_turnerweg_geometry	0101000000495D7C1BAC7D2B
 http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry	01010000000100C0D7587B2B401004D98760884940
 http://dl-learner.org/ont/spatial#pub_fritz_geometry	0101000000D88E988F5A932B40591C29B6DD854940
 http://dl-learner.org/ont/spatial#bergmannstr_no_31_geometry	0101000000FEFFFF2D5E942B40A4A9AEA7B7854940
+http://dl-learner.org/ont/spatial#recycling_container_xyz_geometry	0101000000FFFFFFD712902B400459C6ACF1854940
 \.
 
 

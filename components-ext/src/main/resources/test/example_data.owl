@@ -126,6 +126,22 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#Recycling -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#Recycling">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Amenity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#RecyclingContainer -->
+
+    <owl:Class rdf:about="http://dl-learner.org/ont/spatial#RecyclingContainer">
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/ont/spatial#Recycling"/>
+    </owl:Class>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#ResidentialRoad -->
 
     <owl:Class rdf:about="http://dl-learner.org/ont/spatial#ResidentialRoad">
@@ -917,6 +933,24 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#pub_fritz_geometry">
         <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.7878003 51.0458286)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#recycling_container_xyz -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#recycling_container_xyz">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#RecyclingContainer"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#recycling_container_xyz_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#recycling_container_xyz_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#recycling_container_xyz_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.781393766403196 51.04643783268878)</geosparql:asWKT>
     </owl:NamedIndividual>
     
 
