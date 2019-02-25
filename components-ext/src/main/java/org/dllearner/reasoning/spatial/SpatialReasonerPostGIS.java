@@ -15,6 +15,7 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
@@ -2392,6 +2393,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 //
 //        return null;
 //    }
+
+    @Override
+    public Set<OWLIndividual> getIndividualsNearStartPoint(OWLIndividual lineFeature) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean startsNear(OWLIndividual lineFeature, OWLIndividual nearFeature) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Set<OWLIndividual> getIndividualsNearEndPoint(OWLIndividual lineFeature) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean endsNear(OWLIndividual lineFeature, OWLIndividual nearFeature) {
+        throw new NotImplementedException();
+    }
 
     /** Example/debug set-up */
     public static void main(String[] args) throws Exception {
