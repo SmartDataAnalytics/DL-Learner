@@ -251,7 +251,7 @@
                     <nonavbar>false</nonavbar>
                     <notree>false</notree>
                     <overview>src/etc/overview.html</overview>
-                    <source>1.6</source>
+                    <source>1.8</source>
                     <sourcepath>src/main/java</sourcepath>
                     <splitindex>true</splitindex>
                     <stylesheetfile>src/etc/javadoc.css</stylesheetfile>
