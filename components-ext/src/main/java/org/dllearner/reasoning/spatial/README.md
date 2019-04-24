@@ -23,5 +23,6 @@ The spatial reasoner component can infer for individuals _a_, _b_, _c_, ... for 
 - whether _a_ _runs along_ _b_ (as e.g. a trajectory running along a certain street)
 - whether _a_ _passes_ _b_ (as e.g. a trajectory passing a certain point of interest)
 - whether _a_ _starts near_ _b_
+- whether _a_ _ends near_ _b_
 
 Moreover it allows querying all individuals that are in such a spatial relation with another individual.
