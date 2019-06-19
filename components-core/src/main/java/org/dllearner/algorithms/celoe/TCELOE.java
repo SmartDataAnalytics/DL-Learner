@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.dllearner.algorithms.decisiontrees.utils.SetUtils;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -173,8 +174,10 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(defaultValue="5000", description="TODO")  // TODO
 	private int maxT = 5000;
 
-	private int expressionTestCountLastImprovement;
+	@ConfigOption(defaultValue="100", description="TODO")  // TODO
+	private int coolingFactor = 100;
 
+	private int expressionTestCountLastImprovement;
 
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
@@ -478,6 +481,7 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = searchTree.descendingIterator();
+
 		if (logger.isTraceEnabled()) {
 			for (OENode N:searchTree.getNodeSet()) {
 				logger.trace(sparql_debug,"`getnext:"+N);
@@ -506,13 +510,13 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 			throw new RuntimeException("CELOE could not find any node with lesser accuracy.");
 		}
 
-		double p = 1 /
-				(1 +  Math.exp(-(((nodeToReturn.getAccuracy()-0.5)*40)/t)));
+		double p = 1- (1 /
+				(1 +  Math.exp(-(((nodeToReturn.getAccuracy()-0.5)*coolingFactor)/t))));
 //		double p = 1 / (1 + Math.exp(- (nodeToReturn.getAccuracy() - .5) / t));
-		logger.info("---------------");
-		logger.info("Curr t: " + t);
-		logger.info("Curr acc: " + nodeToReturn.getAccuracy());
-		logger.info("Curr p: " + p);
+//		logger.debug("---------------");
+//		logger.debug("Curr t: " + t);
+//		logger.debug("Curr acc: " + nodeToReturn.getAccuracy());
+//		logger.debug("Curr p: " + p);
 
 		if (random.nextDouble() < p) {
 			//
@@ -526,14 +530,16 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 
 			nodeToReturn = iter.next();
 			numPickedRandomly ++;
-
+//			logger.debug("Random choice");
 		} else {
+//			logger.debug("Best choice");
 			numPickedBest ++;
 		}
+//		logger.debug("Curr refinement: " + nodeToReturn);
 
-		double percRandom =
-				numPickedRandomly / ((double) numPickedBest + (double) numPickedRandomly) * 100.0;
-		logger.info(percRandom + "% of choices made randomly");
+//		double percRandom =
+//				numPickedRandomly / ((double) numPickedBest + (double) numPickedRandomly) * 100.0;
+//		logger.debug(percRandom + "% of choices made randomly");
 
 		numReturnedNodes ++;
 		return nodeToReturn;
@@ -926,6 +932,16 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 		stop = true;
 	}
 
+	/* Getter and setter */
+	public int getCoolingFactor() {
+		return coolingFactor;
+	}
+
+	public void setCoolingFactor(int coolingFactor) {
+		this.coolingFactor = coolingFactor;
+	}
+
+
 	public int getMaximumHorizontalExpansion() {
 		return maxHorizExp;
 	}
@@ -1081,6 +1097,10 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}
 
+	public int getMaxT() {
+		return maxT;
+	}
+
 	public void setMaxT(int maxT) {
 		this.maxT = maxT;
 	}
@@ -1220,7 +1240,7 @@ public class TCELOE extends AbstractCELA implements Cloneable{
 		System.out.println(ce);
 		
 		TCELOE alg = new TCELOE(lp, rc);
-		alg.setMaxExecutionTimeInSeconds(10);
+		alg.setMaxExecutionTimeInSeconds(120);
 		alg.setOperator(op);
 		alg.setWriteSearchTree(true);
 		alg.setSearchTreeFile("log/search-tree.log");
