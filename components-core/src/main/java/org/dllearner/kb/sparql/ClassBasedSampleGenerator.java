@@ -25,13 +25,18 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.mindswap.pellet.PelletOptions;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import com.google.common.collect.Sets;
@@ -130,5 +135,46 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 		}
 		
 		return negExamples;
+	}
+
+	public static void main(String[] args) throws Exception {
+		PelletOptions.INVALID_LITERAL_AS_INCONSISTENCY = false;
+		OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book"));
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+		ks.setRetryCount(0);
+		ks.init();
+
+		ClassBasedSampleGenerator sampleGenerator = new ClassBasedSampleGenerator(ks);
+		sampleGenerator.addAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/"));
+		sampleGenerator.addAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+
+		sampleGenerator.setUseNegExamples(false);
+		OWLOntology sample = sampleGenerator.getSample(cls);
+
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+
+		OWLOntology schema = man.loadOntology(IRI.create("http://downloads.dbpedia.org/2016-10/dbpedia_2016-10.nt"));
+
+		OWLOntology ont = man.createOntology(schema.getAxioms());
+		man.addAxioms(ont, sample.getAxioms());
+
+		OWLAPIOntology ontKS = new OWLAPIOntology(ont);
+		ontKS.init();
+
+
+		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(ontKS);
+		reasoner.init();
+
+		ClassLearningProblem lp = new ClassLearningProblem(reasoner);
+		lp.setClassToDescribe(cls);
+		lp.init();
+
+		ELLearningAlgorithm la = new ELLearningAlgorithm(lp, reasoner);
+		la.setClassToDescribe(cls);
+		la.init();
+
+		la.start();
 	}
 }

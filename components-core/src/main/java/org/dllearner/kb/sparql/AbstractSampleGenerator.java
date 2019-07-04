@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
@@ -134,6 +135,13 @@ public abstract class AbstractSampleGenerator {
 					} else if(datatype.equals(XSDDatatype.XSDgYear) && st.getPredicate().getURI().equals("http://dbpedia.org/ontology/birthDate")) {
 						iterator.remove();
 						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
+					} else if(datatype.equals(XSDDatatype.XSDdate)) {
+						iterator.remove();
+						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
+					} else if(datatype.equals(RDF.dtLangString)) {
+//						System.out.println(st.getObject());
+//						iterator.remove();
+//						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createLiteral("", "en")));
 					}
 				}
 			}
