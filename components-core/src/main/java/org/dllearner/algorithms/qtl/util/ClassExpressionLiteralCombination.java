@@ -18,50 +18,17 @@
  */
 package org.dllearner.algorithms.qtl.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataComplementOf;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataRangeVisitorEx;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -77,9 +44,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLClass ce) {
-		Set<OWLClassExpression> expressions = new HashSet<>(1);
-		expressions.add(ce);
-		return expressions;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -119,7 +84,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectUnionOf ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -128,7 +93,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectComplementOf ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -151,7 +116,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectAllValuesFrom ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -160,9 +125,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<>();
-		expressions.add(ce);
-		return expressions;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -171,7 +134,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectMinCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -180,7 +143,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectExactCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -189,7 +152,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectMaxCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -198,7 +161,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectHasSelf ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -207,7 +170,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLObjectOneOf ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -230,7 +193,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLDataAllValuesFrom ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -239,9 +202,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLDataHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<>();
-		expressions.add(ce);
-		return expressions;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -250,7 +211,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLDataMinCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -259,7 +220,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLDataExactCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -268,7 +229,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLClassExpression> visit(@Nonnull OWLDataMaxCardinality ce) {
-		return null;
+		return Collections.singleton(ce);
 	}
 
 	/* (non-Javadoc)
@@ -277,9 +238,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDatatype dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<>();
-		dataRanges.add(dr);
-		return dataRanges;
+		return Collections.singleton(dr);
 	}
 
 	/* (non-Javadoc)
@@ -288,9 +247,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataOneOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<>();
-		dataRanges.add(dr);
-		return dataRanges;
+		return Collections.singleton(dr);
 	}
 
 	/* (non-Javadoc)
@@ -299,9 +256,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataComplementOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<>();
-		dataRanges.add(dr);
-		return dataRanges;
+		return Collections.singleton(dr);
 	}
 
 	/* (non-Javadoc)
@@ -310,9 +265,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataIntersectionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<>();
-		dataRanges.add(dr);
-		return dataRanges;
+		return Collections.singleton(dr);
 	}
 
 	/* (non-Javadoc)
@@ -321,9 +274,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataUnionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<>();
-		dataRanges.add(dr);
-		return dataRanges;
+		return Collections.singleton(dr);
 	}
 
 	/* (non-Javadoc)
@@ -338,12 +289,15 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 		OWLLiteral max = null;
 		for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 			OWLFacet facet = facetRestriction.getFacet();
-			if(facet == OWLFacet.MIN_INCLUSIVE){
-				min = facetRestriction.getFacetValue();
-			} else if(facet == OWLFacet.MAX_INCLUSIVE){
-				max = facetRestriction.getFacetValue();
-			} else {
-				throw new IllegalArgumentException("Facet not allowed for transformation.");
+			switch (facet) {
+				case MIN_INCLUSIVE:
+					min = facetRestriction.getFacetValue();
+					break;
+				case MAX_INCLUSIVE:
+					max = facetRestriction.getFacetValue();
+					break;
+				default:
+					throw new IllegalArgumentException("Facet not allowed for transformation.");
 			}
 		}
 //		dataRanges.add(dr);

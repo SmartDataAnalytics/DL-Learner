@@ -327,10 +327,8 @@ public class OWLAxiomPatternFinder {
 	}
 	
 	private void createTables(){
-		try {
-			Statement statement = conn.createStatement();
-			
-			statement.execute("CREATE TABLE IF NOT EXISTS Pattern (" 
+		try (Statement statement = conn.createStatement()){
+			statement.execute("CREATE TABLE IF NOT EXISTS Pattern ("
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
 					+ "pattern TEXT NOT NULL,"
 					+ "pattern_pretty TEXT NOT NULL,"
@@ -515,9 +513,10 @@ public class OWLAxiomPatternFinder {
 	private Integer getPatternID(OWLAxiom axiom) {
 		try {
 			selectPatternIdPs.setString(1, render(axiom));
-			ResultSet rs = selectPatternIdPs.executeQuery();
-			if(rs.next()){
-				return rs.getInt(1);
+			try(ResultSet rs = selectPatternIdPs.executeQuery()) {
+				if(rs.next()){
+					return rs.getInt(1);
+				}
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Failed to get pattern ID.", e);
@@ -546,8 +545,9 @@ public class OWLAxiomPatternFinder {
 		//check if ontology was already processed
 		try {
 			selectOntologyIdPs.setString(1, uri.toString());
-			ResultSet rs = selectOntologyIdPs.executeQuery();
-			return rs.next();
+			try(ResultSet rs = selectOntologyIdPs.executeQuery()) {
+				return rs.next();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -638,9 +638,10 @@ public class OWLAxiomPatternFinder {
 		//check for existing entry
 		try {
 			selectOntologyIdPs.setString(1, ontologyIRI);
-			ResultSet rs = selectOntologyIdPs.executeQuery();
-			if(rs.next()){
-				return rs.getInt(1);
+			try(ResultSet rs = selectOntologyIdPs.executeQuery()) {
+				if(rs.next()){
+					return rs.getInt(1);
+				}
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Failed to get ontology ID.", e);
@@ -657,9 +658,10 @@ public class OWLAxiomPatternFinder {
 		//check for existing entry
 		try {
 			selectOntologyIdPs.setString(1, url);
-			ResultSet rs = selectOntologyIdPs.executeQuery();
-			if(rs.next()){
-				return rs.getInt(1);
+			try(ResultSet rs = selectOntologyIdPs.executeQuery()) {
+				if(rs.next()){
+					return rs.getInt(1);
+				}
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Failed to get ontology ID.", e);

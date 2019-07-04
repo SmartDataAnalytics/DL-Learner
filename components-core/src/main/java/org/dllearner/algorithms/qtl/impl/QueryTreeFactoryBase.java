@@ -21,11 +21,13 @@ package org.dllearner.algorithms.qtl.impl;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import org.apache.jena.graph.Node;
-import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.util.NodeComparator;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.iterator.ExtendedIterator;
-import org.apache.jena.util.iterator.Filter;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
@@ -38,7 +40,6 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import java.io.FileInputStream;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -150,9 +151,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 					tree.addChild(subTree, predicate);
 //					System.out.println(root + "::" + object + "::" + (currentDepth < maxDepth));
 					if (currentDepth < maxDepth) {
-						if (currentDepth < maxDepth) {
-							fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
-						}
+						fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
 					}
 				} else if (object.isAnon()) {
 					subTree = new RDFResourceTree(nodeId++);
@@ -166,7 +165,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 		currentDepth--;
 	}
 
-	class StatementComparator implements Comparator<Statement> {
+	static class StatementComparator implements Comparator<Statement> {
 		
 		final NodeComparator nodeComparator = new NodeComparator();
 

@@ -356,9 +356,7 @@ public class OCEL extends AbstractCELA {
 		if (lengthMetric == null) {
 			lengthMetric = OWLClassExpressionLengthMetric.getOCELMetric();
 		}
-		if (operator instanceof LengthLimitedRefinementOperator) {
-			((LengthLimitedRefinementOperator) operator).setLengthMetric(lengthMetric);
-		}
+		operator.setLengthMetric(lengthMetric);
 
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -1420,7 +1418,7 @@ public class OCEL extends AbstractCELA {
 	@Autowired(required = false)
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
-		if (operator != null && operator instanceof LengthLimitedRefinementOperator) {
+		if (operator != null) {
 			operator.setLengthMetric(lengthMetric);
 		}
 	}

@@ -1,19 +1,23 @@
 package org.dllearner.algorithms.qtl.operations.traversal;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An iterator for level-order resp. breadth-first traversal on the nodes in the query tree.
  * 
  * @author Lorenz Buehmann
  */
-public class LevelOrderTreeTraversal implements TreeTraversal{
+public class LevelOrderTreeTraversal<V, T extends GenericTree<V, T>> extends AbstractTreeTraversal<T> {
 
-	private Deque<RDFResourceTree> stack = new ArrayDeque<>();
+	private Deque<T> stack = new ArrayDeque<>();
 
-	public LevelOrderTreeTraversal(RDFResourceTree root) {
+	public LevelOrderTreeTraversal(T root) {
+		super(root);
 		stack.push(root);
 	}
 
@@ -23,17 +27,19 @@ public class LevelOrderTreeTraversal implements TreeTraversal{
 	}
 
 	@Override
-	public RDFResourceTree next() {
+	public T next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException("All nodes have been visited!");
 		}
 
 		// retrieve and remove the head of queue
-		RDFResourceTree res = stack.pop();
+		T res = stack.removeFirst();
 
 		// add children to stack
-		List<RDFResourceTree> children = res.getChildren();
-		children.forEach(c -> stack.push(c));
+		List<T> children = res.getChildren();
+		if(children != null) {
+			stack.addAll(children);
+		}
 
 		return res;
 	}

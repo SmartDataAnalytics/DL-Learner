@@ -120,6 +120,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
+    	super.clone();
     	return new PosNegLPStandard(this);
     }
 }

@@ -20,7 +20,6 @@ package org.dllearner.algorithms.qtl.filters;
 
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.Filter;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
@@ -28,8 +27,9 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
-public class KeywordBasedStatementFilter extends Filter<Statement> {
+public class KeywordBasedStatementFilter implements Predicate<Statement> {
 	
 	private Set<String> questionWords;
 	
@@ -116,7 +116,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	}
 
 	@Override
-	public boolean accept(Statement s) {
+	public boolean test(Statement s) {
 		Boolean similarPredicate = cache.get(s.getPredicate());
 		Boolean similarObject = cache.get(s.getObject());
 		if(similarPredicate != null && similarObject != null){

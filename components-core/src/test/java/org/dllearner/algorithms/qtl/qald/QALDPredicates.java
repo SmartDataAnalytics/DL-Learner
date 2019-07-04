@@ -62,7 +62,7 @@ public class QALDPredicates {
 	 * are used
 	 */
 	public static Predicate<Question> isOnlyDBO() {
-		return q -> q.isOnlyDBO();
+		return Question::isOnlyDBO;
 	}
 
 }

@@ -76,6 +76,34 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		if (positiveExamples.isEmpty()) {
+			logger.warn("No positive examples set");
+		}
+		if (negativeExamples.isEmpty()) {
+			logger.warn("No negative examples set");
+		}
+		if (reasoner != null) {
+			Set<OWLClass> allClasses = reasoner.getClasses();
+			Set<OWLClass> allExamples = Sets.union(positiveExamples, negativeExamples);
+			if (!allClasses.containsAll(allExamples)) {
+				Set<OWLClass> missing = Sets.difference(allExamples, allClasses);
+				double percentage = (double) missing.size() / allExamples.size();
+				percentage = Math.round(percentage * 1000) / 1000;
+				String str =
+						"The examples (" + (percentage * 100) + " % of total) " +
+								"below are not contained in the knowledge base " +
+								"(check spelling and prefixes)\n";
+				str += missing.toString();
+
+				if(missing.size()==allExamples.size())    {
+					throw new ComponentInitException(str);
+				} else if(percentage < 0.10) {
+					logger.warn(str);
+				} else {
+					logger.error(str);
+				}
+			}
+		}
 		
 		initialized = true;
 	}

@@ -19,7 +19,6 @@
 package org.dllearner.algorithms.qtl.experiments;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -29,9 +28,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,7 +95,7 @@ public class SPARQLLearningProblemsGenerator {
 
 		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 
-		CompletionService<List<Path>> ecs = new ExecutorCompletionService<List<Path>>(tp);
+		CompletionService<List<Path>> ecs = new ExecutorCompletionService<>(tp);
 
 		JDKRandomGenerator rndGen = new JDKRandomGenerator();
 		rndGen.setSeed(123);

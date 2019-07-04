@@ -23,8 +23,10 @@ public class OWLClassExpressionLengthMetric extends AbstractComponent {
 	public int objectAllValuesLength = 1;
 	@ConfigOption(defaultValue = "2", description = "Obj. Has Value: \"∃\" r.\"{I}\"")
 	public int objectHasValueLength = 2;
-	@ConfigOption(defaultValue = "2", description = "Obj. Cardinaltiy restriction: \"≤n\" r.C")
+	@ConfigOption(defaultValue = "2", description = "Obj. Cardinality restriction: \"≤n\" r.C")
 	public int objectCardinalityLength = 2;
+	@ConfigOption(defaultValue = "2", description = "Obj. Self restriction: \"∃\" r.Self")
+	public int objectHasSelfLength = 1;
 	@ConfigOption(defaultValue = "1", description = "Obj. One of: ∃ r.\"{X,Y,Z}\"")
 	public int objectOneOfLength = 1;
 	@ConfigOption(defaultValue = "1", description = "Data Some Values: \"∃\" p.t")
@@ -33,7 +35,7 @@ public class OWLClassExpressionLengthMetric extends AbstractComponent {
 	public int dataAllValuesLength = 1;
 	@ConfigOption(defaultValue = "2", description = "Data Has Value: \"∃\" p.\"{V}\"")
 	public int dataHasValueLength = 2;
-	@ConfigOption(defaultValue = "2", description = "Data Cardinaltiy restriction: \"≤n\" r.t")
+	@ConfigOption(defaultValue = "2", description = "Data Cardinality restriction: \"≤n\" r.t")
 	public int dataCardinalityLength = 2;
 	@ConfigOption(defaultValue = "1", description = "Obj. Property: ∃ \"r\".C")
 	public int objectProperyLength = 1;

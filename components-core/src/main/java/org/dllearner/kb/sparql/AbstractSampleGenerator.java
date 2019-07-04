@@ -18,15 +18,18 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.HasProgressMonitor;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.dllearner.utilities.ProgressMonitor;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -37,7 +40,6 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.OWL;
@@ -46,8 +48,26 @@ import org.apache.jena.vocabulary.OWL;
  * @author Lorenz Buehmann
  *
  */
-public abstract class AbstractSampleGenerator {
-	
+public abstract class AbstractSampleGenerator implements HasProgressMonitor<AbstractSampleGenerator.SampleGeneratorProgressMonitor> {
+
+	public interface SampleGeneratorProgressMonitor extends ProgressMonitor {
+		void sampleGenerationStarted();
+		void sampleGenerationFinished();
+	}
+	private Collection<SampleGeneratorProgressMonitor> progressMonitors = new LinkedHashSet<>();
+	@Override
+	public Collection<SampleGeneratorProgressMonitor> progressMonitors() {
+		return progressMonitors;
+	}
+
+	private void fireSampleGenerationStarted() {
+		progressMonitors().forEach(SampleGeneratorProgressMonitor::sampleGenerationStarted);
+	}
+
+	private void fireSampleGenerationFinished() {
+		progressMonitors().forEach(SampleGeneratorProgressMonitor::sampleGenerationFinished);
+	}
+
 	private ConciseBoundedDescriptionGenerator cbdGen;
 	
 	private int sampleDepth = 2;
@@ -58,6 +78,7 @@ public abstract class AbstractSampleGenerator {
 	
 	private boolean loadRelatedSchema = true;
 
+
 	public AbstractSampleGenerator(SparqlEndpointKS ks) {
 		this(ks.getQueryExecutionFactory());
 	}
@@ -66,21 +87,29 @@ public abstract class AbstractSampleGenerator {
 		this.qef = qef;
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.addPropertiesToIgnore(Sets.newHashSet(OWL.sameAs.getURI()));
+		cbdGen.setIgnoredProperties(Sets.newHashSet(OWL.sameAs.getURI()));
 		
 		reasoner = new SPARQLReasoner(qef);
 	}
 	
 	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
-		cbdGen.addAllowedPropertyNamespaces(namespaces);
+		cbdGen.setAllowedPropertyNamespaces(namespaces);
 	}
 	
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
-		cbdGen.addAllowedObjectNamespaces(namespaces);
+		cbdGen.setAllowedObjectNamespaces(namespaces);
 	}
 	
 	public void addIgnoredProperties(Set<String> ignoredProperties) {
-		cbdGen.addPropertiesToIgnore(ignoredProperties);
+		cbdGen.setIgnoredProperties(ignoredProperties);
+	}
+
+	public void addIgnoredClasses(Set<String> ignoredProperties) {
+		cbdGen.setIgnoredProperties(ignoredProperties);
+	}
+
+	public void addAllowedClassNamespaces(Set<String> ignoredProperties) {
+		cbdGen.setIgnoredProperties(ignoredProperties);
 	}
 
 	public void setLoadRelatedSchema(boolean loadRelatedSchema) {
@@ -94,7 +123,17 @@ public abstract class AbstractSampleGenerator {
 	 * @return a sample ontology of the knowledge bas
 	 */
 	public OWLOntology getSample(Set<OWLIndividual> individuals) {
-		return OwlApiJenaUtils.getOWLOntology(getSampleModel(individuals));
+		fireSampleGenerationStarted();
+
+		// get the sample model
+		Model sampleModel = getSampleModel(individuals);
+
+		// convert to ontology
+		OWLOntology sampleOntology = OwlApiJenaUtils.getOWLOntology(sampleModel);
+
+		fireSampleGenerationFinished();
+
+		return sampleOntology;
 	}
 	
 	/**
@@ -110,15 +149,23 @@ public abstract class AbstractSampleGenerator {
 	public int getSampleDepth() {
 		return sampleDepth;
 	}
-	
+
+	public void addPostProcessor(Predicate<Statement> postProcessStatementFilter) {
+
+	}
+
+
 	protected Model getSampleModel(Set<OWLIndividual> individuals) {
-		Model model = ModelFactory.createDefaultModel();
-		
+		Set<String> resources = individuals.stream().map(OWLIndividual::toStringID).collect(Collectors.toSet());
+		Model model = cbdGen.getConciseBoundedDescription(resources, sampleDepth);
+
+//		Model model = ModelFactory.createDefaultModel();
+//
 		// load instance data
-		for(OWLIndividual ind : individuals){
-			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), sampleDepth);
-			model.add(cbd);
-		}
+//		for(OWLIndividual ind : individuals){
+//			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), sampleDepth);
+//			model.add(cbd);
+//		}
 		
 		StmtIterator iterator = model.listStatements();
 		List<Statement> toAdd = new ArrayList<>();
@@ -138,10 +185,9 @@ public abstract class AbstractSampleGenerator {
 					} else if(datatype.equals(XSDDatatype.XSDdate)) {
 						iterator.remove();
 						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
-					} else if(datatype.equals(RDF.dtLangString)) {
-//						System.out.println(st.getObject());
-//						iterator.remove();
-//						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createLiteral("", "en")));
+					} else if(datatype.equals(RDF.langString)) {
+						iterator.remove();
+						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", new BaseDatatype(RDF.dtLangString.getURI()))));
 					}
 				}
 			}

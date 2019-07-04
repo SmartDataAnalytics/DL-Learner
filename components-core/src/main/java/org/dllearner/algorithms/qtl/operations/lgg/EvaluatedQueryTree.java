@@ -32,7 +32,7 @@ import java.util.Set;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
-	public static int cnt = 0;
+	public int cnt = 0;
 	
 	private TIntSet parentIDs = new TIntHashSet();
 	

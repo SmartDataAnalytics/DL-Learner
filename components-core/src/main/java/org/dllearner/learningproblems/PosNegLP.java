@@ -41,7 +41,7 @@ import java.util.TreeSet;
  *
  */
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
-	protected static Logger logger = Logger.getLogger(PosNegLP.class);
+	protected static final Logger logger = Logger.getLogger(PosNegLP.class);
 
 	@ConfigOption(description = "list of positive examples", required = true)
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<>();
@@ -109,7 +109,7 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		// sanity check whether examples are contained in KB
 		if(reasoner != null && !(reasoner instanceof SPARQLReasoner) && !reasoner.getIndividuals().containsAll(allExamples)) {
             Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
-            double percentage = missing.size()/allExamples.size();
+            double percentage = (double)missing.size() / allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
 			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
 			str += missing.toString();

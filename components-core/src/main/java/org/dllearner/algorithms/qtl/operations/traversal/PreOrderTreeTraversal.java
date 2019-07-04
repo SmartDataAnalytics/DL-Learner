@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.operations.traversal;
 
+import org.dllearner.algorithms.qtl.datastructures.impl.GenericTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 import java.util.*;
@@ -12,11 +13,12 @@ import java.util.*;
  *
  * @author Lorenz Buehmann
  */
-public class PreOrderTreeTraversal implements TreeTraversal{
+public class PreOrderTreeTraversal<V, T extends GenericTree<V, T>> extends AbstractTreeTraversal<T> {
 
-	private Deque<RDFResourceTree> stack = new ArrayDeque<>();
+	private Deque<T> stack = new ArrayDeque<>();
 
-	public PreOrderTreeTraversal(RDFResourceTree root) {
+	public PreOrderTreeTraversal(T root) {
+		super(root);
 		stack.push(root);
 	}
 
@@ -26,16 +28,16 @@ public class PreOrderTreeTraversal implements TreeTraversal{
 	}
 
 	@Override
-	public RDFResourceTree next() {
+	public T next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException("All nodes have been visited!");
 		}
 
 		// retrieve and remove the head of queue
-		RDFResourceTree res = stack.pop();
+		T res = stack.pop();
 
 		// add children to stack in reversed order
-		List<RDFResourceTree> children = res.getChildren();
+		List<T> children = res.getChildren();
 		Collections.reverse(children);
 		children.forEach(c -> stack.push(c));
 

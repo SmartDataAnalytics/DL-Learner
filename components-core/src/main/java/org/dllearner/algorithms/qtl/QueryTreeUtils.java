@@ -30,9 +30,13 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.*;
 import org.apache.jena.sparql.serializer.SerializationContext;
+import org.apache.jena.sparql.syntax.ElementFilter;
+import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.sparql.util.NodeUtils;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -45,32 +49,31 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
-import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.GraphMLExporter;
-import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.io.ComponentNameProvider;
+import org.jgrapht.io.ExportException;
+import org.jgrapht.io.GraphMLExporter;
 import org.semanticweb.owlapi.model.*;
-import org.xml.sax.SAXException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import javax.xml.transform.TransformerConfigurationException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Lorenz Buehmann
@@ -248,21 +251,32 @@ public class QueryTreeUtils {
     	}
     	return true;
     }
-    
-    /**
-     * Returns all nodes in the given query tree.
-     * @param tree the query tree
-     * @return the nodes
-     */
-    public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
-		List<RDFResourceTree> nodes = new ArrayList<>();
+
+	/**
+	 * Returns all nodes in the given query tree.
+	 *
+	 * @param tree the query tree
+	 * @return the nodes
+	 */
+	public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
+		List<RDFResourceTree> nodes = tree.getChildren().stream()
+											.flatMap(child -> getNodes(child).stream())
+											.collect(Collectors.toList());
 		nodes.add(tree);
-		
-		for (RDFResourceTree child : tree.getChildren()) {
-			nodes.addAll(getNodes(child));
-		}
-		
+
 		return nodes;
+	}
+
+	/**
+	 * Returns all nodes labels in the given query tree.
+	 *
+	 * @param tree the query tree
+	 * @return the node labels
+	 */
+	public static Set<Node> getNodeLabels(RDFResourceTree tree) {
+		return getNodes(tree).stream()
+				.map(RDFResourceTree::getData)
+				.collect(Collectors.toSet());
 	}
     
     /**
@@ -294,6 +308,8 @@ public class QueryTreeUtils {
 		
 		return maxDepth;
 	}
+
+    private static final Logger log = LoggerFactory.getLogger(QueryTreeUtils.class);
     
     /**
 	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
@@ -303,24 +319,30 @@ public class QueryTreeUtils {
 	 * @return whether <code>tree1</code> is subsumed by <code>tree2</code>
 	 */
     public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
+		log.trace("{} < {} ?",tree1, tree2);
     	// 1.compare the root nodes
     	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
     	if(tree1.isResourceNode() && tree2.isResourceNode()) {
     		return tree1.getData().equals(tree2.getData());
     	} else if(tree1.isLiteralNode() && tree2.isLiteralNode()) {
-    		if(tree1.isLiteralValueNode()) {
-    			if(tree2.isLiteralValueNode()) {
-    				return tree1.getData().equals(tree2.getData());
-    			} else {
-    				RDFDatatype d1 = tree1.getData().getLiteralDatatype();
-    				return tree2.getDatatype().equals(d1);
+    		if(tree1.isLiteralValueNode()) { // T_1 is literal value v1
+    			if(tree2.isLiteralValueNode()) { // T_2 is literal value v2
+    				return tree1.getData().equals(tree2.getData()); // v1 = v2 ?
+    			} else { // T_2 wraps literal -> check whether v1 is of same datatype as
+					RDFDatatype d1 = tree1.getDatatype();
+					RDFDatatype d2 = tree2.getDatatype();
+					// if there is a datatype, it must match for both trees
+					if(d1 != null) {
+						return d1.equals(d2);
+					}
+					return d2 == null;
     			}
     		} else {
     			if(tree2.isLiteralValueNode()) {
     				return false;
     			} else {
 					RDFDatatype d1 = tree1.getDatatype();
-					RDFDatatype d2 = tree1.getDatatype();
+					RDFDatatype d2 = tree2.getDatatype();
 					// if there is a datatype, it must match for both trees
 					if(d1 != null) {
 						return d1.equals(d2);
@@ -328,9 +350,14 @@ public class QueryTreeUtils {
     				return d2 == null;
     			}
     		}
-    		
+
     	}
-    	
+
+    	// TODO workaround for tuples - rething as usually blank nodes are indeed generic
+    	if(tree2.getData().isBlank() && !tree2.hasChildren()) {
+    		return false;
+		}
+
     	// (T_1 = ?) and (T_2 != ?) --> FALSE
     	if(tree1.isVarNode() && !tree2.isVarNode()) {
     		return false;
@@ -342,7 +369,7 @@ public class QueryTreeUtils {
       		if(children1 != null) {
 	    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) { // and each child in T_2
 	    			boolean isSubsumed = false;
-	        		for(RDFResourceTree child1 : children1){ // there has to be at least one child in T_1 that is subsumed 
+	        		for(RDFResourceTree child1 : children1){ // there has to be at least one child in T_1 that is subsumed
 	        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){ 
 	        				isSubsumed = true;
 	        				break;
@@ -587,7 +614,13 @@ public class QueryTreeUtils {
 					if(child.isLiteralNode()) {
 						OWLDataProperty dp = df.getOWLDataProperty(IRI.create(edge.getURI()));
 						if(!child.isLiteralValueNode()) {
-							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatype(IRI.create(child.getDatatype().getURI()))));
+							OWLDataRange dr;
+							if(child.getDatatype() == null) {
+								dr = df.getTopDatatype();
+							} else {
+								dr = df.getOWLDatatype(IRI.create(child.getDatatype().getURI()));
+							}
+							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, dr));
 						} else {
 							OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
 							classExpressions.add(df.getOWLDataHasValue(dp, value));
@@ -633,20 +666,25 @@ public class QueryTreeUtils {
 	public static Query toSPARQLQuery(RDFResourceTree tree) {
 		return QueryFactory.create(toSPARQLQueryString(tree));
 	}
+
+	public static String toSPARQLQueryString(RDFResourceTree tree, List<Node> nodes2Select, String baseIRI, PrefixMapping pm) {
+		return toSPARQLQueryString(tree, baseIRI, pm, LiteralNodeConversionStrategy.DATATYPE, nodes2Select);
+	}
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree) {
     	return toSPARQLQueryString(tree, PrefixMapping.Standard);
     }
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, PrefixMapping pm) {
-    	return toSPARQLQueryString(tree, null, pm, LiteralNodeConversionStrategy.DATATYPE);
+    	return toSPARQLQueryString(tree, null, pm, LiteralNodeConversionStrategy.DATATYPE, Collections.emptyList());
     }
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
-    	return toSPARQLQueryString(tree, baseIRI, pm, LiteralNodeConversionStrategy.DATATYPE);
+    	return toSPARQLQueryString(tree, baseIRI, pm, LiteralNodeConversionStrategy.DATATYPE, Collections.emptyList());
     }
 	
-	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm, LiteralNodeConversionStrategy literalConversion) {
+	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm,
+											 LiteralNodeConversionStrategy literalConversion, List<Node> nodes2Select) {
 		if(!tree.hasChildren()){
     		return EMPTY_QUERY_TREE_QUERY;
     	}
@@ -680,10 +718,18 @@ public class QueryTreeUtils {
         String targetVar = "?s";
         
         // header
-    	sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
-    	
+		if(!nodes2Select.isEmpty()) {
+			sb.append(String.format("SELECT %s %s WHERE {\n", targetVar, nodes2Select.stream().map(node -> "?var" + nodes2Select.indexOf(node)).collect(Collectors.joining(" "))));
+		} else {
+			sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
+		}
+
     	// triple patterns
-    	buildSPARQLQueryString(tree, targetVar, sb, filters, context);
+    	buildSPARQLQueryString(tree, targetVar, sb, filters, context, nodes2Select);
+
+		sb.append("}");
+
+		Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
         
     	// filters
     	if(!filters.isEmpty()) {
@@ -692,18 +738,15 @@ public class QueryTreeUtils {
     		while(it.hasNext()) {
     			filter = new E_LogicalAnd(filter, it.next());
     		}
-    		sb.append("FILTER(").append(filter.toString()).append(")\n");
+			((ElementGroup)query.getQueryPattern()).addElementFilter(new ElementFilter(filter));
     	}
-    	
-        sb.append("}");
-    	
-    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
-    	query.setPrefixMapping(pm);
+
+		query.setPrefixMapping(pm);
     	
     	return query.toString();
 	}
 	
-	private static int buildGraph(Integer parentId, DirectedGraph<Vertex, Edge> graph, RDFResourceTree tree, SerializationContext context){
+	private static int buildGraph(Integer parentId, Graph<Vertex, Edge> graph, RDFResourceTree tree, SerializationContext context){
     	Vertex parent = new Vertex(parentId, FmtUtils.stringForNode(tree.getData(), context));
     	graph.addVertex(parent);
     	
@@ -718,7 +761,7 @@ public class QueryTreeUtils {
 	    		Vertex childVertex = new Vertex(childId, childLabel);
 	    		graph.addVertex(childVertex);
 	    		
-	    		Edge edge = new Edge(Long.valueOf(parentId + "0" + childId), edgeLabel);
+	    		Edge edge = new Edge(Long.parseLong(parentId + "0" + childId), edgeLabel);
 				graph.addEdge(parent, childVertex, edge);
 
 				childId = buildGraph(childId, graph, child, context);
@@ -727,79 +770,169 @@ public class QueryTreeUtils {
     	
     	return childId;
     }
-	
+
+	/**
+	 * Convert the query tree to a directed labelled graph.
+	 * @param tree the query tree
+	 * @param baseIRI the base IRI used for rendering of the nodes
+	 * @param pm the prefixes used for rendering of the nodes
+	 * @return the directed labelled graph
+	 */
+	public static Graph<Vertex, Edge> toGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+		SerializationContext context = new SerializationContext(pm);
+		context.setBaseIRI(baseIRI);
+
+		final Graph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
+
+//		TreeTraversal it = new PreOrderTreeTraversal(tree);
+//		while(it.hasNext()) {
+//			RDFResourceTree node = it.next();
+//			node.get
+//		}
+
+		buildGraph(0, graph, tree, context);
+
+		return graph;
+	}
+
+	/**
+	 * Export the query tree as GraphML file.
+	 *
+	 * @param tree the query tree
+	 * @param baseIRI (optional) base IRI
+	 * @param pm (optional) prefix mapping
+	 * @param outputFile the output file
+	 */
 	public static void asGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm, File outputFile) {
+		Objects.requireNonNull(tree);
+		Objects.requireNonNull(outputFile);
+
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
 		
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
+		final Graph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
 		buildGraph(0, graph, tree, context);
-		VertexNameProvider<Vertex> vertexIDProvider = vertex -> String.valueOf(vertex.getId());
 
-		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
+		ComponentNameProvider<Vertex> vertexIDProvider = vertex -> String.valueOf(vertex.getId());
+		ComponentNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
-		EdgeNameProvider<Edge> edgeIDProvider = edge -> String.valueOf(edge.getId());
+		ComponentNameProvider<Edge> edgeIDProvider = edge -> String.valueOf(edge.getId());
+		ComponentNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 
-		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
-		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
-				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
+		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(
+				vertexIDProvider, vertexNameProvider,
+				edgeIDProvider, edgeLabelProvider);
 		try {
-			exporter.export(new FileWriter(outputFile), graph);
-		} catch (TransformerConfigurationException | IOException | SAXException e) {
-			e.printStackTrace();
+			exporter.exportGraph(graph, new FileWriter(outputFile));
+		} catch (IOException | ExportException e) {
+			log.error("failed to write graph to file " + outputFile, e);
 		}
 	}
     
 	private static void buildSPARQLQueryString(RDFResourceTree tree,
-			String subjectStr, StringBuilder sb, Collection<ExprNode> filters,
-			SerializationContext context) {
+											   String subjectStr, StringBuilder sb, Collection<ExprNode> filters,
+											   SerializationContext context, List<Node> nodes2Select) {
 		if (!tree.isLeaf()) {
-			for (Node edge : tree.getEdges()) {
+			// process rdf:type edges first
+			List<Node> edges = new ArrayList<>(tree.getEdges());
+			edges.sort((e1, e2) -> {
+				if(e1.matches(RDF.type.asNode())){
+					return -2;
+				} else if(e2.matches(RDF.type.asNode())){
+					return 2;
+				} else {
+					return NodeUtils.compareRDFTerms(e1, e2);
+				}});
+
+			for (Node edge : edges) {
 				// process predicate
 				String predicateStr = FmtUtils.stringForNode(edge, context);
-				for (RDFResourceTree child : tree.getChildren(edge)) {
-					// pre-process object
-					Node object = child.getData();
-					
-					if(child.isVarNode()) {
-						// set a fresh var in the SPARQL query
-						object = varGen.newVar();
-					} else if(child.isLiteralNode() && !child.isLiteralValueNode()) { 
-						// set a fresh var in the SPARQL query
-						object = varGen.newVar();
-						
-						// literal node describing a set of literals is rendered depending on the conversion strategy
-						if(child.getDatatype() != null) {
-							ExprNode filter = new E_Equals(
-									new E_Datatype(new ExprVar(object)), 
-									NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
-//							filters.add(filter);
-						}
-						
-					} 
-					
-					// process object
-					String objectStr = FmtUtils.stringForNode(object, context);
 
-					// append triple pattern
-					String tpStr;
-					if(edge instanceof NodeInv) {
-						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, objectStr, predicateStr, subjectStr);
-					} else {
-						tpStr = String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr);
+				// process children
+				// the concrete values first
+				List<RDFResourceTree> children = tree.getChildren(edge);
+				if(!(edge instanceof NodeInv)) {
+					List<Node> concreteChildren =
+					children.stream()
+							.filter(t -> t.isLiteralValueNode() || t.isResourceNode())
+							.filter(t -> !t.hasAnchor())
+							.map(GenericTree::getData)
+							.filter(node -> !(node.isVariable() || node.isBlank()))
+							.collect(Collectors.toList());
+					if(!concreteChildren.isEmpty()) {
+						String objStr = concreteChildren.stream()
+								.map(node -> FmtUtils.stringForNode(node, context))
+								.collect(Collectors.joining(","));
+						String tpStr = (edge instanceof NodeInv)
+								?	String.format(TRIPLE_PATTERN_TEMPLATE, objStr, predicateStr, subjectStr)
+								:	String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objStr);
+
+						sb.append(tpStr).append("\n");
 					}
-					sb.append(tpStr).append("\n");
-					
-					/*
-					 * only if child is var node recursively process children if
-					 * exist because for URIs it doesn't make sense to add the
-					 * triple pattern and for literals there can't exist a child
-					 * in the tree
-					 */
-					if (child.isVarNode()) {
-						buildSPARQLQueryString(child, objectStr, sb, filters, context);
-					}
+					children.stream()
+							.filter(t -> t.hasAnchor() && (t.isLiteralValueNode() || t.isResourceNode()))
+							.forEach(child -> {
+								Var obj = Var.alloc("var" + nodes2Select.indexOf(child.getAnchorVar()));
+								String objStr = FmtUtils.stringForNode(obj, context);
+								String tpStr = (edge instanceof NodeInv)
+										?	String.format(TRIPLE_PATTERN_TEMPLATE, objStr, predicateStr, subjectStr)
+										:	String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objStr);
+
+								sb.append(tpStr).append("\n");
+								filters.add(new E_Equals(new ExprVar(obj), NodeValue.makeNode(child.getData())));
+							});
 				}
+				Stream<RDFResourceTree> childStream = children.stream();
+				if(!(edge instanceof NodeInv)) {
+					childStream = childStream
+							.filter(t -> !(t.isLiteralValueNode() || t.isResourceNode()));
+//							.filter(child -> (child.getData().isVariable() || child.getData().isBlank()));
+				}
+				// the var nodes next
+				childStream
+						.forEach(child -> {
+							// pre-process object
+							Node object = child.getData();
+							if(child.hasAnchor()) {
+								object = Var.alloc("var" + nodes2Select.indexOf(child.getAnchorVar()));
+							} else if(nodes2Select.contains(object)) {
+								object = Var.alloc("var" + nodes2Select.indexOf(object));
+							} else if(child.isVarNode()) {
+								// set a fresh var in the SPARQL query
+								object = varGen.newVar();
+							} else if(child.isLiteralNode() && !child.isLiteralValueNode()) {
+								// set a fresh var in the SPARQL query
+								object = varGen.newVar();
+
+								// literal node describing a set of literals is rendered depending on the conversion strategy
+								if(child.getDatatype() != null) {
+									ExprNode filter = new E_Equals(
+											new E_Datatype(new ExprVar(object)),
+											NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
+		//							filters.add(filter);
+								}
+
+							}
+
+							// process object
+							String objectStr = FmtUtils.stringForNode(object, context);
+
+							// append triple pattern
+							String tp = (edge instanceof NodeInv)
+									?	String.format(TRIPLE_PATTERN_TEMPLATE, objectStr, predicateStr, subjectStr)
+									:	String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr);
+							sb.append(tp).append("\n");
+
+							/*
+							 * only if child is var node recursively process children if
+							 * exist because for URIs it doesn't make sense to add the
+							 * triple pattern and for literals there can't exist a child
+							 * in the tree
+							 */
+							if (child.isVarNode() || child.getData().isBlank()) {
+								buildSPARQLQueryString(child, objectStr, sb, filters, context, nodes2Select);
+							}
+				});
 			}
 		}
     }
@@ -885,9 +1018,7 @@ public class QueryTreeUtils {
 		// collect the existing rdf:type nodes
 		List<RDFResourceTree> children = tree.getChildren(RDF.type.asNode());
 		if(children != null) {
-			children.forEach(child -> {
-				types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS));
-			});
+			children.forEach(child -> types.add(OwlApiJenaUtils.asOWLEntity(child.getData(), EntityType.CLASS)));
 		}
 
 		// we don't keep owl:Thing todo make this configurable

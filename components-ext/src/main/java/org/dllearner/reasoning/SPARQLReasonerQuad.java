@@ -1,8 +1,5 @@
 package org.dllearner.reasoning;
 
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
-import com.google.common.collect.FluentIterable;
 import org.apache.jena.query.ResultSet;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -71,9 +68,7 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 		query += "?ind a ?concept . ";
 		query += "}";
 		query += "VALUES ?concept {"
-				+ Joiner.on(" ").join(
-				FluentIterable.from(targetClasses)
-						.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+				+ targetClasses.stream().map(ce -> "<" + ce.asOWLClass().toStringID() + ">").collect(Collectors.joining(" "))
 				+ "}";
 		return query;
 	}
@@ -88,7 +83,7 @@ public class SPARQLReasonerQuad extends SPARQLReasoner {
 	@Override
 	protected String buildApplicablePropertiesValuesQuery(OWLClassExpression domain, Collection<? extends OWLObjectProperty> objectProperties) {
 		String domQuery = converter.convert("?dom", domain);
-		String props = objectProperties.stream().map(TO_IRI_FUNCTION).collect(Collectors.joining(" "));
+		String props = objectProperties.stream().map(op -> "<" + op.toStringID() + ">").collect(Collectors.joining(" "));
 //		String prop1 = converter.convert("?p", objectProperties.iterator().next());
 
 		String query = "SELECT DISTINCT ?p WHERE { " +

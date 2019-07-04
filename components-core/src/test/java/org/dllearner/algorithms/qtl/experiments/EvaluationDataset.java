@@ -25,6 +25,8 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.util.filters.AbstractTreeFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -34,9 +36,7 @@ import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -55,7 +55,7 @@ public abstract class EvaluationDataset {
 	
 	AbstractReasonerComponent reasoner;
 
-	Map<String, Query> sparqlQueries;
+	Map<String, Query> sparqlQueries = new TreeMap<>();
 	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
 
 	private PredicateExistenceFilter predicateFilter;
@@ -100,6 +100,8 @@ public abstract class EvaluationDataset {
 		this.predicateFilter = predicateFilter;
 	}
 
+	protected Set<AbstractTreeFilter<RDFResourceTree>> treeFilters = new HashSet<>();
+
 	public abstract boolean usesStrictOWLTypes();
 
 	/**
@@ -129,11 +131,11 @@ public abstract class EvaluationDataset {
 		query.getPrefixMapping().removeNsPrefix("foaf");
 		query.getPrefixMapping().removeNsPrefix("rdf");
 
-		prefixMapping.getNsPrefixMap().entrySet().forEach(entry -> {
-			if(query.toString().contains(entry.getValue())) {
-				query.getPrefixMapping().setNsPrefix(entry.getKey(), entry.getValue());
-			}
-		});
+		prefixMapping.getNsPrefixMap().forEach((key, value) -> {
+            if (query.toString().contains(value)) {
+                query.getPrefixMapping().setNsPrefix(key, value);
+            }
+        });
 
 //		if(query.toString().contains("http://dbpedia.org/ontology/")) {
 //			query.getPrefixMapping().setNsPrefix("dbo", "http://dbpedia.org/ontology/");

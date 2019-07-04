@@ -21,6 +21,7 @@ package org.dllearner.utilities;
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.Range;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.jetbrains.annotations.NotNull;
@@ -292,6 +293,10 @@ public class OWLAPIUtils {
 					{
 				return true;
 			}
+		} else if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
+			return Range.between(min.parseFloat(), max.parseFloat()).contains(value.parseFloat());
+		} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
+			return Range.between(min.parseInteger(), max.parseInteger()).contains(value.parseInteger());
 		}
 		
 		return false;

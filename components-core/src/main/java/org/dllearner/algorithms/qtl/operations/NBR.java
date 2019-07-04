@@ -609,7 +609,7 @@ public class NBR<N> {
 		while(it.hasNext()){
 			t = it.next();
 			for(List<QueryTreeChange> changes : noSequences){
-				if(t.getChanges().contains(changes)){
+				if(t.getChanges().containsAll(changes)){
 					it.remove();
 					break;
 				}

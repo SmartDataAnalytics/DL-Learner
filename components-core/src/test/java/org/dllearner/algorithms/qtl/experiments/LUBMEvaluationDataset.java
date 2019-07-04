@@ -24,16 +24,18 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.filters.MostSpecificTypesFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -45,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,8 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 	private static final Logger log = LoggerFactory.getLogger(LUBMEvaluationDataset.class);
 
 	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/lubm_queries.txt";
+
+	private static final String CACHE_DIR = "/tmp/qtl/benchmark/lubm/cache";
 
 	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		super("LUBM");
@@ -82,7 +85,6 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		}
 
 		// read SPARQL queries
-		sparqlQueries = new HashMap<>();
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(QUERIES_FILE));
 
@@ -117,7 +119,15 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		
 		baseIRI = "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#";
 		prefixMapping = PrefixMapping.Factory.create().withDefaultMappings(PrefixMapping.Standard);
-		prefixMapping.setNsPrefix("ub", "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#");
+		prefixMapping.setNsPrefix("ub", "http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
+
+		treeFilters.add(new MostSpecificTypesFilter(reasoner));
+		treeFilters.add(new PredicateExistenceFilter() {
+			@Override
+			public boolean isMeaningless(Node predicate) {
+				return predicate.getURI().startsWith("http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
+			}
+		});
 	}
 
 	@Override
@@ -140,13 +150,23 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 	}
 
 	public static void main(String[] args) throws Exception{
-		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
-														"http://lubm.org");
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred-owlhorst", Lists.newArrayList());
 		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
+		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());
-		queries.entrySet().forEach(entry -> System.out.println(entry.getValue()));
-		queries.entrySet().forEach(entry -> System.out.println(ds.getKS().getQueryExecutionFactory().createQueryExecution(entry.getValue()).execSelect().hasNext()));
+		queries.forEach((key, query) -> {
+            System.out.println(query);
+            query.setLimit(1);
+            try (QueryExecution qe = qef.createQueryExecution(query)) {
+                ResultSet rs = qe.execSelect();
+                System.out.println(rs.hasNext());
+                while (rs.hasNext()) {
+                    QuerySolution qs = rs.next();
+                    System.out.println(qs);
+                }
+            }
+        });
 
 
 	}

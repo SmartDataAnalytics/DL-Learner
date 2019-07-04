@@ -116,13 +116,13 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 		prefixMapping.setNsPrefix("diseasome", "http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/");
 		prefixMapping.setNsPrefix("diseases", "http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/");
 
-		DATASET_FILES.entrySet().forEach(entry -> {
-			try {
-				process(entry.getKey(), entry.getValue());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+		DATASET_FILES.forEach((key, value) -> {
+            try {
+                process(key, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
 
 		reasoner = new SPARQLReasoner(ks);
@@ -157,7 +157,7 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 
 
 				// Read SPARQL query
-				String sparqlQuery = ((org.w3c.dom.Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
+				String sparqlQuery = questionNode.getElementsByTagName("query").item(0).getChildNodes().item(0).getNodeValue().trim();
 				sparqlQuery = SPARQLQueryUtils.PREFIXES + " " + sparqlQuery;
 				if(sparqlQuery.contains("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }")){
 					sparqlQuery = sparqlQuery.replace("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }", "");

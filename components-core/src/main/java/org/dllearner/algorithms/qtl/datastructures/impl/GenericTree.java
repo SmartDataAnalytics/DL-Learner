@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GenericTree<T, V extends GenericTree<T, V>> {
-	
+
 	protected static int idCounter = 0;
 
     protected T data;
@@ -129,6 +129,21 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         return children.get(index);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GenericTree<?, ?> that = (GenericTree<?, ?>) o;
+
+        return data.equals(that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return data.hashCode();
+    }
+
     public T getData() {
         return this.data;
     }
@@ -141,14 +156,6 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         return getData().toString();
     }
 
-    public boolean equals(V node) {
-        return node.getData().equals(getData());
-    }
-
-    public int hashCode() {
-        return getData().hashCode();
-    }
-    
 	protected static synchronized int createID() {
 		return idCounter++;
 	}

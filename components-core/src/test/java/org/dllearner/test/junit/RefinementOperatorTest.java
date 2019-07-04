@@ -24,6 +24,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.*;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
@@ -37,11 +38,13 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.StringDocumentSource;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -96,10 +99,7 @@ public class RefinementOperatorTest {
 			}
 			
 			int desiredResultSize = 141;
-			if(results.size() != desiredResultSize) {
-				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
-			}
-			assertTrue(results.size()==desiredResultSize);
+			assertTrue(results.size() + " results found, but should be " + desiredResultSize + ".",results.size()==desiredResultSize);
 		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
@@ -228,7 +228,7 @@ public class RefinementOperatorTest {
 //		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
 		OWLClassExpression concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
 		System.out.println(concept);
-		Set<OWLClassExpression> refinements = op.refine(concept, 7);
+		Set<OWLClassExpression> refinements = op.refine(concept, 8);
 		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}		
@@ -306,6 +306,111 @@ public class RefinementOperatorTest {
 			}
 			assertTrue(results.size()==desiredResultSize);
 		} catch(ComponentInitException | ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testHasValue() {
+		try {
+			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
+
+			String s = "@prefix : <http://test.org/> . @prefix owl: <http://www.w3.org/2002/07/owl#> ." +
+					":p a owl:ObjectProperty .";
+			for (int i = 0; i < 10; i++) {
+				s += ":a" + i + ":p :b .";
+			}
+			for (int i = 0; i < 20; i++) {
+				s += ":a" + i + " :p :c .";
+			}
+			for (int i = 0; i < 10; i++) {
+				s += ":y  :p :x" + i + " .";
+			}
+			for (int i = 0; i < 20; i++) {
+				s += ":z  :p :x" + i + " .";
+			}
+			OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(s.getBytes()));
+			KnowledgeSource ks = new OWLAPIOntology(ont);
+			ks.init();
+
+//			ont.getLogicalAxioms().forEach(System.out::println);
+
+			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseInverse(true);
+			op.setUseHasValueConstructor(true);
+			op.setFrequencyThreshold(5);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.init();
+			OWLClassExpression concept = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+			Set<OWLClassExpression> results = op.refine(concept, 5, null);
+
+			for(OWLClassExpression result : results) {
+				System.out.println(result);
+			}
+
+			int desiredResultSize = 9;
+			if(results.size() != desiredResultSize) {
+				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
+			}
+			assertTrue(results.size()==desiredResultSize);
+		} catch(ComponentInitException | OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testHasSelf() {
+		try {
+			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
+
+			String s = "@prefix : <http://test.org/> . @prefix owl: <http://www.w3.org/2002/07/owl#> ." +
+					":p a owl:ObjectProperty .";
+			for (int i = 0; i < 10; i++) {
+				s += ":a" + i + ":p :a .";
+			}
+			for (int i = 10; i < 20; i++) {
+				s += ":a" + i + " :p :b .";
+			}
+
+			OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(s.getBytes()));
+			KnowledgeSource ks = new OWLAPIOntology(ont);
+			ks.init();
+
+//			ont.getLogicalAxioms().forEach(System.out::println);
+
+			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseInverse(true);
+			op.setUseHasSelf(true);
+			op.setFrequencyThreshold(5);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.init();
+			OWLClassExpression concept = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+			Set<OWLClassExpression> results = op.refine(concept, 5, null);
+
+			for(OWLClassExpression result : results) {
+				System.out.println(result);
+			}
+
+			int desiredResultSize = 6;
+			if(results.size() != desiredResultSize) {
+				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
+			}
+			assertTrue(results.size()==desiredResultSize);
+		} catch(ComponentInitException | OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
 	}

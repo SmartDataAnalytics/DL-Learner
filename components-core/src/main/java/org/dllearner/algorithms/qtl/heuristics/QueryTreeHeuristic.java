@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl.heuristics;
 import java.util.Comparator;
 import java.util.Set;
 
+import com.google.common.collect.ComparisonChain;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.Heuristic;
@@ -162,16 +163,10 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 
 	@Override
 	public int compare(EvaluatedRDFResourceTree tree1, EvaluatedRDFResourceTree tree2) {
-		double diff = getScore(tree1) - getScore(tree2);
-
-		if (diff > 0) {
-			return 1;
-		} else if (diff < 0) {
-			return -1;
-		} else {
-			return tree1.asEvaluatedDescription().getDescription()
-					.compareTo(tree2.asEvaluatedDescription().getDescription());
-		}
+		return ComparisonChain.start()
+				.compare(getScore(tree1), getScore(tree2))
+				.compare(tree1.asEvaluatedDescription().getDescription(), tree2.asEvaluatedDescription().getDescription())
+				.result();
 	}
 
 	/**
