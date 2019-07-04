@@ -843,7 +843,7 @@ public class TCELOE2 extends AbstractCELA implements Cloneable{
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
-			t --;
+			t -= warmingFactor;
 		} else {
 			// If there is no improvement the temperature should rise again to
 			// increase the influence of randomness
