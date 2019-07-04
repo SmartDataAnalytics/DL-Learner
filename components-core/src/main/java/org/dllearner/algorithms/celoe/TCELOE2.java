@@ -504,8 +504,6 @@ public class TCELOE2 extends AbstractCELA implements Cloneable{
 			}
 		}
 
-		t = Math.max(0, initialT - this.numReturnedNodes);
-
 		if (nodeToReturn == null) {
 			// this should practically never be called, since for any reasonable learning
 			// task, we will always have at least one node with less than 100% accuracy
@@ -845,6 +843,7 @@ public class TCELOE2 extends AbstractCELA implements Cloneable{
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+			t --;
 		} else {
 			// If there is no improvement the temperature should rise again to
 			// increase the influence of randomness
