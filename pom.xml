@@ -16,7 +16,7 @@
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.7.26</slf4j.version>
         <log4j.version>2.12.0</log4j.version>
-        <solr.version>7.1.0</solr.version>
+        <solr.version>8.2.0</solr.version>
         <owlapi.version>4.5.13</owlapi.version>
         <spring.version>4.3.3.RELEASE</spring.version>
         <jena.sparql.api.version>3.11.0-1</jena.sparql.api.version>
@@ -224,8 +224,13 @@
 					<version>1.16</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>tomcat-maven-plugin</artifactId>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat8-maven-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
 					<version>2.2</version>
 				</plugin>
 				<plugin>
@@ -276,7 +281,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>3.7.1</version>
 					<configuration>
 						<!--<skipDeploy>true</skipDeploy> -->
 					</configuration>
@@ -540,7 +545,7 @@
 			<!-- SOLR Dependency -->
 			<dependency>
 				<groupId>org.apache.solr</groupId>
-				<artifactId>solr-core</artifactId>
+				<artifactId>solr-solrj</artifactId>
 				<version>${solr.version}</version>
 				<exclusions>
 					<exclusion>

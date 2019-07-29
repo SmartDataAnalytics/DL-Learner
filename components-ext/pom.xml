@@ -83,24 +83,29 @@
             <version>1.4.1.RC2</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>httpclient</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpcore</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpmime</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-			</exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.solr</groupId>-->
+<!--            <artifactId>solr-core</artifactId>-->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<artifactId>httpclient</artifactId>-->
+<!--					<groupId>org.apache.httpcomponents</groupId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<artifactId>httpcore</artifactId>-->
+<!--					<groupId>org.apache.httpcomponents</groupId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<artifactId>httpmime</artifactId>-->
+<!--					<groupId>org.apache.httpcomponents</groupId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+<!--        </dependency>-->
+
+
+
+
+
 
         <dependency>
             <groupId>edu.northwestern.at</groupId>
@@ -114,7 +119,13 @@
                 <artifactId>lucene-core</artifactId>
             </dependency>
         -->
+        <!-- Solr -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+        </dependency>
 
+        <!-- Lucene -->
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>
@@ -123,9 +134,7 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
         </dependency>
-        <!--BEGIN Logging Dependencies-->
 
-        <!--This is the api jar, it's needed at compile time-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -246,7 +255,6 @@
                     <nohelp>true</nohelp>
                     <destDir>doc/javadoc</destDir>
                     <doctitle>DL-Learner Javadoc</doctitle>
-                    <author>true</author>
                     <nodeprecated>false</nodeprecated>
                     <nodeprecatedlist>false</nodeprecatedlist>
                     <noindex>false</noindex>
