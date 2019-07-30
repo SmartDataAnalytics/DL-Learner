@@ -106,7 +106,7 @@ public class PredicateExistenceFilterDBpedia extends PredicateExistenceFilter{
 			sb.append(p).append("\n");
 		}
 		try {
-			Files.write(sb.toString(), new File("dbpedia_meaningless_properties.txt"), Charsets.UTF_8);
+			Files.asCharSink(new File("dbpedia_meaningless_properties.txt"), Charsets.UTF_8).write(sb.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

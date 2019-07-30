@@ -156,7 +156,7 @@ public class PathDetectionTask implements Callable<List<Path>> {
 							content += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 							content += path.asSPARQLPathQuery(Var.alloc("s"));
 							content += "\n#\n";
-							Files.append(content, file, Charsets.UTF_8);
+							org.dllearner.utilities.Files.appendToFile(file, content);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
