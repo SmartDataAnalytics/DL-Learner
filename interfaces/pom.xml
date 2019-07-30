@@ -159,6 +159,28 @@
 		</profile>
 
 		<profile>
+			<id>extended-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+								<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
+								<exclude>org/dllearner/test/SpringTest.java</exclude>
+								<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
+								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
 			<id>debpackage</id>
 			<properties>
 				<packaging.type>jar</packaging.type>
@@ -268,6 +290,31 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+								<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
+								<exclude>org/dllearner/test/SpringTest.java</exclude>
+								<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
+								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+								<exclude>org/dllearner/test/junit/ExampleTests.java</exclude>
+							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<build>
@@ -334,20 +381,6 @@
 				</configuration>
 			</plugin>
 			<!--Surefire - for JUnits -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
-						<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
-						<exclude>org/dllearner/test/SpringTest.java</exclude>
-						<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
-						<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
-					</excludes>
-					<argLine>-Dlog4j.configuration=log4j.properties</argLine>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
