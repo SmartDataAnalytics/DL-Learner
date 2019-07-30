@@ -18,7 +18,7 @@
         
         <!-- EDGE dependency -->
         <dependency>
-            <groupId>unife</groupId>
+            <groupId>it.unife.endif.ml</groupId>
             <artifactId>edge</artifactId>
             <version>3.2</version>
             <exclusions>
