@@ -294,11 +294,7 @@ public abstract class AbstractOWLOntologyDataset implements AnalyzedOWLOntologyD
 	}
 	
 	private void add403Error(URL url){
-		try {
-			Files.append(url.toString() + "\n", new File(directory, "403.txt"), Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		org.dllearner.utilities.Files.appendToFile(new File(directory, "403.txt"), url.toString() + "\n");
 	}
 	
 	@Override

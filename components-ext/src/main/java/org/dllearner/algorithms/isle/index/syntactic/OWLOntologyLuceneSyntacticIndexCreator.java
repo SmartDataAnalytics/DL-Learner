@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.index.syntactic;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +18,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.MMapDirectory;
 import org.dllearner.algorithms.isle.index.Index;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -36,7 +37,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class OWLOntologyLuceneSyntacticIndexCreator {
 
-	private Directory directory = new RAMDirectory();
+	private Directory directory = new MMapDirectory(Files.createTempDirectory("Lucene"));
 	private OWLOntology ontology;
 	private Set<OWLEntity> schemaEntities;
 	
@@ -45,7 +46,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 	private String language = "en";
 	private String searchField;
 	
-	public OWLOntologyLuceneSyntacticIndexCreator(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String searchField) {
+	public OWLOntologyLuceneSyntacticIndexCreator(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String searchField) throws IOException {
 		this.ontology = ontology;
 		this.annotationProperty = annotationProperty;
 		this.searchField = searchField;

@@ -30,10 +30,12 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.google.common.io.FileWriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,7 +173,7 @@ public class Files {
 		File parentFile = file.getParentFile();
 		if (parentFile != null) { parentFile.mkdirs(); }
 		try {
-			com.google.common.io.Files.write(content, file, Charsets.UTF_8);
+			com.google.common.io.Files.asCharSink(file, Charsets.UTF_8).write(content);
 		} catch (IOException e) {
 			logger.error("Failed to write content to file " + file, e);
 		}
@@ -187,10 +189,22 @@ public class Files {
 	 */
 	public static void appendToFile(File file, String content) {
 		try {
-			com.google.common.io.Files.append(content, file, Charsets.UTF_8);
+			com.google.common.io.Files.asCharSink(file, Charsets.UTF_8, FileWriteMode.APPEND).write(content);
 		} catch (IOException e) {
 			logger.error("Failed to append content to file " + file, e);
 		}
+	}
+
+	/**
+	 * Write content to a file.
+	 *
+	 * @param file
+	 *            The file to create.
+	 * @param content
+	 *            Content of the file.
+	 */
+	public static void writeToFile(String content, File file) throws IOException {
+		java.nio.file.Files.write(file.toPath(), content.getBytes());
 	}
 	
 	public static void clearFile(File file) {

@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +26,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.BytesRef;
 
 /**
@@ -109,8 +110,8 @@ public class VSMCosineDocumentSimilarity {
      * for each term in the documents.
      * The resulting similarity ranges from -1 meaning exactly opposite, to 1 meaning exactly the same, 
      * with 0 usually indicating independence, and in-between values indicating intermediate similarity or dissimilarity.
-     * @param s1
-     * @param s2
+     * @param doc1
+     * @param doc2
      * @return
      * @throws IOException
      */
@@ -127,7 +128,7 @@ public class VSMCosineDocumentSimilarity {
      * @throws IOException
      */
     private Directory createIndex(String s1, String s2) throws IOException {
-        Directory directory = new RAMDirectory();
+        Directory directory = new MMapDirectory(Files.createTempDirectory("Lucene"));
         Analyzer analyzer = new SimpleAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(directory, iwc);

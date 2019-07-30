@@ -28,6 +28,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
@@ -236,10 +237,8 @@ public class BioPortalRepository implements OntologyRepository {
 						System.out.println(entry.getOntologyShortName() + ": " + FileUtils.byteCountToDisplaySize(f.length()));
 						map.put(entry.getOntologyShortName(), FileUtils.byteCountToDisplaySize(f.length()));
 					} catch (Exception e) {
-						com.google.common.io.Files.write(
-								ExceptionUtils.getMessage(e),
-								new File(downloadFailedDir, entry.getOntologyShortName() + ".txt"),
-								Charsets.UTF_8);
+						com.google.common.io.Files.asCharSink(new File(downloadFailedDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8).write(ExceptionUtils.getMessage(e));
 						return;
 					}
 				}
@@ -267,24 +266,24 @@ public class BioPortalRepository implements OntologyRepository {
 						OWLOntology ont = man.loadOntologyFromOntologyDocument(f);
 						System.out.println("#Axioms: " + ont.getLogicalAxiomCount());
 
-						com.google.common.io.Files.write(
+						com.google.common.io.Files.asCharSink(
+								new File(parsedSuccessfulDir, entry.getOntologyShortName() + ".txt"),
+								Charsets.UTF_8).write(
 								ont.getLogicalAxiomCount() + "\t" +
 										ont.getClassesInSignature().size() + "\t" +
 										ont.getObjectPropertiesInSignature().size() + "\t" +
 										ont.getDataPropertiesInSignature().size() + "\t" +
-										ont.getIndividualsInSignature().size(),
-								new File(parsedSuccessfulDir, entry.getOntologyShortName() + ".txt"),
-								Charsets.UTF_8);
+										ont.getIndividualsInSignature().size()
+						);
 
 						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||#Axioms: " + ont.getLogicalAxiomCount());
 						man.removeOntology(ont);
 					} catch (Exception e1) {
 						System.err.println("Failed to parse " + entry.getOntologyShortName());
 						map.replace(entry.getOntologyShortName(), map.get(entry.getOntologyShortName()) + "||Parse Error");
-						com.google.common.io.Files.write(
-								ExceptionUtils.getMessage(e1),
+						com.google.common.io.Files.asCharSink(
 								new File(parsedFailedDir, entry.getOntologyShortName() + ".txt"),
-								Charsets.UTF_8);
+								Charsets.UTF_8).write(ExceptionUtils.getMessage(e1));
 					}
 				}
 			} catch (Exception e) {
