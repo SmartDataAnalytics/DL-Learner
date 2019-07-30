@@ -19,7 +19,6 @@
 package org.dllearner.algorithms.qtl.experiments;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.core.Var;
@@ -28,6 +27,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 
 import java.io.File;
@@ -201,7 +201,7 @@ public class SPARQLLearningProblemsGenerator {
 		}
 		File file = new File(benchmarkDirectory, "queries_" + nrOfSPARQLQueries + "_" + minDepth + "-" + maxDepth + "_" + minNrOfExamples+ ".txt");
 		try {
-			Files.write(queries, file, Charsets.UTF_8);
+			Files.writeToFile(queries, file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

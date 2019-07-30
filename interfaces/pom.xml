@@ -31,7 +31,6 @@
 					<plugin>
 						<groupId>org.apache.tomcat.maven</groupId>
 						<artifactId>tomcat7-maven-plugin</artifactId>
-						<version>2.2</version>
 						<executions>
 							<execution>
 								<id>tomcat-run</id>
@@ -88,7 +87,6 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
-						<version>2.0.0</version>
 						<executions>
 							<execution>
 								<goals>
@@ -191,7 +189,6 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
-						<version>2.0.0</version>
 						<executions>
 							<execution>
 								<goals>
@@ -225,7 +222,6 @@
 					<plugin>
 						<artifactId>jdeb</artifactId>
 						<groupId>org.vafer</groupId>
-						<version>1.5</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -337,8 +333,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>tomcat-maven-plugin</artifactId>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -384,7 +380,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<goals>
