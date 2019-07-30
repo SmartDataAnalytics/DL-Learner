@@ -123,14 +123,14 @@ public class CLI extends CLIBase2 {
 				if((la instanceof TDTClassifier)||(la instanceof DSTTDTClassifier) ){
 					
 					//TODO:  verify if the quality of the code can be improved
-					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
+					DLTreesRefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
 					ArrayList<OWLClass> concepts = new ArrayList<>(rs.getClasses());
-					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
+					op.setAllConcepts(concepts);
 					
 					ArrayList<OWLObjectProperty> roles = new ArrayList<>(rs.getAtomicRolesList());
-					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
-					((DLTreesRefinementOperator) op).setAllRoles(roles);
-					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
+					op.setAllConcepts(concepts);
+					op.setAllRoles(roles);
+					op.setReasoner(getMainReasonerComponent());
 					
 					if (la instanceof TDTClassifier)
 					    ((TDTClassifier)la).setOperator(op);
