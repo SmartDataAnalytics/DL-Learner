@@ -117,7 +117,7 @@
 
     <owl:ObjectProperty rdf:about="#hasNegIntent">
         <rdfs:range rdf:resource="#TherapeuticType"/>
-        <owl11:disjointObjectProperties rdf:resource="#hasPosIntent"/>
+        <owl:propertyDisjointWith rdf:resource="#hasPosIntent"/>
         <rdfs:domain rdf:resource="#Adults"/>
     </owl:ObjectProperty>
     
@@ -192,7 +192,7 @@
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="#Adults"/>
         <rdfs:range rdf:resource="#TherapeuticType"/>
-        <owl11:disjointObjectProperties rdf:resource="#notHasTreatment"/>
+        <owl:propertyDisjointWith rdf:resource="#notHasTreatment"/>
     </owl:ObjectProperty>
     
 
@@ -208,7 +208,7 @@
     <!-- http://acl/BMV#notHasPrognosis -->
 
     <owl:ObjectProperty rdf:about="#notHasPrognosis">
-        <owl11:disjointObjectProperties rdf:resource="#hasPrognosis"/>
+        <owl:propertyDisjointWith rdf:resource="#hasPrognosis"/>
     </owl:ObjectProperty>
     
 
