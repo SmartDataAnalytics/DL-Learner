@@ -32,7 +32,8 @@ import com.google.common.collect.ComparisonChain;
  * @author Lorenz Buehmann
  *
  */
-public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score> implements Serializable, Comparable<EvaluatedHypothesis<T, S>>{
+public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score>
+		implements Serializable, Comparable<EvaluatedHypothesis<T, S>>{
 
 	private static final long serialVersionUID = 1106431570510815033L;
 	
