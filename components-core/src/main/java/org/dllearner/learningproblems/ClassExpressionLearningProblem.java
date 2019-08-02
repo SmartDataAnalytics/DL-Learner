@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * The problem of learning the OWL class expression for another OWL class expression
  * in an OWL ontology.
- * This for example allows to learn domain or range of a property by descibing the following class expressions:
+ * This for example allows to learn domain or range of a property by describing the following class expressions:
  * <ul>
  *     <li><code>Dom(p, C) -> ∃p.⊤</code> </li>
  *     <li><code>Ran(p, C) -> ∃p^(-1).⊤</code></li>
@@ -181,7 +181,7 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
-		Coverage[] cc = ((ReasoningUtilsCLP)reasoningUtil).getCoverageCLP(description, classInstances, superClassInstances);
+		Coverage[] cc = reasoningUtil.getCoverage(description, classInstances, superClassInstances);
 
 		double recall = Heuristics.divideOrZero(cc[0].trueCount, classInstances.size()); // tp / (tp+fn)
 		double precision = Heuristics.divideOrZero(cc[0].trueCount, cc[0].trueCount + cc[1].trueCount); // tp / (tp+fp)
@@ -197,6 +197,7 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 			throw new RuntimeException();
 		}
 
+		ClassScore score;
 		if (checkConsistency) {
 
 			// we check whether the axiom already follows from the knowledge base
@@ -206,11 +207,13 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 			// (if the axiom follows, then the knowledge base remains consistent)
 			boolean isConsistent = followsFromKB || isConsistent(description);
 
-			return new ClassScore(cc[0].trueSet, cc[0].falseSet, recall, cc[1].trueSet, precision, acc, isConsistent, followsFromKB);
+			score = new ClassScore(cc[0].trueSet, cc[0].falseSet, recall, cc[1].trueSet, precision, acc, isConsistent, followsFromKB);
 
 		} else {
-			return new ClassScore(cc[0].trueSet, cc[0].falseSet, recall, cc[1].trueSet, precision, acc);
+			score = new ClassScore(cc[0].trueSet, cc[0].falseSet, recall, cc[1].trueSet, precision, acc);
 		}
+		score.setNotCoveredNegInstances(cc[1].falseSet);
+		return score;
 	}
 
 	public boolean isEquivalenceProblem() {

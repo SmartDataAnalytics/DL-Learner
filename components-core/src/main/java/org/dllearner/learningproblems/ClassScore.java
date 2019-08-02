@@ -44,6 +44,8 @@ public class ClassScore extends Score implements Serializable{
 	
 	private boolean isConsistent;
 	private boolean followsFromKB;
+
+	private Set<OWLIndividual> notCoveredNegInstances;
 	
 	public ClassScore(Set<OWLIndividual> coveredInstances, Set<OWLIndividual> notCoveredInstances, double coverage, Set<OWLIndividual> additionalInstances, double protusion, double accuracy) {
 		this.coveredInstances = coveredInstances;
@@ -59,7 +61,15 @@ public class ClassScore extends Score implements Serializable{
 		this.isConsistent = isConsistent;
 		this.followsFromKB = followsFromKB;
 	}
-	
+
+	public void setNotCoveredNegInstances(Set<OWLIndividual> notCoveredNegInstances) {
+		this.notCoveredNegInstances = notCoveredNegInstances;
+	}
+
+	public Set<OWLIndividual> getNotCoveredNegInstances() {
+		return notCoveredNegInstances;
+	}
+
 	/**
 	 * @return Coverage of the class description.
 	 */
