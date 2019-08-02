@@ -76,7 +76,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// specific variables for generalised F-measure
 	private TreeSet<OWLIndividual> negatedClassInstances;
 
-	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measures are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
 	              defaultValue = "PRED_ACC")
 	protected AccMethod accuracyMethod;
 

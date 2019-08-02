@@ -68,7 +68,7 @@ public class ReasoningUtils implements Component {
 	}
 
 	/**
-	 * binary set to divide a set in 2 partitions, and an additonal for unknown individuals
+	 * binary set to divide a set in 2 partitions, and an additional for unknown individuals
 	 */
 	class Coverage3 extends Coverage3Count {
 		final SortedSet<OWLIndividual> trueSet = new TreeSet<>();

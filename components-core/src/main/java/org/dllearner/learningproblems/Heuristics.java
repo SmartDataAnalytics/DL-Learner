@@ -65,7 +65,7 @@ public class Heuristics {
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
 	 * here (A=arithmetic), but is not an established notion in machine learning.
 	 * @param recall Recall.
-	 * @param precision Precison.
+	 * @param precision Precision.
 	 * @return Arithmetic mean of precision and recall.
 	 */
 	public static double getAScore(double recall, double precision) {
@@ -76,7 +76,7 @@ public class Heuristics {
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
 	 * here (A=arithmetic), but is not an established notion in machine learning.
 	 * @param recall Recall.
-	 * @param precision Precison.
+	 * @param precision Precision.
 	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
 	 * than precision.
 	 * @return Arithmetic mean of precision and recall.
