@@ -21,12 +21,15 @@ package org.dllearner.kb;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.io.File;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * This class provides a wrapper around a single OWL Ontology.  However, due to threading issues it is not safe
@@ -44,6 +47,11 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
         this.ontology = ontology;
 //		ontologyBytes = converter.convert(ontology);
     }
+
+    public static OWLAPIOntology fromFile(File file) throws OWLOntologyCreationException {
+		Objects.requireNonNull(file, "file must not be null");
+		return new OWLAPIOntology(OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file));
+	}
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
