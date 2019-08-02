@@ -25,12 +25,12 @@ public abstract class StochasticBeamSearch<H extends OWLObject, S extends Score,
         this(beamSize, Collections.emptySet());
     }
 
-    public StochasticBeamSearch(int beamSize, Set<EH> startHypotheses) {
+    public StochasticBeamSearch(int beamSize, Set<H> startHypotheses) {
         super(beamSize, startHypotheses);
     }
 
     @Override
-    void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates) {
+    protected void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates) {
         beam.clear();
 
         Iterables.limit(candidates, beamSize).forEach(beam::add);

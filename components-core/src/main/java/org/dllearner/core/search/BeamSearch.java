@@ -1,10 +1,14 @@
 package org.dllearner.core.search;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.dllearner.core.EvaluatedHypothesis;
 import org.dllearner.core.Score;
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Beam search that keeps k states opposed to one state like in e.g. classic hill-climbing.
@@ -24,13 +28,23 @@ import org.semanticweb.owlapi.model.OWLObject;
  */
 public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extends EvaluatedHypothesis<H, S>> {
 
-    protected final int beamSize;
+    private static final Logger log = LoggerFactory.getLogger(BeamSearch.class);
+
+    protected int beamSize;
+
+    protected int maxNrOfResults = 100;
 
     private SortedSet<EH> solutions;
 
-    private Set<EH> startHypotheses;
+    private Set<H> startHypotheses;
 
-    public BeamSearch(int beamSize, Set<EH> startHypotheses) {
+    protected long startTime;
+    protected double minAccuracy;
+
+    public BeamSearch(int beamSize, Set<H> startHypotheses) {
+        if (beamSize <= 0) {
+            throw new IllegalArgumentException("beamSize = " + beamSize + "; expected a positive integer.");
+        }
         Objects.requireNonNull(startHypotheses, "start hypotheses must not be null");
         this.beamSize = beamSize;
         this.startHypotheses = startHypotheses;
@@ -40,36 +54,38 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
         this(beamSize, Collections.emptySet());
     }
 
-    public void setStartHypotheses(Set<EH> startHypotheses) {
-        this.startHypotheses = startHypotheses;
-    }
-
     public void search() {
-        solutions = new TreeSet<>();
+        startTime = System.currentTimeMillis();
+
+        solutions = new BoundedTreeSet<>(maxNrOfResults);
 
         // init beam
-        Beam<EH> beam = new Beam<EH>(beamSize, Comparator.naturalOrder());
+        Beam<EH> beam = new Beam<>(beamSize, Comparator.naturalOrder());
 
         // populate beam with start hypotheses
-        beam.addAll(startHypotheses);
+        startHypotheses.stream().map(this::evaluate).forEach(beam::add);
 
+        int i = 1;
         while(!beam.isEmpty() && !terminationCriteriaSatisfied()) {
+            log.info("iteration " + i++);
 
             SortedSet<EH> candidates = new TreeSet<>();
 
             // process each element of the beam
             for (EH h : beam) {
                 // compute refinements
-                Set<EH> refinements = refine(h);
+                Set<H> refinements = refine(h.getDescription());
 
-                for (EH ref : refinements) {
+                // evaluate refinements
+                Set<EH> evaluatedRefinements = evaluate(refinements);
+
+                for (EH ref : evaluatedRefinements) {
                     if(isSolution(ref)) { // refinement is already a solution? TODO add option to refine solutions
-                        solutions.add(ref);
+                        addSolution(ref);
                     } else if(isCandidate(ref)){ // refinement is at least "good" enough being a candidate
-                        refinements.add(ref);
+                        candidates.add(ref);
                     }
                 }
-                candidates.addAll(refinements);
             }
 
             // re-populate the beam
@@ -78,7 +94,31 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
 
     }
 
-    abstract Set<EH> refine(EH hypothesis);
+    /**
+     * Refine a single hypothesis.
+     *
+     * @param hypothesis the hypothesis to refine
+     * @return set of more specific hypothesis
+     */
+    protected abstract Set<H> refine(H hypothesis);
+
+    /**
+     * Evaluate a single hypothesis.
+     *
+     * @param hypothesis the hypothesis to evaluate
+     * @return the evaluated hypothesis
+     */
+    protected abstract EH evaluate(H hypothesis);
+
+    /**
+     * Evaluate a set of hypotheses.
+     *
+     * @param hypotheses the hypotheses to evaluate
+     * @return the evaluated hypotheses
+     */
+    protected Set<EH> evaluate(Set<H> hypotheses) {
+        return hypotheses.stream().map(this::evaluate).collect(Collectors.toSet());
+    }
 
     /**
      * Check if the given hypothesis is a solution.
@@ -86,7 +126,7 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
      * @param hypothesis the hypothesis to check
      * @return <code>true</code> if hypothesis is solution, otherwise <code>false</code>
      */
-    abstract boolean isSolution(EH hypothesis);
+    protected abstract boolean isSolution(EH hypothesis);
 
     /**
      * Check if the given hypothesis is a sufficient candidate.
@@ -94,7 +134,7 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
      * @param hypothesis the candidate hypothesis to check
      * @return <code>true</code> if hypothesis is a candidate, otherwise <code>false</code>
      */
-    abstract boolean isCandidate(EH hypothesis);
+    protected abstract boolean isCandidate(EH hypothesis);
 
     /**
      * After all elements of the beam have been processed, the beam has to rebuild based
@@ -103,12 +143,102 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
      * @param beam the beam that will be populated
      * @param candidates the set of candidates
      */
-    abstract void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates);
+    protected abstract void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates);
 
-    abstract boolean terminationCriteriaSatisfied();
+    /**
+     * Called to add solution candidate to solution set. Can be overridden to modify resp. transform solution before
+     * added to final solution set.
+     *
+     * @param hypothesis
+     * @return
+     */
+    protected boolean addSolution(EH hypothesis) {
+        return solutions.add(hypothesis);
+    }
 
+    protected abstract boolean terminationCriteriaSatisfied();
+
+    /**
+     * Set the hypotheses to start with.
+     *
+     * @param startHypotheses
+     */
+    public void setStartHypotheses(Set<H> startHypotheses) {
+        this.startHypotheses = startHypotheses;
+    }
+
+    /**
+     * The maximum number of learned hypothesis maintained during learning and returned as final result.
+     *
+     * @param maxNrOfResults
+     */
+    public void setMaxNrOfResults(int maxNrOfResults) {
+        this.maxNrOfResults = maxNrOfResults;
+    }
+
+    /**
+     * Returns the solutions found so far, i.e. it can also be used as online algorithm.
+     *
+     * @return
+     */
     public SortedSet<EH> getSolutions() {
         return solutions;
+    }
+
+    /**
+     * Set the size of the beam maintained during learning.
+     *
+     * @param beamSize the size of the beam
+     */
+    public void setBeamSize(int beamSize) {
+        this.beamSize = beamSize;
+    }
+
+    static class BeamNode<T, U extends Utility, Q extends Quality> implements Comparable<T> {
+
+        private final BeamNode<T, U, Q> parent;
+
+        private Q quality;
+        private U utility;
+
+        BeamNode(BeamNode<T, U, Q> parent) {
+            this.parent = parent;
+        }
+
+        BeamNode(BeamNode<T, U, Q> parent, Q quality, U utility) {
+            this.parent = parent;
+            this.quality = quality;
+            this.utility = utility;
+        }
+
+        public boolean isRoot() {
+            return parent == null;
+        }
+
+        public BeamNode<T, U, Q> getParent() {
+            return parent;
+        }
+
+        public Q getQuality() {
+            return quality;
+        }
+
+        public U getUtility() {
+            return utility;
+        }
+
+        @Override
+        public int compareTo(@NotNull T other) {
+            return 0;
+        }
+    }
+
+    static abstract class Quality implements Comparable<Quality> {
+
+    }
+
+    static abstract class Utility implements Comparable<Utility> {
+
     }
 
 

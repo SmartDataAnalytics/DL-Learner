@@ -22,14 +22,15 @@ public abstract class LocalBeamSearch<H extends OWLObject, S extends Score, EH e
         this(beamSize, Collections.emptySet());
     }
 
-    public LocalBeamSearch(int beamSize, Set<EH> startHypotheses) {
+    public LocalBeamSearch(int beamSize, Set<H> startHypotheses) {
         super(beamSize, startHypotheses);
     }
 
     @Override
-    void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates) {
+    protected void repopulateBeam(Beam<EH> beam, SortedSet<EH> candidates) {
         beam.clear();
 
+        // candidates are already sorted, thus, just take as many elements as fit into the beam
         Iterables.limit(candidates, beamSize).forEach(beam::add);
     }
 }
