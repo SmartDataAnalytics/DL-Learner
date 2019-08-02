@@ -172,7 +172,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			}
 		}
 		
-		if(newOperands.size() == 1){
+		if(new HashSet<>(newOperands).size() == 1){
 			return newOperands.iterator().next().accept(this);
 		}
 		
