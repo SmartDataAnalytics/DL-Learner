@@ -27,10 +27,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
@@ -275,7 +272,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
-		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
+		isClassLearningProblem = learningProblem instanceof ClassLearningProblem;
 		
 		// we put important parameters in class variables
 		noise = noisePercentage/100d;
@@ -290,6 +287,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			classToDescribe = problem.getClassToDescribe();
 			isEquivalenceProblem = problem.isEquivalenceProblem();
 			
+			examples = reasoner.getIndividuals(classToDescribe);
+		} else if(learningProblem instanceof ClassExpressionLearningProblem) {
+			ClassExpressionLearningProblem problem = (ClassExpressionLearningProblem) learningProblem;
+			classToDescribe = problem.getClassExpressionToDescribe().asOWLClass(); //TODO not safe, rewrite CELOE
+			isEquivalenceProblem = problem.isEquivalenceProblem();
+
 			examples = reasoner.getIndividuals(classToDescribe);
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
