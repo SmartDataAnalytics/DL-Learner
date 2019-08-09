@@ -1,12 +1,13 @@
-package org.dllearner.core.search;
+package org.dllearner.core.search.old;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.SortedSet;
 
 import com.google.common.collect.Iterables;
-import org.dllearner.core.EvaluatedHypothesis;
+import org.dllearner.core.EvaluatedHypothesisOWL;
 import org.dllearner.core.Score;
+import org.dllearner.core.search.Beam;
 import org.semanticweb.owlapi.model.OWLObject;
 
 /**
@@ -15,7 +16,7 @@ import org.semanticweb.owlapi.model.OWLObject;
  *
  * @author Lorenz Buehmann
  */
-public abstract class LocalBeamSearch<H extends OWLObject, S extends Score, EH extends EvaluatedHypothesis<H, S>>
+public abstract class LocalBeamSearch<H extends OWLObject, S extends Score, EH extends EvaluatedHypothesisOWL<H, S>>
         extends BeamSearch<H, S, EH> {
 
     public LocalBeamSearch(int beamSize) {

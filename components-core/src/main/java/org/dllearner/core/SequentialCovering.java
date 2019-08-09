@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 /**
  * @author Lorenz Buehmann
  */
-public abstract class SequentialCovering<E extends Example, H extends EvaluatedHypothesis> {
+public abstract class SequentialCovering<E extends Example, H extends EvaluatedHypothesisOWL> {
 
     private final Set<E> examples;
 

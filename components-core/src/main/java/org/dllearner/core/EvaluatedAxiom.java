@@ -18,7 +18,6 @@
  */
 package org.dllearner.core;
 
-import com.google.common.collect.ComparisonChain;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.utilities.EnrichmentVocabulary;
@@ -32,7 +31,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, AxiomScore>{
+public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesisOWL<T, AxiomScore> {
 	
 	private boolean asserted = false;
 	

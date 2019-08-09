@@ -54,13 +54,11 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
     @ConfigOption(description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
     private double percentPerLengthUnit = 0.05;
 
-	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measures are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",
 			defaultValue = "PRED_ACC")
 	protected AccMethodTwoValued accuracyMethod;
 
-    public PosNegLP(){
-
-    }
+    public PosNegLP(){}
 
 	public PosNegLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);

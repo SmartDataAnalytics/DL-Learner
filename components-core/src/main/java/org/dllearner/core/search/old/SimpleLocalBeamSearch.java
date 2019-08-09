@@ -1,20 +1,16 @@
-package org.dllearner.core.search;
+package org.dllearner.core.search.old;
 
 import java.io.File;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.common.collect.Sets;
-import org.apache.jena.base.Sys;
 import org.dllearner.accuracymethods.AccMethodPredAcc;
-import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassExpressionLearningProblem;
-import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.ClassScore;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ClosedWorldReasoner;

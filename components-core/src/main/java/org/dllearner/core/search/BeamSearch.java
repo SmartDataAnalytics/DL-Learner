@@ -3,7 +3,7 @@ package org.dllearner.core.search;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.dllearner.core.EvaluatedHypothesis;
+import org.dllearner.core.EvaluatedHypothesisOWL;
 import org.dllearner.core.Score;
 import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -26,7 +26,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lorenz Buehmann
  */
-public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extends EvaluatedHypothesis<H, S>> {
+public abstract class BeamSearch<H extends OWLObject,
+                                S extends Score,
+                                EH extends EvaluatedHypothesisOWL<H, S>,
+                                Q extends BeamSearch.Quality,
+                                U extends BeamSearch.Utility> {
 
     private static final Logger log = LoggerFactory.getLogger(BeamSearch.class);
 
@@ -73,6 +77,7 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
 
             // process each element of the beam
             for (EH h : beam) {
+
                 // compute refinements
                 Set<H> refinements = refine(h.getDescription());
 
@@ -93,6 +98,14 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
         }
 
     }
+
+    /**
+     * Refine a single hypothesis.
+     *
+     * @param hypothesis the hypothesis to refine
+     * @return set of more specific hypothesis
+     */
+    protected abstract Set<H> initBeam(H hypothesis);
 
     /**
      * Refine a single hypothesis.
@@ -194,16 +207,12 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
         this.beamSize = beamSize;
     }
 
-    static class BeamNode<T, U extends Utility, Q extends Quality> implements Comparable<T> {
+    static class BeamNode<T, U extends Utility, Q extends Quality> implements Comparable<BeamNode<T, U, Q>> {
 
         private final BeamNode<T, U, Q> parent;
 
         private Q quality;
         private U utility;
-
-        BeamNode(BeamNode<T, U, Q> parent) {
-            this.parent = parent;
-        }
 
         BeamNode(BeamNode<T, U, Q> parent, Q quality, U utility) {
             this.parent = parent;
@@ -228,8 +237,8 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
         }
 
         @Override
-        public int compareTo(@NotNull T other) {
-            return 0;
+        public int compareTo(@NotNull BeamNode<T, U , Q> other) {
+            return utility.compareTo(other.utility);
         }
     }
 
@@ -237,8 +246,22 @@ public abstract class BeamSearch<H extends OWLObject, S extends Score, EH extend
 
     }
 
-    static abstract class Utility implements Comparable<Utility> {
+    static abstract class Utility<T extends Utility> implements Comparable<T> {
 
+    }
+
+    static class SimpleUtility extends Utility<SimpleUtility> {
+
+        final double value;
+
+        SimpleUtility(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public int compareTo(@NotNull SimpleUtility other) {
+            return Double.compare(this.value, other.value);
+        }
     }
 
 

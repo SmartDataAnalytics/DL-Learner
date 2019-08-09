@@ -18,6 +18,9 @@
  */
 package org.dllearner.algorithms;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -27,17 +30,12 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.ClassScore;
 import org.dllearner.learningproblems.ScoreSimple;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Learns subclass-relationships for a given class by using SPARQL queries.

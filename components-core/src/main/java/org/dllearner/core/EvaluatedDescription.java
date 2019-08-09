@@ -31,7 +31,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesis<OWLClassExpression, S>{
+public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesisOWL<OWLClassExpression, S> {
 
 	/**
 	 * Constructs an evaluated class expression using its score.
