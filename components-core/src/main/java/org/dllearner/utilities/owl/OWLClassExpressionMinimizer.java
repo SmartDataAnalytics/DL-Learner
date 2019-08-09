@@ -26,6 +26,7 @@ import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * @author Lorenz Buehmann
@@ -66,6 +67,13 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		return ce;
 	}
 
+	private OWLClassExpression unionDist(OWLObjectUnionOf union, OWLClassExpression ce) {
+		return df.getOWLObjectUnionOf(
+				union.getOperands().stream()
+						.map(op -> df.getOWLObjectIntersectionOf(op, ce)).collect(Collectors.toSet())
+		);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectIntersectionOf)
 	 */
@@ -76,6 +84,8 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
+
+		flattenNestedUnion(operands);
 		
 		List<OWLClassExpression> oldOperands = new ArrayList<>(new TreeSet<>(operands));
 		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
@@ -134,6 +144,40 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		return df.getOWLObjectIntersectionOf(new HashSet<>(newOperands));
 	}
 
+	private void flattenNestedUnion(Collection<OWLClassExpression> operands) {
+
+		Set<OWLObjectUnionOf> unions = new HashSet<>();
+		for (Iterator<OWLClassExpression> it = operands.iterator(); it.hasNext();) {
+			OWLClassExpression op = it.next();
+			if(op.getClassExpressionType() == ClassExpressionType.OBJECT_UNION_OF) {
+				unions.add((OWLObjectUnionOf) op);
+				it.remove();
+			}
+		}
+
+		for (OWLObjectUnionOf union : unions) {
+			Set<OWLClassExpression> unionOperands = union.getOperands();
+			for (OWLClassExpression op : operands) {
+				if(!op.isAnonymous()) {
+					for(Iterator<OWLClassExpression> it1 = unionOperands.iterator(); it1.hasNext();) {
+						OWLClassExpression unionOp = it1.next();
+						if(!unionOp.isAnonymous()) {
+							if(reasoner.isDisjoint(op.asOWLClass(), unionOp.asOWLClass())) {
+								it1.remove();
+							}
+						}
+
+					}
+				}
+			}
+			if(unionOperands.size() == 1) {
+				operands.add(unionOperands.iterator().next());
+			} else if(unionOperands.size() > 1) {
+				operands.add(df.getOWLObjectUnionOf(unionOperands));
+			}
+		}
+	}
+
 	private boolean isSubClassOf(OWLClassExpression subClass, OWLClassExpression superClass) {
 		return superClass.isOWLThing() || reasoner.isSuperClassOf(superClass, subClass);
 	}
@@ -165,10 +209,11 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 					newOperands.remove(op2);
 				} else if(isSubClassOf(op1, op2)){
 					newOperands.remove(op1);
-				} else if(isSubClassOf(op1, df.getOWLObjectComplementOf(op2)) || isSubClassOf(op2, df.getOWLObjectComplementOf(op1))) {
-					// check for C or not C
-					return df.getOWLThing();
 				}
+//				else if(isSubClassOf(op1, df.getOWLObjectComplementOf(op2)) || isSubClassOf(op2, df.getOWLObjectComplementOf(op1))) {
+//					// check for C or not C
+//					return df.getOWLThing();
+//				}
 			}
 		}
 		
