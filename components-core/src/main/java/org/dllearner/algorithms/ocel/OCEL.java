@@ -491,21 +491,21 @@ public class OCEL extends AbstractCELA {
 
 			if (writeSearchTree) {
 				// String treeString = "";
-				String treeString = "best node: " + bestNode + "\n";
+				StringBuilder treeString = new StringBuilder("best node: " + bestNode + "\n");
 				if (expandedNodes.size() > 1) {
-					treeString += "all expanded nodes:\n";
+					treeString.append("all expanded nodes:\n");
 					for (ExampleBasedNode n : expandedNodes) {
-						treeString += "   " + n + "\n";
+						treeString.append("   ").append(n).append("\n");
 					}
 				}
 				expandedNodes.clear();
-				treeString += TreeUtils.toTreeString(startNode);
-				treeString += "\n";
+				treeString.append(TreeUtils.toTreeString(startNode));
+				treeString.append("\n");
 
 				if (replaceSearchTree)
-					Files.createFile(searchTreeFile, treeString);
+					Files.createFile(searchTreeFile, treeString.toString());
 				else
-					Files.appendToFile(searchTreeFile, treeString);
+					Files.appendToFile(searchTreeFile, treeString.toString());
 			}
 
 			// Anzahl Schleifendurchläufe
@@ -1120,7 +1120,7 @@ public class OCEL extends AbstractCELA {
 	 * The algorithm stops if:
 	 * 1. the object attribute stop is set to true (possibly by an outside source)
 	 * 2. the maximimum execution time is reached
-	 * 3. the maximum number of class OWLClassExpression tests is reached
+	 * 3. the maximum number of class description tests is reached
 	 *
 	 * Continuation criteria and result improvement
 	 * The algorithm continues (although it would normally stop) if
