@@ -191,7 +191,7 @@ public class AxiomAlgorithms {
 				new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}"));
 	}
 
-	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes =
+	private static final Map<EntityType<? extends OWLEntity>, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes =
 			new HashMap<>();
 
 	static {
@@ -272,11 +272,11 @@ public class AxiomAlgorithms {
 		axiomType2Class.put(AxiomType.FUNCTIONAL_DATA_PROPERTY, FunctionalDataPropertyAxiomLearner.class);
 	}
 	
-	public static Set<AxiomType<? extends OWLAxiom>> getAxiomTypes(EntityType<? extends OWLEntity> entityType){
+	public static <E extends OWLEntity> Set<AxiomType<? extends OWLAxiom>> getAxiomTypes(EntityType<E> entityType){
 		return entityType2AxiomTypes.get(entityType);
 	}
 	
-	public static Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> getAlgorithmClass(AxiomType<? extends OWLAxiom> axiomType){
+	public static <E extends OWLEntity> Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> getAlgorithmClass(AxiomType<? extends OWLAxiom> axiomType){
 		return axiomType2Class.get(axiomType);
 	}
 	

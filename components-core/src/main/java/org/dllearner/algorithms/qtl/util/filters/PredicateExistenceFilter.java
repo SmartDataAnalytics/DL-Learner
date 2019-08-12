@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl.util.filters;
 import org.apache.jena.graph.Node;
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
 
@@ -40,8 +41,7 @@ public class PredicateExistenceFilter extends AbstractTreeFilter<RDFResourceTree
 
     private Set<Node> existentialMeaninglessProperties = new HashSet<>();
 
-    public PredicateExistenceFilter() {
-    }
+    public PredicateExistenceFilter() {}
 
     public PredicateExistenceFilter(Set<Node> existentialMeaninglessProperties) {
         this.existentialMeaninglessProperties = existentialMeaninglessProperties;
@@ -71,8 +71,11 @@ public class PredicateExistenceFilter extends AbstractTreeFilter<RDFResourceTree
 //        newTree.setAnchorVar(tree.getAnchorVar());
 
         for (Node edge : tree.getEdges()) {
+            // get the label if it's an incoming edge
+            Node edgeLabel = edge instanceof NodeInv ? ((NodeInv) edge).getNode() : edge;
+
             // properties that are marked as "meaningless"
-            if (isMeaningless(edge)) {
+            if (isMeaningless(edgeLabel)) {
                 // if the edge is meaningless
                 // 1. process all children
                 for (RDFResourceTree child : tree.getChildren(edge)) {
@@ -99,7 +102,7 @@ public class PredicateExistenceFilter extends AbstractTreeFilter<RDFResourceTree
         }
 
         // we have to run the subsumption check one more time to prune the tree
-//        QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
+        QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
         return newTree;
     }
 }

@@ -77,8 +77,9 @@ public class QueryTreeFactoryCache implements QueryTreeFactory {
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
+	@SafeVarargs
 	@Override
-	public void addDropFilters(Predicate<Statement>... dropFilters) {
+	public final void addDropFilters(Predicate<Statement>... dropFilters) {
 		delegatee.addDropFilters(dropFilters);
 	}
 }

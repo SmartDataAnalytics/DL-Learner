@@ -389,10 +389,7 @@ public class ELDescriptionNode {
 			}
 		// return an intersection of labels and edges
 		} else {
-			Set<OWLClassExpression> operands = new TreeSet<>();
-			for(OWLClass nc : label) {
-				operands.add(nc);
-			}
+			Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>(label);
 			
 			for(ELDescriptionEdge edge : edges) {
 				if(edge.isObjectProperty()){
@@ -405,8 +402,7 @@ public class ELDescriptionNode {
 					operands.add(dsr);
 				}
 			}
-			OWLClassExpression is = df.getOWLObjectIntersectionOf(operands);
-			return is;
+			return df.getOWLObjectIntersectionOf(operands);
 		}
 	}
 

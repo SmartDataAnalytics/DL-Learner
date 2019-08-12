@@ -18,6 +18,12 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.io.*;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -49,6 +55,8 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.operations.traversal.LevelOrderTreeTraversal;
+import org.dllearner.algorithms.qtl.operations.traversal.PreOrderTreeTraversal;
+import org.dllearner.algorithms.qtl.operations.traversal.TreeTraversal;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -56,9 +64,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.io.ComponentNameProvider;
-import org.jgrapht.io.ExportException;
-import org.jgrapht.io.GraphMLExporter;
+import org.jgrapht.io.*;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,14 +72,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Lorenz Buehmann
@@ -88,6 +86,20 @@ public class QueryTreeUtils {
 	public static String EMPTY_QUERY_TREE_QUERY = "SELECT ?s WHERE {?s ?p ?o.}";
 	
 	private static Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
+
+	/**
+	 * Rebuilds the node IDs starting from the root node.
+	 *
+	 * @param tree the tree
+	 */
+	public static void rebuildNodeIDs(RDFResourceTree tree) {
+		TreeTraversal<RDFResourceTree> it = new PreOrderTreeTraversal<>(tree);
+
+		int id = 0;
+		while(it.hasNext()) {
+			it.next().setId(id++);
+		}
+	}
 	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
@@ -719,7 +731,7 @@ public class QueryTreeUtils {
         
         // header
 		if(!nodes2Select.isEmpty()) {
-			sb.append(String.format("SELECT %s %s WHERE {\n", targetVar, nodes2Select.stream().map(node -> "?var" + nodes2Select.indexOf(node)).collect(Collectors.joining(" "))));
+			sb.append(String.format("SELECT %s %s WHERE {%n", targetVar, nodes2Select.stream().map(node -> "?var" + nodes2Select.indexOf(node)).collect(Collectors.joining(" "))));
 		} else {
 			sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
 		}
@@ -822,8 +834,22 @@ public class QueryTreeUtils {
 		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(
 				vertexIDProvider, vertexNameProvider,
 				edgeIDProvider, edgeLabelProvider);
-		try {
-			exporter.exportGraph(graph, new FileWriter(outputFile));
+
+		Map<String, Attribute> rootNodeAttributes = new HashMap<>();
+		rootNodeAttributes.put("rootNode", new DefaultAttribute<>(true, AttributeType.BOOLEAN));
+
+		ComponentAttributeProvider<Vertex> vertexAttributeProvider = vertex -> {
+			if(vertex.getId() == tree.getID()) {
+				return rootNodeAttributes;
+			}
+			return null;
+		};
+		exporter.setVertexAttributeProvider(vertexAttributeProvider);
+
+		exporter.registerAttribute("rootNode", GraphMLExporter.AttributeCategory.NODE, AttributeType.BOOLEAN, "false");
+
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
+			exporter.exportGraph(graph, writer);
 		} catch (IOException | ExportException e) {
 			log.error("failed to write graph to file " + outputFile, e);
 		}
@@ -1226,36 +1252,46 @@ public class QueryTreeUtils {
 		List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
 		if (typeChildren != null) {
 			// collapse rdfs:subClassOf paths
-			new ArrayList<>(typeChildren).forEach(child -> {
-				if(child.isVarNode()) {
-					new ArrayList<>(child.getChildren(RDFS.subClassOf.asNode())).forEach(childChild -> {
+			new ArrayList<>(typeChildren).stream().filter(RDFResourceTree::isVarNode).forEach(child -> {
+				// check if there are rdfs:subClassOf edges TODO we need a complete "collapse" method here
+				List<RDFResourceTree> subClassOfChildren = child.getChildren(RDFS.subClassOf.asNode());
+				if(subClassOfChildren != null) {
+					new ArrayList<>(subClassOfChildren).forEach(childChild -> {
 						if(childChild.isResourceNode()) {
 							tree.addChild(childChild, RDF.type.asNode());
 							child.removeChild(childChild, RDFS.subClassOf.asNode());
 						}
 					});
 					tree.removeChild(child, RDF.type.asNode());
-				}
-			});
-			typeChildren = tree.getChildren(RDF.type.asNode());
-
-			List<RDFResourceTree> children2Remove = new ArrayList<>();
-
-			for (int i = 0; i < typeChildren.size(); i++) {
-				RDFResourceTree child1 = typeChildren.get(i);
-				OWLClass cls1 = df.getOWLClass(IRI.create(child1.getData().getURI()));
-				for (int j = i+1; j < typeChildren.size(); j++) {
-					RDFResourceTree child2 = typeChildren.get(j);
-					OWLClass cls2 = df.getOWLClass(IRI.create(child2.getData().getURI()));
-
-					if(reasoner.isSuperClassOf(cls1, cls2)) { // T2 subClassOf T1 -> remove T1
-						children2Remove.add(child1);
-					} else if(reasoner.isSuperClassOf(cls2, cls1)) { // T1 subClassOf T2 -> remove T2
-						children2Remove.add(child2);
+				} else {
+					if(!child.hasChildren()) {
+						tree.removeChild(child, RDF.type.asNode());
 					}
 				}
+			});
+			// refresh the rdf:type children after subClassOf collapsing
+			typeChildren = tree.getChildren(RDF.type.asNode());
+
+			if(typeChildren != null) {
+				List<RDFResourceTree> children2Remove = new ArrayList<>();
+
+				for (int i = 0; i < typeChildren.size(); i++) {
+					RDFResourceTree child1 = typeChildren.get(i);
+					OWLClass cls1 = df.getOWLClass(IRI.create(child1.getData().getURI()));
+
+					for (int j = i+1; j < typeChildren.size(); j++) {
+						RDFResourceTree child2 = typeChildren.get(j);
+						OWLClass cls2 = df.getOWLClass(IRI.create(child2.getData().getURI()));
+
+						if(reasoner.isSuperClassOf(cls1, cls2)) { // T2 subClassOf T1 -> remove T1
+							children2Remove.add(child1);
+						} else if(reasoner.isSuperClassOf(cls2, cls1)) { // T1 subClassOf T2 -> remove T2
+							children2Remove.add(child2);
+						}
+					}
+				}
+				children2Remove.forEach(c -> tree.removeChild(c, RDF.type.asNode()));
 			}
-			children2Remove.forEach(c -> tree.removeChild(c, RDF.type.asNode()));
 		}
 
 		return modified;

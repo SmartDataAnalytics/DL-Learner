@@ -462,13 +462,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		try {
 			classes = reasoner.getSuperClasses(concept, true);
 		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
 			if (useFallbackReasoner) {
 				classes = fallbackReasoner.getSubClasses(concept, true);
 			} else {
 				throw e;
 			}
 		}
-		return getFirstClasses(classes);
+		return new TreeSet<>(classes.getFlattened());
+//		return getFirstClasses(classes);
 	}
 
 	@Override
@@ -484,7 +486,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				throw e;
 			}
 		}
-		TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
+		TreeSet<OWLClassExpression> subClasses = new TreeSet<>(classes.getFlattened());//getFirstClasses(classes);
 		subClasses.remove(df.getOWLNothing());
 		// remove built-in entities sometimes returned as subclasses of
 		// owl:Thing

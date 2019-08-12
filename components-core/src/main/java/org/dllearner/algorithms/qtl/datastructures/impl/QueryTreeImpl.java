@@ -18,6 +18,12 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
 import com.google.common.collect.Sets;
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -51,12 +57,6 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import javax.xml.bind.DatatypeConverter;
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 /**
  * 
