@@ -1020,7 +1020,7 @@ public class QTLEvaluation {
 	}
 	
 	private void solutionsFromCache(String sparqlQuery, int possibleNrOfExamples, double noise) {
-		HashFunction hf = Hashing.md5();
+		HashFunction hf = Hashing.goodFastHash(128);
 		String hash = hf.newHasher()
 				.putString(sparqlQuery, Charsets.UTF_8)
 				.putInt(possibleNrOfExamples)
@@ -1125,7 +1125,7 @@ public class QTLEvaluation {
 	}
 
 	private String hash(String query) {
-		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
+		return Hashing.goodFastHash(128).newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
 
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{

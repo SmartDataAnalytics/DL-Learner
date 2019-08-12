@@ -106,7 +106,7 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	public void setMaxNrOfNegExamples(int maxNrOfNegExamples) {
 		this.maxNrOfNegExamples = maxNrOfNegExamples;
 	}
-	
+
 	/**
 	 * @param useNegExamples whether to use negative examples or not
 	 */
@@ -138,7 +138,7 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	public void setSeed(long seed) {
 		rnd.setSeed(seed);
 	}
-	
+
 	private Set<OWLIndividual> computePosExamples(OWLClass cls) {
 		List<OWLIndividual> posExamples = new ArrayList<>();
 		

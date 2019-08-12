@@ -234,7 +234,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
 	    for (OWLDataProperty dataProperty : datatypeProperties) {
 //		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
-		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, ontology);
+		    Collection<OWLDataRange> ranges = Collections.EMPTY_SET;
+		    LinkedList<OWLDataProperty> superDataProperties = new LinkedList<>();
+		    superDataProperties.add(dataProperty);
+		    while (ranges.isEmpty() && !superDataProperties.isEmpty()) {
+			    OWLDataProperty sDP = superDataProperties.removeFirst();
+			    ranges = EntitySearcher.getRanges(sDP, ontology);
+			    if (ranges.isEmpty()) {
+				    final NodeSet<OWLDataProperty> sps = reasoner.getSuperDataProperties(sDP, true);
+				    superDataProperties.addAll(sps.getFlattened());
+			    }
+		    }
 		    Iterator<OWLDataRange> it = ranges.iterator();
 		    if (it.hasNext()) {
 			    OWLDataRange range = it.next();

@@ -39,7 +39,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	private double expansionPenaltyFactor = 0.1;
 	@ConfigOption(description = "bonus for being better than parent node", defaultValue = "0.3")
 	private double gainBonusFactor = 0.3;
-	@ConfigOption(description = "penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive",
+	@ConfigOption(description = "penalty if a node description has very many refinements since exploring such a node is computationally very expensive",
 			defaultValue = "0.0001")
 	private double nodeRefinementPenalty = 0.0001;
 	
@@ -60,18 +60,22 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();
+
 		// being better than the parent gives a bonus;
 		if(!node.isRoot()) {
-			double parentAccuracy = node.getParent().getAccuracy();
-			score += (parentAccuracy - score) * gainBonusFactor;
+			double accuracyGain = node.getAccuracy() - node.getParent().getAccuracy();
+			score += accuracyGain * gainBonusFactor;
 		// the root node also gets a bonus to possibly spawn useful disjunctions
 		} else {
 			score += startNodeBonus;
 		}
+
 		// penalty for horizontal expansion
-		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
+		score -= (node.getHorizontalExpansion() - 1) * expansionPenaltyFactor;
+
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;
+
 		return score;
 	}
 

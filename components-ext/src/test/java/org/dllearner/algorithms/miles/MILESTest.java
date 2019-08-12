@@ -11,7 +11,6 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**

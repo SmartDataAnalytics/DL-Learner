@@ -41,7 +41,6 @@ import org.apache.jena.sparql.syntax.*;
 import org.apache.jena.sparql.util.VarUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.kb.sparql.CBDStructureTree;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -722,12 +721,12 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		}
 	}
 
-	public static DirectedGraph<Node, LabeledEdge> asJGraphT(Query query) {
+	public static DefaultDirectedGraph<Node, LabeledEdge> asJGraphT(Query query) {
 		QueryUtils utils = new QueryUtils();
 
 		Set<Triple> tps = utils.extractTriplePattern(query);
 
-		DirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<>(LabeledEdge.class);
+		DefaultDirectedGraph<Node, LabeledEdge> g = new DefaultDirectedGraph<>(LabeledEdge.class);
 
 		tps.forEach(tp -> {
 			g.addVertex(tp.getSubject());
@@ -739,7 +738,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 
 	public static void exportAsGraph(Query query, File file) {
-		DirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
+		DefaultDirectedGraph<Node, LabeledEdge> g = asJGraphT(query);
 		System.out.println(g.edgeSet().size());
 
 		JGraphXAdapter adapter = new JGraphXAdapter(g);

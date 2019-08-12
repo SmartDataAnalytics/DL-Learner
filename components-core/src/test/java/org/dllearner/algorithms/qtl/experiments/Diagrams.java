@@ -29,8 +29,6 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
@@ -42,6 +40,7 @@ import com.panayotis.gnuplot.JavaPlot.Key;
 import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.style.PlotStyle;
 import com.panayotis.gnuplot.style.Style;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 
 /**
  * @author Lorenz Buehmann
@@ -121,7 +120,7 @@ public class Diagrams {
 				}
 				 s += "\n";
 			}
-			Files.write(s, new File(dir, "examplesVsScore-" + noise + ".tsv"), Charsets.UTF_8);
+			org.dllearner.utilities.Files.writeToFile(s, new File(dir, "examplesVsScore-" + noise + ".tsv"));
 		}
 		
 		// noise vs fscore
