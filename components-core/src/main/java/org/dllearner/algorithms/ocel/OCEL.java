@@ -499,7 +499,7 @@ public class OCEL extends AbstractCELA {
 					}
 				}
 				expandedNodes.clear();
-				treeString += TreeUtils.toTreeString(startNode);
+				treeString += TreeUtils.toTreeString(startNode, heuristic);
 				treeString += "\n";
 
 				if (replaceSearchTree)

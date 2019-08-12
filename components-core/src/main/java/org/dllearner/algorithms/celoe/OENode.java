@@ -18,14 +18,14 @@
  */
 package org.dllearner.algorithms.celoe;
 
-import java.text.DecimalFormat;
-import java.util.Map;
-
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import java.text.DecimalFormat;
+import java.util.Map;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
