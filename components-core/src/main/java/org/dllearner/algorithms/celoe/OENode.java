@@ -60,7 +60,7 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	public OENode(OWLClassExpression description, double accuracy) {
 		this.description = description;
 		this.accuracy = accuracy;
-		this.horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
+		this.horizontalExpansion = OWLClassExpressionUtils.getLength(description);
 	}
 	
 //	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
