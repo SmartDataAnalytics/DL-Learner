@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import org.dllearner.accuracymethods.*;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.ReasoningUtilsCLP;
@@ -115,9 +116,7 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 		}
 
 		// check if entities in signature of class expression occur in ontology
-		if (!getReasoner().getClasses().containsAll(classExpressionToDescribe.getClassesInSignature()) ||
-				!getReasoner().getObjectProperties().containsAll(classExpressionToDescribe.getObjectPropertiesInSignature()) ||
-				!getReasoner().getDatatypeProperties().containsAll(classExpressionToDescribe.getDataPropertiesInSignature())) {
+		if (!Helper.checkConceptEntities(getReasoner(), classExpressionToDescribe)) {
 			throw new ComponentInitException("Some entities in \"" + classExpressionToDescribe + "\" do not exist. Make sure you spelled it correctly.");
 		}
 

@@ -20,6 +20,7 @@ package org.dllearner.utilities;
 
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
@@ -234,6 +235,20 @@ public class Helper {
 				return ar;
 		}
 		return null;
+	}
+
+	/**
+	 * Checks whether all entities in the given class expression do also occur in the knowledge base.
+	 *
+	 * @param ce The concept to check.
+	 * @return {@code true} if all entities of the class expression occur in the knowledge base,
+	 * otherwise {@code false}
+	 */
+	public static boolean checkConceptEntities(AbstractReasonerComponent rc, OWLClassExpression ce) {
+		return rc.getClasses().containsAll(ce.getClassesInSignature()) &&
+				rc.getObjectProperties().containsAll(ce.getObjectPropertiesInSignature()) &&
+				rc.getDatatypeProperties().containsAll(ce.getDataPropertiesInSignature());
+
 	}
 
 }

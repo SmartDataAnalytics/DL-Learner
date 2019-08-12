@@ -28,6 +28,7 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -76,7 +77,18 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		
+		OWLClass missingExample = Helper.checkConcepts(getReasoner(), positiveExamples);
+		if (missingExample != null) {
+			throw new ComponentInitException("Some pos. examples (e.g. \"" + missingExample + "\") do not exist. " +
+					"Make sure you spelled it correctly.");
+		}
+
+		missingExample = Helper.checkConcepts(getReasoner(), negativeExamples);
+		if (missingExample != null) {
+			throw new ComponentInitException("Some neg. examples (e.g. \"" + missingExample + "\") do not exist. " +
+					"Make sure you spelled it correctly.");
+		}
+
 		initialized = true;
 	}
 
