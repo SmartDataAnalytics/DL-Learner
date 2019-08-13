@@ -7,9 +7,9 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 /**
  * @author Lorenz Buehmann
  */
-public class ListBasedExamplesProvider extends AbstractExamplesProvider {
+public class SetBasedExamplesProvider extends AbstractExamplesProvider {
 
-    ListBasedExamplesProvider(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples) {
+    public SetBasedExamplesProvider(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples) {
         super(posExamples, negExamples);
     }
 }
