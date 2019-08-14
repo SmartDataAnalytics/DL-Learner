@@ -18,11 +18,8 @@
  */
 package org.dllearner.core;
 
-import java.util.Comparator;
-
-import org.dllearner.algorithms.celoe.OENode;
-
 import com.google.common.collect.ComparisonChain;
+import org.dllearner.algorithms.celoe.OENode;
 
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
@@ -32,7 +29,7 @@ import com.google.common.collect.ComparisonChain;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractHeuristic extends AbstractComponent implements Heuristic, Comparator<OENode>{
+public abstract class AbstractHeuristic extends AbstractComponent implements Heuristic<OENode>{
 	
 	public AbstractHeuristic() {}
 	

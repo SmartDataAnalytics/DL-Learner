@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;

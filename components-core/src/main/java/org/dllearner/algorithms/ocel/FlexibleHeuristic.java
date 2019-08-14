@@ -115,5 +115,11 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 	@Override
 	public void init() throws ComponentInitException {
 	}
-	
+
+	@Override
+	public double getNodeScore(ExampleBasedNode n1) {
+		double score1 = -n1.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
+		score1 -= percentPerLengthUnit * OWLClassExpressionUtils.getLength(n1.getConcept());
+		return score1;
+	}
 }

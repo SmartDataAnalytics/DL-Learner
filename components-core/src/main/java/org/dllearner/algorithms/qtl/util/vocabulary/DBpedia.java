@@ -8,6 +8,7 @@ import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.serializer.SerializationContext;
 import org.apache.jena.sparql.vocabulary.FOAF;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -47,7 +48,7 @@ public class DBpedia {
     /**
      * Some properties (<code>http://dbpedia.org/ontology/wiki*</code>) which are usually blacklisted in applications.
      */
-    public static final Set<String> BLACKLIST_PROPERTIES = Sets.newHashSet(
+    public static final Set<String> BLACKLIST_PROPERTIES = Collections.unmodifiableSet(Sets.newHashSet(
             "http://dbpedia.org/ontology/wikiPageWikiLink",
             "http://dbpedia.org/ontology/wikiPageExternalLink",
             "http://dbpedia.org/ontology/wikiPageRedirects",
@@ -58,12 +59,13 @@ public class DBpedia {
             "http://dbpedia.org/ontology/wikiPageRevisionLink",
             "http://dbpedia.org/ontology/wikiPageWikiLinkText",
             "http://dbpedia.org/ontology/wikidataSplitIri",
+            "http://dbpedia.org/ontology/abstract",
             "http://www.w3.org/ns/prov#wasDerivedFrom",
             FOAF.isPrimaryTopicOf.getURI()
-    );
+    ));
 
-    public static String BASE_IRI = "http://dbpedia.org/resource/";
-    public static PrefixMapping PM = PrefixMapping.Factory.create();
+    public static final String BASE_IRI = "http://dbpedia.org/resource/";
+    public static final PrefixMapping PM = PrefixMapping.Factory.create();
     static {
         PM.setNsPrefixes(PrefixMapping.Standard);
         PM.setNsPrefix("dbr", DBR);
@@ -72,7 +74,7 @@ public class DBpedia {
         PM.setNsPrefix("dbc", DBC);
         PM.setNsPrefix("foaf", FOAF.NS);
     }
-    public static SerializationContext CONTEXT = new SerializationContext(PM);
+    public static final SerializationContext CONTEXT = new SerializationContext(PM);
     static {
         CONTEXT.setBaseIRI(BASE_IRI);
     }

@@ -33,7 +33,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Lorenz Buehmann
  *
  */
-public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
+public abstract class AbstractClassExpressionLearningProblem<T extends Score>
+		extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>>
+		implements LearningProblem {
 
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	@ConfigOption(description = "load examples via class expression selector")

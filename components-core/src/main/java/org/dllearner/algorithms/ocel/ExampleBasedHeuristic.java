@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.ocel;
 
-import java.util.Comparator;
-
 import org.dllearner.core.Heuristic;
 
 /**
@@ -31,6 +29,6 @@ import org.dllearner.core.Heuristic;
  * @author Jens Lehmann
  *
  */
-public interface ExampleBasedHeuristic extends Comparator<ExampleBasedNode>, Heuristic{
+public interface ExampleBasedHeuristic extends Heuristic<ExampleBasedNode>{
 
 }

@@ -19,6 +19,7 @@
 package org.dllearner.utilities.datastructures;
 
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.core.Heuristic;
 
 import java.util.*;
 
@@ -26,19 +27,19 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 
 	// all nodes in the search tree (used for selecting most promising node)
 	protected NavigableSet<T> nodes;
-	
+
 	// the sort order on the set
-	protected Comparator<T> sortOrderComp;
+	protected Heuristic<T> sortOrderComp;
 
 	// root of search tree
 	protected T root;
 	
 	/**
 	 * create a new search tree
-	 * @param comparator the comparator to use for the nodes
+	 * @param heuristic the comparator to use for the nodes
 	 */
-	public AbstractSearchTree(Comparator<T> comparator) {
-		sortOrderComp = comparator;
+	public AbstractSearchTree(Heuristic<T> heuristic) {
+		sortOrderComp = heuristic;
 	}
 
 	/**
@@ -153,4 +154,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 		return root;
 	}
 
+	public Heuristic<T> getHeuristic() {
+		return (Heuristic<T>)sortOrderComp;
+	}
 }

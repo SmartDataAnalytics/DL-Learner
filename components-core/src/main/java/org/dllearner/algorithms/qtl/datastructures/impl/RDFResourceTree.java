@@ -58,7 +58,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		INDENTED, BRACES
 	}
 	
-	private final int id;
+	private int id;
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
 	public static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
@@ -201,7 +201,11 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public int getID() {
 		return id;
 	}
-	
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public void addChild(RDFResourceTree child, Node edge) {
 		super.addChild(child);
 		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
@@ -393,17 +397,31 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 * @return a rendered string representation of the tree
 	 */
 	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm) {
+		return getStringRepresentation(stopIfChildIsResourceNode, syntax, baseIRI, pm, false);
+	}
+
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 *
+	 * @param stopIfChildIsResourceNode if a child node is not a variable, children will not be rendered
+	 * @param syntax the syntax used for rendering
+	 * @param baseIRI the base IRI
+	 * @param pm the prefix mapping
+	 * @param showID show the IDs of the nodes
+	 * @return a rendered string representation of the tree
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm, boolean showID) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
-		
+
 		if(syntax == Rendering.BRACES) {
 			buildTreeString(sb, stopIfChildIsResourceNode, 0, context);
 		} else {
-			buildTreeStringIndented(sb, stopIfChildIsResourceNode, 1, context);
+			buildTreeStringIndented(sb, stopIfChildIsResourceNode, 1, context, showID);
 		}
-		
+
 		return "TREE [\n" + sb.toString() + "]";
 	}
 	
@@ -436,7 +454,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 	}
 	
-	private void buildTreeStringIndented(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
+	private void buildTreeStringIndented(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context, boolean showID) {
 		
 		// render current node
 		String ren;
@@ -447,6 +465,9 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 		if(getAnchorVar() != null) {
 			ren += " (" + getAnchorVar() + ")";
+		}
+		if(showID) {
+			ren += " (" + getID() + ")";
 		}
 		sb.append(ren).append("\n");
 		
@@ -467,7 +488,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 						}
 
 					}
-					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context);
+					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context, showID);
 				}
 			}
 		}

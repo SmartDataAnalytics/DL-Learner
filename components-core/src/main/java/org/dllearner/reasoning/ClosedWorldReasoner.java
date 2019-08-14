@@ -17,8 +17,10 @@
  */
 package org.dllearner.reasoning;
 
-import com.google.common.collect.*;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.common.collect.TreeMultimap;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -32,9 +34,6 @@ import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
-import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
@@ -1057,14 +1056,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                     .map(Entry::getKey)
                     .collect(Collectors.toCollection(TreeSet::new));
         } else if (description instanceof OWLObjectAllValuesFrom) {
-			// \forall restrictions are difficult to handle; assume we want to check
+            // \forall restrictions are difficult to handle; assume we want to check
             // \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
             // this is satisfied trivially (all of their non-existing children are male)
 //			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
 //				throw new Error("Only forallExists semantics currently implemented.");
 //			}
 
-			// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
+            // problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
             // can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
             // semantics)
             OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
@@ -1079,7 +1078,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 //			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
             SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 
-			// each individual is connected to a set of individuals via the property;
+            // each individual is connected to a set of individuals via the property;
             // we loop through the complete mapping
             mapping.entrySet().stream()
                     .filter(e -> e.getValue().stream().anyMatch(ind -> !targetSet.contains(ind)))
@@ -1113,20 +1112,23 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 for (OWLIndividual ind : inds) {
                     // stop inner loop when nr of fillers is reached
                     if (nrOfFillers >= number) {
-                        returnSet.add(entry.getKey());
                         break;
                     }
                     // early abort when too many instance checks failed, i.e. there are not enough remaining candidates
-                    if (inds.size() - index < number) {
+                    if (inds.size() - index < number - nrOfFillers) {
                         break;
                     }
+
                     if (targetSet.contains(ind)) {
                         nrOfFillers++;
                     }
                     index++;
                 }
-            }
 
+                if(nrOfFillers >= number) {
+                    returnSet.add(entry.getKey());
+                }
+            }
             return returnSet;
         } else if (description instanceof OWLObjectMaxCardinality) { // <=n r.C
             OWLObjectPropertyExpression property = ((OWLObjectMaxCardinality) description).getProperty();

@@ -290,18 +290,21 @@ public class MultiPropertyAxiomLearner {
 		AbstractAxiomLearningAlgorithm learner = null;
 		try {
 			learner = algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(ks);
+
+			learner.setEntityToDescribe(entity);
+			learner.setUseSampling(false);
+			learner.setProgressMonitor(progressMonitor);
+			learner.init();
+			learner.start();
+
+			algorithms.put(axiomType, learner);
+
+			return learner.getCurrentlyBestEvaluatedAxioms();
+		} catch (ComponentInitException e) {
+			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("Failed to apply algorithm for " + axiomType + " axioms on entity " + entity);
 		}
-		learner.setEntityToDescribe(entity);
-		learner.setUseSampling(false);
-		learner.setProgressMonitor(progressMonitor);
-		learner.init();
-		learner.start();
-		
-		algorithms.put(axiomType, learner);
-		
-		return learner.getCurrentlyBestEvaluatedAxioms();
 	}
 
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){
