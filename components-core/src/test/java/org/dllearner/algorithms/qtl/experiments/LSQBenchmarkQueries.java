@@ -18,20 +18,30 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
 import org.dllearner.algorithms.qtl.operations.tuples.QTLTuples;
+import org.dllearner.algorithms.qtl.util.filters.AbstractTreeFilter;
 import org.dllearner.algorithms.qtl.util.filters.MostSpecificTypesFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.algorithms.qtl.util.vocabulary.DBpedia;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.*;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.QueryUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphTests;
 import org.jgrapht.alg.isomorphism.VF2GraphIsomorphismInspector;
+import org.jgrapht.graph.AsUndirectedGraph;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,19 +55,28 @@ public class LSQBenchmarkQueries {
 
     static int numQueries = 2000;
     static int limit = 10;
+    static int queryLimit = 1000;
 
     public static void main(String[] args) throws Exception{
         SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-        endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/repo-dbpedia", Collections.emptyList());
+        endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/dbpedia?infer=false", Collections.emptyList());
         SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+        ks.setCacheDir("/tmp/qtl/sparql-cache");
         ks.init();
+
+        QueryExecutionFactory qef = ks.getQueryExecutionFactory();
 
         String baseIRI = DBpedia.BASE_IRI;
         PrefixMapping pm = DBpedia.PM;
 
         AbstractReasonerComponent reasoner = new SPARQLReasoner(ks);
+        reasoner.setPrecomputeClassHierarchy(true);
+
+
+//        OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntology(IRI.create("file:///tmp/dbpedia_2016-10.sorted.nt"));
+//        OWLAPIReasoner reasoner = new OWLAPIReasoner(new OWLAPIOntology(ont));
+//        reasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
         reasoner.init();
-        reasoner.prepareSubsumptionHierarchy();
 
         Set<String> ignoredProperties = Sets.newHashSet(
                 "http://dbpedia.org/ontology/abstract",
@@ -66,7 +85,16 @@ public class LSQBenchmarkQueries {
                 "http://dbpedia.org/ontology/wikiPageID","http://www.w3.org/ns/prov#wasDerivedFrom", "http://dbpedia.org/ontology/wikiPageDisambiguates",
                 "http://dbpedia.org/ontology/wikiPageExternalLink", FOAF.isPrimaryTopicOf.getURI());
 
-        ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
+        boolean useIncoming = true;
+
+        ConciseBoundedDescriptionGenerator cbdGen;
+
+        if(useIncoming) {
+            cbdGen = new TreeBasedConciseBoundedDescriptionGenerator(qef);
+//            ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).setDefaultStructureTree(CBDStructureTree.fromTreeString("root:[in:[],out:[]]"));
+        } else {
+            cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+        }
         cbdGen.setIgnoredProperties(ignoredProperties);
         cbdGen.setAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/property/", FOAF.NS));
         cbdGen.setAllowedClassNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
@@ -75,20 +103,22 @@ public class LSQBenchmarkQueries {
 
         int depth = 1;
 
-        QueryExecutionFactory qef = ks.getQueryExecutionFactory();
-
         QTLTuples qtl = new QTLTuples(qef);
         qtl.setCBDGenerator(cbdGen);
         qtl.setTreeFactory(tf);
-        qtl.addTreeFilter(new PredicateExistenceFilterDBpedia(ks));
-        qtl.addTreeFilter(new MostSpecificTypesFilter(reasoner));
-        qtl.addTreeFilter(new PredicateExistenceFilter() {
-            @Override
-            public boolean isMeaningless(Node predicate) {
-                return predicate.getURI().startsWith("http://dbpedia.org/property/");
-            }
-        });
+        qtl.setMaxTreeDepth(depth);
+//        qtl.setUseIncomingTriples(true);
 
+
+        List<AbstractTreeFilter<RDFResourceTree>> filters = Lists.newArrayList(
+                new PredicateExistenceFilterDBpedia(ks),
+                new MostSpecificTypesFilter(reasoner),
+                new PredicateExistenceFilter() {
+                    @Override
+                    public boolean isMeaningless(Node predicate) {
+                        return predicate.getURI().startsWith("http://dbpedia.org/property/");
+                    }
+                });
 
         List<Query> queries = getQueries();
 
@@ -115,9 +145,23 @@ public class LSQBenchmarkQueries {
 
                     solutions.forEach(sol -> {
                         RDFResourceTree tree = sol.getKey();
+
+                        if(tree.getChildren().isEmpty()) {
+                            System.err.println("empty tree");
+                            return;
+                        }
+
                         List<Node> nodes2Select = sol.getValue();
                         System.out.println("LGG\n" + tree.getStringRepresentation());
                         sb.append("LGG\n" + tree.getStringRepresentation());
+
+                        for (AbstractTreeFilter<RDFResourceTree> filter : filters) {
+                            filter.setNodes2Keep(nodes2Select);
+                            tree = filter.apply(tree);
+                        }
+
+                        System.out.println("LGG(filtered)\n" + tree.getStringRepresentation());
+                        sb.append("LGG(filtered)\n" + tree.getStringRepresentation());
 
                         String learnedQuery = QueryTreeUtils.toSPARQLQueryString(tree, nodes2Select, baseIRI, pm);
                         System.out.println("Learned query\n" + learnedQuery);
@@ -241,6 +285,15 @@ public class LSQBenchmarkQueries {
 //        analyze(q);
 //        queries = Lists.newArrayList(q);
 
+//        queries = Lists.newArrayList(QueryFactory.create("PREFIX  property: <http://dbpedia.org/property/>\n" +
+//                "PREFIX  foaf: <http://xmlns.com/foaf/0.1/>\n" +
+//                "PREFIX  db:   <http://dbpedia.org/ontology/>\n" +
+//                "\n" +
+//                "SELECT DISTINCT  *\n" +
+//                "WHERE\n" +
+//                "  { ?musician  a                    db:MusicalArtist ;\n" +
+//                "              db:genre              ?genre\n" +
+//                "  }"));
         System.out.println("Evaluating " + queries.size() + " queries...");
         return queries;
     }
@@ -283,27 +336,49 @@ public class LSQBenchmarkQueries {
         }
     }
 
+    private static final Logger log = LoggerFactory.getLogger(LSQBenchmarkQueries.class);
+
     private static boolean valid(Query query) {
         // check for connectedness
         boolean connected = isConnected(query);
         if(!connected) {
-//            System.err.println(query);
+            log.debug("triple patterns not connected:\n{}", query);
             return false;
         }
+
+        Set<Triple> triplePatterns = QueryUtils.getTriplePatterns(query);
 
         // check for projection vars that do not exists in query pattern
         List<Var> vars = query.getProjectVars();
-        Set<Triple> triplePatterns = QueryUtils.getTriplePatterns(query);
         Set<Node> nodes = triplePatterns.stream().flatMap(tp -> getNodes(tp).stream()).collect(Collectors.toSet());
         Set<Var> superflousVars = vars.stream().filter(var -> !nodes.contains(var.asNode())).collect(Collectors.toSet());
         if(!superflousVars.isEmpty()) {
-//            System.err.println(query);
-//            System.err.println("Proj. vars: " + superflousVars);
+            log.debug("superflous proj. vars {} :\n{}", superflousVars, query);
             return false;
         }
 
-        // check if projection var doesn't refer to a predicate
-        boolean hasPredicateProjVar = QueryUtils.getTriplePatterns(query).stream()
+        // no triple pattern with a variable as predicate
+        boolean predicateVar = triplePatterns.stream()
+                .map(Triple::getPredicate)
+                .anyMatch(Node::isVariable);
+        if(predicateVar) {
+            log.debug("predicate var in query:\n{}", query);
+            return false;
+        }
+
+        // no triple pattern with dbp namespace predicate
+        boolean dbpPredicate = triplePatterns.stream()
+                .map(Triple::getPredicate)
+                .filter(Node::isURI)
+                .map(Node::getURI)
+                .anyMatch(uri -> uri.startsWith(DBpedia.DBP));
+        if(dbpPredicate) {
+            log.debug("dbp: namespace used in query:\n{}", query);
+            return false;
+        }
+
+        // check that projection var doesn't refer to a predicate
+        boolean hasPredicateProjVar = triplePatterns.stream()
                 .map(Triple::getPredicate)
                 .filter(Node::isVariable)
                 .map(Var::alloc)
@@ -318,7 +393,7 @@ public class LSQBenchmarkQueries {
 
     private static boolean isConnected(Query query) {
         Graph<Node, QueryUtils.LabeledEdge> g = QueryUtils.asJGraphT(query);
-        return GraphTests.isConnected(g);
+        return GraphTests.isConnected(new AsUndirectedGraph<>(g));
     }
 
     private static SortedSet<Node> toSet(QuerySolution qs) {
@@ -328,7 +403,9 @@ public class LSQBenchmarkQueries {
         return nodes;
     }
 
-    private static Set<SortedSet<Node>> query(String query, QueryExecutionFactory qef) {
+    private static Set<SortedSet<Node>> query(String qStr, QueryExecutionFactory qef) {
+        Query query = QueryFactory.create(qStr);
+        query.setLimit(queryLimit);
         Set<SortedSet<Node>> result = new HashSet<>();
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();

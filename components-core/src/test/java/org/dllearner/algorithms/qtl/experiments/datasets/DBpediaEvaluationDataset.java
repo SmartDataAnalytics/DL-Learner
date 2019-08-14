@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -26,6 +26,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.vocabulary.FOAF;
+import org.dllearner.algorithms.qtl.experiments.datasets.EvaluationDataset;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;

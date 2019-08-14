@@ -18,8 +18,9 @@
  */
 package org.dllearner.algorithms.ocel;
 
-import java.util.Comparator;
-
+import org.apache.commons.lang3.NotImplementedException;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.Heuristic;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
@@ -30,7 +31,7 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
  * @author Jens Lehmann
  *
  */
-public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
+public class NodeComparatorStable implements Heuristic<ExampleBasedNode> {
 
 	@Override
 	public int compare(ExampleBasedNode n1, ExampleBasedNode n2) {
@@ -75,4 +76,13 @@ public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
 		return (o instanceof NodeComparatorStable);
 	}
 
+	@Override
+	public double getNodeScore(ExampleBasedNode node) {
+		throw new NotImplementedException("Node Score not implemented for NodeComparatorStable");
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+
+	}
 }

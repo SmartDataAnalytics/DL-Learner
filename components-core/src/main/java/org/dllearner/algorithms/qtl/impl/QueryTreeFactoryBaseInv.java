@@ -18,6 +18,9 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
+import java.util.*;
+import java.util.function.Predicate;
+
 import com.google.common.collect.Sets;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
@@ -26,6 +29,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeInv;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -39,9 +43,6 @@ import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * A factory for query trees that also considers incoming triples.
@@ -112,34 +113,30 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 						  int currentDepth, int maxDepth) {
 
 		if(currentDepth < maxDepth) {
-			SortedSet<Statement> statements = resource2InStatements.get(s);
-			if (statements == null) {
-				statements = new TreeSet<>(comparator);
-				ExtendedIterator stmtIterator = model.listStatements(null, null, s);
-				for (Predicate<Statement> filter : dropFilters) {
-					stmtIterator = stmtIterator.filterKeep(filter);
-				}
-				statements.addAll(stmtIterator.toSet());
-				resource2InStatements.put(s, statements);
-				statements.forEach(st -> fillMaps(st.getSubject(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth));
+			// incoming triples
+			SortedSet<Statement> statements = resource2InStatements.computeIfAbsent(s, k -> new TreeSet<>(comparator));
+			ExtendedIterator stmtIterator = model.listStatements(null, null, s);
+			for (Predicate<Statement> filter : dropFilters) {
+				stmtIterator = stmtIterator.filterKeep(filter);
 			}
+			statements.addAll(stmtIterator.toSet());
+			statements.forEach(st -> fillMaps(st.getSubject(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth));
 
-			statements = resource2OutStatements.get(s);
-			if (statements == null) {
-				statements = new TreeSet<>(comparator);
-				ExtendedIterator stmtIterator = model.listStatements(s, null, (RDFNode) null);
-				for (Predicate<Statement> filter : dropFilters) {
-					stmtIterator = stmtIterator.filterKeep(filter);
-				}
-				statements.addAll(stmtIterator.toSet());
-				resource2OutStatements.put(s, statements);
-				statements.forEach(st -> {
-					if (st.getObject().isResource()) {
-						fillMaps(st.getObject().asResource(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth);
-					}
-				});
+			// outgoing triples
+			statements = resource2OutStatements.computeIfAbsent(s, k -> new TreeSet<>(comparator));
+			stmtIterator = model.listStatements(s, null, (RDFNode) null);
+			for (Predicate<Statement> filter : dropFilters) {
+				stmtIterator = stmtIterator.filterKeep(filter);
 			}
+			statements.addAll(stmtIterator.toSet());
+			statements.stream().filter(st -> st.getObject().isResource()).forEach(st ->
+				fillMaps(st.getObject().asResource(), model, resource2InStatements, resource2OutStatements, currentDepth + 1, maxDepth)
+			);
 		}
+	}
+
+	private int nextNodeId() {
+		return nodeId++;
 	}
 
 	private void fillTree(Resource root, Statement statementFromParent, RDFResourceTree tree,
@@ -148,12 +145,19 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 						  int currentDepth, int maxDepth) {
 		if(resource2InStatements.containsKey(root)) {
 			resource2InStatements.get(root).stream().filter(st -> !st.equals(statementFromParent)).forEach(st -> {
+
+				// check if path to parent is rdf:type, i.e. we have a class node
+				// if so, we avoid incoming edges
+				if(!tree.isRoot() && tree.getEdgeToParent().matches(RDF.type.asNode())) {
+					return;
+				}
+
 				Node predicate = new NodeInv(st.getPredicate().asNode());
 
 				RDFNode data = st.getSubject();
 
 				// create the subtree
-				RDFResourceTree subTree = new RDFResourceTree(nodeId++, data.asNode());
+				RDFResourceTree subTree = new RDFResourceTree(nextNodeId(), data.asNode());
 				tree.addChild(subTree, predicate);
 
 				// if current depth is < max depth recursive call
@@ -169,7 +173,7 @@ public class QueryTreeFactoryBaseInv implements QueryTreeFactory {
 				RDFNode data = st.getObject();
 
 				// create the subtree
-				RDFResourceTree subTree = new RDFResourceTree(nodeId++, data.asNode());
+				RDFResourceTree subTree = new RDFResourceTree(nextNodeId(), data.asNode());
 				tree.addChild(subTree, predicate);
 
 				// if root of subtree is not a literal and current depth is < max depth recursive call

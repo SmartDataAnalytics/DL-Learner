@@ -122,7 +122,8 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		if(tree1.getData().isBlank() && tree1.getData().matches(tree2.getData())) {
 			lgg.setData(tree1.getData());
 		}
-		if(tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar())) {
+		boolean isAnchorNode = tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar());
+		if(isAnchorNode) {
 			lgg.setAnchorVar(tree1.getAnchorVar());
 		}
 
@@ -172,6 +173,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //										addedChild.getStringRepresentation(),
 //										lggChild.getStringRepresentation());
 							add = false;
+							if(lggChild.hasAnchor()) {
+								add = true;
+								if(isSubTreeOf(lggChild, addedChild) && !addedChild.hasAnchor()) {
+									lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
+									it.remove();
+								}
+//								System.err.println("not add anchor " + lggChild.getAnchorVar());
+//								System.err.println(lggChild.getStringRepresentation());
+//								System.err.println("subsumes");
+//								System.err.println(addedChild.getStringRepresentation());
+							}
 							break;
 						} else if(isSubTreeOf(lggChild, addedChild)){
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
@@ -179,6 +191,9 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //										addedChild.getStringRepresentation());
 							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 							it.remove();
+							if(addedChild.hasAnchor()) {
+								System.err.println("removed anchor " + addedChild.getAnchorVar());
+							}
 						}
 					}
 					if(add){

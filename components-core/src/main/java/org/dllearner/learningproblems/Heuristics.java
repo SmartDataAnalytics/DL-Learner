@@ -252,7 +252,7 @@ public class Heuristics {
 		// method approximates t * a / |R(A)|
 		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfSuccessfulInstanceChecks, nrOfInstanceChecks);
 		double diff = beta * (interval[1] - interval[0]);
-		double ret[] = new double[2];
+		double[] ret = new double[2];
 		ret[0] = beta * interval[0] + 0.5*diff;
 		ret[1] = diff;
 		return ret;
@@ -289,7 +289,7 @@ public class Heuristics {
 		double lowerBorder = Heuristics.getAScore(recallLowerBorder, precisionLowerBorder, beta);
 		double upperBorder = Heuristics.getAScore(recallUpperBorder, precisionUpperBorder, beta);
 		double diff = upperBorder - lowerBorder;
-		double ret[] = new double[2];
+		double[] ret = new double[2];
 		ret[0] = lowerBorder + 0.5*diff;
 		ret[1] = diff;
 		return ret;

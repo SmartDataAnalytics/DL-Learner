@@ -71,7 +71,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 		}
 
 		// penalty for horizontal expansion
-		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
+		score -= (node.getHorizontalExpansion() - 1) * expansionPenaltyFactor;
 
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;

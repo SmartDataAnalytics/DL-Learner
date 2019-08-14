@@ -29,6 +29,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,24 +106,11 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		}
 		
 		// sanity check whether examples are contained in KB
-		if(reasoner != null && !(reasoner instanceof SPARQLReasoner) && !reasoner.getIndividuals().containsAll(allExamples)) {
-            Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
-            double percentage = (double)missing.size() / allExamples.size();
-            percentage = Math.round(percentage * 1000) / 1000;
-			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
-			str += missing.toString();
-            if(missing.size()==allExamples.size())    {
-                throw new ComponentInitException(str);
-            } if(percentage < 0.10) {
-                logger.warn(str);
-            } else {
-                logger.error(str);
-            }
-		}
+		Helper.checkIndividuals(reasoner, allExamples);
 		
 		initialized = true;
 	}
-	
+
 	public Set<OWLIndividual> getNegativeExamples() {
 		return negativeExamples;
 	}

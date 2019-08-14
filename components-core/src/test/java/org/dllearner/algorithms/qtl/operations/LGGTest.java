@@ -32,7 +32,7 @@ import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.experiments.DBpediaEvaluationDataset;
+import org.dllearner.algorithms.qtl.experiments.datasets.DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;

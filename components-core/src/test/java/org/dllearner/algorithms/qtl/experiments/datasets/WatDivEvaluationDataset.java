@@ -16,7 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,29 +57,24 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
 /**
  * @author Lorenz Buehmann
  *
  */
-public class LUBMEvaluationDataset extends EvaluationDataset {
+public class WatDivEvaluationDataset extends EvaluationDataset {
 
-	private static final Logger log = LoggerFactory.getLogger(LUBMEvaluationDataset.class);
+	private static final Logger log = LoggerFactory.getLogger(WatDivEvaluationDataset.class);
 
-	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/lubm_queries.txt";
+	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/watdiv_queries.txt";
 
-	private static final String CACHE_DIR = "/tmp/qtl/benchmark/lubm/cache";
+	private static File DEFAULT_BENCHMARK_DIR = new File("/tmp/qtl/experiment/");
 
-	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
-		super("LUBM");
+	public WatDivEvaluationDataset(SparqlEndpoint endpoint) {
+		this(DEFAULT_BENCHMARK_DIR, endpoint);
+	}
+
+	public WatDivEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+		super("WatDiv");
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache-" + getName());
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
@@ -84,32 +93,6 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 			e.printStackTrace();
 		}
 
-		// read SPARQL queries
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(QUERIES_FILE));
-
-			String query = "";
-			String id = null;
-			for (String line : lines) {
-				if(line.startsWith("#")) {
-					query = "";
-					if(id == null) {
-						id = line.replace("#", "").trim();
-					}
-				} else if(line.isEmpty()) {
-					 if(!query.isEmpty()) {
-						 sparqlQueries.put(id, QueryFactory.create(query));
-						 id = null;
-						 query = "";
-					 }
-				} else {
-					query += line + "\n";
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		reasoner = new SPARQLReasoner(ks);
 		try {
 			reasoner.init();
@@ -117,9 +100,9 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 			e.printStackTrace();
 		}
 		
-		baseIRI = "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#";
+		baseIRI = "http://db.uwaterloo.ca/~galuc/wsdbm/";
 		prefixMapping = PrefixMapping.Factory.create().withDefaultMappings(PrefixMapping.Standard);
-		prefixMapping.setNsPrefix("ub", "http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
+		prefixMapping.setNsPrefix("wsdbm", "http://db.uwaterloo.ca/~galuc/wsdbm/");
 
 		treeFilters.add(new MostSpecificTypesFilter(reasoner));
 		treeFilters.add(new PredicateExistenceFilter() {
@@ -128,6 +111,40 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 				return predicate.getURI().startsWith("http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
 			}
 		});
+
+		// read SPARQL queries
+		readQueries();
+	}
+
+	private void readQueries() {
+		try {
+			String s = Files.readAllLines(Paths.get(QUERIES_FILE)).stream().collect(Collectors.joining("\n"));
+
+			String regex = "\\#(\\s[A-Z][1-9])?\\n(SELECT [^}]*})";
+
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(s);
+
+			int cnt = 1;
+			String id = "";
+			Set<String> queryStrs = new HashSet<>();
+			while (matcher.find()) {
+				// parse ID if exist
+				String idTmp = matcher.group(1);
+				if(idTmp != null) {
+					id = idTmp.trim();
+					cnt = 1;
+				}
+				// parse query
+				String qStr = matcher.group(2);
+				if(queryStrs.add(qStr)) {
+					Query query = QueryFactory.create(qStr);
+					sparqlQueries.put(id + "-" + cnt++, query);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -150,8 +167,8 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 	}
 
 	public static void main(String[] args) throws Exception{
-		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred-owlhorst", Lists.newArrayList());
-		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/watdiv1000k", Lists.newArrayList());
+		WatDivEvaluationDataset ds = new WatDivEvaluationDataset(new File("/tmp/test"), endpoint);
 		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());

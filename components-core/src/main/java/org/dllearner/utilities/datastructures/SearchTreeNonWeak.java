@@ -19,8 +19,7 @@
 package org.dllearner.utilities.datastructures;
 
 import org.dllearner.core.AbstractSearchTreeNode;
-
-import java.util.Comparator;
+import org.dllearner.core.Heuristic;
 
 /**
  * A Search Tree which does not maintain weak nodes in its set
@@ -29,8 +28,8 @@ import java.util.Comparator;
  */
 public class SearchTreeNonWeak<T extends AbstractSearchTreeNode & WeakSearchTreeNode> extends SearchTree<T> {
 
-	public SearchTreeNonWeak(Comparator<T> comparator) {
-		super(comparator);
+	public SearchTreeNonWeak(Heuristic<T> heuristic) {
+		super(heuristic);
 	}
 
 	@Override

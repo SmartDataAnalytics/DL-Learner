@@ -19,7 +19,6 @@
 package org.dllearner.refinementoperators;
 
 import com.google.common.collect.*;
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
@@ -150,6 +149,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<>();
+
+	// numeric values splitter
+	private ValuesSplitter numericValuesSplitter;
 
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
@@ -389,8 +391,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// TODO SPARQL support for splits
 				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
-				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
-				splits.putAll(splitter.computeSplits());
+				// create default splitter if none was set
+				if(numericValuesSplitter == null) {
+					numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+				}
+				splits.putAll(numericValuesSplitter.computeSplits());
 				if (logger.isDebugEnabled()) {
 					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
 				}
@@ -2069,5 +2074,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
 
 		logger.debug("mMaxLength = " + mMaxLength);
+	}
+
+	/**
+	 * Set the splitter used to precompute possible splits for data properties with numeric ranges. Those splits
+	 * will then be used to create facet restrictions during refinement.
+	 *
+	 * @param numericValuesSplitter
+	 */
+	public void setNumericValuesSplitter(ValuesSplitter numericValuesSplitter) {
+		this.numericValuesSplitter = numericValuesSplitter;
 	}
 }
