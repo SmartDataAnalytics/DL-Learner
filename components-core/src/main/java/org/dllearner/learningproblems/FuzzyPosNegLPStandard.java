@@ -20,6 +20,7 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
@@ -81,7 +82,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	}
 	
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		super.init();
 		
 		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {
@@ -97,7 +98,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
 	}
 	
-	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
+	private double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		if(heuristic.equals(HeuristicType.PRED_ACC)) {
 			int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 			
@@ -144,7 +145,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				}
 			
 				// compute how accurate our current approximation is and return if it is sufficiently accurate
-				double approx[] = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(), 1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				double[] approx = Heuristics.getPredAccApproximation(positiveExamples.size(), negativeExamples.size(), 1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
 				if(approx[1]<approxDelta) {
 //					System.out.println(approx[0]);
 					return approx[0];
@@ -205,7 +206,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		}
 	}
 	
-	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
+	private double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 		if(heuristic.equals(HeuristicType.PRED_ACC)) {
 			return getPredAccuracyOrTooWeakExact(description, noise);
 		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
@@ -240,7 +241,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
-	public double getPredAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
+	private double getPredAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 		
 		// System.out.println(errorIndex++);
 
@@ -259,7 +260,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		double negMembership = 0;
 		double descriptionMembership = 0;
 		// double accumulatedSingleMembership = 0;
-		double nonAccumulativeDescriptionMembership = 0;
+		double nonAccumulativeDescriptionMembership;
 		double accumulativeDescriptionMembership = 0;
 		
 //		System.out.println("noise = " + noise);
@@ -346,14 +347,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		return Heuristics.getFScore(recall, precision);
 	}
 	
-	public double getFMeasureOrTooWeakExact(OWLClassExpression description, double noise) {
+	private double getFMeasureOrTooWeakExact(OWLClassExpression description, double noise) {
 		
 		// added by Josue
 		// fuzzy F-measure
 		double coveredMembershipDegree = 0;
 		double totalMembershipDegree = 0;
 		double invertedCoveredMembershipDegree = 0;
-		double lastMembershipDegree = 0;
+		double lastMembershipDegree;
 
 		for (FuzzyIndividual ind: fuzzyExamples) {
 			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - getReasoner().hasTypeFuzzyMembership(description, ind)));
@@ -394,7 +395,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 		int instancesCovered = 0;
 		int instancesNotCovered = 0;
-		int total = 0;
+		int total;
 		boolean estimatedA = false;
 		
 		double lowerBorderA = 0;

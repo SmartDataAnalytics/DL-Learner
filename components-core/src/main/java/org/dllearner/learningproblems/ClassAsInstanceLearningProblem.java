@@ -89,7 +89,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 			if (!allClasses.containsAll(allExamples)) {
 				Set<OWLClass> missing = Sets.difference(allExamples, allClasses);
 				double percentage = (double) missing.size() / allExamples.size();
-				percentage = Math.round(percentage * 1000) / 1000;
+				percentage = Math.round(percentage * 1000.0) / 1000.0;
 				String str =
 						"The examples (" + (percentage * 100) + " % of total) " +
 								"below are not contained in the knowledge base " +

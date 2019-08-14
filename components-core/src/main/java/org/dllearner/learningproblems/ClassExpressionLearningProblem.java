@@ -154,6 +154,7 @@ public class ClassExpressionLearningProblem extends AbstractClassExpressionLearn
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 
+
 		if (accuracyMethod == null) {
 			accuracyMethod = new AccMethodPredAcc(true);
 		}
