@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.rdf.model.Model;
 import org.dllearner.accuracymethods.AccMethodPredAcc;
 import org.dllearner.core.*;
 import org.dllearner.core.search.Beam;
@@ -222,7 +224,7 @@ public class SimpleStochasticBeamSearch2
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
 //        swore();
-        poker();
+        poker2();
     }
 
     static void swore() throws Exception {
@@ -285,8 +287,6 @@ public class SimpleStochasticBeamSearch2
             File file = new File("../examples/poker/pair50.owl");
             OWLClass startClass = OWLManager.getOWLDataFactory().getOWLThing();
 
-
-
             AbstractKnowledgeSource ks = OWLAPIOntology.fromFile(file);
             ks.init();
 
@@ -297,7 +297,6 @@ public class SimpleStochasticBeamSearch2
             rc.setReasonerComponent(baseReasoner);
             rc.init();
 
-
             RhoDRDown op = new RhoDRDown();
             op.setStartClass(startClass);
             op.setReasoner(rc);
@@ -307,9 +306,6 @@ public class SimpleStochasticBeamSearch2
             op.setUseExistsConstructor(true);
             op.setUseAllConstructor(false);
             op.init();
-
-            ks = OWLAPIOntology.fromFile(file);
-            ks.init();
 
         OWLDataFactory df = OWLManager.getOWLDataFactory();
 
@@ -382,5 +378,57 @@ public class SimpleStochasticBeamSearch2
             alg.search();
             System.out.println("solutions:");
             alg.getSolutions().forEach(System.out::println);
+    }
+
+    static void poker2() throws Exception {
+
+        File file = new File("/tmp/poker_straight_flush_p50-n50.owl");
+        OWLClass startClass = OWLManager.getOWLDataFactory().getOWLThing();
+
+        OWLAPIOntology ks = OWLAPIOntology.fromFile(file);
+        ks.init();
+
+        OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
+        baseReasoner.setReasonerImplementation(ReasonerImplementation.PELLET);
+        baseReasoner.init();
+        ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
+        rc.setReasonerComponent(baseReasoner);
+        rc.init();
+
+        RhoDRDown op = new RhoDRDown();
+        op.setStartClass(startClass);
+        op.setReasoner(rc);
+        op.setUseNegation(false);
+        op.setUseHasValueConstructor(false);
+        op.setUseCardinalityRestrictions(true);
+        op.setUseExistsConstructor(true);
+        op.setUseAllConstructor(false);
+        op.init();
+
+        OWLDataFactory df = OWLManager.getOWLDataFactory();
+
+        final String targetClass = "straight_flush";
+
+        Set<OWLIndividual> allIndividuals = Sets.newHashSet(ks.getOntology().getIndividualsInSignature());
+        Set<OWLIndividual> posExamples = allIndividuals.stream()
+                .filter(ind -> ks.getOntology().getAnnotationAssertionAxioms((OWLAnnotationSubject) ind).stream()
+                        .map(OWLAnnotationAssertionAxiom::annotationValue)
+                        .map(OWLAnnotationValue::asLiteral)
+                        .anyMatch(lit -> lit.isPresent() && lit.get().getLiteral().equals(targetClass)))
+                .collect(Collectors.toSet());
+
+        Set<OWLIndividual> negExamples = Sets.difference(allIndividuals, posExamples);
+
+        PosNegLP lp = new PosNegLPStandard(rc);
+        lp.setPositiveExamples(posExamples);
+        lp.setNegativeExamples(negExamples);
+        lp.setAccuracyMethod(new AccMethodPredAcc());
+        lp.init();
+
+
+        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(20, Sets.newHashSet(startClass), rc, op, lp);
+        alg.search();
+        System.out.println("solutions:");
+        alg.getSolutions().forEach(System.out::println);
     }
 }
