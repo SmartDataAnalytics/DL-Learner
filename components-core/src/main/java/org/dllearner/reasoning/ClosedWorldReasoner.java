@@ -26,6 +26,7 @@ import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
@@ -45,6 +46,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -292,8 +294,15 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
         individuals = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals();
 
-        logger.debug("materialising concepts");
+        int totalEntities = baseReasoner.getClasses().size() +
+                            baseReasoner.getObjectProperties().size() +
+                            baseReasoner.getDatatypeProperties().size();
+
+        AtomicInteger i = new AtomicInteger();
+
+        logger.info("materialising concepts");
         baseReasoner.getClasses().stream().filter(cls -> !cls.getIRI().isReservedVocabulary()).forEach(cls -> {
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
             TreeSet<OWLIndividual> pos = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(cls);
             classInstancesPos.put(cls, pos);
 
@@ -337,13 +346,18 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 //        }
 
         // materialize the object property facts
-        logger.debug("materialising object properties ...");
-        baseReasoner.getObjectProperties().forEach(p -> opPos.put(p, baseReasoner.getPropertyMembers(p)));
-        logger.debug("finished materialising object properties.");
+        logger.info("materialising object properties ...");
+        baseReasoner.getObjectProperties().forEach(p -> {
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
+            opPos.put(p, baseReasoner.getPropertyMembers(p));
+        });
 
         // materialize the data property facts
-        logger.debug("materialising datatype properties");
-        baseReasoner.getDatatypeProperties().forEach(p -> dpPos.put(p, baseReasoner.getDatatypeMembers(p)));
+        logger.info("materialising datatype properties");
+        baseReasoner.getDatatypeProperties().forEach(p -> {
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
+            dpPos.put(p, baseReasoner.getDatatypeMembers(p));
+        });
 
         for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
             bdPos.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getTrueDatatypeMembers(dp));
