@@ -116,7 +116,7 @@ public class PokerDatasetConverter {
 
         man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(hasCard, hand));
         man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(hasCard, card));
-        man.addAxiom(ont, df.getOWLSubClassOfAxiom(hand, df.getOWLObjectExactCardinality(5, hasCard, card)));
+//        man.addAxiom(ont, df.getOWLSubClassOfAxiom(hand, df.getOWLObjectExactCardinality(5, hasCard, card)));
 
         man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(hasSuit, card));
         man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(hasSuit, suit));
