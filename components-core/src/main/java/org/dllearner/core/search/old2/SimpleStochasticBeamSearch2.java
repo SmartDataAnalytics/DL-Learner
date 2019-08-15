@@ -1,16 +1,15 @@
 package org.dllearner.core.search.old2;
 
 import java.io.File;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.rdf.model.Model;
 import org.dllearner.accuracymethods.AccMethodPredAcc;
 import org.dllearner.core.*;
 import org.dllearner.core.search.Beam;
@@ -21,12 +20,18 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.ConsoleProgressMonitor;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
@@ -63,13 +68,13 @@ public class SimpleStochasticBeamSearch2
 
     @Override
     protected Set<OWLClassExpression> refine(OWLClassExpression hypothesis) {
-        return ((RhoDRDown)op).refine(hypothesis, 5);
+        return ((RhoDRDown)op).refine(hypothesis, 25);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected EvaluatedDescription<Score> evaluate(OWLClassExpression hypothesis) {
-        System.out.println(lp.evaluate(hypothesis, 0.2));
+//        System.out.println(lp.evaluate(hypothesis, 0.2));
         return (EvaluatedDescription<Score>) lp.evaluate(hypothesis, 0.2);
     }
 
@@ -223,8 +228,28 @@ public class SimpleStochasticBeamSearch2
     public static void main(String[] args) throws Exception {
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
+//        pelletBug();
+
 //        swore();
+//        poker();
         poker2();
+    }
+
+    static void pelletBug() throws Exception {
+        OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("/tmp/poker_straight_flush_p50-n50.owl"));
+
+        PelletReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ont);
+        reasoner.prepareReasoner();
+
+        OWLClassExpression ce;
+
+        ce = parseClassExpression(ont, "hasRank some {seven}");
+//        reasoner.getSubClasses(ce, true);
+
+        ce = parseClassExpression(ont, "hasCard max 4 (hasRank some {seven})");
+        reasoner.getSubClasses(ce, true);
+
+
     }
 
     static void swore() throws Exception {
@@ -384,6 +409,7 @@ public class SimpleStochasticBeamSearch2
 
         File file = new File("/tmp/poker_straight_flush_p50-n50.owl");
         OWLClass startClass = OWLManager.getOWLDataFactory().getOWLThing();
+        startClass = OWLManager.getOWLDataFactory().getOWLClass(IRI.create("http://dl-learner.org/examples/uci/poker#Hand"));
 
         OWLAPIOntology ks = OWLAPIOntology.fromFile(file);
         ks.init();
@@ -398,11 +424,13 @@ public class SimpleStochasticBeamSearch2
         RhoDRDown op = new RhoDRDown();
         op.setStartClass(startClass);
         op.setReasoner(rc);
-        op.setUseNegation(false);
-        op.setUseHasValueConstructor(false);
+        op.setUseNegation(true);
+        op.setUseHasValueConstructor(true);
+        op.setFrequencyThreshold(10);
         op.setUseCardinalityRestrictions(true);
         op.setUseExistsConstructor(true);
         op.setUseAllConstructor(false);
+        op.setCardinalityLimit(5);
         op.init();
 
         OWLDataFactory df = OWLManager.getOWLDataFactory();
@@ -411,7 +439,7 @@ public class SimpleStochasticBeamSearch2
 
         Set<OWLIndividual> allIndividuals = Sets.newHashSet(ks.getOntology().getIndividualsInSignature());
         Set<OWLIndividual> posExamples = allIndividuals.stream()
-                .filter(ind -> ks.getOntology().getAnnotationAssertionAxioms((OWLAnnotationSubject) ind).stream()
+                .filter(ind -> ks.getOntology().getAnnotationAssertionAxioms(ind.asOWLNamedIndividual().getIRI()).stream()
                         .map(OWLAnnotationAssertionAxiom::annotationValue)
                         .map(OWLAnnotationValue::asLiteral)
                         .anyMatch(lit -> lit.isPresent() && lit.get().getLiteral().equals(targetClass)))
@@ -426,9 +454,22 @@ public class SimpleStochasticBeamSearch2
         lp.init();
 
 
-        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(20, Sets.newHashSet(startClass), rc, op, lp);
+        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(400, Sets.newHashSet(startClass), rc, op, lp);
+        alg.setProgressMonitor(new ConsoleProgressMonitor());
         alg.search();
         System.out.println("solutions:");
         alg.getSolutions().forEach(System.out::println);
+    }
+
+    private static OWLClassExpression parseClassExpression(OWLOntology rootOntology, String s) {
+        ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
+        parser.setDefaultOntology(rootOntology);
+        parser.setStringToParse(s);
+        parser.setOWLEntityChecker(new ShortFormEntityChecker(
+                new BidirectionalShortFormProviderAdapter(
+                        rootOntology.getOWLOntologyManager(),
+                        rootOntology.getImportsClosure(),
+                        new SimpleShortFormProvider())));
+        return parser.parseClassExpression();
     }
 }

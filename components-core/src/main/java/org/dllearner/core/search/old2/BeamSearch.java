@@ -10,6 +10,8 @@ import org.dllearner.core.EvaluatedHypothesisOWL;
 import org.dllearner.core.Score;
 import org.dllearner.core.search.Beam;
 import org.dllearner.core.search.BoundedTreeSet;
+import org.dllearner.utilities.ProgressMonitor;
+import org.dllearner.utilities.SilentProgressMonitor;
 import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
@@ -57,6 +59,8 @@ public abstract class BeamSearch<
     // start time of the algorithm
     protected long startTime;
 
+    protected ProgressMonitor progressMonitor = new SilentProgressMonitor();
+
 
     public BeamSearch(int beamSize, Set<H> startHypotheses) {
         if (beamSize <= 0) {
@@ -89,18 +93,24 @@ public abstract class BeamSearch<
         while(!beam.isEmpty() && !terminationCriteriaSatisfied()) {
             nextIterationStarted(i++);
 
+            Set<H> candidateHypotheses = new HashSet<>();// beam.stream().flatMap(node -> refine(node.hypothesis.getDescription()).stream()).collect(Collectors.toSet());
+
             SortedSet<BeamNode<EH>> candidates = new TreeSet<>();
 
             // process each element of the beam
+            int done = 0;
+            int total = beam.size();
             for (BeamNode<EH> node : beam) {
+                progressMonitor.updateProgress(++done, total, "processing node " + node);
                 // compute refinements
                 Set<H> refinements = refine(node.hypothesis.getDescription());
+                refinements.removeAll(candidateHypotheses);
 
                 // evaluate refinements
                 Set<EH> evaluatedRefinements = evaluate(refinements);
 
                 for (EH ref : evaluatedRefinements) {
-                    if(isSolution(ref)) { // refinement is already a solution? TODO add option to refine solutions
+                    if(isSolution(ref)) { // refinement is already a solution?
                         // we update the min. quality value once a new solution was added to the solutions
                         if(addSolution(ref)) {
                             minQuality = quality(solutions.last());
@@ -110,10 +120,16 @@ public abstract class BeamSearch<
                                 bestQuality = quality(solutions.first());
                             }
                         }
+                        // TODO add option to refine solutions
+                        if(quality(ref) < 1.0) {
+                            candidates.add(new BeamNode<>(ref, node, utility(ref, node.hypothesis)));
+                        }
                     } else if(isCandidate(ref)){ // refinement is at least "good" enough being a candidate for populating the beam
                         candidates.add(new BeamNode<>(ref, node, utility(ref, node.hypothesis)));
                     }
                 }
+
+                candidateHypotheses.addAll(refinements);
             }
 
             // re-populate the beam
@@ -290,6 +306,11 @@ public abstract class BeamSearch<
         this.minQuality = minQuality;
     }
 
+    public void setProgressMonitor(ProgressMonitor progressMonitor) {
+        this.progressMonitor = progressMonitor;
+    }
+
+
     static class BeamNode<T extends EvaluatedHypothesis> implements Comparable<BeamNode<T>> {
 
         private final T hypothesis;
@@ -328,11 +349,16 @@ public abstract class BeamSearch<
 
         @Override
         public int compareTo(@NotNull BeamNode<T> other) {
-            return ComparisonChain.start()
+            return -1 * ComparisonChain.start()
                     .compare(utility, other.utility)
                     .compare(hypothesis.getAccuracy(), other.hypothesis.getAccuracy())
                     .compare(hypothesis.getDescription(), other.hypothesis.getDescription())
                     .result();
+        }
+
+        @Override
+        public String toString() {
+            return hypothesis + "\t(u(h)=" + utility + ")";
         }
     }
 
