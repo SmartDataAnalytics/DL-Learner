@@ -21,7 +21,7 @@
         <spring.version>4.3.3.RELEASE</spring.version>
         <jena.sparql.api.version>3.11.0-1</jena.sparql.api.version>
 		<jena.version>3.12.0</jena.version>
-		<pellet.version>2.5.0-dllearner</pellet.version>
+		<pellet.version>2.5.1-dllearner</pellet.version>
 		<jgrapht.version>1.1.0</jgrapht.version>
 	</properties>
 
@@ -646,6 +646,21 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-rng-core</artifactId>
+				<version>1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-rng-simple</artifactId>
+				<version>1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-rng-sampling</artifactId>
+                <version>1.2</version>
 			</dependency>
 
 			<!-- Jena SPARQL API -->

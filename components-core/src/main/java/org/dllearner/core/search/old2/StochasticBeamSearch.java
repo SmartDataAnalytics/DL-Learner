@@ -1,15 +1,16 @@
 package org.dllearner.core.search.old2;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.Pair;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.DiscreteProbabilityCollectionSampler;
+import org.apache.commons.rng.simple.RandomSource;
 import org.dllearner.core.EvaluatedHypothesis;
 import org.dllearner.core.EvaluatedHypothesisOWL;
 import org.dllearner.core.Score;
@@ -56,25 +57,23 @@ public abstract class StochasticBeamSearch< H extends OWLObject,
         double maxUtility = candidates.first().getUtility();
 
         // compute probability for each node
-        List<Pair<BeamNode<EH>, Double>> nodes2Prob = candidates.stream()
-                .map(c -> Pair.create(c, probability(normalize(c.getUtility(), minUtility, maxUtility))))
-                .collect(Collectors.toList());
-
+        Map<BeamNode<EH>, Double> node2Prob = candidates.stream().collect(Collectors.toMap(
+                                                    Function.identity(),
+                                                    c -> probability(normalize(c.getUtility(), minUtility, maxUtility))));
         // reset the random generator
-        rng.setSeed(123);
+        UniformRandomProvider rng = RandomSource.create(RandomSource.MT, 123);
 
         // create discrete probability distribution (this class does normalization to sum of 1 internally)
-        EnumeratedDistribution<BeamNode<EH>> distribution = new EnumeratedDistribution<>(rng, nodes2Prob);
+        DiscreteProbabilityCollectionSampler<BeamNode<EH>> sampler = new DiscreteProbabilityCollectionSampler<>(rng, node2Prob);
 
         // fill beam
         while(beam.size() < beamSize) {
             // compute a sample
-            BeamNode<EH> sampleNode = distribution.sample();
+            BeamNode<EH> sampleNode = sampler.sample();
 
             // add to beam set
             beam.add(sampleNode);
         }
-
     }
 
     double temperature = 1.0;
