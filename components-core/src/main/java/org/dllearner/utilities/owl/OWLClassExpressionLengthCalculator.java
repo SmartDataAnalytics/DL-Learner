@@ -52,6 +52,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 * @return the length of the class expression
 	 */
 	public int getLength(OWLClassExpression ce) {
+		length = 0;
 		ce.accept(this);
 		return length;
 	}
