@@ -1092,6 +1092,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 								(domain != null && mA.get(domain).get(j).size()==0))
 							validCombo = false;
 					}
+					validCombo = false; // todo add option to disable union
 
 					if(validCombo) {
 
@@ -1431,13 +1432,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //							.flatMap(p -> frequentValues.get(p).stream()
 //									.map(val -> df.getOWLObjectHasValue(p, val)))
 //							.collect(Collectors.toSet()));
+			SortedSet<OWLClassExpression> classExpressions = mA.get(nc).get(lc);
+			SortedSet<OWLClassExpression> classExpressionsInv = mA.get(nc).get(lc_i);
 			for(OWLObjectProperty p : mgr.get(nc)) {
 				Set<OWLIndividual> values = frequentValues.get(p);
-				values.forEach(val -> m.get(lc).add(df.getOWLObjectHasValue(p, val)));
+				if(values != null) {
+					values.forEach(val -> classExpressions.add(df.getOWLObjectHasValue(p, val)));
 
-				if(useInverse) {
-					values.forEach(val -> m.get(lc_i).add(df.getOWLObjectHasValue(p.getInverseProperty(), val)));
+					if(useInverse) {
+						values.forEach(val -> classExpressionsInv.add(df.getOWLObjectHasValue(p.getInverseProperty(), val)));
+					}
 				}
+
 			}
 		}
 
