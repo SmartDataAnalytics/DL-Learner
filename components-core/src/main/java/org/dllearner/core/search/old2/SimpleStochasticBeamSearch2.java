@@ -226,13 +226,17 @@ public class SimpleStochasticBeamSearch2
     }
 
     public static void main(String[] args) throws Exception {
+        String path = args[0];
+        int beamSize = Integer.parseInt(args[1]);
+        String startClass = args.length == 2 ? args[2] : null;
+
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
 //        pelletBug();
 
 //        swore();
 //        poker();
-        poker2();
+        poker2(path, beamSize);
     }
 
     static void pelletBug() throws Exception {
@@ -405,9 +409,9 @@ public class SimpleStochasticBeamSearch2
             alg.getSolutions().forEach(System.out::println);
     }
 
-    static void poker2() throws Exception {
+    static void poker2(String path, int beamSize) throws Exception {
 
-        File file = new File("/tmp/poker_straight_flush_p50-n50.owl");
+        File file = new File(path);
         OWLClass startClass = OWLManager.getOWLDataFactory().getOWLThing();
         startClass = OWLManager.getOWLDataFactory().getOWLClass(IRI.create("http://dl-learner.org/examples/uci/poker#Hand"));
 
@@ -454,7 +458,7 @@ public class SimpleStochasticBeamSearch2
         lp.init();
 
 
-        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(400, Sets.newHashSet(startClass), rc, op, lp);
+        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(beamSize, Sets.newHashSet(startClass), rc, op, lp);
         alg.setProgressMonitor(new ConsoleProgressMonitor());
         alg.search();
         System.out.println("solutions:");

@@ -116,7 +116,7 @@ public abstract class BeamSearch<
                             minQuality = quality(solutions.last());
                             // notify if new best solution was found
                             if(quality(solutions.first()) > bestQuality) {
-                                log.info("better solution found:" + ref);
+                                log.info("\nbetter solution found: " + ref);
                                 bestQuality = quality(solutions.first());
                             }
                         }
