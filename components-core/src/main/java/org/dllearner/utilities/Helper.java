@@ -277,8 +277,8 @@ public class Helper {
 		}
 	}
 
-	public static void displayProgressPercentage(int done, int total) {
-		int size = 5;
+	public static void displayProgressPercentage(int done, int total, String message) {
+		int size = 40;
 		String iconLeftBoundary = "[";
 		String iconDone = "=";
 		String iconRemain = ".";
@@ -300,7 +300,7 @@ public class Helper {
 		}
 		bar.append(iconRightBoundary);
 
-		System.out.print("\r" + bar + " " + donePercents + "%");
+		System.out.print("\r" + bar + " " + donePercents + "%" + " (" + done + "/" + total + ")" + "::\"" + message + "\"");
 
 		if (done == total) {
 			System.out.print("\n");

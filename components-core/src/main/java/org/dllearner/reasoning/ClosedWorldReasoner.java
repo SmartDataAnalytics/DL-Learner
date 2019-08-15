@@ -301,7 +301,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
         logger.info("materialising concepts");
         baseReasoner.getClasses().stream().filter(cls -> !cls.getIRI().isReservedVocabulary()).forEach(cls -> {
-            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, cls.toString());
             TreeSet<OWLIndividual> pos = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(cls);
             classInstancesPos.put(cls, pos);
 
@@ -347,14 +347,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         // materialize the object property facts
         logger.info("materialising object properties ...");
         baseReasoner.getObjectProperties().forEach(p -> {
-            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, p.toString());
             opPos.put(p, baseReasoner.getPropertyMembers(p));
         });
 
         // materialize the data property facts
         logger.info("materialising datatype properties");
         baseReasoner.getDatatypeProperties().forEach(p -> {
-            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
+            Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, p.toString());
             dpPos.put(p, baseReasoner.getDatatypeMembers(p));
         });
 
