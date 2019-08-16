@@ -7,12 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -64,18 +66,30 @@ public class PokerDatasetConverter {
         }
 
         // sampling
-        int pos = n;
-        int negPerClass = n;
+        int maxPos = n;
+        int maxNegPerClass = n;
 
         for (int i = 0; i < target.length; i++) {
             int idx = i;
-            OWLOntology merge = man.createOntology(ontologies.get(i).getAxioms());
-            ontologies.forEach((key, value) -> {
-                if (!key.equals(idx)) {
-                    man.addAxioms(merge, value.getAxioms());
-                }
-            });
-            merge.saveOntology(new FileOutputStream(new File(args[1],"poker_" + target[i] + "_p" + pos + "-n" + negPerClass + ".owl")));
+
+            OWLOntology merge = man.createOntology();
+
+            Set<OWLAxiom> posAxioms = ontologies.get(i).getAxioms();
+            Set<OWLAxiom> negAxioms = ontologies.entrySet().stream()
+                    .filter(e -> !e.getKey().equals(idx))
+                    .flatMap(e -> e.getValue().getAxioms().stream())
+                    .collect(Collectors.toSet());
+
+            man.addAxioms(merge, posAxioms);
+            man.addAxioms(merge, negAxioms);
+
+            long posCnt = posAxioms.stream()
+                    .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
+                    .filter(ax -> ((OWLClassAssertionAxiom)ax).getClassExpression().equals(hand)).count();
+            long negCnt = negAxioms.stream()
+                    .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
+                    .filter(ax -> ((OWLClassAssertionAxiom)ax).getClassExpression().equals(hand)).count();
+            merge.saveOntology(new FileOutputStream(new File(args[1],"poker_" + target[i] + "_p" + posCnt + "-n" + negCnt + ".owl")));
         }
 
     }
@@ -196,18 +210,27 @@ public class PokerDatasetConverter {
         for (int i = 0; i < cards.size(); i++) {
             Card c1 = cards.get(i);
             int rank1 = c1.getRankID();
-            if(rank1 == ranks.size() - 1) {
-                rank1 = -1;
-            }
             for (int j = i+1; j < cards.size(); j++) {
                 Card c2 = cards.get(j);
                 int rank2 = c2.getRankID();
 
                 if(rank2 - rank1 == 1) {
                     axioms.add(df.getOWLObjectPropertyAssertionAxiom(nextRank, c1.ind, c2.ind));
+                } else {
+                    // we can stop here since cards are ordered by rank
+                    break;
+                }
+            }
+
+            // special case if c1 = king, check for ace
+            if(rank1 == ranks.indexOf("king") + 1) {
+                Card c2 = cards.get(0);
+                if(c2.getRankID() == 1) {
+                    axioms.add(df.getOWLObjectPropertyAssertionAxiom(nextRank, c1.ind, c2.ind));
                 }
             }
         }
+//        System.out.println(target[Integer.parseInt(split[10])] + ":" + idx);
 
         axioms.add(df.getOWLAnnotationAssertionAxiom(pokerHand,
                                                     handInd.getIRI(),
