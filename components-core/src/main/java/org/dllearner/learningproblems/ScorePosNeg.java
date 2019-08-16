@@ -54,5 +54,31 @@ public abstract class ScorePosNeg<T extends OWLEntity> extends Score {
 	 * @return Score.
 	 */
 	public abstract ScorePosNeg<T> getModifiedLengthScore(int newLength);
+
+	public String printConfusionMatrix() {
+
+		int[][] matrix = new int[2][2];
+		matrix[0][0] = getCoveredPositives().size();
+		matrix[0][1] = getCoveredNegatives().size();
+		matrix[1][0] = getNotCoveredPositives().size();
+		matrix[1][1] = getNotCoveredNegatives().size();
+
+
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("          pos        neg     \n");
+
+		for(int i = 0; i < matrix.length; i++){
+			String cls = i==0 ? "pos" : "neg";
+			sb.append(cls + "  |");
+			for(int j = 0; j < matrix.length; j++){
+				sb.append(String.format("%8d |", matrix[i][j]));
+			}
+			sb.append("\n");
+		}
+
+		return sb.toString();//.trim();
+	}
 	
 }
