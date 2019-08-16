@@ -1,5 +1,6 @@
 package org.dllearner.core.search.old2;
 
+import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.util.Set;
 import java.util.SortedSet;
@@ -29,6 +30,7 @@ import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
@@ -228,7 +230,7 @@ public class SimpleStochasticBeamSearch2
     public static void main(String[] args) throws Exception {
         String path = args[0];
         int beamSize = Integer.parseInt(args[1]);
-        String startClass = args.length == 2 ? args[2] : null;
+        String startClass = args.length == 3 ? args[2] : null;
 
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
@@ -236,7 +238,7 @@ public class SimpleStochasticBeamSearch2
 
 //        swore();
 //        poker();
-        poker2(path, beamSize);
+        poker2(path, beamSize, startClass);
     }
 
     static void pelletBug() throws Exception {
@@ -409,14 +411,16 @@ public class SimpleStochasticBeamSearch2
             alg.getSolutions().forEach(System.out::println);
     }
 
-    static void poker2(String path, int beamSize) throws Exception {
+    static void poker2(String path, int beamSize, String startClassExpressionString) throws Exception {
 
         File file = new File(path);
-        OWLClass startClass = OWLManager.getOWLDataFactory().getOWLThing();
-        startClass = OWLManager.getOWLDataFactory().getOWLClass(IRI.create("http://dl-learner.org/examples/uci/poker#Hand"));
 
         OWLAPIOntology ks = OWLAPIOntology.fromFile(file);
         ks.init();
+
+        OWLClassExpression startClass = startClassExpressionString == null
+                                                ? OWLManager.getOWLDataFactory().getOWLThing()
+                                                : parseClassExpression(ks.getOntology(), startClassExpressionString);
 
         OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
         baseReasoner.setReasonerImplementation(ReasonerImplementation.PELLET);
@@ -431,6 +435,7 @@ public class SimpleStochasticBeamSearch2
         op.setUseNegation(true);
         op.setUseHasValueConstructor(true);
         op.setFrequencyThreshold(10);
+        op.setUseObjectValueNegation(true);
         op.setUseCardinalityRestrictions(true);
         op.setUseExistsConstructor(true);
         op.setUseAllConstructor(false);
@@ -441,6 +446,8 @@ public class SimpleStochasticBeamSearch2
 
         final String targetClass = "straight_flush";
 
+        OWLClass hand = df.getOWLClass(IRI.create("http://dl-learner.org/examples/uci/poker#Hand"));
+
         Set<OWLIndividual> allIndividuals = Sets.newHashSet(ks.getOntology().getIndividualsInSignature());
         Set<OWLIndividual> posExamples = allIndividuals.stream()
                 .filter(ind -> ks.getOntology().getAnnotationAssertionAxioms(ind.asOWLNamedIndividual().getIRI()).stream()
@@ -449,13 +456,38 @@ public class SimpleStochasticBeamSearch2
                         .anyMatch(lit -> lit.isPresent() && lit.get().getLiteral().equals(targetClass)))
                 .collect(Collectors.toSet());
 
-        Set<OWLIndividual> negExamples = Sets.difference(allIndividuals, posExamples);
+        Set<OWLIndividual> negExamples = ks.getOntology().getABoxAxioms(Imports.INCLUDED).stream()
+                .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
+                .map(ax -> (OWLClassAssertionAxiom)ax)
+                .filter(ax -> ax.getClassExpression().equals(hand))
+                .map(OWLClassAssertionAxiom::getIndividual)
+                .filter(ind -> ks.getOntology().getAnnotationAssertionAxioms(ind.asOWLNamedIndividual().getIRI()).stream()
+                        .map(OWLAnnotationAssertionAxiom::annotationValue)
+                        .map(OWLAnnotationValue::asLiteral)
+                        .anyMatch(lit -> lit.isPresent() && !lit.get().getLiteral().equals(targetClass)))
+                .collect(Collectors.toSet());
+
+//        negExamples = Sets.difference(allIndividuals, posExamples);
 
         PosNegLP lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
         lp.setAccuracyMethod(new AccMethodPredAcc());
         lp.init();
+
+        System.out.println("#pos ex. = " + posExamples.size());
+        System.out.println("#neg ex. = " + negExamples.size());
+
+        OWLClassExpression target = parseClassExpression(ks.getOntology(),
+                "Hand and hasCard some ( Card and sameSuit min 4 ( Card and nextRank some ( Card and hasRank some (not {ace}))))");
+
+        EvaluatedDescription<ScorePosNeg<OWLNamedIndividual>> targetED = lp.evaluate(target);
+
+        System.out.println(targetED);
+        System.out.println(targetED.getScore().printConfusionMatrix());
+        System.out.println(targetED.getScore().getNotCoveredPositives());
+
+
 
 
         SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(beamSize, Sets.newHashSet(startClass), rc, op, lp);
