@@ -426,8 +426,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					maxNrOfFillers.put(op, 10);
 				} else {
 					int maxFillers = Math.min(cardinalityLimit,
-							reasoner.getPropertyMembers(op).entrySet().stream()
-									.mapToInt(entry -> entry.getValue().size())
+							reasoner.getPropertyMembers(op).values().stream()
+									.mapToInt(Set::size)
 									.max().orElse(0));
 					maxNrOfFillers.put(op, maxFillers);
 
@@ -626,9 +626,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					refinements.add(operands.get(1));
 				} else {
 					// copy children list and remove a different element in each turn
-					for(int i=0; i<operands.size(); i++) {
+					for (OWLClassExpression op : operands) {
 						List<OWLClassExpression> newChildren = new LinkedList<>(operands);
-						newChildren.remove(i);
+						newChildren.remove(op);
 						OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
 						refinements.add(md);
 					}
@@ -639,7 +639,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
 
-			OWLClassExpression domain = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+			// we need the context of the filler which is either the domain (in case of an inverse property) or the range of p
+			OWLClassExpression domain = role.isAnonymous()
+					? opDomains.get(role.getNamedProperty()) // inv(p) -> D = domain(p)
+					: opRanges.get(role.asOWLObjectProperty()); // p -> D = range(p)
 
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(filler, maxLength-lengthMetric.objectSomeValuesLength-lengthMetric.objectProperyLength, null, domain);
@@ -657,11 +660,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// rule 3: EXISTS r.D => >= 2 r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if(useCardinalityRestrictions) {// && !role.isAnonymous()) {
-				if(maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) && maxNrOfFillers.get(role) > 1) {
-					OWLObjectMinCardinality min = df.getOWLObjectMinCardinality(2,role,filler);
-					refinements.add(min);
-				}
+			if (useCardinalityRestrictions &&
+					maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) &&
+					maxNrOfFillers.get(role) > 1) {
+				refinements.add(df.getOWLObjectMinCardinality(2, role, filler));
+
 			}
 
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
@@ -672,10 +675,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					for(OWLIndividual ind : frequentInds) {
 						OWLObjectHasValue ovr = df.getOWLObjectHasValue(role, ind);
 						refinements.add(ovr);
-						if(useObjectValueNegation ){
-							refinements.add(df.getOWLObjectComplementOf(ovr));
+						// rule 4b : EXISTS r.TOP => EXISTS r.not {value}
+						if (useObjectValueNegation) {
+							if (maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric)) {
+								refinements.add(df.getOWLObjectSomeValuesFrom(role, df.getOWLObjectComplementOf(df.getOWLObjectOneOf(ind))));
+							}
 						}
-
 					}
 				}
 			}
