@@ -17,6 +17,7 @@ import org.dllearner.core.search.Beam;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.ClosedWorldReasonerFast;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RefinementOperator;
@@ -70,12 +71,13 @@ public class SimpleStochasticBeamSearch2
 
     @Override
     protected Set<OWLClassExpression> refine(OWLClassExpression hypothesis) {
-        return ((RhoDRDown)op).refine(hypothesis, 25);
+        return ((RhoDRDown) op).refine(hypothesis, 25);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected EvaluatedDescription<Score> evaluate(OWLClassExpression hypothesis) {
+        if(lengthCalculator.getLength(hypothesis) > 25) throw new RuntimeException("too long: " + hypothesis);
 //        System.out.println(lp.evaluate(hypothesis, 0.2));
         return (EvaluatedDescription<Score>) lp.evaluate(hypothesis, 0.2);
     }
@@ -307,7 +309,7 @@ public class SimpleStochasticBeamSearch2
         op.setUseAllConstructor(true);
         op.init();
 
-        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(20, Sets.newHashSet(startClass), rc, op, lp);
+        SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(50, Sets.newHashSet(startClass), rc, op, lp);
         alg.search();
         System.out.println("solutions:");
         alg.getSolutions().forEach(System.out::println);
@@ -425,6 +427,7 @@ public class SimpleStochasticBeamSearch2
         OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
         baseReasoner.setReasonerImplementation(ReasonerImplementation.PELLET);
         baseReasoner.init();
+//        ClosedWorldReasonerFast rc = new ClosedWorldReasonerFast(ks);
         ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
         rc.setReasonerComponent(baseReasoner);
         rc.init();
@@ -492,6 +495,7 @@ public class SimpleStochasticBeamSearch2
 
         SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(beamSize, Sets.newHashSet(startClass), rc, op, lp);
         alg.setProgressMonitor(new ConsoleProgressMonitor());
+//        alg.setMinQuality(0.8);
         alg.search();
         System.out.println("solutions:");
         alg.getSolutions().forEach(System.out::println);

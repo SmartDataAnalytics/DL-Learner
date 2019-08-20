@@ -36,6 +36,7 @@ import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.LightweightSortedSet;
 import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
@@ -68,9 +69,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  *
  */
 @ComponentAnn(name = "closed world reasoner", shortName = "cwr", version = 0.9)
-public class ClosedWorldReasoner extends AbstractReasonerComponent {
+public class ClosedWorldReasonerFast extends AbstractReasonerComponent {
 
-    private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasoner.class);
+    private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasonerFast.class);
 
     // the underlying base reasoner implementation
     private OWLAPIReasoner baseReasoner;
@@ -147,16 +148,16 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     private boolean handlePunning = false;
     private boolean precomputeNegations = true;
 
-    public ClosedWorldReasoner() {
+    public ClosedWorldReasonerFast() {
     }
 
-    public ClosedWorldReasoner(TreeSet<OWLIndividual> individuals,
-            Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
-            Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos,
-            Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id,
-            Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos,
-            Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg,
-            KnowledgeSource... sources) {
+    public ClosedWorldReasonerFast(TreeSet<OWLIndividual> individuals,
+                                   Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
+                                   Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos,
+                                   Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id,
+                                   Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos,
+                                   Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg,
+                                   KnowledgeSource... sources) {
         super(new HashSet<>(Arrays.asList(sources)));
         this.individuals = individuals;
         this.classInstancesPos = classInstancesPos;
@@ -195,15 +196,15 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         }
     }
 
-    public ClosedWorldReasoner(Set<KnowledgeSource> sources) {
+    public ClosedWorldReasonerFast(Set<KnowledgeSource> sources) {
         super(sources);
     }
 
-    public ClosedWorldReasoner(KnowledgeSource... sources) {
+    public ClosedWorldReasonerFast(KnowledgeSource... sources) {
         super(new HashSet<>(Arrays.asList(sources)));
     }
 
-    public ClosedWorldReasoner(OWLAPIReasoner baseReasoner) {
+    public ClosedWorldReasonerFast(OWLAPIReasoner baseReasoner) {
         super(baseReasoner.getSources());
         this.baseReasoner = baseReasoner;
     }
@@ -284,7 +285,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     private void materialize() {
-        logger.info("Materializing TBox ...");
+        logger.info("Materializing TBox...");
         long dematStartTime = System.currentTimeMillis();
 
         objectProperties = baseReasoner.getObjectProperties();
@@ -297,7 +298,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
         AtomicInteger i = new AtomicInteger();
 
-        logger.info("\nmaterialising concepts ...");
+        logger.info("materialising concepts");
         baseReasoner.getClasses().stream().filter(cls -> !cls.getIRI().isReservedVocabulary()).forEach(cls -> {
             Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, cls.toString());
             TreeSet<OWLIndividual> pos = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(cls);
@@ -343,14 +344,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 //        }
 
         // materialize the object property facts
-        logger.info("\nmaterialising object properties ...");
+        logger.info("materialising object properties ...");
         baseReasoner.getObjectProperties().forEach(p -> {
             Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, p.toString());
             opPos.put(p, baseReasoner.getPropertyMembers(p));
         });
 
         // materialize the data property facts
-        logger.info("\nmaterialising datatype properties ...");
+        logger.info("materialising datatype properties");
         baseReasoner.getDatatypeProperties().forEach(p -> {
             Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities, p.toString());
             dpPos.put(p, baseReasoner.getDatatypeMembers(p));
@@ -999,12 +1000,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		// policy: returned sets are clones, i.e. can be modified
         // (of course we only have to clone the leafs of a class expression tree)
         if (description.isOWLThing()) {
-            return (TreeSet<OWLIndividual>) individuals.clone();
+            return new LightweightSortedSet<>(individuals);
+//            return (TreeSet<OWLIndividual>) individuals.clone();
         } else if (description.isOWLNothing()) {
             return new TreeSet<>();
         } else if (!description.isAnonymous()) {
             if (classInstancesPos.containsKey(description.asOWLClass())) {
-                return (TreeSet<OWLIndividual>) classInstancesPos.get(description).clone();
+                return new LightweightSortedSet<>(classInstancesPos.get(description));
+//                return (TreeSet<OWLIndividual>) classInstancesPos.get(description).clone();
             } else {
                 return new TreeSet<>();
             }
@@ -1013,16 +1016,16 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             if (!operand.isAnonymous()) {
                 if (isDefaultNegation()) {
                     if (precomputeNegations) {
-                        return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
+                        return new LightweightSortedSet<>(classInstancesNeg.get(operand));
                     }
                     SetView<OWLIndividual> diff = Sets.difference(individuals, classInstancesPos.get(operand));
                     return new TreeSet<>(diff);
                 } else {
-                    return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
+                    return new LightweightSortedSet<>(classInstancesNeg.get(operand));
                 }
             }
             // implement retrieval as default negation
-            return new TreeSet<>(Sets.difference(individuals, getIndividualsImpl(operand)));
+            return new LightweightSortedSet<>(Sets.difference(individuals, getIndividualsImpl(operand)));
         } else if (description instanceof OWLObjectUnionOf) {
             SortedSet<OWLIndividual> ret = new TreeSet<>();
             for (OWLClassExpression operand : ((OWLObjectUnionOf) description).getOperands()) {
@@ -1052,7 +1055,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             return mapping.entrySet().stream()
                     .filter(e -> e.getValue().stream().anyMatch(targetSet::contains))
                     .map(Entry::getKey)
-                    .collect(Collectors.toCollection(TreeSet::new));
+                    .collect(Collectors.toCollection(LightweightSortedSet::new));
         } else if (description instanceof OWLObjectAllValuesFrom) {
             // \forall restrictions are difficult to handle; assume we want to check
             // \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
@@ -1074,7 +1077,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
 //			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
-            SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
+            SortedSet<OWLIndividual> returnSet = new LightweightSortedSet<>(individuals);
 
             // each individual is connected to a set of individuals via the property;
             // we loop through the complete mapping
@@ -1093,7 +1096,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             // the mapping of instances related by r
             Map<OWLIndividual, ? extends Collection<OWLIndividual>> mapping = getTargetIndividuals(property);
 
-            SortedSet<OWLIndividual> returnSet = new TreeSet<>();
+            SortedSet<OWLIndividual> returnSet = new LightweightSortedSet<>();//new TreeSet<>();
 
             int number = ((OWLObjectMinCardinality) description).getCardinality();
 
@@ -1141,7 +1144,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 			// initially all individuals are in the return set and we then remove those
             // with too many fillers
-            SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
+            SortedSet<OWLIndividual> returnSet = new LightweightSortedSet<>(individuals);
 
             for (Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
                 int nrOfFillers = 0;
@@ -1219,14 +1222,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             return mapping.entrySet().stream()
                     .filter(e -> e.getValue().contains(value))
                     .map(Entry::getKey)
-                    .collect(Collectors.toCollection(TreeSet::new));
+                    .collect(Collectors.toCollection(LightweightSortedSet::new));
         } else if (description instanceof OWLDataSomeValuesFrom) {
             OWLDataPropertyExpression property = ((OWLDataSomeValuesFrom) description).getProperty();
             OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
 
             if (filler.isDatatype()) {
                 // we assume that the values are of the given datatype
-                return new TreeSet<>(dpPos.get(property).keySet());
+                return new LightweightSortedSet<>(dpPos.get(property).keySet());
             } else if (filler instanceof OWLDataIntersectionOf) {
                 return ((OWLDataIntersectionOf) filler).getOperands().stream()
                         .map(dr -> getIndividuals(df.getOWLDataSomeValuesFrom(property, dr)))
@@ -1234,7 +1237,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                             s1.retainAll(s2);
                             return s1;
                         })
-                        .orElse(new TreeSet<>());
+                        .orElse(new LightweightSortedSet<>());
             } else if (filler instanceof OWLDataUnionOf) {
                 return ((OWLDataUnionOf) filler).getOperands().stream()
                         .map(dr -> getIndividuals(df.getOWLDataSomeValuesFrom(property, dr)))
@@ -1333,7 +1336,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             return dpPos.getOrDefault(property, new HashMap<>()).entrySet().stream()
                     .filter(e -> e.getValue().contains(value))
                     .map(Entry::getKey)
-                    .collect(Collectors.toCollection(TreeSet::new));
+                    .collect(Collectors.toCollection(LightweightSortedSet::new));
         } else if (description instanceof OWLObjectOneOf) {
             return new TreeSet(((OWLObjectOneOf) description).getIndividuals());
         }
@@ -1745,7 +1748,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         OWLAPIOntology ks = new OWLAPIOntology(ontology);
         ks.init();
 
-        ClosedWorldReasoner reasoner = new ClosedWorldReasoner(ks);
+        ClosedWorldReasonerFast reasoner = new ClosedWorldReasonerFast(ks);
         reasoner.init();
 
 

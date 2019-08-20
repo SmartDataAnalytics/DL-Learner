@@ -31,7 +31,7 @@ public abstract class StochasticBeamSearch< H extends OWLObject,
                                             EH extends EvaluatedHypothesis<H, S>>
         extends BeamSearch<H, S, EH> {
 
-    private RandomGenerator rng = new JDKRandomGenerator();
+//    private UniformRandomProvider rng = RandomSource.create(RandomSource.MT, 123);
 
     public StochasticBeamSearch(int beamSize) {
         this(beamSize, Collections.emptySet());
@@ -60,7 +60,7 @@ public abstract class StochasticBeamSearch< H extends OWLObject,
         Map<BeamNode<EH>, Double> node2Prob = candidates.stream().collect(Collectors.toMap(
                                                     Function.identity(),
                                                     c -> probability(normalize(c.getUtility(), minUtility, maxUtility))));
-        // reset the random generator
+        // TODO reset the random generator here?
         UniformRandomProvider rng = RandomSource.create(RandomSource.MT, 123);
 
         // create discrete probability distribution (this class does normalization to sum of 1 internally)

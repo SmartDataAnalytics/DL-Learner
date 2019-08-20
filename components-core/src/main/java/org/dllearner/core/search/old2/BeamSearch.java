@@ -133,7 +133,9 @@ public abstract class BeamSearch<
             }
 
             // re-populate the beam
+//            log.info("\ntop candidates:\n" + candidates.stream().limit(beamSize).map(BeamNode::toString).collect(Collectors.joining("\n")));
             repopulateBeam(beam, candidates);
+//            log.info("\nbeam:\n" + beam.stream().map(BeamNode::toString).collect(Collectors.joining("\n")));
 
             // TODO add option to either clear the candidates or consider them for re-populating the beam in next iteration
             candidates.clear();
