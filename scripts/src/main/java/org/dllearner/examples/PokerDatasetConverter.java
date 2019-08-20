@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import static java.util.stream.Collectors.groupingBy;
+import static org.apache.jena.sys.JenaSystem.forEach;
 
 /**
  * Convert Poker dataset to OWL.
@@ -44,25 +45,44 @@ public class PokerDatasetConverter {
 
         Map<Integer, OWLOntology> ontologies = new HashMap<>();
 
+        Map<Integer, Set<OWLAxiom>> target2sampleAxioms = new HashMap<>();
+
+        // iterate over the target classes
         for (int i = 0; i < target.length; i++) {// if(i != 4) continue;
             OWLOntology ont = man.createOntology();
+
+            // add the schema axioms
             createSchema(ont);
             final int idx = i;
 //            index.set(0);
+            // process the lines with the target class
+            // once to get the sample axioms per class
             try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-
-                stream.filter(l -> l.endsWith(String.valueOf(idx)))
+                Set<OWLAxiom> sampleAxioms = stream.filter(l -> l.endsWith(String.valueOf(idx)))
                         .limit(n)
-                        .forEach(line -> {
-                            man.addAxioms(ont, convertLine(line));
-                        });
-
+                        .map(PokerDatasetConverter::convertLine)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet());
+                target2sampleAxioms.put(idx, sampleAxioms);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            // and once to create the whole ontology per class
+            try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+                stream.filter(l -> l.endsWith(String.valueOf(idx)))
+                        .forEach(line -> man.addAxioms(ont, convertLine(line)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            long examplesCnt = ont.getLogicalAxioms().stream()
+                    .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
+                    .filter(ax -> ((OWLClassAssertionAxiom) ax).getClassExpression().equals(hand))
+                    .count();
+
             ontologies.put(i, ont);
-            ont.saveOntology(new FileOutputStream(new File(args[1],"poker_" + target[i] + "_" + n + ".owl")));
+            ont.saveOntology(new FileOutputStream(new File(args[1],"poker_" + target[i] + "_" + examplesCnt + ".owl")));
         }
 
         // sampling
@@ -74,10 +94,11 @@ public class PokerDatasetConverter {
 
             OWLOntology merge = man.createOntology();
 
-            Set<OWLAxiom> posAxioms = ontologies.get(i).getAxioms();
-            Set<OWLAxiom> negAxioms = ontologies.entrySet().stream()
+            Set<OWLAxiom> posAxioms = target2sampleAxioms.get(i);
+            Set<OWLAxiom> negAxioms = target2sampleAxioms.entrySet().stream()
                     .filter(e -> !e.getKey().equals(idx))
-                    .flatMap(e -> e.getValue().getAxioms().stream())
+                    .map(Map.Entry::getValue)
+                    .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
 
             man.addAxioms(merge, posAxioms);
@@ -135,6 +156,23 @@ public class PokerDatasetConverter {
         man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(hasSuit, card));
         man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(hasSuit, suit));
         man.addAxiom(ont, df.getOWLFunctionalObjectPropertyAxiom(hasSuit));
+
+        man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(sameSuit, card));
+        man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(sameSuit, card));
+        man.addAxiom(ont, df.getOWLSymmetricObjectPropertyAxiom(sameSuit));
+        man.addAxiom(ont, df.getOWLReflexiveObjectPropertyAxiom(sameSuit));
+        man.addAxiom(ont, df.getOWLTransitiveObjectPropertyAxiom(sameSuit));
+
+        man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(sameRank, card));
+        man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(sameRank, card));
+        man.addAxiom(ont, df.getOWLSymmetricObjectPropertyAxiom(sameRank));
+        man.addAxiom(ont, df.getOWLReflexiveObjectPropertyAxiom(sameRank));
+        man.addAxiom(ont, df.getOWLTransitiveObjectPropertyAxiom(sameRank));
+
+        man.addAxiom(ont, df.getOWLObjectPropertyDomainAxiom(nextRank, card));
+        man.addAxiom(ont, df.getOWLObjectPropertyRangeAxiom(nextRank, card));
+        man.addAxiom(ont, df.getOWLAsymmetricObjectPropertyAxiom(nextRank));
+        man.addAxiom(ont, df.getOWLIrreflexiveObjectPropertyAxiom(nextRank));
 
 
         // suits
