@@ -490,11 +490,19 @@ public class SimpleStochasticBeamSearch2
         System.out.println(targetED.getScore().printConfusionMatrix());
         System.out.println(targetED.getScore().getNotCoveredPositives());
 
+        target = parseClassExpression(ks.getOntology(),
+                "Hand and hasCard some ( Card and (sameSuit min 4 Card) and (nextRank some (nextRank some (nextRank some (nextRank some (hasRank some (not {ace} )))))))");
 
+        targetED = lp.evaluate(target);
+
+        System.out.println(targetED);
+        System.out.println(targetED.getScore().printConfusionMatrix());
+        System.out.println("fn:" + targetED.getScore().getNotCoveredPositives());
+        System.out.println("fp:" + targetED.getScore().getCoveredNegatives());
 
 
         SimpleStochasticBeamSearch2 alg = new SimpleStochasticBeamSearch2(beamSize, Sets.newHashSet(startClass), rc, op, lp);
-        alg.setProgressMonitor(new ConsoleProgressMonitor());
+//        alg.setProgressMonitor(new ConsoleProgressMonitor());
 //        alg.setMinQuality(0.8);
         alg.search();
         System.out.println("solutions:");
