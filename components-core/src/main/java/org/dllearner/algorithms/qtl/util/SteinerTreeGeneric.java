@@ -3,8 +3,8 @@ package org.dllearner.algorithms.qtl.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import org.jgrapht.EdgeFactory;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.BellmanFordShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -23,12 +23,12 @@ public class SteinerTreeGeneric<V, E> {
 	Graph<V, E> graph;
 	WeightedMultigraph<V, E> tree;
 	List<V> steinerNodes;
-	private final EdgeFactory<V, E> edgeFactory;
+	private final Class<? extends E> edgeClass;
 
-	public SteinerTreeGeneric(Graph<V, E> graph, List<V> steinerNodes, EdgeFactory<V, E> edgeFactory) {
+	public SteinerTreeGeneric(Graph<V, E> graph, List<V> steinerNodes, Class<? extends E> edgeClass) {
 		this.graph = graph;
 		this.steinerNodes = steinerNodes;
-		this.edgeFactory = edgeFactory;
+		this.edgeClass = edgeClass;
 
 		runAlgorithm();
 	}
@@ -40,7 +40,7 @@ public class SteinerTreeGeneric<V, E> {
 
 		logger.debug("<enter");
 
-		Pseudograph<V, E> g = new WeightedPseudograph<V, E>(edgeFactory);
+		Pseudograph<V, E> g = new WeightedPseudograph<V, E>(edgeClass);
 
 		for (V n : this.steinerNodes) {
 			g.addVertex(n);
@@ -57,8 +57,7 @@ public class SteinerTreeGeneric<V, E> {
 				if (g.containsEdge(n1, n2))
 					continue;
 
-				E e = edgeFactory.createEdge(n1, n2);
-				g.addEdge(n1, n2, e);
+				E e = g.addEdge(n1, n2);
 				g.setEdgeWeight(e, pathGen.getPathWeight(n1, n2));
 
 			}
@@ -87,7 +86,7 @@ public class SteinerTreeGeneric<V, E> {
 
 		Set<E> edges = mst.getSpanningTree().getEdges();
 
-		WeightedMultigraph<V, E> g2 = new WeightedMultigraph<>(edgeFactory);
+		WeightedMultigraph<V, E> g2 = new WeightedMultigraph<>(edgeClass);
 
 		List<E> edgesSortedById = new ArrayList<>(edges);
 //		edgesSortedById.sort();
@@ -114,7 +113,7 @@ public class SteinerTreeGeneric<V, E> {
 
 		logger.debug("<enter");
 
-		WeightedMultigraph<V, E> g3 = new WeightedMultigraph<>(edgeFactory);
+		WeightedMultigraph<V, E> g3 = new WeightedMultigraph<>(edgeClass);
 
 		Set<E> edges = g2.edgeSet();
 		DijkstraShortestPath<V, E> pathGen = new DijkstraShortestPath<>(this.graph);
@@ -170,7 +169,7 @@ public class SteinerTreeGeneric<V, E> {
 
 		Set<E> edges = mst.getSpanningTree().getEdges();
 
-		WeightedMultigraph<V, E> g4 = new WeightedMultigraph<>(edgeFactory);
+		WeightedMultigraph<V, E> g4 = new WeightedMultigraph<>(edgeClass);
 
 		List<E> edgesSortedById = new ArrayList<>(edges);
 //		Collections.sort(edgesSortedById);
@@ -241,7 +240,7 @@ public class SteinerTreeGeneric<V, E> {
 //		GraphUtil.printGraph(g1);
 
 		if (g1.vertexSet().size() < 2) {
-			this.tree = new WeightedMultigraph<>(edgeFactory);
+			this.tree = new WeightedMultigraph<>(edgeClass);
 			for (V n : g1.vertexSet()) this.tree.addVertex(n);
 			return;
 		}
