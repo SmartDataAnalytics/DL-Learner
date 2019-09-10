@@ -330,6 +330,7 @@
 				<inherited>true</inherited>
 				<configuration>
 					<schemaDirectory>src/main/xsd</schemaDirectory>
+					<javaSource>${compiler.version}</javaSource>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -446,6 +447,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.jws</groupId>
+			<artifactId>javax.jws-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
 		</dependency>
 	</dependencies>
 

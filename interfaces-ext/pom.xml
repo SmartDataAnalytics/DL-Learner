@@ -479,6 +479,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <schemaDirectory>src/main/xsd</schemaDirectory>
+                    <javaSource>${compiler.version}</javaSource>
                 </configuration>
             </plugin>
 

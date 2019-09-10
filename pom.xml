@@ -11,7 +11,7 @@
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<compiler.version>1.8</compiler.version>
+		<compiler.version>12</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.7.28</slf4j.version>
@@ -125,7 +125,7 @@
 					<configuration>
 						<useSystemClassLoader>false</useSystemClassLoader>
 					</configuration>
-					<version>2.20.1</version>
+					<version>2.22.0</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
@@ -148,7 +148,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -183,7 +183,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.4</version>
+					<version>3.0.1</version>
 					<configuration>
 						<failOnError>false</failOnError>
 					</configuration>
@@ -221,7 +221,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>1.16</version>
+					<version>1.17</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
@@ -236,7 +236,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.mortbay.jetty</groupId>
@@ -246,7 +246,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -262,7 +262,7 @@
 				<plugin>
 					<groupId>com.amashchenko.maven.plugin</groupId>
 					<artifactId>gitflow-maven-plugin</artifactId>
-					<version>1.8.0</version>
+					<version>1.13.0</version>
 					<configuration>
 						<installProject>false</installProject>
 						<verbose>true</verbose>
@@ -365,7 +365,7 @@
 				<plugin>
 					<artifactId>jdeb</artifactId>
 					<groupId>org.vafer</groupId>
-					<version>1.7</version>
+					<version>1.8</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -881,6 +881,29 @@
 				<artifactId>jgrapht-io</artifactId>
 				<version>${jgrapht.version}</version>
 			</dependency>
+
+			<!-- for JDK 11+ -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>1.3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>2.2.11</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml.ws</groupId>
+				<artifactId>jaxws-api</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.jws</groupId>
+				<artifactId>javax.jws-api</artifactId>
+				<version>1.1</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
