@@ -11,7 +11,7 @@
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<compiler.version>12</compiler.version>
+		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.7.28</slf4j.version>
