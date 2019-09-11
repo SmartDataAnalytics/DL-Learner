@@ -34,6 +34,9 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
     private AbstractHeuristic heuristic;
     private OWLClassExpression startClass;
 
+    @ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+    private double noisePercentage = 0.0;
+
     @ConfigOption(description = "the refinement operator instance to use")
     private LengthLimitedRefinementOperator operator;
 
@@ -62,6 +65,10 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
     public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
         this.expandAccuracy100Nodes = expandAccuracy100Nodes;
+    }
+
+    public void setNoisePercentage(double noisePercentage) {
+        this.noisePercentage = noisePercentage;
     }
     // </getter/setter>
 
@@ -230,6 +237,7 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
     public void init() throws ComponentInitException {
         descriptions = new TreeSet<>();
         expressionTests = 0;
+        noise = noisePercentage/100d;
         heuristic = new OEHeuristicRuntime();
         searchTree = new SearchTree<>(heuristic);
     }
