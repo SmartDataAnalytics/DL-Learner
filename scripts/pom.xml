@@ -65,10 +65,14 @@
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-dev</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.dllearner</groupId>
+			<artifactId>components-ext</artifactId>
+		</dependency>
+
 		<!--<dependency>
-		    <groupId>org.semanticweb.elk</groupId>
-		    <artifactId>elk-owlapi</artifactId>
+			<groupId>org.semanticweb.elk</groupId>
+			<artifactId>elk-owlapi</artifactId>
 		</dependency>-->
 
 		<!-- <dependency>
