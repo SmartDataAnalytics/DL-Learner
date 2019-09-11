@@ -657,7 +657,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(
+	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(
 			OWLDataProperty datatypeProperty) {
 		try {
 			return getDatatypeMembersImpl(datatypeProperty);
