@@ -195,6 +195,10 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
         }
     }
 
+    public double getCurrentlyBestAccuracy() {
+        return bestEvaluatedDescriptions.getBest().getAccuracy();
+    }
+
     @Override
     public void start() {
         currentHighestAccuracy = 0.0;
