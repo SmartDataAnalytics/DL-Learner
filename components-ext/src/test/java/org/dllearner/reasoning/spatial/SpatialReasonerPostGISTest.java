@@ -8,7 +8,6 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -19,6 +18,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -466,6 +466,116 @@ public class SpatialReasonerPostGISTest {
                         expectedIndividual1, expectedIndividual2,
                         expectedIndividual3, expectedIndividual4),
                 reasoner.getIndividualsOWLObjectAllValuesFrom(spatialCE));
+    }
+
+    @Ignore
+    @Test
+    public void testGetConnectedIndividuals() throws ComponentInitException {
+        SpatialReasonerPostGIS reasoner = getReasoner();
+        OWLIndividual point1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "holzhofgasse_no_21"));
+        OWLIndividual point2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "ksc_dresden"));
+        OWLIndividual point3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_on_turnerweg"));
+        OWLIndividual point4 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "pos_inside_bhf_neustadt"));
+        OWLIndividual point5 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "elbwiesen_point_01"));
+        OWLIndividual line1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "turnerweg"));
+        OWLIndividual line2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "turnerweg_part"));
+        OWLIndividual line3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "elbwiesen_line_01"));
+        OWLIndividual area1 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "bahnhof_dresden_neustadt_building"));
+        OWLIndividual area2 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "elbwiesen_area_01"));
+        OWLIndividual area3 = df.getOWLNamedIndividual(
+                IRI.create(defaultPrefix + "elbwiesen_area_02"));
+
+        // point - point
+        reasoner.setIsConnectednessReflexive(false);
+        List<OWLIndividual> connectedIndividuals =
+                reasoner.getConnectedIndividuals(point1).collect(Collectors.toList());
+
+        assertEquals(1, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(point2));
+
+        reasoner.setIsConnectednessReflexive(true);
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(point1).collect(Collectors.toList());
+
+        assertEquals(2, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(point1));
+        assertTrue(connectedIndividuals.contains(point2));
+
+        // point - line
+        reasoner.setIsConnectednessReflexive(false);
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(point3).collect(Collectors.toList());
+
+        assertEquals(2, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(line1));
+        assertTrue(connectedIndividuals.contains(line2));
+
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(line1).collect(Collectors.toList());
+
+        assertEquals(2, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(point3));
+
+        // point - area
+        reasoner.setIsConnectednessReflexive(false);
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(point4).collect(Collectors.toList());
+
+        assertEquals(1, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(area1));
+
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(area1).collect(Collectors.toList());
+        assertTrue(connectedIndividuals.contains(point4));
+
+        // line - line
+        reasoner.setIsConnectednessReflexive(false);
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(line1).collect(Collectors.toList());
+
+        assertEquals(2, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(line2));
+
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(line2).collect(Collectors.toList());
+
+        assertEquals(2, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(line1));
+
+        // line - area
+        reasoner.setIsConnectednessReflexive(false);
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(line3).collect(Collectors.toList());
+
+        assertEquals(3, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(area2));
+        assertTrue(connectedIndividuals.contains(area3));
+
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(area2).collect(Collectors.toList());
+
+        assertTrue(connectedIndividuals.contains(line3));
+
+        // area - area
+        reasoner.setIsConnectednessReflexive(false);
+
+        connectedIndividuals =
+                reasoner.getConnectedIndividuals(area2).collect(Collectors.toList());
+
+        assertEquals(3, connectedIndividuals.size());
+        assertTrue(connectedIndividuals.contains(area3));
+        assertTrue(connectedIndividuals.contains(line3));
+        assertTrue(connectedIndividuals.contains(point5));
     }
 
     @Ignore

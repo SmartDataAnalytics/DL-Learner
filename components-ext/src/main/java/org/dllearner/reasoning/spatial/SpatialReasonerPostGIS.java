@@ -340,6 +340,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public void setIsIsNearRelationReflexive(boolean isIsNearRelationReflexive) {
         this.isIsNearRelationReflexive = isIsNearRelationReflexive;
     }
+
+    public void setIsConnectednessReflexive(boolean isConnectednessReflexive) {
+        this.isConnectednessReflexive = isConnectednessReflexive;
+    }
     // </getter/setter>
 
     // <implemented interface/base class methods>
@@ -448,8 +452,92 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public Stream<OWLIndividual> getConnectedIndividuals(OWLIndividual individual) {
-        throw new RuntimeException("Not implemented, yet");
+    public Stream<OWLIndividual> getConnectedIndividuals(OWLIndividual featureIndividual) {
+        String tableName = getTable(featureIndividual);
+
+        OWLIndividual geomIndividual;
+        try {
+            geomIndividual = feature2geom.get(featureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        /* Two individuals are connected if they have at least one point in
+         * common. This is pretty well covered by the ST_Intersects function for
+         * all kinds of geo features.
+         */
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri c " +
+                "FROM " +
+                    tableName + " l, " +
+                    "point_feature r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? "; // #1
+        if (!isConnectednessReflexive && tableName.equals(pointFeatureTableName))
+            queryStr +=
+                "AND " +
+                    "NOT l.iri=r.iri ";
+        queryStr +=
+                "UNION " +
+                "SELECT " +
+                    "r.iri c " +
+                "FROM " +
+                    tableName + " l, " +
+                    "line_feature r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? "; // #2
+        if (!isConnectednessReflexive && tableName.equals(lineFeatureTableName))
+            queryStr +=
+                "AND " +
+                    "NOT l.iri=r.iri ";
+        queryStr +=
+                "UNION " +
+                "SELECT " +
+                    "r.iri c " +
+                "FROM " +
+                    tableName + " l, " +
+                    "area_feature r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? "; // #3
+        if (!isConnectednessReflexive && tableName.equals(areaFeatureTableName))
+            queryStr +=
+                "AND " +
+                    "NOT l.iri=r.iri";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+            statement.setString(2, geomIndividual.toStringID());
+            statement.setString(3, geomIndividual.toStringID());
+
+            long startMilliSecs = System.currentTimeMillis();
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("c");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+            long endMilliSecs = System.currentTimeMillis();
+            logger.debug("Executing getConnectedIndividuals query took " +
+                    (endMilliSecs-startMilliSecs) / 1000 + " seconds\n");
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

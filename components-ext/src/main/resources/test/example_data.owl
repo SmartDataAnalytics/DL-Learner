@@ -532,6 +532,96 @@
     
 
 
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_area_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_area_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#AreaFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#elbwiesen_area_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_area_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_area_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.76840114593506 51.06443199027609,13.768588900566105 51.064125205751566,13.768031001091005 51.06397686964783,13.767827153205873 51.0642297149937,13.76840114593506 51.06443199027609))</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_area_02 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_area_02">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#AreaFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#elbwiesen_area_02_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_area_02_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_area_02_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((13.76840114593506 51.06443199027609,13.769007325172426 51.064732030317,13.769425749778748 51.064374679035836,13.76840114593506 51.06443199027609))</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_line_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_line_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#LineFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#elbwiesen_line_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_line_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_line_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.76840114593506 51.06443199027609,13.768181204795836 51.06452975634576)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_point_01 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_point_01">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#elbwiesen_point_01_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#elbwiesen_point_01_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#elbwiesen_point_01_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.76840114593506 51.06443199027609)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#holzhofgasse_no_21 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#holzhofgasse_no_21">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#holzhofgasse_no_21_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#holzhofgasse_no_21_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#holzhofgasse_no_21_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.759718835353851 51.062706722300106)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry -->
 
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#inside_building_bhf_neustadt_02_geometry">
@@ -781,6 +871,24 @@
     <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#kipsdorfer_str_13_geometry">
         <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">LINESTRING(13.8178602 51.0332905, 13.8196378 51.0326208, 13.8197461 51.0325799, 13.8199902 51.0324880, 13.8200217 51.0324751, 13.8202864 51.0323763, 13.8205664 51.0322709, 13.8206040 51.0322567, 13.8208317 51.0321709, 13.8217537 51.0318235)</geosparql:asWKT>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#ksc_dresden -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#ksc_dresden">
+        <rdf:type rdf:resource="http://dl-learner.org/ont/spatial#PointFeature"/>
+        <geosparql:hasGeometry rdf:resource="http://dl-learner.org/ont/spatial#ksc_dresden_geometry"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/ont/spatial#ksc_dresden_geometry -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/ont/spatial#ksc_dresden_geometry">
+        <rdf:type rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+        <geosparql:asWKT rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POINT(13.759718835353851 51.062706722300106)</geosparql:asWKT>
     </owl:NamedIndividual>
     
 
