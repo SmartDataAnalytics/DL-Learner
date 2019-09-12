@@ -15,7 +15,6 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
 import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
@@ -27,16 +26,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A SpatialReasoner implementation that uses PostGIS in the back to do the
+ * heavy lifting w.r.t. actual geo-spatial computations.
+ */
 public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements SpatialReasoner {
     private final static String defaultHost = "localhost";
     private final static int defaultPort = 5432;
     private DBConnectionSetting dbConnectionSetting;
     private Connection conn;
 
-    private double nearRadiusInMeters = 5; // meters
+    private double nearRadiusInMeters = 20; // meters
     private double runsAlongToleranceInMeters = 20; // meters
+    private double tangentialToleranceInMeters = 0.5; // meters
     private boolean isContainmentRelationReflexive = false;
     private boolean isIsNearRelationReflexive = true;
+    private boolean isConnectednessReflexive = true;
+
     private Set<List<OWLProperty>> geometryPropertyPaths = new HashSet<>();
 
     // TODO: make this configurable
