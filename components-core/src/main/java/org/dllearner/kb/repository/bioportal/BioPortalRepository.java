@@ -19,6 +19,7 @@
 package org.dllearner.kb.repository.bioportal;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.StandardSystemProperty;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -186,7 +187,7 @@ public class BioPortalRepository implements OntologyRepository {
 		// create Options object
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> baseDir =
-				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File("/tmp/bioportal/"));
+				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File(System.getProperty("java.io.tmpdir") + File.separator + "bioportal" + File.separator));
 		OptionSpec<Void> downloadOption =
 				parser.accepts( "download" );
 		OptionSpec<Void> parseOption =

@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -67,7 +68,7 @@ public class WatDivEvaluationDataset extends EvaluationDataset {
 
 	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/watdiv_queries.txt";
 
-	private static File DEFAULT_BENCHMARK_DIR = new File("/tmp/qtl/experiment/");
+	private static File DEFAULT_BENCHMARK_DIR = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl" + File.separator + "experiment" + File.separator);
 
 	public WatDivEvaluationDataset(SparqlEndpoint endpoint) {
 		this(DEFAULT_BENCHMARK_DIR, endpoint);
@@ -168,7 +169,7 @@ public class WatDivEvaluationDataset extends EvaluationDataset {
 
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/watdiv1000k", Lists.newArrayList());
-		WatDivEvaluationDataset ds = new WatDivEvaluationDataset(new File("/tmp/test"), endpoint);
+		WatDivEvaluationDataset ds = new WatDivEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), endpoint);
 		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());

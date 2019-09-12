@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -48,6 +49,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -230,7 +232,7 @@ public class LGGTest {
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
 						.setModelContentType(WebContent.contentTypeRDFXML))
-				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withCache(CacheUtilsH2.createCacheFrontend(System.getProperty("java.io.tmpdir") + File.separator + "cache", false, TimeUnit.DAYS.toMillis(60)))
 				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 
 		Set<String> ignoredProperties = Sets.newHashSet(

@@ -18,6 +18,7 @@
  */
 package org.dllearner.reasoning;
 
+import com.google.common.base.StandardSystemProperty;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.joda.time.Period;
@@ -33,6 +34,7 @@ import org.semanticweb.owlapi.util.OWLObjectPropertyManager;
 import org.semanticweb.owlapi.util.Version;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -1446,7 +1448,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
     public static void main(String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
         OWLOntology schema = //man.loadOntology(IRI.create("http://downloads.dbpedia.org/2016-10/dbpedia_2016-10.nt"));
-        man.loadOntology(IRI.create("file:///tmp/merged.ttl"));
+        man.loadOntology(IRI.create("file://" + System.getProperty("java.io.tmpdir") + "/merged.ttl"));
 
         OWLOntologyKnowledgeSource sampleKS = new OWLAPIOntology(schema);
         sampleKS.init();

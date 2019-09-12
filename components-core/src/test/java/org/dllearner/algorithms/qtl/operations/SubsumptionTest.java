@@ -21,12 +21,9 @@ package org.dllearner.algorithms.qtl.operations;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
+import com.google.common.base.StandardSystemProperty;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -89,12 +86,12 @@ public class SubsumptionTest {
 		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree1));
 		assertFalse(QueryTreeUtils.isSubsumedBy(tree1, tree2));
 		
-		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("/tmp/tree.obj"))) {
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(System.getProperty("java.io.tmpdir") + File.separator + "tree.obj"))) {
 			oos.writeObject(tree1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/tmp/tree.obj"))) {
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(System.getProperty("java.io.tmpdir") + File.separator + "tree.obj"))) {
 			RDFResourceTree tree = (RDFResourceTree) ois.readObject();
 			System.out.println(tree.getStringRepresentation());
 		} catch (Exception e) {

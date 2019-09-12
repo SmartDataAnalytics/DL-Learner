@@ -8,6 +8,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -308,7 +309,7 @@ public class QTLTuples {
                             });
                         });
                         log.debug("connected tree\n{}", tree::getStringRepresentation);
-                        QueryTreeUtils.asGraph(tree, baseIRI, pm, new File("/tmp/tree-" + FmtUtils.stringForNode(node, pm) + ".graphml"));
+                        QueryTreeUtils.asGraph(tree, baseIRI, pm, new File(System.getProperty("java.io.tmpdir") + File.separator + "tree-" + FmtUtils.stringForNode(node, pm) + ".graphml"));
                         result.put(key, Maps.immutableEntry(tree, new ArrayList<>(nodes2Project)));
                     };
 
@@ -729,7 +730,7 @@ public class QTLTuples {
 
             Graph<Vertex, Edge> g = QueryTreeUtils.toGraph(tree, baseIRI, pm);
             
-            QueryTreeUtils.asGraph(tree, baseIRI, pm, new File("/tmp/lgg.graphml"));
+            QueryTreeUtils.asGraph(tree, baseIRI, pm, new File(System.getProperty("java.io.tmpdir") + File.separator + "lgg.graphml"));
 
         });
 

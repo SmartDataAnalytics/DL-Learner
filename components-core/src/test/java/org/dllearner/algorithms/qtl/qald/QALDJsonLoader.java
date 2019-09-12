@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.qtl.qald;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
@@ -85,7 +86,7 @@ public class QALDJsonLoader {
 //				.end()
 				.create();
 		long timeToLive = TimeUnit.DAYS.toMillis(30);
-		CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend("/tmp/qald/sparql", true, timeToLive);
+		CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(System.getProperty("java.io.tmpdir") + File.separator + "qald" + File.separator + "sparql", true, timeToLive);
 		qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 
 //		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);

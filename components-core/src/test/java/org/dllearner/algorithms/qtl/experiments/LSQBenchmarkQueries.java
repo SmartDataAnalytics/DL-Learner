@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.FileWriteMode;
@@ -61,7 +62,7 @@ public class LSQBenchmarkQueries {
         SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
         endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/dbpedia?infer=false", Collections.emptyList());
         SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
-        ks.setCacheDir("/tmp/qtl/sparql-cache");
+        ks.setCacheDir(System.getProperty("java.io.tmpdir") + File.separator + "qtl" + File.separator + "sparql-cache");
         ks.init();
 
         QueryExecutionFactory qef = ks.getQueryExecutionFactory();
@@ -122,7 +123,7 @@ public class LSQBenchmarkQueries {
 
         List<Query> queries = getQueries();
 
-        File out = new File("/tmp/qtl.out");
+        File out = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl.out");
 
         queries.forEach(query -> {
             try {
