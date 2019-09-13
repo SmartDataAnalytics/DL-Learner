@@ -44,7 +44,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * Represents an EL OWLClassExpression tree. Unlike {@link ELDescriptionNode}, this is
+ * Represents an EL description tree. Unlike {@link ELDescriptionNode}, this is
  * a tree-wide structure, i.e. it does not implement the tree structure itself,
  * but is used to store information about the tree.
  * 

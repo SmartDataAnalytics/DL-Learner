@@ -61,6 +61,6 @@ public class RDFSLabelEntityTextRetriever extends AnnotationEntityTextRetriever{
 			String label = entry.getValue();
 			csv.append(uri).append(",").append(label).append("\n");
 		}
-		Files.write(csv, new File("semantic-bible-labels.csv"), Charsets.UTF_8);
+		Files.asCharSink(new File("semantic-bible-labels.csv"), Charsets.UTF_8).write(csv);
 	}
 }

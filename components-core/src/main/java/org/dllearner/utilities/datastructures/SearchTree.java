@@ -18,15 +18,15 @@
  */
 package org.dllearner.utilities.datastructures;
 
-import java.util.Comparator;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.core.Heuristic;
+
+import java.util.TreeSet;
 
 public class SearchTree<T extends AbstractSearchTreeNode> extends AbstractSearchTree<T> {
 
-	public SearchTree(Comparator<T> comparator) {
-		super(comparator);
+	public SearchTree(Heuristic<T> heuristic) {
+		super(heuristic);
 		nodes = new TreeSet<>(sortOrderComp);
 	}
 	

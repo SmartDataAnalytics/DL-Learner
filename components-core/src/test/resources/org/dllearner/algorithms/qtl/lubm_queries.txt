@@ -29,7 +29,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X
 WHERE
-{?X rdf:type/rdfs:subClassOf* ub:Publication .
+{?X rdf:type ub:Publication .
   ?X ub:publicationAuthor <http://www.Department0.University0.edu/AssistantProfessor0>}
 
 # Query4
@@ -41,7 +41,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 SELECT ?X ?Y1 ?Y2 ?Y3
 WHERE
-{?X rdf:type/rdfs:subClassOf* ub:Professor .
+{?X rdf:type ub:Professor .
   ?X ub:worksFor <http://www.Department0.University0.edu> .
   ?X ub:name ?Y1 .
   ?X ub:emailAddress ?Y2 .
@@ -51,13 +51,14 @@ WHERE
 # This query assumes subClassOf relationship between Person and its subclasses
 # and subPropertyOf relationship between memberOf and its subproperties.
 # Moreover, class Person features a deep and wide hierarchy.
+# /(((rdfs:subClassOf|owl:equivalentClass)|((owl:intersectionOf/(rdf:rest)*)/rdf:first)))*
 PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
 PREFIX  ub:   <http://swat.cse.lehigh.edu/onto/univ-bench.owl#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT  *
 WHERE
-  { ?X rdf:type/(((rdfs:subClassOf|owl:equivalentClass)|((owl:intersectionOf/(rdf:rest)*)/rdf:first)))* ub:Person .
+  { ?X rdf:type ub:Person .
     ?X ?p <http://www.Department0.University0.edu> .
     ?p rdfs:subPropertyOf ub:memberOf
   }

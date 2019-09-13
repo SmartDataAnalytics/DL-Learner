@@ -50,4 +50,9 @@ public class StableHeuristic implements ELHeuristic {
 	 */
 	@Override
 	public void init() throws ComponentInitException {}
+
+	@Override
+	public double getNodeScore(SearchTreeNode node) {
+		return node.getScore().getAccuracy();
+	}
 }

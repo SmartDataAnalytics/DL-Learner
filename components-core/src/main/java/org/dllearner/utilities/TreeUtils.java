@@ -18,19 +18,23 @@
  */
 package org.dllearner.utilities;
 
+import org.dllearner.algorithms.ocel.ExampleBasedNode;
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.core.Heuristic;
 import org.dllearner.utilities.datastructures.AbstractSearchTree;
+
+import javax.annotation.Nonnull;
 
 public class TreeUtils {
 
-	public static String toTreeString(
-			AbstractSearchTree<? extends AbstractSearchTreeNode<? extends AbstractSearchTreeNode>> tree) {
-		return TreeUtils.toTreeString(tree.getRoot());
+	public static <T extends AbstractSearchTreeNode> String toTreeString(
+			AbstractSearchTree<T> tree) {
+		return TreeUtils.<T>toTreeString(tree.getRoot(), tree.getHeuristic());
 	}
-	public static String toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
-		return TreeUtils.toTreeString(node, 0).toString();
+	public static  <T extends AbstractSearchTreeNode> String toTreeString(T node, Heuristic<T> heuristic) {
+		return TreeUtils.toTreeString(node, heuristic, 0).toString();
 	}
-	public static String getRefinementChainString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
+	public static <T extends AbstractSearchTreeNode> String getRefinementChainString(T node) {
 		if(node.getParent()!=null) {
 			String ret = getRefinementChainString(node.getParent());
 			ret += " => " + node.getExpression().toString();
@@ -40,18 +44,38 @@ public class TreeUtils {
 		}
 	}
 
-	private static StringBuilder toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node,
-			int depth) {
+	private static <T extends AbstractSearchTreeNode> StringBuilder toTreeString(T node,
+	                                          Heuristic<T> heuristic, int depth) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(node.toString()).append("\n");
-		for(AbstractSearchTreeNode child : node.getChildren()) {
-			treeString.append(TreeUtils.toTreeString(child, depth+1));
+		treeString.append(node.toString())
+				.append(addNodeScore(node, heuristic))
+				.append("\n");
+		for (Object child :
+		     node.getChildren()) {
+			treeString.append(TreeUtils.<T>toTreeString((T) child, heuristic,depth+1));
 		}
 		return treeString;
+	}
+
+	@Nonnull
+	private static <T extends AbstractSearchTreeNode> String addNodeScore(T node, Heuristic<T> heuristic) {
+		if (heuristic == null)
+			return "";
+
+		if (node instanceof ExampleBasedNode) {
+			if (!((ExampleBasedNode) node).isQualityEvaluated()) {
+				return "";
+			}
+			if (((ExampleBasedNode) node).isTooWeak()) {
+				return "[score:too weak]";
+			}
+		}
+
+		return "[score: " + heuristic.getNodeScore(node) + "]";
 	}
 
 }

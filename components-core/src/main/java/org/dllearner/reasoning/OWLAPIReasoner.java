@@ -21,6 +21,7 @@ package org.dllearner.reasoning;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.base.StandardSystemProperty;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.*;
@@ -234,7 +235,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
 	    for (OWLDataProperty dataProperty : datatypeProperties) {
 //		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
-		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, ontology);
+		    Collection<OWLDataRange> ranges = Collections.EMPTY_SET;
+		    LinkedList<OWLDataProperty> superDataProperties = new LinkedList<>();
+		    superDataProperties.add(dataProperty);
+		    while (ranges.isEmpty() && !superDataProperties.isEmpty()) {
+			    OWLDataProperty sDP = superDataProperties.removeFirst();
+			    ranges = EntitySearcher.getRanges(sDP, ontology);
+			    if (ranges.isEmpty()) {
+				    final NodeSet<OWLDataProperty> sps = reasoner.getSuperDataProperties(sDP, true);
+				    superDataProperties.addAll(sps.getFlattened());
+			    }
+		    }
 		    Iterator<OWLDataRange> it = ranges.iterator();
 		    if (it.hasNext()) {
 			    OWLDataRange range = it.next();
@@ -462,13 +473,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		try {
 			classes = reasoner.getSuperClasses(concept, true);
 		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
 			if (useFallbackReasoner) {
 				classes = fallbackReasoner.getSubClasses(concept, true);
 			} else {
 				throw e;
 			}
 		}
-		return getFirstClasses(classes);
+		return new TreeSet<>(classes.getFlattened());
+//		return getFirstClasses(classes);
 	}
 
 	@Override
@@ -484,7 +497,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				throw e;
 			}
 		}
-		TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
+		TreeSet<OWLClassExpression> subClasses = new TreeSet<>(classes.getFlattened());//getFirstClasses(classes);
 		subClasses.remove(df.getOWLNothing());
 		// remove built-in entities sometimes returned as subclasses of
 		// owl:Thing
@@ -1246,7 +1259,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	}
 
 	public static void main(String[] args) throws Exception{
-		OWLOntology o = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("/tmp/test2.rdf"));
+		OWLOntology o = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File(System.getProperty("java.io.tmpdir") + File.separator + "test2.rdf"));
 		System.out.println(o.getClassesInSignature());
 		System.out.println(o.getDataPropertiesInSignature());
 		System.out.println(o.getIndividualsInSignature().size());

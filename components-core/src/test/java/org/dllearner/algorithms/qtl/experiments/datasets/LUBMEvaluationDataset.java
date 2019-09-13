@@ -16,20 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
-import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.riot.WebContent;
 import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
 import org.dllearner.algorithms.qtl.util.filters.MostSpecificTypesFilter;
@@ -43,15 +47,6 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
 /**
  * @author Lorenz Buehmann
  *
@@ -62,29 +57,48 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 
 	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/lubm_queries.txt";
 
-	private static final String CACHE_DIR = "/tmp/qtl/benchmark/lubm/cache";
 
-	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint examplesEndpoint, SparqlEndpoint dataEndpoint) {
 		super("LUBM");
+
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache-" + getName());
-		QueryExecutionFactory qef = FluentQueryExecutionFactory
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
-				.config().withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
-						.setModelContentType(WebContent.contentTypeRDFXML))
-				.end()
-				.create();
-		qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false", false, TimeUnit.DAYS.toMillis(7) );
 		try {
-			ks = new SparqlEndpointKS(endpoint);
-			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
-			ks.setQueryExecutionFactory(qef);
+			ks = new SparqlEndpointKS(dataEndpoint);
+			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl;mv_store=false");
 			ks.init();
+
+			if(examplesEndpoint != dataEndpoint) {
+				examplesKS = new SparqlEndpointKS(examplesEndpoint);
+				examplesKS.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl;mv_store=false");
+				examplesKS.init();
+			} else {
+				examplesKS = ks;
+			}
+
+			reasoner = new SPARQLReasoner(ks);
+			reasoner.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
 
+		baseIRI = "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#";
+		prefixMapping = PrefixMapping.Factory.create().withDefaultMappings(PrefixMapping.Standard);
+		prefixMapping.setNsPrefix("ub", "http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
+
+		treeFilters.add(new MostSpecificTypesFilter(reasoner));
+		treeFilters.add(new PredicateExistenceFilter() {
+			@Override
+			public boolean isMeaningless(Node predicate) {
+				return predicate.getURI().startsWith("http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
+			}
+		});
+
 		// read SPARQL queries
+		readQueries();
+	}
+
+	private void readQueries() {
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(QUERIES_FILE));
 
@@ -97,11 +111,11 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 						id = line.replace("#", "").trim();
 					}
 				} else if(line.isEmpty()) {
-					 if(!query.isEmpty()) {
-						 sparqlQueries.put(id, QueryFactory.create(query));
-						 id = null;
-						 query = "";
-					 }
+					if(!query.isEmpty()) {
+						sparqlQueries.put(id, QueryFactory.create(query));
+						id = null;
+						query = "";
+					}
 				} else {
 					query += line + "\n";
 				}
@@ -109,25 +123,10 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
-		reasoner = new SPARQLReasoner(ks);
-		try {
-			reasoner.init();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		}
-		
-		baseIRI = "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#";
-		prefixMapping = PrefixMapping.Factory.create().withDefaultMappings(PrefixMapping.Standard);
-		prefixMapping.setNsPrefix("ub", "http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
-
-		treeFilters.add(new MostSpecificTypesFilter(reasoner));
-		treeFilters.add(new PredicateExistenceFilter() {
-			@Override
-			public boolean isMeaningless(Node predicate) {
-				return predicate.getURI().startsWith("http://swat.cse.lehigh.edu/onto/univ-bench.owl#");
-			}
-		});
+	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+		this(benchmarkDirectory, endpoint, endpoint);
 	}
 
 	@Override
@@ -151,7 +150,7 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred-owlhorst", Lists.newArrayList());
-		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
+		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), endpoint);
 		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());

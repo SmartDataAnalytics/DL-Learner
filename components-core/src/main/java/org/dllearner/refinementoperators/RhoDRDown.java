@@ -19,7 +19,6 @@
 package org.dllearner.refinementoperators;
 
 import com.google.common.collect.*;
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.dllearner.core.*;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
@@ -80,9 +79,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(description = "the reasoner to use")
 	private AbstractReasonerComponent reasoner;
-
-	//@ConfigOption(description = "the learning algorithm")
-	//private
 
 	// hierarchies
 	@NoConfigOption
@@ -151,6 +147,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<>();
 
+	// numeric values splitter
+	private ValuesSplitter numericValuesSplitter;
+
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
 
@@ -161,14 +160,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(defaultValue = "3", description = "minimum number an individual or literal has to be seen in the " +
 			"knowledge base before considering it for inclusion in concepts")
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
-	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<>();
 	// data structure with identified frequent values
 	private Map<OWLObjectPropertyExpression, Set<OWLIndividual>> frequentValues = new HashMap<>();
 	// frequent data values
 	private Map<OWLDataProperty, Set<OWLLiteral>> frequentDataValues = new HashMap<>();
-	private Map<OWLDataProperty, Map<OWLLiteral, Integer>> dataValueFrequency = new HashMap<>();
-	@ConfigOption(description = "whether to use hasValue on frequently occuring strings", defaultValue = "false")
-	private boolean useDataHasValueConstructor = false;
 
 	// statistics
 	public long mComputationTimeNs = 0;
@@ -189,6 +184,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false")
 	private boolean useHasValueConstructor = false;
+
+	@ConfigOption(description = "support of has value constructor (owl:hasValue), e.g. \u2203 r.{20} ", defaultValue = "false")
+	private boolean useDataHasValueConstructor = false;
 
 	@ConfigOption(description="support of qualified cardinality restrictions (owl:minCardinality, owl:maxCardinality, owl:exactCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
 	private boolean useCardinalityRestrictions = true;
@@ -243,29 +241,43 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public RhoDRDown() {}
 
+	/**
+	 * Copy constructor
+	 */
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
 		setCardinalityLimit(op.cardinalityLimit);
 		setClassHierarchy(op.classHierarchy);
+		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
 		setDataPropertyHierarchy(op.dataPropertyHierarchy);
 		setDropDisjuncts(op.dropDisjuncts);
-		setFrequencyThreshold(op.frequencyThreshold);
 		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
-		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
 		setReasoner(op.reasoner);
 		setStartClass(op.startClass);
-		setSubHierarchy(op.classHierarchy);
 		setUseAllConstructor(op.useAllConstructor);
-		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
-		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
 		setUseExistsConstructor(op.useExistsConstructor);
-		setUseHasValueConstructor(op.useHasValueConstructor);
 		setUseNegation(op.useNegation);
+		setUseHasValueConstructor(op.useHasValueConstructor);
 		setUseObjectValueNegation(op.useObjectValueNegation);
+		setFrequencyThreshold(op.frequencyThreshold);
+		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
+		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseStringDatatypes(op.useStringDatatypes);
 		setUseNumericDatatypes(op.useNumericDatatypes);
+		setUseTimeDatatypes(op.useTimeDatatypes);
 		initialized = false;
+	}
+
+	private <T> Set<T> frequentObjects(Collection<? extends Collection<T>> c, int frequencyThreshold) {
+		final int t = frequencyThreshold;
+		return c.stream()
+				.flatMap(Collection::stream)
+				.collect(Collectors.collectingAndThen(Collectors.groupingBy(Function.identity(), Collectors.counting()),
+						map -> {
+							map.values().removeIf(v -> v < t);
+							return map.keySet();
+						}));
 	}
 
 	@Override
@@ -289,98 +301,38 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		opRanges = reasoner.getObjectPropertyRanges();
 		dpDomains = reasoner.getDataPropertyDomains();
 
+		// r. some {ind}
 		if (useHasValueConstructor) {
 			for (OWLObjectProperty op : objectPropertyHierarchy.getEntities()) {
-				// sets ordered by corresponding individual (which we ignore)
+
 				Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers = reasoner.getPropertyMembers(op);
 
-				Collection<SortedSet<OWLIndividual>> fillerSets = propertyMembers.values();
-
-				// compute frequency of individuals used as object
-				Map<OWLIndividual, Integer> ind2Frequency = fillerSets.stream()
-						.flatMap(Collection::stream)
-						.collect(Collectors.groupingBy(Function.identity(), TreeMap::new, summingInt(s -> 1))); // (ind -> freqency)
-
-				// keep track of this
-				valueFrequency.put(op, ind2Frequency);
-
-				// keep only individuals with frequency > threshold
-				Set<OWLIndividual> frequentInds = ind2Frequency.entrySet().stream()
-						.filter(e -> e.getValue() >= frequencyThreshold) // frequency >= threshold
-						.map(Map.Entry::getKey)
-						.collect(Collectors.toCollection(TreeSet::new));
+				// compute the frequency of all individuals used as object and filter by threshold
+				Set<OWLIndividual> frequentInds = frequentObjects(propertyMembers.values(), frequencyThreshold);
 				frequentValues.put(op, frequentInds);
 
+				// inv(r). some {ind}
 				if(useInverse) {
-					Map<OWLIndividual, Integer> opMap = new TreeMap<>();
-					valueFrequency.put(op.getInverseProperty(), opMap);
-
-					frequentInds = new TreeSet<>();
-
-					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : propertyMembers
-							.entrySet()) {
-						OWLIndividual subject = entry.getKey();
-						SortedSet<OWLIndividual> values = entry.getValue();
-
-						opMap.put(subject, values.size());
-
-						if (values.size() >= frequencyThreshold) {
-							frequentInds.add(subject);
-						}
-					}
+					// it's a bit easier for inverse properties since we have a mapping from each individual to
+					// all related individuals, thus, the freuqncy of each individual as subject is just the number
+					// of objects
+					frequentInds = propertyMembers.entrySet().stream().collect(Collectors.collectingAndThen(
+							Collectors.toMap(Entry::getKey, e -> e.getValue().size()), map -> {
+								map.values().removeIf(v -> v < frequencyThreshold);
+								return map.keySet();
+					}));
 					frequentValues.put(op.getInverseProperty(), frequentInds);
 				}
 			}
 		}
 
+		// r. some {lit}
 		if(useDataHasValueConstructor) {
 			for(OWLDataProperty dp : dataPropertyHierarchy.getEntities()) {
-				Map<OWLLiteral, Integer> dpMap = new TreeMap<>();
-				dataValueFrequency.put(dp, dpMap);
-
-//				long s1 = System.currentTimeMillis();
-//				ConcurrentMap<OWLLiteral, Integer> lit2frequency = reasoner.getDatatypeMembers(dp).values()
-//						.parallelStream()
-//						.map(set -> set.stream().collect(Collectors.toList()))
-//						.flatMap(list -> list.stream())
-//						.collect(Collectors.toConcurrentMap(
-//								Function.identity(), lit -> 1, Integer::sum));
-//				long s2 = System.currentTimeMillis();
-//				System.out.println(s2 - s1);
-
-				// sets ordered by corresponding individual (which we ignore)
-//				s1 = System.currentTimeMillis();
-				Collection<SortedSet<OWLLiteral>> fillerSets = reasoner.getDatatypeMembers(dp).values();
-				for(SortedSet<OWLLiteral> fillerSet : fillerSets) {
-					for(OWLLiteral lit : fillerSet) {
-						Integer frequency = dpMap.get(lit);
-
-						if(frequency != null) {
-							dpMap.put(lit, frequency+1);
-						} else {
-							dpMap.put(lit, 1);
-						}
-					}
-				}
-//				s2 = System.currentTimeMillis();
-//				System.out.println(s2 - s1);
-
-				// keep only frequent patterns
-				Set<OWLLiteral> frequentInds = new TreeSet<>();
-				for(OWLLiteral i : dpMap.keySet()) {
-					if(dpMap.get(i) >= frequencyThreshold) {
-						logger.trace("adding value "+i+", because "+dpMap.get(i) +">="+frequencyThreshold);
-						frequentInds.add(i);
-					}
-				}
-				frequentDataValues.put(dp, frequentInds);
+				Set<OWLLiteral> frequentLiterals = frequentObjects(reasoner.getDatatypeMembers(dp).values(), frequencyThreshold);
+				frequentDataValues.put(dp, frequentLiterals);
 			}
 		}
-
-		// we do not need the temporary set anymore and let the
-		// garbage collector take care of it
-		valueFrequency = null;
-		dataValueFrequency.clear();// = null;
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
@@ -389,8 +341,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// TODO SPARQL support for splits
 				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
-				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
-				splits.putAll(splitter.computeSplits());
+				// create default splitter if none was set
+				if(numericValuesSplitter == null) {
+					numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+				}
+				splits.putAll(numericValuesSplitter.computeSplits());
 				if (logger.isDebugEnabled()) {
 					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
 				}
@@ -421,8 +376,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					maxNrOfFillers.put(op, 10);
 				} else {
 					int maxFillers = Math.min(cardinalityLimit,
-							reasoner.getPropertyMembers(op).entrySet().stream()
-									.mapToInt(entry -> entry.getValue().size())
+							reasoner.getPropertyMembers(op).values().stream()
+									.mapToInt(Set::size)
 									.max().orElse(0));
 					maxNrOfFillers.put(op, maxFillers);
 
@@ -621,9 +576,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					refinements.add(operands.get(1));
 				} else {
 					// copy children list and remove a different element in each turn
-					for(int i=0; i<operands.size(); i++) {
+					for (OWLClassExpression op : operands) {
 						List<OWLClassExpression> newChildren = new LinkedList<>(operands);
-						newChildren.remove(i);
+						newChildren.remove(op);
 						OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
 						refinements.add(md);
 					}
@@ -634,7 +589,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
 
-			OWLClassExpression domain = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+			// we need the context of the filler which is either the domain (in case of an inverse property) or the range of p
+			OWLClassExpression domain = role.isAnonymous()
+					? opDomains.get(role.getNamedProperty()) // inv(p) -> D = domain(p)
+					: opRanges.get(role.asOWLObjectProperty()); // p -> D = range(p)
 
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(filler, maxLength-lengthMetric.objectSomeValuesLength-lengthMetric.objectProperyLength, null, domain);
@@ -652,11 +610,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// rule 3: EXISTS r.D => >= 2 r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if(useCardinalityRestrictions) {// && !role.isAnonymous()) {
-				if(maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) && maxNrOfFillers.get(role) > 1) {
-					OWLObjectMinCardinality min = df.getOWLObjectMinCardinality(2,role,filler);
-					refinements.add(min);
-				}
+			if (useCardinalityRestrictions &&
+					maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) &&
+					maxNrOfFillers.get(role) > 1) {
+				refinements.add(df.getOWLObjectMinCardinality(2, role, filler));
+
 			}
 
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
@@ -667,10 +625,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					for(OWLIndividual ind : frequentInds) {
 						OWLObjectHasValue ovr = df.getOWLObjectHasValue(role, ind);
 						refinements.add(ovr);
-						if(useObjectValueNegation ){
-							refinements.add(df.getOWLObjectComplementOf(ovr));
+						// rule 4b : EXISTS r.TOP => EXISTS r.not {value}
+						if (useObjectValueNegation) {
+							if (maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric)) {
+								refinements.add(df.getOWLObjectSomeValuesFrom(role, df.getOWLObjectComplementOf(df.getOWLObjectOneOf(ind))));
+							}
 						}
-
 					}
 				}
 			}
@@ -1110,11 +1070,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						// TODO: similar filtering can be done for boolean datatype
 						// properties
 						if(applyExistsFilter) {
-							Iterator<OWLObjectUnionOf> it = baseSet.iterator();
-							while(it.hasNext()) {
-								if(MathOperations.containsDoubleObjectSomeRestriction(it.next()))
-									it.remove();
-							}
+							baseSet.removeIf(MathOperations::containsDoubleObjectSomeRestriction);
 						}
 
 						// add computed refinements
@@ -2069,5 +2025,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
 
 		logger.debug("mMaxLength = " + mMaxLength);
+	}
+
+	/**
+	 * Set the splitter used to precompute possible splits for data properties with numeric ranges. Those splits
+	 * will then be used to create facet restrictions during refinement.
+	 *
+	 * @param numericValuesSplitter
+	 */
+	public void setNumericValuesSplitter(ValuesSplitter numericValuesSplitter) {
+		this.numericValuesSplitter = numericValuesSplitter;
 	}
 }

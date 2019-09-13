@@ -70,24 +70,14 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 			return 0;
 		}
 		
-		boolean equalPosSize = false;
-		boolean equalNegSize = false;
-		
-		if(getPositiveExamples().size() == e.getPositiveExamples().size()){
-			equalPosSize = true;
-		} 
-		if(getNegativeExamples().size() == e.getNegativeExamples().size()){
-			equalNegSize = true;
-		} 
-		
+		boolean equalPosSize = getPositiveExamples().size() == e.getPositiveExamples().size();
+		boolean equalNegSize = getNegativeExamples().size() == e.getNegativeExamples().size();
 		
 		if(equalPosSize && !equalNegSize)return 1;
 		if(equalNegSize && !equalPosSize)return -1;
-		if(!equalPosSize && !equalPosSize)return 1;
-		
+		if(!equalPosSize && !equalNegSize)return 1;
 		
 		return 1;
-		
 	}
 	
 	public SortedSet<OWLIndividual> getNegativeExamples() {
@@ -96,8 +86,4 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	public SortedSet<OWLIndividual> getPositiveExamples() {
 		return positiveExamples;
 	}
-	
-	
-	
-
 }

@@ -18,9 +18,6 @@
  */
 package org.dllearner.algorithms.qtl.heuristics;
 
-import java.util.Comparator;
-import java.util.Set;
-
 import com.google.common.collect.ComparisonChain;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.core.AbstractComponent;
@@ -30,12 +27,13 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import java.util.Set;
+
 /**
  * @author Lorenz Buehmann
  *
  */
-public abstract class QueryTreeHeuristic extends AbstractComponent implements Heuristic,
-		Comparator<EvaluatedRDFResourceTree> {
+public abstract class QueryTreeHeuristic extends AbstractComponent implements Heuristic<EvaluatedRDFResourceTree> {
 
 	protected double posExamplesWeight = 1.0;
 	protected HeuristicType heuristicType = HeuristicType.PRED_ACC;
@@ -46,7 +44,12 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 	}
 	
 	public abstract double getScore(EvaluatedRDFResourceTree tree);
-	
+
+	@Override
+	public double getNodeScore(EvaluatedRDFResourceTree node) {
+		return getScore(node);
+	}
+
 	/**
 	 * @param posExamplesWeight the posExamplesWeight to set
 	 */

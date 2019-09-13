@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -26,6 +26,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.shared.PrefixMapping;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.experiments.SPARQLUtils;
 import org.dllearner.algorithms.qtl.util.filters.AbstractTreeFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -47,18 +48,21 @@ import java.util.stream.Collectors;
  */
 public abstract class EvaluationDataset {
 
-	String name;
+	protected String name;
 
-	SparqlEndpointKS ks;
-	String baseIRI;
-	PrefixMapping prefixMapping;
-	
-	AbstractReasonerComponent reasoner;
+	protected SparqlEndpointKS examplesKS;
+	protected SparqlEndpointKS ks;
+	protected String baseIRI;
+	protected PrefixMapping prefixMapping;
 
-	Map<String, Query> sparqlQueries = new TreeMap<>();
-	List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
+	protected AbstractReasonerComponent reasoner;
 
-	private PredicateExistenceFilter predicateFilter;
+	protected Map<String, Query> sparqlQueries = new TreeMap<>();
+
+	protected List<Predicate<Statement>> queryTreeFilters = new ArrayList<>();
+	protected Set<AbstractTreeFilter<RDFResourceTree>> treeFilters = new HashSet<>();
+
+	protected  PredicateExistenceFilter predicateFilter;
 
 	public EvaluationDataset(String name) {
 		this.name = name;
@@ -71,7 +75,11 @@ public abstract class EvaluationDataset {
 	public SparqlEndpointKS getKS() {
 		return ks;
 	}
-	
+
+	public SparqlEndpointKS getExamplesKS() {
+		return examplesKS;
+	}
+
 	public AbstractReasonerComponent getReasoner() {
 		return reasoner;
 	}
@@ -100,7 +108,9 @@ public abstract class EvaluationDataset {
 		this.predicateFilter = predicateFilter;
 	}
 
-	protected Set<AbstractTreeFilter<RDFResourceTree>> treeFilters = new HashSet<>();
+	public Set<AbstractTreeFilter<RDFResourceTree>> getTreeFilters() {
+		return treeFilters;
+	}
 
 	public abstract boolean usesStrictOWLTypes();
 

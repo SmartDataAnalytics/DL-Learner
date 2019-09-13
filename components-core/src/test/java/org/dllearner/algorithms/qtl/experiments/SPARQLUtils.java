@@ -22,6 +22,10 @@ import java.util.stream.StreamSupport;
  */
 public class SPARQLUtils {
 
+    public enum QueryType {
+        IN, OUT, MISC
+    }
+
     private static QueryUtils utils = new QueryUtils();
 
     public static ParameterizedSparqlString CBD_TEMPLATE_DEPTH3;
@@ -36,11 +40,6 @@ public class SPARQLUtils {
         }
 
     }
-
-    enum QueryType {
-        IN, OUT, MISC
-    }
-
 
     public static List<String> getResult(QueryExecutionFactory qef, Query query) throws Exception{
         return getResult(qef, query, query.getProjectVars().get(0));

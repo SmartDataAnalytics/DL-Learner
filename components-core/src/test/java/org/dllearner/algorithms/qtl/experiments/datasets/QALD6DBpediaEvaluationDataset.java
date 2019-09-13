@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.algorithms.qtl.experiments;
+package org.dllearner.algorithms.qtl.experiments.datasets;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -216,7 +217,7 @@ public class QALD6DBpediaEvaluationDataset extends EvaluationDataset {
 		}
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql",
 														"http://dbpedia.org");
-		QALD6DBpediaEvaluationDataset ds = new QALD6DBpediaEvaluationDataset(new File("/tmp/test"), endpoint);
+		QALD6DBpediaEvaluationDataset ds = new QALD6DBpediaEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), endpoint);
 		ds.saveToDisk(new File(args[0]));
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println("#queries:" + queries.size());

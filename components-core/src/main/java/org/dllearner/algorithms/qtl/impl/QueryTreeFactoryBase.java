@@ -85,8 +85,9 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(org.apache.jena.util.iterator.Filter)
 	 */
+	@SafeVarargs
 	@Override
-	public void addDropFilters(Predicate<Statement>... dropFilters) {
+	public final void addDropFilters(Predicate<Statement>... dropFilters) {
 		this.dropFilters.addAll(Arrays.asList(dropFilters));
 	}
 
@@ -118,16 +119,12 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 //			it = it.filterKeep(keepFilter);
 		}
 
-		SortedSet<Statement> statements = resource2Statements.get(s);
-		if (statements == null) {
-			statements = new TreeSet<>(comparator);
-			resource2Statements.put(s, statements);
-		}
+		SortedSet<Statement> statements = resource2Statements.computeIfAbsent(s, k -> new TreeSet<>(comparator));
 
 		while (it.hasNext()) {
 			Statement st = it.next();
 			statements.add(st);
-			if ((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject())) {
+			if ((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject().asResource())) {
 				fillMap(st.getObject().asResource(), model, resource2Statements);
 			}
 		}

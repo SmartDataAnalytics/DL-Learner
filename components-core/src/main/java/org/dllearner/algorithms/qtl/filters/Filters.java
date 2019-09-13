@@ -69,7 +69,7 @@ public class Filters {
 		filters.add(FOAF.homepage.toString());
 		filters.add(FOAF.depiction.toString());
 		filters.add(FOAF.Image.toString());
-		filters.add(FOAF.surname.toString());
+		filters.add(FOAF.familyName.toString());
 		filters.add(FOAF.birthday.toString());
 		filters.add(FOAF.name.toString());
 		filters.add(FOAF.firstName.toString());

@@ -21,27 +21,42 @@ package org.dllearner.algorithms.qtl.util;
 import org.apache.jena.sparql.core.Var;
 
 /**
+ * A SPARQL variable generator, e.g. <code>?x1, ?x2, ?x3, ...</code>
+ *
  * @author Lorenz Buehmann
  *
  */
 public class VarGenerator {
 	
-	private final String header = "?";
 	private final String base;
 	private int cnt = 0;
-	
+
+	/**
+	 * @param base the base variable name, which will be used as prefix, e.g. <code>x</code> will result in variables
+	 *               <code>?x1, ?x2, ?x3, ...</code>
+	 */
 	public VarGenerator(String base) {
 		this.base = base;
 	}
-	
+
+	/**
+	 * A variable generator with the default prefix <code>s</code>, i.e. <code>?s1, ?s2, ?s3, ...</code>
+	 */
 	public VarGenerator() {
 		this("s");
 	}
-	
+
+	/**
+	 * Generate a new variable of form <code>${base}${cnt}</code> and increment the counter.
+	 * @return a new variable
+	 */
 	public Var newVar(){
 		return Var.alloc(base + cnt++);
 	}
-	
+
+	/**
+	 * Reset the counter.
+	 */
 	public void reset(){
 		cnt = 0;
 	}
