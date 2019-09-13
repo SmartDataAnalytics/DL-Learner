@@ -8,6 +8,7 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
