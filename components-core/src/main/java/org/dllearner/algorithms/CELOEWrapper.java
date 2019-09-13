@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Sets;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
@@ -41,6 +42,7 @@ import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Set;
@@ -113,7 +115,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		
 		OWLOntology fragment = buildFragment(posExamples, negExamples);
 		try {
-			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLDocumentFormat(), new FileOutputStream("/tmp/ont.owl"));
+			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLDocumentFormat(), new FileOutputStream(System.getProperty("java.io.tmpdir") + File.separator + "ont.owl"));
 		} catch (OWLOntologyStorageException | FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

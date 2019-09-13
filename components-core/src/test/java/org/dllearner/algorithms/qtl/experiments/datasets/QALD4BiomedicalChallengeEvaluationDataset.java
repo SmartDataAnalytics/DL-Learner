@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.experiments.datasets;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
@@ -237,7 +238,7 @@ public class QALD4BiomedicalChallengeEvaluationDataset extends EvaluationDataset
 			System.out.println("Usage: QALD4BiomedicalChallengeEvaluationDataset <queriesTargetFile");
 			System.exit(0);
 		}
-		QALD4BiomedicalChallengeEvaluationDataset ds = new QALD4BiomedicalChallengeEvaluationDataset(new File("/tmp/test"), endpoint);
+		QALD4BiomedicalChallengeEvaluationDataset ds = new QALD4BiomedicalChallengeEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), endpoint);
 		ds.saveToDisk(new File(args[0]));
 //		List<String> queries = ds.getSparqlQueries();
 //		System.out.println(queries.size());

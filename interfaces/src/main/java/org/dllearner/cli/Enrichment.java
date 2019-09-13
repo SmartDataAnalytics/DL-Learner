@@ -20,6 +20,7 @@
 package org.dllearner.cli;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Sets;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.*;
@@ -448,7 +449,7 @@ public class Enrichment {
 			}
 			ksFragment = new OWLAPIOntology(ontology);
 			try {
-				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream("/tmp/test.ttl"));
+				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream(System.getProperty("java.io.tmpdir") + File.separator + "test.ttl"));
 			} catch (OWLOntologyStorageException | FileNotFoundException e) {
 				e.printStackTrace();
 			}
