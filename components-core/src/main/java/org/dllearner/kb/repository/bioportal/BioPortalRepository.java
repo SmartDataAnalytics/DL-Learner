@@ -187,7 +187,9 @@ public class BioPortalRepository implements OntologyRepository {
 		// create Options object
 		OptionParser parser = new OptionParser();
 		OptionSpec<File> baseDir =
-				parser.accepts( "basedir" ).withRequiredArg().ofType( File.class ).defaultsTo(new File(System.getProperty("java.io.tmpdir") + File.separator + "bioportal" + File.separator));
+				parser.accepts( "basedir" )
+						.withRequiredArg().ofType( File.class )
+						.defaultsTo(new File(System.getProperty("java.io.tmpdir") + File.separator + "bioportal" + File.separator));
 		OptionSpec<Void> downloadOption =
 				parser.accepts( "download" );
 		OptionSpec<Void> parseOption =
@@ -221,6 +223,8 @@ public class BioPortalRepository implements OntologyRepository {
 		final Map<String, String> map = Collections.synchronizedMap(new TreeMap<>());
 
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
+
+		System.out.println("download dir is " + downloadDir);
 
 		entries.parallelStream().forEach(entry -> {
 			try {
