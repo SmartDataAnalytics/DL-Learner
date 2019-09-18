@@ -3,10 +3,10 @@ knowledge (usually in description logics, hence the "DL" in its name). Please
 check the website for details and examples. Post to the mailing list if help
 is needed.
 
-Website: http://dl-learner.org
-Bugs & Feature Requests: https://github.com/SmartDataAnalytics/DL-Learner/issues
-Mailing Lists: [DL-Learner Discussion](https://www.freelists.org/list/dl-learner-discussion)
-Latest Release: https://github.com/SmartDataAnalytics/DL-Learner/releases
+* Website: http://dl-learner.org
+* Bugs & Feature Requests: https://github.com/SmartDataAnalytics/DL-Learner/issues
+* Mailing Lists: [DL-Learner Discussion](https://www.freelists.org/list/dl-learner-discussion)
+* Latest Release: https://github.com/SmartDataAnalytics/DL-Learner/releases
 
 Documentation for DL-Learner:
  * please visit http://dl-learner.org for general information
@@ -16,7 +16,7 @@ Documentation for DL-Learner:
  * Docker: https://github.com/SmartDataAnalytics/DL-Learner/tree/develop/docker
 
 DL-Learner is Open Source and licensed under the GNU General Public License 3.
-(Copyright (c) 2007-2018, Jens Lehmann).
+(Copyright (c) 2007-2019, Jens Lehmann).
 
 DL-Learner uses several other libraries. An incomplete list is as follows:
   * [OWL API](https://owlcs.github.io/owlapi/) (licensed under LGPL)
