@@ -47,7 +47,7 @@ public class DocumentationGenerator {
 	static {
 		if (System.getProperty("log4j.configuration") == null)
 			System.setProperty("log4j.configuration", "log4j.properties");
-		AnnComponentManager.setReflectionScanner(new Reflections());
+		//AnnComponentManager.setReflectionScanner(new Reflections());
 		org.apache.log4j.Logger.getLogger(AnnComponentManager.class).setLevel(Level.DEBUG);
 	}
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
