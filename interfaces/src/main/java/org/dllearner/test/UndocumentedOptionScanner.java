@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /* (no java-doc)
  * Internal tool to help find undocumented config options
@@ -149,8 +151,17 @@ public class UndocumentedOptionScanner {
 	private static File findSource(Class<?> clazz) {
 		File file = null;
 		String fileName = getFilename(clazz);
-		URLClassLoader currentClassLoader = ((URLClassLoader) (Thread.currentThread().getContextClassLoader()));
-		List<URL> sourceCP = Arrays.stream(currentClassLoader.getURLs()).filter(url -> !url.getPath().endsWith(".jar")).collect(Collectors.toList());
+		URL[] urls = Stream.of(System.getProperty("java.class.path").split(File.pathSeparator))
+				.map(entry -> {
+					try {
+						return new File(entry).toURI().toURL();
+					} catch (MalformedURLException e) {
+						throw new IllegalArgumentException("URL could not be created from '" + entry + "'", e);
+					}
+				})
+				.toArray(URL[]::new);
+		//URLClassLoader currentClassLoader = ((URLClassLoader) (Thread.currentThread().getContextClassLoader()));
+		List<URL> sourceCP = Arrays.stream(urls).filter(url -> !url.getPath().endsWith(".jar")).collect(Collectors.toList());
 		for (URL u : sourceCP) {
 			File tFile = new File(u.getFile() + "/../../src/main/java/" + fileName);
 			if (tFile.isFile()) {
