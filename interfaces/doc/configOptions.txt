@@ -2003,6 +2003,13 @@ required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
 
+option name: minimumTreeScore
+description: the minimum quality a tree must have to proceed
+type: double
+required: false
+default value: -1
+conf file usage: la.minimumTreeScore = -1
+
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 type: double
@@ -2532,6 +2539,67 @@ type: Set
 required: false
 default value: 
 conf file usage: lp.positiveExamples = {}
+
+component: ClassExpressionLearningProblem (org.dllearner.learningproblems.ClassExpressionLearningProblem) v0.6
+==============================================================================================================
+
+conf file usage: lp.type = "celp"
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
+type: AccMethod
+required: false
+default value: PRED_ACC
+conf file usage: lp.accuracyMethod = "PRED_ACC"
+
+option name: betaEq
+description: beta index for F-measure in definition learning
+type: double
+required: false
+default value: 1.0
+conf file usage: lp.betaEq = 1.0
+
+option name: betaSC
+description: beta index for F-measure in super class learning
+type: double
+required: false
+default value: 3.0
+conf file usage: lp.betaSC = 3.0
+
+option name: checkConsistency
+description: whether to check for consistency of suggestions (when added to ontology)
+type: boolean
+required: false
+default value: true
+conf file usage: lp.checkConsistency = true
+
+option name: classExpressionToDescribe
+description: OWL class expression of which an OWL class expression should be learned
+type: OWLClassExpression
+required: true
+default value: 
+conf file usage: lp.classExpressionToDescribe = ""
+
+option name: equivalence
+description: Whether this is an equivalence problem (or superclass learning problem)
+type: boolean
+required: false
+default value: true
+conf file usage: lp.equivalence = true
+
+option name: exampleLoaderHelper
+description: load examples via class expression selector
+type: ExampleLoader
+required: false
+default value: 
+conf file usage: lp.exampleLoaderHelper = ""
+
+option name: maxExecutionTimeInSeconds
+description: Maximum execution time in seconds
+type: int
+required: false
+default value: 10
+conf file usage: lp.maxExecutionTimeInSeconds = 10
 
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
@@ -3171,7 +3239,7 @@ default value: true
 conf file usage: op.disjointChecks = true
 
 option name: dropDisjuncts
-description: no description available
+description: if enabled, generalise by removing parts of a disjunction
 type: boolean
 required: false
 default value: false
@@ -3234,14 +3302,14 @@ default value: true
 conf file usage: op.useBooleanDatatypes = true
 
 option name: useCardinalityRestrictions
-description: support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C 
+description: support of qualified cardinality restrictions (owl:minCardinality, owl:maxCardinality, owl:exactCardinality), e.g. ≥ 3 r.C 
 type: boolean
 required: false
 default value: true
 conf file usage: op.useCardinalityRestrictions = true
 
 option name: useDataHasValueConstructor
-description: whether to use hasValue on frequently occuring strings
+description: support of has value constructor (owl:hasValue), e.g. ∃ r.{20} 
 type: boolean
 required: false
 default value: false
@@ -3253,6 +3321,13 @@ type: boolean
 required: false
 default value: true
 conf file usage: op.useExistsConstructor = true
+
+option name: useHasSelf
+description: support of local reflexivity of an object property expression (owl:hasSelf), e.g. ∃ loves.Self for a narcissistic
+type: boolean
+required: false
+default value: false
+conf file usage: op.useHasSelf = false
 
 option name: useHasValueConstructor
 description: support of has value constructor (owl:hasValue), e.g. ∃ r.{a} 
@@ -3336,7 +3411,7 @@ default value: 0.3
 conf file usage: h.gainBonusFactor = 0.3
 
 option name: nodeRefinementPenalty
-description: penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive
+description: penalty if a node description has very many refinements since exploring such a node is computationally very expensive
 type: double
 required: false
 default value: 0.0001
@@ -3690,12 +3765,12 @@ Load examples from Class Expression
 
 conf file usage: component.type = "ExampleLoader"
 
-option name: negativeExamples
+option name: negativeExamplesCE
 description: class expression of negative examples
 type: OWLClassExpression
 required: false
 default value: 
-conf file usage: component.negativeExamples = ""
+conf file usage: component.negativeExamplesCE = ""
 
 option name: negativeRandomCount
 description: randomly choose only so many negative examples
@@ -3704,12 +3779,12 @@ required: false
 default value: 
 conf file usage: component.negativeRandomCount = 
 
-option name: positiveExamples
+option name: positiveExamplesCE
 description: class expression of positive examples
 type: OWLClassExpression
 required: false
 default value: 
-conf file usage: component.positiveExamples = ""
+conf file usage: component.positiveExamplesCE = ""
 
 option name: positiveRandomCount
 description: randomly choose only so many positive examples
@@ -3750,7 +3825,7 @@ default value: 1
 conf file usage: component.dataAllValuesLength = 1
 
 option name: dataCardinalityLength
-description: Data Cardinaltiy restriction: "≤n" r.t
+description: Data Cardinality restriction: "≤n" r.t
 type: int
 required: false
 default value: 2
@@ -3820,7 +3895,7 @@ default value: 1
 conf file usage: component.objectAllValuesLength = 1
 
 option name: objectCardinalityLength
-description: Obj. Cardinaltiy restriction: "≤n" r.C
+description: Obj. Cardinality restriction: "≤n" r.C
 type: int
 required: false
 default value: 2
@@ -3832,6 +3907,13 @@ type: int
 required: false
 default value: 1
 conf file usage: component.objectComplementLength = 1
+
+option name: objectHasSelfLength
+description: Obj. Self restriction: "∃" r.Self
+type: int
+required: false
+default value: 2
+conf file usage: component.objectHasSelfLength = 2
 
 option name: objectHasValueLength
 description: Obj. Has Value: "∃" r."{I}"

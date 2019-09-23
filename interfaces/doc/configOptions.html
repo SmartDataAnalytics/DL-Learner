@@ -29,6 +29,7 @@ function showAllCat(){
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.core.probabilistic.unife.BUNDLE">BUNDLE</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassAsInstanceLearningProblem">Class as Instance LP</a></li></div>
+<div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassExpressionLearningProblem">ClassExpressionLearningProblem</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassLearningProblem">ClassLearningProblem</a></li></div>
 <div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
@@ -170,6 +171,18 @@ function showAllCat(){
 <tr><td>positiveExamples</td><td>no description available</td><td> Set</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
+<div class="type LearningProblem"><a name="org.dllearner.learningproblems.ClassExpressionLearningProblem"><h2>ClassExpressionLearningProblem <small class="default-hidden">org.dllearner.learningproblems.ClassExpressionLearningProblem</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>celp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethod</td><td>PRED_ACC</td><td> false</td></tr>
+<tr><td>betaEq</td><td>beta index for F-measure in definition learning</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>betaSC</td><td>beta index for F-measure in super class learning</td><td> double</td><td>3.0</td><td> false</td></tr>
+<tr><td>checkConsistency</td><td>whether to check for consistency of suggestions (when added to ontology)</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>classExpressionToDescribe</td><td>OWL class expression of which an OWL class expression should be learned</td><td> OWLClassExpression</td><td></td><td> true</td></tr>
+<tr><td>equivalence</td><td>Whether this is an equivalence problem (or superclass learning problem)</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>exampleLoaderHelper</td><td>load examples via class expression selector</td><td> ExampleLoader</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>Maximum execution time in seconds</td><td> int</td><td>10</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.ClassLearningProblem"><h2>ClassLearningProblem <small class="default-hidden">org.dllearner.learningproblems.ClassLearningProblem</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>clp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethod</td><td>PRED_ACC</td><td> false</td></tr>
@@ -200,6 +213,7 @@ function showAllCat(){
 <tr><td>instanceBasedDisjoints</td><td>whether to do real disjoint tests or check that two named classes do not have common instances</td><td> boolean</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> long</td><td>10</td><td> false</td></tr>
+<tr><td>minimumTreeScore</td><td>the minimum quality a tree must have to proceed</td><td> double</td><td>-1</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
@@ -302,9 +316,9 @@ function showAllCat(){
 </div>
 <div class="type OtherComponent"><a name="org.dllearner.learningproblems.ExampleLoader"><h2>ExampleLoader <small class="default-hidden">org.dllearner.learningproblems.ExampleLoader</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>ExampleLoader</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd><dt>description</dt><dd>Load examples from Class Expression</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>negativeExamples</td><td>class expression of negative examples</td><td> OWLClassExpression</td><td></td><td> false</td></tr>
+<tr><td>negativeExamplesCE</td><td>class expression of negative examples</td><td> OWLClassExpression</td><td></td><td> false</td></tr>
 <tr><td>negativeRandomCount</td><td>randomly choose only so many negative examples</td><td> int</td><td></td><td> false</td></tr>
-<tr><td>positiveExamples</td><td>class expression of positive examples</td><td> OWLClassExpression</td><td></td><td> false</td></tr>
+<tr><td>positiveExamplesCE</td><td>class expression of positive examples</td><td> OWLClassExpression</td><td></td><td> false</td></tr>
 <tr><td>positiveRandomCount</td><td>randomly choose only so many positive examples</td><td> int</td><td></td><td> false</td></tr>
 <tr><td>randomSeed</td><td>random seed for deterministic example choice</td><td> long</td><td></td><td> false</td></tr>
 </tbody></table></div>
@@ -412,7 +426,7 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>celoe_heuristic</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>expansionPenaltyFactor</td><td>penalty for long descriptions (horizontal expansion) (strong by default)</td><td> double</td><td>0.1</td><td> false</td></tr>
 <tr><td>gainBonusFactor</td><td>bonus for being better than parent node</td><td> double</td><td>0.3</td><td> false</td></tr>
-<tr><td>nodeRefinementPenalty</td><td>penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive</td><td> double</td><td>0.0001</td><td> false</td></tr>
+<tr><td>nodeRefinementPenalty</td><td>penalty if a node description has very many refinements since exploring such a node is computationally very expensive</td><td> double</td><td>0.0001</td><td> false</td></tr>
 <tr><td>startNodeBonus</td><td>no description available</td><td> double</td><td>0.1</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -475,7 +489,7 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>cel_metric</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>classLength</td><td>Class: "C"</td><td> int</td><td>1</td><td> false</td></tr>
 <tr><td>dataAllValuesLength</td><td>Data All Values: "∀" p.t</td><td> int</td><td>1</td><td> false</td></tr>
-<tr><td>dataCardinalityLength</td><td>Data Cardinaltiy restriction: "≤n" r.t</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>dataCardinalityLength</td><td>Data Cardinality restriction: "≤n" r.t</td><td> int</td><td>2</td><td> false</td></tr>
 <tr><td>dataComplementLength</td><td>Data Complement: "¬"datatype</td><td> int</td><td>1</td><td> false</td></tr>
 <tr><td>dataHasValueLength</td><td>Data Has Value: "∃" p."{V}"</td><td> int</td><td>2</td><td> false</td></tr>
 <tr><td>dataIntersectionLength</td><td>Data Intersection: datatype"⨅"datatype</td><td> int</td><td>1</td><td> false</td></tr>
@@ -485,8 +499,9 @@ function showAllCat(){
 <tr><td>dataUnionLength</td><td>Data Union: datatype"<u>⨆</u>"datatype</td><td> int</td><td>1</td><td> false</td></tr>
 <tr><td>datatypeLength</td><td>Datatype: "^^datatype"</td><td> int</td><td>1</td><td> false</td></tr>
 <tr><td>objectAllValuesLength</td><td>Obj. All Values: "∀" r.C</td><td> int</td><td>1</td><td> false</td></tr>
-<tr><td>objectCardinalityLength</td><td>Obj. Cardinaltiy restriction: "≤n" r.C</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>objectCardinalityLength</td><td>Obj. Cardinality restriction: "≤n" r.C</td><td> int</td><td>2</td><td> false</td></tr>
 <tr><td>objectComplementLength</td><td>Complement: "¬"C</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectHasSelfLength</td><td>Obj. Self restriction: "∃" r.Self</td><td> int</td><td>2</td><td> false</td></tr>
 <tr><td>objectHasValueLength</td><td>Obj. Has Value: "∃" r."{I}"</td><td> int</td><td>2</td><td> false</td></tr>
 <tr><td>objectIntersectionLength</td><td>Intersection: A"⨅"B</td><td> int</td><td>1</td><td> false</td></tr>
 <tr><td>objectInverseLength</td><td>Inverse property: ∃ "r⁻".C</td><td> int</td><td>2</td><td> false</td></tr>
@@ -851,7 +866,7 @@ function showAllCat(){
 <tr><td>applyExistsFilter</td><td>throwing out all refinements with duplicate ∃ r for any r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>cardinalityLimit</td><td>limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)</td><td> int</td><td>5</td><td> false</td></tr>
 <tr><td>disjointChecks</td><td>skip combination of intersection between disjoint classes</td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>dropDisjuncts</td><td>if enabled, generalise by removing parts of a disjunction</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>frequencyThreshold</td><td>minimum number an individual or literal has to be seen in the knowledge base before considering it for inclusion in concepts</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>lengthMetric</td><td>class expression length metric (should match learning algorithm usage)</td><td> OWLClassExpressionLengthMetric</td><td>default cel_metric</td><td> false</td></tr>
@@ -860,9 +875,10 @@ function showAllCat(){
 <tr><td>startClass</td><td>You can specify a start class for the algorithm</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>useAllConstructor</td><td>support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useBooleanDatatypes</td><td>support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>useDataHasValueConstructor</td><td>whether to use hasValue on frequently occuring strings</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality, owl:maxCardinality, owl:exactCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useDataHasValueConstructor</td><td>support of has value constructor (owl:hasValue), e.g. ∃ r.{20} </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useExistsConstructor</td><td>support of existential restrictions (owl:someValuesFrom), e.g. ∃ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useHasSelf</td><td>support of local reflexivity of an object property expression (owl:hasSelf), e.g. ∃ loves.Self for a narcissistic</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useHasValueConstructor</td><td>support of has value constructor (owl:hasValue), e.g. ∃ r.{a} </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useInverse</td><td>support of inverse object properties (owl:inverseOf), e.g. r⁻.C </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useNegation</td><td>support of negation (owl:complementOf), e.g. ¬ C </td><td> boolean</td><td>true</td><td> false</td></tr>
