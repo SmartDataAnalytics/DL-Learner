@@ -22,16 +22,18 @@ import java.net.URI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
+import org.dllearner.kb.repository.SimpleRepositoryEntry;
 
+/**
+ * Oxford ontologies repository located at http://www.cs.ox.ac.uk/isg/ontologies
+ *
+ * @author Lorenz Buehmann
+ */
 public class OxfordRepository implements OntologyRepository{
 	
 	private static final Logger log = Logger.getLogger(OxfordRepository.class);
@@ -40,15 +42,11 @@ public class OxfordRepository implements OntologyRepository{
 
     private final URI repositoryLocation = URI.create("http://www.cs.ox.ac.uk/isg/ontologies/UID/");
 
-    private List<RepositoryEntry> entries;
+    private List<SimpleRepositoryEntry> entries = new ArrayList<>();
 
     int numberOfEntries = 797;
     
-    DecimalFormat df = new DecimalFormat("00000");
-
-    public OxfordRepository() {
-        entries = new ArrayList<>();
-    }
+    private DecimalFormat df = new DecimalFormat("00000");
 
     @Override
     public void initialize() {
@@ -72,73 +70,17 @@ public class OxfordRepository implements OntologyRepository{
 
     @Override
 	public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<>();
-        ret.addAll(entries);
-        return ret;
+        return new ArrayList<>(entries);
     }
-
-    @Override
-	public List<Object> getMetaDataKeys() {
-        return Collections.emptyList();
-    }
-
-	@Override
-	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
-		return null;
-	}
-
-	public void dispose() {
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //  Implementation details
 
     private void fillRepository() {
     	entries.clear();
         for(int i = 1; i <= numberOfEntries; i++){
-        	entries.add(new RepositoryEntry(URI.create(repositoryLocation + df.format(i) + ".owl")));
+        	entries.add(new SimpleRepositoryEntry(URI.create(repositoryLocation + df.format(i) + ".owl")));
         }
         log.info("Loaded " + entries.size() + " ontology entries from Oxford.");
     }
 
-    private class RepositoryEntry implements OntologyRepositoryEntry {
-
-        private String shortName;
-
-        private URI ontologyURI;
-
-        private URI physicalURI;
-
-        public RepositoryEntry(URI ontologyIRI) {
-            this.ontologyURI = ontologyIRI;
-            OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
-            shortName = sfp.getShortForm(IRI.create(ontologyIRI));
-            physicalURI = ontologyIRI;
-        }
-
-        @Override
-		public String getOntologyShortName() {
-            return shortName;
-        }
-
-        @Override
-		public URI getOntologyURI() {
-            return ontologyURI;
-        }
-
-        @Override
-		public URI getPhysicalURI() {
-            return physicalURI;
-        }
-
-        @Override
-		public String getMetaData(Object key) {
-            return null;
-        }
-
-    }
-    
     public static void main(String[] args) throws Exception {
 		new OxfordRepository().fillRepository();
 	}

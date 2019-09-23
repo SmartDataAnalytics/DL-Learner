@@ -16,20 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.dllearner.kb.repository.bioportal;
+package org.dllearner.kb.repository.agroportal;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.google.common.base.Charsets;
 import joptsimple.OptionParser;
@@ -38,117 +33,38 @@ import joptsimple.OptionSpec;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
-import org.dllearner.kb.repository.SimpleRepositoryEntry;
+import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * BioPortal repository located at http://bioportal.bioontology.org/
+ * AgroPortal repository located at http://data.agroportal.lirmm.fr/
  *
  * @author Lorenz Buehmann
  */
-public class BioPortalRepository implements OntologyRepository {
+public class AgroPortalRepository extends BioPortalRepository {
 	
-	private String apiKey = "20caf25c-f140-4fef-be68-ff1a3936f405";
-	private String  serviceURL = "http://data.bioontology.org/";
+	private static final String apiKey = "1de0a270-29c5-4dda-b043-7c3580628cd5";
+	private static final String serviceURL = "http://data.agroportal.lirmm.fr/";
 
-	private boolean initialized = false;
-	
-	private List<OntologyRepositoryEntry> entries = new ArrayList<>();
 
-	public BioPortalRepository(String serviceURL, String apiKey) {
-		this.serviceURL = serviceURL;
-		this.apiKey = apiKey;
+	public AgroPortalRepository() {
+		super(serviceURL, apiKey);
 	}
-
-	public BioPortalRepository() {}
 
 	@Override
 	public String getName() {
-		return "BioPortal";
+		return "AgroPortal";
 	}
 
 	@Override
 	public String getLocation() {
-		return "http://www.bioontology.org/";
+		return "http://data.agroportal.lirmm.fr/";
 	}
 	
-	@Override
-	public void initialize() {
-		refresh();
-		initialized = true;
-	}
-
-	@Override
-	public void refresh() {
-		fillRepository();
-	}
-	
-	private void fillRepository(){
-		try {
-			HttpURLConnection conn = (HttpURLConnection) new URL(serviceURL + "ontologies").openConnection();
-			conn.setRequestProperty("Authorization", "apikey token=" + apiKey);
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-
-			// list all ontologies
-			try (InputStream is = conn.getInputStream()) {
-
-				JsonReader rdr = Json.createReader(is);
-				JsonArray array = rdr.readArray();
-
-				// for each ontology get the download link
-				for (JsonObject obj : array.getValuesAs(JsonObject.class)) {
-					String acronym = obj.getString("acronym");
-					String name = obj.getString("name");
-
-					URI physicalURI = URI.create(obj.getJsonObject("links").getString("download"));
-					String shortName = acronym;
-					boolean add = false;
-					entries.add(new SimpleRepositoryEntry(physicalURI, physicalURI, shortName));
-				}
-			} catch( Exception e){
-				log.error("failed to load entries from repository.", e);
-			} finally {
-				conn.disconnect();
-			}
-		} catch(Exception e) {
-			log.error("failed to load entries from repository.", e);
-		}
-
-		log.info("Loaded " + entries.size() + " ontology entries from BioPortal.");
-	}
-
-	@Override
-	public Collection<OntologyRepositoryEntry> getEntries() {
-		if(!initialized){
-			initialize();
-		}
-		return entries;
-	}
-
-	protected InputStream getInputStream(URL url) throws IOException {
-		if (url.getProtocol().equals("http")) {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestProperty("Authorization", "apikey token=" + apiKey);
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/rdf+xml");
-			conn.addRequestProperty("Accept", "text/xml");
-			conn.addRequestProperty("Accept", "*/*");
-			return conn.getInputStream();
-		} else {
-			return url.openStream();
-		}
-	}
-
-	@Override
-	public InputStream getInputStream(OntologyRepositoryEntry entry) throws IOException {
-		return getInputStream(entry.getPhysicalURI().toURL());
-	}
 
 	public static void main(String[] args) throws Exception{
 
@@ -157,7 +73,7 @@ public class BioPortalRepository implements OntologyRepository {
 		OptionSpec<File> baseDir =
 				parser.accepts( "basedir" )
 						.withRequiredArg().ofType( File.class )
-						.defaultsTo(new File(System.getProperty("java.io.tmpdir") + File.separator + "bioportal" + File.separator));
+						.defaultsTo(new File(System.getProperty("java.io.tmpdir") + File.separator + "agroportal" + File.separator));
 		OptionSpec<Void> downloadOption =
 				parser.accepts( "download" );
 		OptionSpec<Void> parseOption =
@@ -179,11 +95,11 @@ public class BioPortalRepository implements OntologyRepository {
 		parsedSuccessfulDir.mkdirs();
 		parsedFailedDir.mkdirs();
 
-		BioPortalRepository repo = new BioPortalRepository();
+		AgroPortalRepository repo = new AgroPortalRepository();
 		repo.initialize();
 
 		Collection<OntologyRepositoryEntry> entries = repo.getEntries();
-		System.out.println("BioPortal repository size: " + entries.size());
+		System.out.println("AgroPortal repository size: " + entries.size());
 
 		boolean downloadEnabled = options.has(downloadOption);
 		boolean parseEnabled = options.has(parseOption);

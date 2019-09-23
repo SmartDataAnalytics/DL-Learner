@@ -26,28 +26,37 @@ import org.apache.jena.query.ResultSet;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.dllearner.kb.repository.SimpleRepositoryEntry;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
+/**
+ * An ontology repository for
+ * Linked Open Vocabularies https://lov.linkeddata.es
+ *
+ * @author Lorenz Buehmann
+ */
 public class LOVRepository implements OntologyRepository{
 
 	private static final Logger log = Logger.getLogger(LOVRepository.class);
 
 	private final String repositoryName = "LOV";
 
-    String endpointURL = "http://lov.okfn.org/dataset/lov/sparql";
+    private static final String ENDPOINT_URL = "https://lov.linkeddata.es/dataset/lov/sparql";
 
-    private List<RepositoryEntry> entries;
+    private List<SimpleRepositoryEntry> entries;
 
     private OWLOntologyIRIMapper iriMapper;
 
@@ -68,7 +77,7 @@ public class LOVRepository implements OntologyRepository{
 
     @Override
     public String getLocation() {
-        return endpointURL;
+        return ENDPOINT_URL;
     }
 
     @Override
@@ -78,14 +87,7 @@ public class LOVRepository implements OntologyRepository{
 
     @Override
     public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<>();
-        ret.addAll(entries);
-        return ret;
-    }
-
-    @Override
-    public List<Object> getMetaDataKeys() {
-        return Collections.emptyList();
+        return new ArrayList<>(entries);
     }
 
     @Override
@@ -96,83 +98,87 @@ public class LOVRepository implements OntologyRepository{
     public void dispose() {
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //  Implementation details
+    @Override
+    public InputStream getInputStream(OntologyRepositoryEntry entry) throws IOException {
+        URL url = entry.getPhysicalURI().toURL();
+        HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
+
+        boolean redirect = false;
+
+        // normally, 3xx is redirect
+        int status = conn.getResponseCode();
+        if (status != HttpURLConnection.HTTP_OK) {
+            if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                    || status == HttpURLConnection.HTTP_MOVED_PERM
+                    || status == HttpURLConnection.HTTP_SEE_OTHER)
+                redirect = true;
+        }
+
+        System.out.println("Response Code ... " + status);
+
+        if (redirect) {
+
+            // get redirect url from "location" header field
+            String newUrl = conn.getHeaderField("Location");
+
+            // get the cookie if need, for login
+            String cookies = conn.getHeaderField("Set-Cookie");
+
+            // open the new connnection again
+            conn = (HttpURLConnection) new URL(newUrl).openConnection();
+            conn.setRequestProperty("Cookie", cookies);
+            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+            conn.addRequestProperty("User-Agent", "Mozilla");
+            conn.addRequestProperty("Referer", "google.com");
+
+            System.out.println("Redirect to URL : " + newUrl);
+
+        }
+        return conn.getInputStream();
+    }
+
+
 
     private void fillRepository() {
         String query = "PREFIX vann:<http://purl.org/vocab/vann/>\n" +
                 "PREFIX voaf:<http://purl.org/vocommons/voaf#>\n" +
-                " \n" +
-                "### Vocabularies contained in LOV and their prefix\n" +
-                "SELECT DISTINCT ?vocabPrefix ?vocabURI {\n" +
-                " \tGRAPH <http://lov.okfn.org/dataset/lov>{\n" +
+                "SELECT DISTINCT ?vocabPrefix ?vocabURI ?title ?distribution {\n" +
+                " \tGRAPH <https://lov.linkeddata.es/dataset/lov>{\n" +
                 " \t \t?vocabURI a voaf:Vocabulary.\n" +
                 " \t \t?vocabURI vann:preferredNamespacePrefix ?vocabPrefix.\n" +
+                " ?vocabURI <http://purl.org/dc/terms/title> ?title." +
+                " ?vocabURI <http://www.w3.org/ns/dcat#distribution> ?distribution. filter(!isBlank(?distribution))" +
                 "}} ORDER BY ?vocabPrefix";
 
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 
-        QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpointURL);
+        QueryExecutionFactory qef = new QueryExecutionFactoryHttp(ENDPOINT_URL);
         try(QueryExecution qe = qef.createQueryExecution(query)) {
             ResultSet rs = qe.execSelect();
             while(rs.hasNext()) {
                 QuerySolution qs = rs.next();
                 String uri = qs.getResource("vocabURI").getURI();
-                System.out.println(uri);
-                try {
-                    OWLOntology ont = man.loadOntology(IRI.create(uri));
-                    entries.add(new RepositoryEntry(URI.create(uri)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                String title = qs.getLiteral("title").getLexicalForm();
+                String location = qs.getResource("distribution").getURI();
+                System.out.println(location);
+//                System.out.println(uri);
+//                try {
+//                    OWLOntology ont = man.loadOntology(IRI.create(uri));
+//                    entries.add(new RepositoryEntry(URI.create(uri)));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                entries.add(new SimpleRepositoryEntry(URI.create(uri), URI.create(location), title));
             }
         }
         log.info("Loaded " + entries.size() + " ontology entries from LOV.");
-    }
-
-    private class RepositoryEntry implements OntologyRepositoryEntry {
-
-        private String shortName;
-
-        private URI ontologyURI;
-
-        private URI physicalURI;
-
-        public RepositoryEntry(URI ontologyIRI) {
-            this.ontologyURI = ontologyIRI;
-            OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
-            shortName = sfp.getShortForm(IRI.create(ontologyIRI));
-            physicalURI = URI.create(getLocation() + "/download?ontology=" + ontologyIRI);
-        }
-
-        @Override
-        public String getOntologyShortName() {
-            return shortName;
-        }
-
-        @Override
-        public URI getOntologyURI() {
-            return ontologyURI;
-        }
-
-        @Override
-        public URI getPhysicalURI() {
-            return physicalURI;
-        }
-
-        @Override
-        public String getMetaData(Object key) {
-            return null;
-        }
-
     }
 
     private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
 
         @Override
         public IRI getDocumentIRI(IRI iri) {
-            for(RepositoryEntry entry : entries) {
+            for(SimpleRepositoryEntry entry : entries) {
                 if(entry.getOntologyURI().equals(iri.toURI())) {
                     return IRI.create(entry.getPhysicalURI());
                 }
