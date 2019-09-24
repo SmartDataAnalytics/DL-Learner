@@ -85,14 +85,14 @@ public class ExampleTests {
 		logger.setLevel(Level.WARN);
 
 		// map containing a list of conf files for each path
-		Map<String, ArrayList<String>> confFiles = new TreeMap<>();
+		Map<String, List<String>> confFiles = new TreeMap<>();
 		String exampleDir = ".." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
 
 		// put all examples in a flat list
 		List<String> examples = new LinkedList<>();
-		for(Map.Entry<String,ArrayList<String>> entry : confFiles.entrySet()) {
+		for(Map.Entry<String, List<String>> entry : confFiles.entrySet()) {
 			for(String file : entry.getValue()) {
 				examples.add(entry.getKey() + file + ".conf");
 			}
@@ -109,7 +109,7 @@ public class ExampleTests {
 		// ignore list (examples which are temporarily not working due
 		// to server downtime, lack of features etc., but should still
 		// remain in the example directory
-		Set<String> ignore = new TreeSet<>();
+		Set<String> ignore = new HashSet<>();
 		
 		// "standard" ignores (no problem to keep those)
 		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated
@@ -141,74 +141,62 @@ public class ExampleTests {
 		
 		ExecutorService tp = Executors.newFixedThreadPool(nThreads);
 		
-		final StringBuilder failed = new StringBuilder();
-		final StringBuilder successful = new StringBuilder();
-		
-		for(final String conf : examples) {
-			boolean ignored = false;
-			for(String ignoredConfExpression : ignore) {
-				if(conf.contains(ignoredConfExpression)) {
-					ignored = true;
-					break;
-				}
-			}
-			if(sparql == 2 && conf.contains("sparql")) ignored = true;
-			if(ignored) {
+		final StringBuffer failed = new StringBuffer();
+		final StringBuffer successful = new StringBuffer();
+
+		for (final String conf : examples) {
+			boolean ignored = ignore.stream().anyMatch(conf::contains) || (sparql == 2 && conf.contains("sparql"));
+
+			if (ignored) {
 				System.out.println("Skipping " + conf + " (is on ignore list).");
 			} else {
 				
-				tp.submit(new Runnable() {
-					
-					@Override
-					public void run() {
-						System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
-						long startTime = System.nanoTime();
-						boolean success = false, started = false;
-						try {
-							// start example
-							CLI start = new CLI(new File(conf));
-							start.init();
-							
+				tp.submit(() -> {
+					System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
+					long startTime = System.nanoTime();
+					boolean success = false, started = false;
+					try {
+						// start example
+						CLI start = new CLI(new File(conf));
+						start.init();
+
 //							System.out.println("algorithm: " + start.getLearningAlgorithm());
-							boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
+						boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
 //							boolean isSparql = false;
-							LearningAlgorithm algorithm = start.getLearningAlgorithm();
-							if(
+						AbstractCELA algorithm = start.getLearningAlgorithm();
+						if(
 //									(testGP || !(algorithm instanceof GP)) &&
-									(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
-								start.run();
-								started = true;
+								(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
+							start.run();
+							started = true;
 //								start.start(false);
-								// test is successful if a concept was learned
-								if(algorithm instanceof AbstractCELA){
-									assert (((AbstractCELA) algorithm).getCurrentlyBestDescription() != null);
-								}
+							// test is successful if a concept was learned
+							assert algorithm.getCurrentlyBestDescription() != null;
 //								start.getReasonerComponent().releaseKB();
-								success = true;		
-								successful.append(conf).append("\n");
-							} else {
-								System.out.println("Test skipped, because of GP or SPARQL settings.");
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-							// unit test not succesful (exceptions are caught explicitly to find 
-							assert ( false );
-							failedCounter.incrementAndGet();
-							failed.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-							failed.append(conf).append("\n");
-							StringWriter writer = new StringWriter();
-							PrintWriter printWriter = new PrintWriter( writer );
-							e.printStackTrace(printWriter);
-							printWriter.flush();
-							failed.append(writer.toString());
+							success = true;
+							successful.append(conf).append("\n");
+						} else {
+							System.out.println("Test skipped, because of GP or SPARQL settings.");
 						}
-						long timeNeeded = System.nanoTime() - startTime;
-						if(!success && started) {
-							System.out.println("TEST FAILED.");
-						}
-						if(started) {
-							System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
-						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// unit test not succesful (exceptions are caught explicitly to find
+						assert ( false );
+						failedCounter.incrementAndGet();
+						failed.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+						failed.append(conf).append("\n");
+						StringWriter writer = new StringWriter();
+						PrintWriter printWriter = new PrintWriter( writer );
+						e.printStackTrace(printWriter);
+						printWriter.flush();
+						failed.append(writer.toString());
+					}
+					long timeNeeded = System.nanoTime() - startTime;
+					if(!success && started) {
+						System.out.println("TEST FAILED.");
+					}
+					if(started) {
+						System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
 					}
 				});
 				
