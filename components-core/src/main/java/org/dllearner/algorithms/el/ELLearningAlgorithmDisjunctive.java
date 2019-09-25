@@ -25,6 +25,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScoreSimple;
 import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
@@ -113,7 +114,9 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private SearchTreeNode bestCurrentNode;
 	private Score bestCurrentScore = new ScoreSimple(0);
 	private long treeStartTime;
+
 	// minimum score a tree must have to be part of the solution
+	@ConfigOption(defaultValue = "-1", description = "the minimum quality a tree must have to proceed", required = false)
 	private double minimumTreeScore = -1;
 
 	@ConfigOption(description="whether to do real disjoint tests or check that two named classes do not have common instances")
@@ -158,6 +161,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		noise = noisePercentage/100d;
+		
+		initialized = true;
 	}	
 	
 	@Override
@@ -175,7 +180,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 			ELDescriptionTree startTree = new ELDescriptionTree(reasoner, startClass);
 			addDescriptionTree(startTree, null);
 //			bestCurrentTree = top;
-			bestCurrentScore = new ScoreSimple(0);//ScoreSimple.MIN;
+			bestCurrentScore = new ScoreSimple(ScoreSimple.MIN.getAccuracy());
 			
 			// main loop
 			int loop = 0;
@@ -249,7 +254,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				logger.info("tree found: " + OWLAPIRenderers.toManchesterOWLSyntax(bestDescription) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
 				logger.info("combined accuracy: " + decFormat.format(bestEvaluatedDescription.getAccuracy()));
 			} else {
-				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + OWLAPIRenderers.toManchesterOWLSyntax(bestCurrentNode.getDescriptionTree().transformToClassExpression()) + " with score " + bestCurrentNode.getScore());
+				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + ( bestCurrentNode == null ? "(none)" : OWLAPIRenderers.toManchesterOWLSyntax(bestCurrentNode.getDescriptionTree().transformToClassExpression()) + " with score " + bestCurrentNode.getScore() ));
 			}
 			
 			logger.info(trees.size() + " trees checked");
@@ -317,17 +322,14 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		double score = 0;
 		
 		// test coverage on current positive examples
-		int posCovered = 0;
-		for(OWLIndividual ind : currentPosExamples) {
-			if(reasoner.hasType(d, ind)) {
-				posCovered++;
-				score += 1;
-			}
-		}
-		
+		ReasoningUtils reasoningUtils = new ReasoningUtils(reasoner);
+
+		ReasoningUtils.CoverageCount[] posCoverageCount = reasoningUtils.getCoverageCount(d, currentPosExamples);
+		score += 1 * posCoverageCount[0].trueCount;
+
 		// penalty if a minimum coverage is not achieved (avoids too many trees where
 		// each tree has only little impact)
-		if((startPosExamplesSize > 10 && posCovered<3) || posCovered < 1) {
+		if((startPosExamplesSize > 10 && posCoverageCount[0].trueCount<3) || posCoverageCount[0].trueCount < 1) {
 //			score -= 100;
 			// further refining such a tree will not cover more positives
 			// => reject
@@ -335,14 +337,9 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		}
 		
 		// test coverage on current negative examples
-		int negCovered = 0;
-		for(OWLIndividual ind : currentNegExamples) {
-			if(reasoner.hasType(d, ind)) {
-				negCovered++;
-				score -= posWeight;
-			}
-		}
-		
+		ReasoningUtils.CoverageCount[] negCoverageCount = reasoningUtils.getCoverageCount(d, currentNegExamples);
+		score -= posWeight * negCoverageCount[0].trueCount;
+
 		// remove - does not make sense
 		// check whether tree is too weak, i.e. covers more than noise % negatives
 //		int maxNegCov = (int) Math.round(noise * currentNegExamples.size());
@@ -462,6 +459,14 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	 */
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
+	}
+
+	public double getMinimumTreeScore() {
+		return minimumTreeScore;
+	}
+
+	public void setMinimumTreeScore(double minimumTreeScore) {
+		this.minimumTreeScore = minimumTreeScore;
 	}
 
 	public boolean isStopOnFirstDefinition() {

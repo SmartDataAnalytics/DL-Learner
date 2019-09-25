@@ -45,6 +45,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+
 public class PropertyAxiomLearningTest {
 	
 	private static SparqlEndpointKS ks;
@@ -138,6 +140,7 @@ public class PropertyAxiomLearningTest {
 	public void testObjectPropertyDomainAxiomLearning() throws Exception {
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		l.setUsePrecisionOnly(false);
 		l.setEntityToDescribe(op1);
 		l.init();
 		l.start();
@@ -148,14 +151,13 @@ public class PropertyAxiomLearningTest {
 		
 		int cntA = 100;
 		int cntB = 70;
-		int cntAB = 50;
+		int cntAB = 70;
 		double beta = 3.0;
 		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
 		double recall = Heuristics.getConfidenceInterval95WaldAverage(cntA, cntAB);
 		double expectedScore = Heuristics.getFScore(recall, precision, beta);
 		
-		// update Feb 2015: seems to be incorrect to require those values to be the same as one is exact and the other an approximation		
-		// assertEquals("", expectedScore, actualScore, 0d);
+		 assertEquals("", expectedScore, actualScore, 0d);
 	}
 	
 	@Test

@@ -1,18 +1,20 @@
 package org.dllearner.learningproblems;
 
+import java.util.*;
+
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import java.util.*;
 
 /**
  * Load positive and negative examples from Class Expression
@@ -28,9 +30,9 @@ public class ExampleLoader extends AbstractComponent {
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	@ConfigOption(description = "class expression of positive examples", required = false)
-	OWLClassExpression positiveExamples = null;
+	OWLClassExpression positiveExamplesCE = null;
 	@ConfigOption(description = "class expression of negative examples", required = false)
-	OWLClassExpression negativeExamples = null;
+	OWLClassExpression negativeExamplesCE = null;
 
 	@ConfigOption(description = "randomly choose only so many positive examples", required = false)
 	int positiveRandomCount = 0;
@@ -45,11 +47,18 @@ public class ExampleLoader extends AbstractComponent {
 		Random r1 = randomSeed > -1 ? new Random(randomSeed) : new Random();
 		Random r2 = randomSeed > -1 ? new Random(randomSeed) : new Random();
 
-		if (positiveExamples != null && (posNegLP != null || posOnlyLP != null)) {
-			positiveExamples = OWLAPIUtils.classExpressionPropertyExpander(positiveExamples, reasonerComponent, dataFactory, true);
-			Set<OWLIndividual> posEx = reasonerComponent.getIndividuals(positiveExamples);
+		if (positiveExamplesCE != null && (posNegLP != null || posOnlyLP != null)) {
+			positiveExamplesCE = OWLAPIUtils.classExpressionPropertyExpander(positiveExamplesCE, reasonerComponent, dataFactory, true);
+
+			// sanity check to verify the existence of all entities in the concept
+			if (!Helper.checkConceptEntities(reasonerComponent, positiveExamplesCE)) {
+				throw new ComponentInitException("Some entities in the concept \"" + positiveExamplesCE + "\" defining the pos. examples " +
+						" do not exist. Make sure you spelled it correctly.");
+			}
+
+			Set<OWLIndividual> posEx = reasonerComponent.getIndividuals(positiveExamplesCE);
 			if (positiveRandomCount > 0) {
-				ArrayList<OWLIndividual> sample = new ArrayList<>(posEx);
+				List<OWLIndividual> sample = new ArrayList<>(posEx);
 				Collections.shuffle(sample, r1);
 				posEx = new HashSet<>(sample.subList(0, positiveRandomCount));
 			}
@@ -57,35 +66,50 @@ public class ExampleLoader extends AbstractComponent {
 				posNegLP.setPositiveExamples(posEx);
 			if (posOnlyLP != null)
 				posOnlyLP.setPositiveExamples(posEx);
+			initialized = true;
 		}
 
-		if (negativeExamples != null && posNegLP != null) {
-			negativeExamples = OWLAPIUtils.classExpressionPropertyExpander(negativeExamples, reasonerComponent, dataFactory, true);
-			Set<OWLIndividual> negEx = reasonerComponent.getIndividuals(negativeExamples);
+		if (negativeExamplesCE != null && posNegLP != null) {
+			negativeExamplesCE = OWLAPIUtils.classExpressionPropertyExpander(negativeExamplesCE, reasonerComponent, dataFactory, true);
+
+			// sanity check to verify the existence of all entities in the concept
+			if (!Helper.checkConceptEntities(reasonerComponent, negativeExamplesCE)) {
+				throw new ComponentInitException("Some entities in the concept \"" + negativeExamplesCE + "\" defining the pos. examples " +
+						" do not exist. Make sure you spelled it correctly.");
+			}
+
+			Set<OWLIndividual> negEx;
+			if (reasonerComponent instanceof SPARQLReasoner) {
+				negEx = ((SPARQLReasoner) reasonerComponent).getIndividuals(negativeExamplesCE, negativeRandomCount);
+			} else {
+				negEx = reasonerComponent.getIndividuals(negativeExamplesCE);
+			}
 			if (negativeRandomCount > 0) {
-				ArrayList<OWLIndividual> sample = new ArrayList<>(negEx);
+				List<OWLIndividual> sample = new ArrayList<>(negEx);
 				Collections.shuffle(sample, r2);
 				negEx = new HashSet<>(sample.subList(0, negativeRandomCount));
 			}
-			if (posNegLP != null)
-				posNegLP.setNegativeExamples(negEx);
+			posNegLP.setNegativeExamples(negEx);
+			initialized = true;
 		}
+
+		initialized = true;
 	}
 
-	public OWLClassExpression getPositiveExamples() {
-		return positiveExamples;
+	public OWLClassExpression getPositiveExamplesCE() {
+		return positiveExamplesCE;
 	}
 
-	public void setPositiveExamples(OWLClassExpression positiveExamples) {
-		this.positiveExamples = positiveExamples;
+	public void setPositiveExamplesCE(OWLClassExpression positiveExamplesCE) {
+		this.positiveExamplesCE = positiveExamplesCE;
 	}
 
-	public OWLClassExpression getNegativeExamples() {
-		return negativeExamples;
+	public OWLClassExpression getNegativeExamplesCE() {
+		return negativeExamplesCE;
 	}
 
-	public void setNegativeExamples(OWLClassExpression negativeExamples) {
-		this.negativeExamples = negativeExamples;
+	public void setNegativeExamplesCE(OWLClassExpression negativeExamplesCE) {
+		this.negativeExamplesCE = negativeExamplesCE;
 	}
 
 	public int getPositiveRandomCount() {
@@ -125,7 +149,6 @@ public class ExampleLoader extends AbstractComponent {
 		return posNegLP;
 	}
 
-	@Autowired(required = false)
 	public void setPosNegLP(PosNegLP posNegLP) {
 		this.posNegLP = posNegLP;
 	}
@@ -134,7 +157,6 @@ public class ExampleLoader extends AbstractComponent {
 		return posOnlyLP;
 	}
 
-	@Autowired(required = false)
 	public void setPosOnlyLP(PosOnlyLP posOnlyLP) {
 		this.posOnlyLP = posOnlyLP;
 	}

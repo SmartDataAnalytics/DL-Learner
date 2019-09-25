@@ -121,7 +121,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// statistical variables
 	private int expressionTests = 0;
-	private int minHorizExp = 0;
+	private int minHorizExp = 1;
 	private int maxHorizExp = 0;
 	private long totalRuntimeNs = 0;
 	
@@ -310,7 +310,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
-		operator.init();
+		
+		if (!((AbstractRefinementOperator) operator).isInitialized())
+			operator.init();
+		
+		initialized = true;
 	}
 	
 	@Override
@@ -345,7 +349,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
-				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
+				if(length >= horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 					// add node to search tree
 					addNode(refinement, nextNode);
 				}
@@ -493,7 +497,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		searchTree.updatePrepare(node);
 		int horizExp = node.getHorizontalExpansion();
-		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
+		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp);
 //		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
@@ -661,7 +665,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// transform [r,s] to \exists r.\exists s.\top
 				OWLClassExpression existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				if(reasoner instanceof SPARQLReasoner) {
 					SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(existentialContext);
 					fillerFound = !Sets.intersection(individuals, examples).isEmpty();
 				} else {

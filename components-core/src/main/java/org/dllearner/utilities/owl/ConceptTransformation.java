@@ -60,7 +60,7 @@ public class ConceptTransformation {
 	 * @return the class expression in negation normal form
 	 */
 	public static OWLClassExpression nnf(OWLClassExpression ce) {
-		NNF nnfGen = new NNF(new OWLDataFactoryImpl());
+		NNF nnfGen = new NNF(df);
 		return ce.accept(nnfGen);
 	}
 	

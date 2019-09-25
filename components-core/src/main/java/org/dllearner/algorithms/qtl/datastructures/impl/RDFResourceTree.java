@@ -22,16 +22,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
@@ -63,7 +58,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		INDENTED, BRACES
 	}
 	
-	private final int id;
+	private int id;
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
 	public static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("DEF");
@@ -71,9 +66,23 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
 	
-	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
+	private Map<RDFResourceTree, Node> child2Edge = new IdentityHashMap<>();//HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparatorInv());
 
+    private Node anchorVar;
+	public void setAnchorVar(Node anchorVar) {
+		this.anchorVar = anchorVar;
+	}
+	public Node getAnchorVar() {
+		return anchorVar;
+	}
+	public boolean hasAnchor() {
+		return anchorVar != null;
+	}
+	public boolean hasAnchor(Node node) {
+		Objects.requireNonNull(node);
+		return node.matches(anchorVar);
+	}
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
 
@@ -141,18 +150,47 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public RDFResourceTree(int id, RDFDatatype datatype, Set<Literal> literals) {
 		super(DEFAULT_LITERAL_NODE);
 		this.id = id;
+		this.datatype = datatype;
 	}
-	
+
+	/**
+	 * Copy constructor that copies
+	 * - node label
+	 * - children recursively
+	 * - datatype (if literal node)
+	 * - anchor var (if exists)
+	 * @param tree
+	 */
 	public RDFResourceTree(RDFResourceTree tree) {
+		this(tree, true);
+	}
+
+	/**
+	 * Copy constructor that copies
+	 * - node label
+	 * - datatype (if literal node)
+	 * - anchor var (if exists)
+	 *
+	 * Children are recursivly copied only if enabled.
+	 *
+	 * @param tree the tree
+	 * @param withChildren whether to copy also the children recursively
+	 */
+	public RDFResourceTree(RDFResourceTree tree, boolean withChildren) {
 		super(tree.getData());
 		this.id = getID();
-		
-		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
-			Node edge = entry.getKey();
-			List<RDFResourceTree> children = entry.getValue();
-			
-			for (RDFResourceTree child : children) {
-				addChild(new RDFResourceTree(child), edge);
+
+		setDatatype(tree.getDatatype());
+		setAnchorVar(tree.getAnchorVar());
+
+		if(withChildren) {
+			for (Entry<Node, List<RDFResourceTree>> entry : tree.edge2Children.entrySet()) {
+				Node edge = entry.getKey();
+				List<RDFResourceTree> children = entry.getValue();
+
+				for (RDFResourceTree child : children) {
+					addChild(new RDFResourceTree(child), edge);
+				}
 			}
 		}
 	}
@@ -163,26 +201,22 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public int getID() {
 		return id;
 	}
-	
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public void addChild(RDFResourceTree child, Node edge) {
 		super.addChild(child);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.add(child);
-		
+
 		child2Edge.put(child, edge);
 	}
 	
 	public void addChildren(List<RDFResourceTree> children, Node edge) {
 		super.addChildren(children);
-		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
-		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<>();
-			edge2Children.put(edge, childrenForEdge);
-		}
+		List<RDFResourceTree> childrenForEdge = edge2Children.computeIfAbsent(edge, k -> new ArrayList<>());
 		childrenForEdge.addAll(children);
 	}
 	
@@ -197,14 +231,19 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge != null) {
 			childrenForEdge.remove(child);
+
+			// if there are no other children for the given edge, remove whole edge
+			if(childrenForEdge.isEmpty()) {
+				edge2Children.remove(edge);
+			}
 		}
-		
-		// if there are no other children for the given edge, remove whole edge
-		if(childrenForEdge.isEmpty()) {
-			edge2Children.remove(edge);
-		}
-		
+
 		child2Edge.remove(child);
+	}
+
+	public void replaceChild(RDFResourceTree oldChild, RDFResourceTree newChild, Node edge) {
+		removeChild(oldChild, edge);
+		addChild(newChild, edge);
 	}
 	
 	@Override
@@ -358,17 +397,31 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 * @return a rendered string representation of the tree
 	 */
 	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm) {
+		return getStringRepresentation(stopIfChildIsResourceNode, syntax, baseIRI, pm, false);
+	}
+
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 *
+	 * @param stopIfChildIsResourceNode if a child node is not a variable, children will not be rendered
+	 * @param syntax the syntax used for rendering
+	 * @param baseIRI the base IRI
+	 * @param pm the prefix mapping
+	 * @param showID show the IDs of the nodes
+	 * @return a rendered string representation of the tree
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm, boolean showID) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
-		
+
 		if(syntax == Rendering.BRACES) {
 			buildTreeString(sb, stopIfChildIsResourceNode, 0, context);
 		} else {
-			buildTreeStringIndented(sb, stopIfChildIsResourceNode, 1, context);
+			buildTreeStringIndented(sb, stopIfChildIsResourceNode, 1, context, showID);
 		}
-		
+
 		return "TREE [\n" + sb.toString() + "]";
 	}
 	
@@ -401,14 +454,20 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 	}
 	
-	private void buildTreeStringIndented(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
+	private void buildTreeStringIndented(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context, boolean showID) {
 		
 		// render current node
 		String ren;
-		if(isLiteralNode() && !isLiteralValueNode()) {
+		if(isLiteralNode() && !isLiteralValueNode() && getDatatype() != null) {
 			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
 		} else {
 			ren = FmtUtils.stringForNode(this.getData(), context);
+		}
+		if(getAnchorVar() != null) {
+			ren += " (" + getAnchorVar() + ")";
+		}
+		if(showID) {
+			ren += " (" + getID() + ")";
 		}
 		sb.append(ren).append("\n");
 		
@@ -429,23 +488,30 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 						}
 
 					}
-					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context);
+					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context, showID);
 				}
 			}
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.qtl.datastructures.impl.GenericTree#equals(org.dllearner.algorithms.qtl.datastructures.impl.GenericTree)
-	 */
 	@Override
-	public boolean equals(RDFResourceTree other) {
-		if(this.isResourceNode() || this.isLiteralValueNode()) {
-			return this.getData().equals(other.getData());
-		}
-		return this == other;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+
+		RDFResourceTree that = (RDFResourceTree) o;
+
+		return (this.isResourceNode() || this.isLiteralValueNode()) && this.getData().equals(that.getData());
 	}
-	
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + id;
+		return result;
+	}
+
 	/**
 	 * @param datatype the datatype to set
 	 */
@@ -534,4 +600,22 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
 			result();
 	}
+
+//	static class NodeRenderer implements Function<Node, String>{
+//		@Override
+//		public String apply(Node node) {
+//			return null;
+//		}
+//	}
+//
+//	static class TreeRenderer {
+//
+//		private Function<Node, String> nodeRenderer;
+//
+//		public String render(RDFResourceTree tree) {
+//
+//		}
+//
+//
+//	}
 }

@@ -18,16 +18,21 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
+import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 /**
  * @author Jens Lehmann
@@ -44,15 +49,6 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	@ConfigOption()
 	protected SortedSet<FuzzyIndividual> fuzzyExamples;
 
-	public void setFuzzyExamples(Map<OWLIndividual, Double> fuzzyEx) {
-		fuzzyExamples = new TreeSet<>();
-
-		for (OWLIndividual i : fuzzyEx.keySet()) {
-			this.fuzzyExamples.add(new FuzzyIndividual(i.toStringID(), fuzzyEx.get(i).doubleValue()));
-		}
-	}
-
-	protected boolean useRetrievalForClassification = false;
 	protected double percentPerLengthUnit = 0.05;
 	protected double totalTruth = 0;
 	
@@ -68,9 +64,14 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		// commented by Josue as now there's no need of + and - examples (more code need to be deleted in this sense)
 		// allExamples = Helper.union(positiveExamples, negativeExamples);
+
+		// sanity check whether examples are contained in KB
+		Helper.checkIndividuals(reasoner, Sets.union(Sets.union(positiveExamples, negativeExamples), fuzzyExamples));
+
+		initialized = true;
 	}
 	
 	public SortedSet<OWLIndividual> getNegativeExamples() {
@@ -100,5 +101,13 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	public void setFuzzyExamples(SortedSet<FuzzyIndividual> fuzzyExamples) {
 		this.fuzzyExamples = fuzzyExamples;
 	}
+
+	public void setFuzzyExamples(Map<OWLIndividual, Double> fuzzyEx) {
+		fuzzyExamples = fuzzyEx.entrySet().stream()
+				.map(e -> new FuzzyIndividual(e.getKey().toStringID(), e.getValue()))
+				.collect(Collectors.toCollection(TreeSet::new));
+	}
+
+
 	
 }

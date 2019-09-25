@@ -39,7 +39,7 @@ import java.util.TreeSet;
  *
  */
 @ComponentAnn(name = "OperatorInverter", shortName = "inv_op", version = 0.1)
-public class OperatorInverter implements LengthLimitedRefinementOperator {
+public class OperatorInverter extends AbstractRefinementOperator implements LengthLimitedRefinementOperator {
 
 	@ConfigOption(description = "class expression length calculation metric")
 	private OWLClassExpressionLengthMetric lengthMetric;
@@ -146,8 +146,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		
+		initialized = true;
 	}
 	
 }

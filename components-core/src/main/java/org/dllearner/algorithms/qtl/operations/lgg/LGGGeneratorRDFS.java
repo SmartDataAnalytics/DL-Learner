@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -49,6 +50,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.NonStandardReasoningServices;
 import org.semanticweb.owlapi.model.EntityType;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -214,7 +216,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		QueryExecutionFactory qef = FluentQueryExecutionFactory
 				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
-				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withCache(CacheUtilsH2.createCacheFrontend(System.getProperty("java.io.tmpdir") + File.separator + "cache", false, TimeUnit.DAYS.toMillis(60)))
 				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 
 		// tree generation

@@ -43,7 +43,7 @@ import com.google.common.hash.Hashing;
  */
 public abstract class SemanticIndexGenerator {
 
-	static HashFunction hf = Hashing.md5();
+	static HashFunction hf = Hashing.goodFastHash(128);
     private static final Logger logger = Logger.getLogger(SemanticIndexGenerator.class);
     private static boolean useCache = false;
     

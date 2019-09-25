@@ -52,10 +52,10 @@ public class SKOSReasoner extends GenericRuleReasoner {
     protected static final String SIMPLE_RULE_FILE = "etc/skos-simple.rules";
     
     /** The cached rule sets, indexed by processing level */
-    protected static Map<String, List<Rule>> ruleSets = new HashMap<>();
+    protected static final Map<String, List<Rule>> ruleSets = new HashMap<>();
     
     /** The rule file names, indexed by processing level */
-    protected static Map<String, String> ruleFiles;
+    protected static final Map<String, String> ruleFiles = new HashMap<>();
 
 	/**
 	 * @param factory the Jena reasoner factory

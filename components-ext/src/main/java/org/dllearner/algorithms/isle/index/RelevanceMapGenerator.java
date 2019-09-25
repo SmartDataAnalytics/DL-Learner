@@ -31,7 +31,6 @@ import com.google.common.hash.Hashing;
  */
 public abstract class RelevanceMapGenerator {
 
-	static HashFunction hf = Hashing.md5();
     private static final Logger logger = Logger.getLogger(RelevanceMapGenerator.class);
     public static String cacheDirectory = "cache/relevance";
     

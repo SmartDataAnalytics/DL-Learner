@@ -21,11 +21,15 @@ package org.dllearner.learningproblems;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import org.apache.log4j.Logger;
+import org.dllearner.accuracymethods.AccMethodApproximate;
+import org.dllearner.accuracymethods.AccMethodPredAcc;
+import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +42,7 @@ import java.util.TreeSet;
  *
  */
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
-	protected static Logger logger = Logger.getLogger(PosNegLP.class);
+	protected static final Logger logger = Logger.getLogger(PosNegLP.class);
 
 	@ConfigOption(description = "list of positive examples", required = true)
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<>();
@@ -70,6 +74,12 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
+		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
+			logger.info("Loading examples by expression");
+			exampleLoaderHelper.setPosNegLP(this);
+			exampleLoaderHelper.init();
+		}
 		// check if some positive examples have been set
 		if(positiveExamples.isEmpty()) {
 			throw new ComponentInitException("No positive examples have been set.");
@@ -98,22 +108,11 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		}
 		
 		// sanity check whether examples are contained in KB
-		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
-            Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
-            double percentage = missing.size()/allExamples.size();
-            percentage = Math.round(percentage * 1000) / 1000;
-			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
-			str += missing.toString();
-            if(missing.size()==allExamples.size())    {
-                throw new ComponentInitException(str);
-            } if(percentage < 0.10) {
-                logger.warn(str);
-            } else {
-                logger.error(str);
-            }
-		}
+		Helper.checkIndividuals(reasoner, allExamples);
+		
+		initialized = true;
 	}
-	
+
 	public Set<OWLIndividual> getNegativeExamples() {
 		return negativeExamples;
 	}

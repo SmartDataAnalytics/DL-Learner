@@ -164,12 +164,10 @@ public class NoiseGenerator {
             negExamplesSet.addAll(result);
         } else {
             // we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-            Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> {
-                return ComparisonChain.start()
-                        .compare(o1.size(), o2.size())
-                        .compare(o1.hashCode(), o2.hashCode())
-                        .result();
-            });
+            Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> ComparisonChain.start()
+                    .compare(o1.size(), o2.size())
+                    .compare(o1.hashCode(), o2.hashCode())
+                    .result());
             powerSet.addAll(Sets.powerSet(triplePatterns));
 
             for (Set<Triple> set : powerSet) {

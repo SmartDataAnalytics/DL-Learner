@@ -83,8 +83,8 @@ public class BiomedicalLearningProblemsGenerator {
 		Iterator<OWLClass> iterator = classes.iterator();
 		
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
-		List<Future<Path>> futures = new ArrayList<Future<Path>>();
-		List<Path> paths = new ArrayList<Path>();
+		List<Future<Path>> futures = new ArrayList<>();
+		List<Path> paths = new ArrayList<>();
 		
 		ThreadPoolExecutor tp = new CustomFutureReturningExecutor(
 				threadCount, threadCount,
@@ -98,7 +98,7 @@ public class BiomedicalLearningProblemsGenerator {
 		
 		for(int depth = minDepth; depth <= maxDepth; depth++) {
 			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
-			List<Path> pathsForDepth = new ArrayList<Path>();
+			List<Path> pathsForDepth = new ArrayList<>();
 			// generate paths of depths <= maxDepth
 			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
 				

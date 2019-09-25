@@ -119,22 +119,27 @@ public class SemKernel extends AbstractComponent {
         svmParams.shrinking = doShrinking ? 1 : 0;
 
         switch (svmType) {
-        case C_SVC:
-            svmParams.svm_type = svm_parameter.C_SVC;
-            break;
-        case NU_SVC:
-            svmParams.svm_type = svm_parameter.NU_SVC;
-            break;
-        case ONE_CLASS:
-            svmParams.svm_type = svm_parameter.ONE_CLASS;
-        case EPSILON_SVR:
-            svmParams.svm_type = svm_parameter.EPSILON_SVR;
-        case NU_SVR:
-            svmParams.svm_type = svm_parameter.NU_SVR;
+            case C_SVC:
+                svmParams.svm_type = svm_parameter.C_SVC;
+                break;
+            case NU_SVC:
+                svmParams.svm_type = svm_parameter.NU_SVC;
+                break;
+            case ONE_CLASS:
+                svmParams.svm_type = svm_parameter.ONE_CLASS;
+                break;
+            case EPSILON_SVR:
+                svmParams.svm_type = svm_parameter.EPSILON_SVR;
+                break;
+            case NU_SVR:
+                svmParams.svm_type = svm_parameter.NU_SVR;
+                break;
         }
 
         svmParams.weight = new double[0];  // TODO: make configurable
         svmParams.weight_label = new int[0];  // TODO make configurable
+        
+        initialized = true;
     }
 
     public void train() {

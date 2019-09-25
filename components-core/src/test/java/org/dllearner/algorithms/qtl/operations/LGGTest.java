@@ -18,13 +18,22 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
+import com.google.common.base.StandardSystemProperty;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.experiments.DBpediaEvaluationDataset;
+import org.dllearner.algorithms.qtl.experiments.datasets.DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
@@ -32,11 +41,19 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static org.junit.Assert.assertTrue;
@@ -206,6 +223,55 @@ public class LGGTest {
 		System.out.println("Operation took " + (end - start) + "ms");
 		
 		System.out.println(lggSimple.getStringRepresentation());
+	}
+
+	@Test
+	public void testDBpediaRemote() {
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
+				.withPostProcessor(qe -> ((QueryEngineHTTP) ((QueryExecutionHttpWrapper) qe).getDecoratee())
+						.setModelContentType(WebContent.contentTypeRDFXML))
+				.withCache(CacheUtilsH2.createCacheFrontend(System.getProperty("java.io.tmpdir") + File.separator + "cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
+
+		Set<String> ignoredProperties = Sets.newHashSet(
+				"http://dbpedia.org/ontology/abstract",
+				"http://dbpedia.org/ontology/wikiPageID",
+				"http://dbpedia.org/ontology/wikiPageRevisionID",
+				"http://dbpedia.org/ontology/wikiPageID",
+				"http://dbpedia.org/ontology/thumbnail",
+				"http://dbpedia.org/ontology/wikiPageExternalLink");
+
+		List<String> examples = Lists.newArrayList(
+				"http://dbpedia.org/resource/Brad_Pitt",
+				"http://dbpedia.org/resource/Tom_Hanks");
+		int maxDepth = 2;
+
+		// CBD
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		cbdGen.setIgnoredProperties(ignoredProperties);
+		cbdGen.setAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+		cbdGen.setAllowedClassNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+
+		// tree generation
+		List<RDFResourceTree> trees = new ArrayList<>();
+		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
+		treeFactory.setMaxDepth(maxDepth);
+		for(String resource : examples){
+			try {
+				Model model = cbdGen.getConciseBoundedDescription(resource, maxDepth);
+				RDFResourceTree tree = treeFactory.getQueryTree(ResourceFactory.createResource(resource), model);
+				trees.add(tree);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		LGGGeneratorSimple lggGen = new LGGGeneratorSimple();
+		RDFResourceTree lgg = lggGen.getLGG(trees);
+
+		System.out.println(lgg.getStringRepresentation(true));
 	}
 
 }

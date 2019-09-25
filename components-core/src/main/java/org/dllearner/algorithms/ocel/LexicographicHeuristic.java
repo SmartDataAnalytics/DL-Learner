@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
@@ -111,5 +112,10 @@ public class LexicographicHeuristic implements ExampleBasedHeuristic {
 	@Override
 	public void init() throws ComponentInitException {
 		// nothing to do
+	}
+
+	@Override
+	public double getNodeScore(ExampleBasedNode node) {
+		throw new NotImplementedException("Lexicographic Score not implemented");
 	}
 }

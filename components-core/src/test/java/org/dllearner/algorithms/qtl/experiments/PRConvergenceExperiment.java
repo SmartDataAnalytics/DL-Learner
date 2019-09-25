@@ -18,10 +18,7 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
+import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -65,6 +62,9 @@ import org.dllearner.algorithms.qtl.QTL2DisjunctiveMultiThreaded;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.experiments.datasets.EvaluationDataset;
+import org.dllearner.algorithms.qtl.experiments.datasets.QALD4BiomedicalChallengeEvaluationDataset;
+import org.dllearner.algorithms.qtl.experiments.datasets.QALD6DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
@@ -85,6 +85,7 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
+import org.dllearner.utilities.owl.DLSyntaxObjectRendererExt;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -215,7 +216,7 @@ public class PRConvergenceExperiment {
 
 	private int nrOfThreads;
 
-	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
+	OWLObjectRenderer owlRenderer = new DLSyntaxObjectRendererExt();
 
 	DescriptiveStatistics treeSizeStats = new DescriptiveStatistics();
 
@@ -468,12 +469,12 @@ public class PRConvergenceExperiment {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(Query::toString).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
 		queries = queries.stream().filter(q -> queriesToProcessTokens.stream().noneMatch(t -> !q.contains(t))).collect(Collectors.toList());
-		queries = queries.stream().filter(q -> queriesToOmitTokens.stream().noneMatch(t -> q.contains(t))).collect(Collectors.toList());
+		queries = queries.stream().filter(q -> queriesToOmitTokens.stream().noneMatch(q::contains)).collect(Collectors.toList());
 
 
 
@@ -495,7 +496,7 @@ public class PRConvergenceExperiment {
 		// check for queries that do not return any result (should not happen, but we never know)
 		Set<String> emptyQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.isEmpty())
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} empty queries.", emptyQueries.size());
 		queries.removeAll(emptyQueries);
@@ -504,7 +505,7 @@ public class PRConvergenceExperiment {
 		int min = 3;
 		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.size() < min)
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} queries with < {} pos. examples.", emptyQueries.size(), min);
 		queries.removeAll(lowNrOfExamplesQueries);
@@ -591,7 +592,7 @@ public class PRConvergenceExperiment {
 						queriesToProcess.retainAll(
 								query2Examples.entrySet().stream()
 								.filter(e -> e.getValue().correctPosExampleCandidates.size() >= nrOfExamples)
-								.map(e -> e.getKey())
+								.map(Map.Entry::getKey)
 								.collect(Collectors.toSet()));
 
 						// loop over SPARQL queries
@@ -648,7 +649,7 @@ public class PRConvergenceExperiment {
 											lp.setNegativeExamples(examples.negExamplesMapping.keySet());
 //											QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 											QTL2DisjunctiveMultiThreaded la = new QTL2DisjunctiveMultiThreaded(lp, qef);
-											la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+											la.setRenderer(new DLSyntaxObjectRendererExt());
 											la.setReasoner(dataset.getReasoner());
 											la.setEntailment(Entailment.SIMPLE);
 											la.setTreeFactory(queryTreeFactory);
@@ -715,7 +716,7 @@ public class PRConvergenceExperiment {
 
 											for (RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 												if (QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-													Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
+													Files.append(sparqlQuery + "\n", new File(System.getProperty("java.io.tmpdir") + File.separator + "negCovered.txt"), Charsets.UTF_8);
 													break;
 												}
 											}
@@ -746,7 +747,7 @@ public class PRConvergenceExperiment {
 										} finally {
 											int cnt = currentNrOfFinishedRuns.incrementAndGet();
 											logger.info("***********Evaluation Progress:"
-													+ NumberFormat.getPercentInstance().format((double) cnt / totalNrOfQTLRuns)
+													+ NumberFormat.getPercentInstance(Locale.ROOT).format((double) cnt / totalNrOfQTLRuns)
 													+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
 													+ "***********");
 										}
@@ -936,12 +937,9 @@ public class PRConvergenceExperiment {
 					types.add(child.getData());
 				}
 			}
-			Node mostFrequentType = Ordering.natural().onResultOf(new Function<Multiset.Entry<Node>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Node> entry) {
-				    return entry.getCount();
-				  }
-				}).max(types.entrySet()).getElement();
+			Node mostFrequentType = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Node>, Integer>) Multiset.Entry::getCount)
+					.max(types.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
 			break;
@@ -956,12 +954,9 @@ public class PRConvergenceExperiment {
 					}
 				}
 			}
-			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(new Function<Multiset.Entry<Pair<Node, Node>>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Pair<Node, Node>> entry) {
-				    return entry.getCount();
-				  }
-				}).max(pairs.entrySet()).getElement();
+			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Pair<Node, Node>>, Integer>) Multiset.Entry::getCount)
+					.max(pairs.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
 			break;
@@ -1036,7 +1031,7 @@ public class PRConvergenceExperiment {
 //		lp.init();
 
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-		la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+		la.setRenderer(new DLSyntaxObjectRendererExt());
 		la.setReasoner(dataset.getReasoner());
 		la.setEntailment(Entailment.RDFS);
 		la.setTreeFactory(queryTreeFactory);
@@ -1243,7 +1238,7 @@ public class PRConvergenceExperiment {
 		// get CBD
 		logger.info("loading data for {} ...", resource);
 		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, cbdStructure);
 		mon.stop();
 		logger.info("got {} triples in {}ms.", cbd.size(), mon.getLastValue());
 
@@ -1320,7 +1315,7 @@ public class PRConvergenceExperiment {
 		List<Query> queries = QueryRewriter.split(query);
 
 		List<String> resources = getResult(queries.remove(0).toString());
-		queries.stream().map(q -> getResult(q.toString())).forEach(l -> resources.retainAll(l));
+		queries.stream().map(q -> getResult(q.toString())).forEach(resources::retainAll);
 
 		return resources;
 	}
@@ -1364,7 +1359,7 @@ public class PRConvergenceExperiment {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
+		Files.write(Joiner.on("\n").join(learnedResources), new File(System.getProperty("java.io.tmpdir") + File.separator + "result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();

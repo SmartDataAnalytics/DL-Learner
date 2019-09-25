@@ -29,71 +29,40 @@ options {
   UNICODE_INPUT=true;
 }
 
-PARSER_BEGIN(ConfParser)
+PARSER_BEGIN(ConfParserLegacy)
 package org.dllearner.confparser;
 
 import org.dllearner.cli.ConfFileOption;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.parser.KBParser;
 
 import java.io.*;
 import java.util.*;
 
-public class ConfParser {
-	
-	// special directives (those without a property name)
-	private Map<String, ConfFileOption> specialOptions = new HashMap<String, ConfFileOption>();
-
-	// conf file options
-	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
-	private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<String, ConfFileOption>();
-	private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<String, List<ConfFileOption>>();
-
-	private void addConfOption(ConfFileOption confOption) {
-		confOptions.add(confOption);
-		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
-		String beanName = confOption.getBeanName();
-		if (confOptionsByBean.containsKey(beanName))
-			confOptionsByBean.get(beanName).add(confOption);
-		else {
-			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
-			optionList.add(confOption);
-			confOptionsByBean.put(beanName, optionList);
-		}
-	}
-
-	public List<ConfFileOption> getConfOptions() {
-		return confOptions;
-	}
-
-	public Map<String, ConfFileOption> getConfOptionsByProperty() {
-		return confOptionsByProperty;
-	}
-
-	public ConfFileOption getConfOptionsByProperty(String propertyName) {
-		ConfFileOption confOption = confOptionsByProperty.get(propertyName);
-		if (confOption == null) {
-			confOption = specialOptions.get(propertyName);
-		}
-		return confOption;
-	}
-
-	public Map<String, List<ConfFileOption>> getConfOptionsByBean() {
-		return confOptionsByBean;
-	}
-
-	public List<ConfFileOption> getConfOptionsByBean(String beanName) {
-		return confOptionsByBean.get(beanName);
-	}
+public class ConfParserLegacy extends AbstractConfParser {
 
 	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException,
 			UnsupportedEncodingException {
-		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
-		parser.Start();
+		ConfParserLegacy parser = new ConfParserLegacy(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
+		try {
+			parser.init();
+		} catch (ComponentInitException e) {
+			throw (ParseException) e.getCause();
+		}
 		return parser;
 	}
-	
+
+	public void init() throws ComponentInitException {
+		try {
+			this.Start();
+		} catch (ParseException e) {
+			throw new ComponentInitException(e);
+		}
+		postProcess();
+	}
+
 }
-PARSER_END(ConfParser)
+PARSER_END(ConfParserLegacy)
 
 SKIP :
 {
@@ -122,16 +91,9 @@ void Start() :
 }
 {
   (		confOption = ConfOption()  		  
-  	   { if(confOption.getPropertyName() == null) {
-  	   		specialOptions.put(confOption.getBeanName(),confOption);
-  	     } else { 
-  	     	addConfOption(confOption); 
-  	     } 
-  	   }
+  	   { addConfOption(confOption); }
   )*
   <EOF>
-  { PostProcessor pp = new PostProcessor(confOptions, specialOptions);
-    pp.applyAll(); }
 }
 
 ConfFileOption ConfOption() :

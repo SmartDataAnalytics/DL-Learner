@@ -62,16 +62,19 @@ public class NLPHeuristic extends AbstractHeuristic{
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();
+
 		// being better than the parent gives a bonus;
 		if(!node.isRoot()) {
-			double parentAccuracy = node.getParent().getAccuracy();
-			score += (parentAccuracy - score) * gainBonusFactor;
-		// the root node also gets a bonus to possibly spawn useful disjunctions
+			double accuracyGain = node.getAccuracy() - node.getParent().getAccuracy();
+			score += accuracyGain * gainBonusFactor;
+			// the root node also gets a bonus to possibly spawn useful disjunctions
 		} else {
 			score += startNodeBonus;
 		}
+
 		// penalty for horizontal expansion
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
+
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;
 		

@@ -18,6 +18,12 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
 import com.google.common.collect.Sets;
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -43,29 +49,14 @@ import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.utilities.PrefixCCMap;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.GraphMLExporter;
-import org.jgrapht.ext.VertexNameProvider;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.Graph;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
-import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.transform.TransformerConfigurationException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 /**
  * 
@@ -926,14 +917,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         for (QueryTree<N> child : getChildren()) {
             Object edge = getEdge(child);
             boolean meaningful = !edge.equals(RDF.type.getURI()) || meaningful(child);
-            if (edge != null && meaningful) {
+            if (meaningful) {
                 writer.print(sb.toString());
                 writer.print("--- ");
                 writer.print(edge);
                 writer.print(" ---\n");
-            }
-            if(meaningful){
-            	child.dump(writer, indent);
+
+                // recursive call
+				child.dump(writer, indent);
             }
         }
         writer.flush();
@@ -1659,7 +1650,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return df.getOWLDatatype(IRI.create(literals.iterator().next().getDatatypeURI()));
     }
     
-    private void buildGraph(DirectedGraph<Vertex, Edge> graph, QueryTree<N> tree){
+    private void buildGraph(Graph<Vertex, Edge> graph, QueryTree<N> tree){
     	PrefixCCMap prefixes = PrefixCCMap.getInstance();
     	List<QueryTree<N>> children = tree.getChildren();
     	Vertex parent = new Vertex(tree.getId(), prefixed(prefixes, tree.getUserObject().toString()));
@@ -1667,7 +1658,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for (QueryTree<N> child : children) {
     		Vertex childVertex = new Vertex(child.getId(), prefixed(prefixes, child.getUserObject().toString()));
     		graph.addVertex(childVertex);
-    		Edge edge = new Edge(Long.valueOf(parent.getId() + "0" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
+    		Edge edge = new Edge(Long.parseLong(parent.getId() + "0" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
 			graph.addEdge(parent, childVertex, edge);
 			buildGraph(graph, child);
 		}
@@ -1724,38 +1715,4 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	return uri;
     }
-    
-	public void asGraph() {
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
-		buildGraph(graph, this);
-		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return String.valueOf(vertex.getId());
-			}
-		};
-
-		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
-
-		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return String.valueOf(edge.getId());
-			}
-		};
-
-		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
-		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
-                vertexNameProvider, edgeIDProvider, edgeLabelProvider);
-		try {
-			exporter.export(new FileWriter(new File("tree.graphml")), graph);
-		} catch (TransformerConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-
-	
-	
 }

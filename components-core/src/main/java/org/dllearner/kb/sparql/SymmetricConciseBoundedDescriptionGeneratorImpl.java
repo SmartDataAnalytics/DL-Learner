@@ -74,7 +74,6 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricConciseBoundedDescriptionGeneratorImpl.class);
 	
-	private Model baseModel;
 	private QueryExecutionFactory qef;
 	
 	private Set<String> namespaces;
@@ -102,26 +101,24 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	}
 
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(Model model) {
-		this.baseModel = model;
-
-		qef = new QueryExecutionFactoryModel(baseModel);
+		this(new QueryExecutionFactoryModel(model));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
 	 */
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
-		logger.debug("computing CBD of depth {} for {} ...", resourceURI, depth);
+	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
+		logger.debug("computing CBD of depth {} for {} ...", resource, depth);
 		Model cbd = ModelFactory.createDefaultModel();
-		cbd.add(getIncomingModel(resourceURI, depth));
-		cbd.add(getOutgoingModel(resourceURI, depth));
+		cbd.add(getIncomingModel(resource, depth));
+		cbd.add(getOutgoingModel(resource, depth));
 		logger.debug("CBD size: {}", cbd.size());
 		return cbd;
 	}
 
 	@Override
-	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
 		this.namespaces = namespaces;
 	}
 	
@@ -129,8 +126,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		String query = makeConstructQueryObject2(resource, depth);
 		logger.debug("computing incoming triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
-			Model model = qe.execConstruct();
-			return model;
+			return qe.execConstruct();
 		} catch (Exception e) {
 			logger.error("Failed to retrieve incoming CBD for " + resource + ".\nQuery:\n" + query, e);
 		}
@@ -141,8 +137,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		String query = makeConstructQuerySubject(resource, depth);
 		logger.debug("computing outgoing triples for {}\n{}", resource, query);
 		try(QueryExecution qe = qef.createQueryExecution(query)) {
-			Model model = qe.execConstruct();
-			return model;
+			return qe.execConstruct();
 		} catch (Exception e) {
 			logger.error("Failed to retrieve outgoing CBD for " + resource + ".\nQuery:\n" + query, e);
 		}
@@ -240,14 +235,14 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	}
 
 	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
+	public void setIgnoredProperties(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#addAllowedObjectNamespaces(java.util.Set)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#setAllowedObjectNamespaces(java.util.Set)
 	 */
 	@Override
-	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+	public void setAllowedObjectNamespaces(Set<String> namespaces) {
 	}
 
 	public static void main(String[] args) throws Exception{

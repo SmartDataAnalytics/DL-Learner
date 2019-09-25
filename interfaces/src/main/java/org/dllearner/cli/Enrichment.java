@@ -20,6 +20,7 @@
 package org.dllearner.cli;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Sets;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.*;
@@ -33,10 +34,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
@@ -46,7 +44,7 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.*;
-import org.dllearner.learningproblems.AccMethodFMeasure;
+import org.dllearner.accuracymethods.AccMethodFMeasure;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ClosedWorldReasoner;
@@ -451,7 +449,7 @@ public class Enrichment {
 			}
 			ksFragment = new OWLAPIOntology(ontology);
 			try {
-				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream("/tmp/test.ttl"));
+				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream(System.getProperty("java.io.tmpdir") + File.separator + "test.ttl"));
 			} catch (OWLOntologyStorageException | FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -507,7 +505,7 @@ public class Enrichment {
 	}
 
 	private Model getFragment(SparqlEndpointKS ks, Set<OWLIndividual> individuals){
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache");
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		Model model = ModelFactory.createDefaultModel();
 		for(OWLIndividual ind : individuals){
 			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
@@ -524,7 +522,7 @@ public class Enrichment {
 			futures.add(threadPool.submit(new Callable<Model>() {
 				@Override
 				public Model call() throws Exception {
-					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache");
+					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 					return cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
 				}
 			}));

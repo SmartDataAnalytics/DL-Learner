@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import com.google.common.collect.ComparisonChain;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
@@ -93,15 +94,11 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 			
 			double score2 = -n2.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
 			score2 -= percentPerLengthUnit * OWLClassExpressionUtils.getLength(n2.getConcept());
-			
-			double diff = score1 - score2;
-			
-			if(diff>0)
-				return 1;
-			else if(diff<0)
-				return -1;
-			else
-				return n1.getConcept().compareTo(n2.getConcept());
+
+			return ComparisonChain.start()
+					.compare(score1, score2)
+					.compare(n1.getConcept(), n2.getConcept())
+					.result();
 		}
 		
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");
@@ -118,5 +115,11 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 	@Override
 	public void init() throws ComponentInitException {
 	}
-	
+
+	@Override
+	public double getNodeScore(ExampleBasedNode n1) {
+		double score1 = -n1.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
+		score1 -= percentPerLengthUnit * OWLClassExpressionUtils.getLength(n1.getConcept());
+		return score1;
+	}
 }

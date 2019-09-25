@@ -21,10 +21,16 @@ package org.dllearner.algorithms.properties;
 import java.util.SortedSet;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 @ComponentAnn(name = "object subproperty axiom learner", shortName = "oplsubprop", version = 0.1, description="A learning algorithm object subproperty axioms.")
 public class SubObjectPropertyOfAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLSubObjectPropertyOfAxiom>{
@@ -59,5 +65,25 @@ public class SubObjectPropertyOfAxiomLearner extends ObjectPropertyHierarchyAxio
 	@Override
 	public OWLSubObjectPropertyOfAxiom getAxiom(OWLObjectProperty property, OWLObjectProperty otherProperty) {
 		return df.getOWLSubObjectPropertyOfAxiom(property, otherProperty);
+	}
+
+	public static void main(String[] args) throws Exception {
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		ks.init();
+
+		SubObjectPropertyOfAxiomLearner la = new SubObjectPropertyOfAxiomLearner(ks);
+		la.setEntityToDescribe(new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/author")));
+		la.setUseSampling(false);
+		la.setBatchMode(true);
+		la.setProgressMonitor(new ConsoleAxiomLearningProgressMonitor());
+		la.init();
+
+		la.start();
+
+		la.getCurrentlyBestEvaluatedAxioms().forEach(ax -> {
+			System.out.println("---------------\n" + ax);
+			la.getPositiveExamples(ax).stream().limit(5).forEach(System.out::println);
+		});
 	}
 }

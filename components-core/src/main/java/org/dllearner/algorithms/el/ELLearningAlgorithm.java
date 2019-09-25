@@ -32,6 +32,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -129,8 +130,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		noise = noisePercentage/100d;
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
+
+		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
+		
+		initialized = true;
 	}	
 	
 	@Override
@@ -207,12 +212,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		OWLClassExpression classExpression = descriptionTree.transformToClassExpression();
 		
 		if(classExpression.equals(startClass) || isDescriptionAllowed(classExpression)){
+
 			// rewrite class expression
-			classExpression = getNiceDescription(classExpression);
-			
+			classExpression = rewrite(classExpression);
+
 			// compute score
 			Score score = learningProblem.computeScore(classExpression, noise);
-			
+
 			// compute accuracy
 			double accuracy = score.getAccuracy();
 			
@@ -241,7 +247,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
 				if(classToDescribe == null || !classToDescribe.equals(classExpression)) {
-					if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
+					if(!bestEvaluatedDescriptions.isFull() || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
 						EvaluatedDescription<Score> ed = new EvaluatedDescription<>(classExpression, score);
 						bestEvaluatedDescriptions.add(ed);
 //						System.out.println("Add " + ed);

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +22,10 @@ import java.util.stream.StreamSupport;
  */
 public class SPARQLUtils {
 
+    public enum QueryType {
+        IN, OUT, MISC
+    }
+
     private static QueryUtils utils = new QueryUtils();
 
     public static ParameterizedSparqlString CBD_TEMPLATE_DEPTH3;
@@ -30,18 +35,11 @@ public class SPARQLUtils {
             String query = Joiner.on("\n").join(Files.readAllLines(Paths.get(
 					SPARQLUtils.class.getClassLoader().getResource("org/dllearner/algorithms/qtl/cbd-depth3.query").toURI())));
             CBD_TEMPLATE_DEPTH3 = new ParameterizedSparqlString(query);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
 
     }
-
-    enum QueryType {
-        IN, OUT, MISC
-    }
-
 
     public static List<String> getResult(QueryExecutionFactory qef, Query query) throws Exception{
         return getResult(qef, query, query.getProjectVars().get(0));
@@ -66,13 +64,13 @@ public class SPARQLUtils {
             outgoing = true;
             incoming |= tmp.stream()
                     .filter(tp -> tp.getObject().isVariable())
-                    .map(tp -> tp.getObject())
+                    .map(Triple::getObject)
                     .anyMatch(o -> utils.extractIncomingTriplePatterns(query, o).size() > 1);
             tmp = tmp.stream()
                     .filter(tp -> tp.getObject().isVariable())
-                    .map(tp -> tp.getObject())
+                    .map(Triple::getObject)
                     .map(o -> utils.extractOutgoingTriplePatterns(query, o))
-                    .flatMap(tps -> tps.stream())
+                    .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
         }
         tmp = utils.extractIncomingTriplePatterns(query, query.getProjectVars().get(0));
@@ -80,13 +78,13 @@ public class SPARQLUtils {
             incoming = true;
             outgoing |= tmp.stream()
                     .filter(tp -> tp.getSubject().isVariable())
-                    .map(tp -> tp.getSubject())
+                    .map(Triple::getSubject)
                     .anyMatch(s -> utils.extractOutgoingTriplePatterns(query, s).size() > 1);
             tmp = tmp.stream()
                     .filter(tp -> tp.getSubject().isVariable())
-                    .map(tp -> tp.getSubject())
+                    .map(Triple::getSubject)
                     .map(s -> utils.extractIncomingTriplePatterns(query, s))
-                    .flatMap(tps -> tps.stream())
+                    .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
         }
 

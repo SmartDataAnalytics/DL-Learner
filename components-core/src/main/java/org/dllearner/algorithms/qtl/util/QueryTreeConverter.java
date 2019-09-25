@@ -99,25 +99,31 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     					} else {
     						for (LiteralNodeConversionStrategy strategy : LiteralNodeConversionStrategy.values()) {
-    							if(strategy == LiteralNodeConversionStrategy.DATATYPE){
-        							Literal lit = literals.iterator().next();
-                        			RDFDatatype datatype = lit.getDatatype();
-                        			String datatypeURI;
-                        			if(datatype == null){
-                        				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getIRI().toString();
-                        			} else {
-                        				datatypeURI = datatype.getURI();
-                        			}
-                        			dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
-        						} else if(strategy == LiteralNodeConversionStrategy.DATA_ONE_OF){
-        							dataRange = asDataOneOf(df, literals);
-        						} else if(strategy == LiteralNodeConversionStrategy.MIN_MAX){
-        							dataRange = asFacet(df, literals);
-        						} else if(strategy == LiteralNodeConversionStrategy.MIN){
-        							dataRange = asMinFacet(df, literals);
-        						} else if(strategy == LiteralNodeConversionStrategy.MAX){
-        							dataRange = asMaxFacet(df, literals);
-        						}
+								switch (strategy) {
+									case DATATYPE:
+										Literal lit = literals.iterator().next();
+										RDFDatatype datatype = lit.getDatatype();
+										String datatypeURI;
+										if (datatype == null) {
+											datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getIRI().toString();
+										} else {
+											datatypeURI = datatype.getURI();
+										}
+										dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
+										break;
+									case DATA_ONE_OF:
+										dataRange = asDataOneOf(df, literals);
+										break;
+									case MIN_MAX:
+										dataRange = asFacet(df, literals);
+										break;
+									case MIN:
+										dataRange = asMinFacet(df, literals);
+										break;
+									case MAX:
+										dataRange = asMaxFacet(df, literals);
+										break;
+								}
 							}
     					}
             			classExpressions.add(df.getOWLDataSomeValuesFrom(p, dataRange));
@@ -226,7 +232,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
     			min = (l.getFloat() < min.getFloat()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
-    			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
+    			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) < 0) ? l : min;
     		} 
     	}
     	return min;
@@ -245,7 +251,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
     			max = (l.getFloat() > max.getFloat()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
-    			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
+    			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) > 0) ? l : max;
     		} 
     	}
     	return max;

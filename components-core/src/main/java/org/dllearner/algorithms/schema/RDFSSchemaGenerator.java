@@ -7,7 +7,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
+import org.dllearner.utilities.owl.DLSyntaxObjectRendererExt;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
@@ -147,7 +147,7 @@ public class RDFSSchemaGenerator extends AbstractSchemaGenerator {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRendererExt());
 
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();

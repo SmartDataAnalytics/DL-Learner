@@ -556,12 +556,10 @@ public class QALDExperiment {
 			negExamples.addAll(result);
 		} else {
 			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-			Set<Set<Triple>> powerSet = new TreeSet<>((Comparator<Set<Triple>>) (o1, o2) -> {
-				return ComparisonChain.start()
-						.compare(o1.size(), o2.size())
-						.compare(o1.hashCode(), o2.hashCode())
-						.result();
-			});
+			Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> ComparisonChain.start()
+                    .compare(o1.size(), o2.size())
+                    .compare(o1.hashCode(), o2.hashCode())
+                    .result());
 			powerSet.addAll(Sets.powerSet(triplePatterns));
 			
 			for (Set<Triple> set : powerSet) {
@@ -744,13 +742,11 @@ public class QALDExperiment {
 			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
 				fixedTriplePatterns.add(tp);
 			} else {
-				Set<Triple> cluster = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
-					return ComparisonChain.start().
-					compare(o1.getSubject().toString(), o2.getSubject().toString()).
-					compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-					compare(o1.getObject().toString(), o2.getObject().toString()).
-					result();
-				});
+				Set<Triple> cluster = new TreeSet<>((o1, o2) -> ComparisonChain.start().
+                compare(o1.getSubject().toString(), o2.getSubject().toString()).
+                compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+                compare(o1.getObject().toString(), o2.getObject().toString()).
+                result());
 				cluster.add(tp);
 				clusters.add(cluster);
 				useSplitting = true;
@@ -964,7 +960,7 @@ public class QALDExperiment {
 	            	
 	            	
 	                // Read SPARQL query
-	            	String sparqlQuery = ((org.w3c.dom.Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
+	            	String sparqlQuery = questionNode.getElementsByTagName("query").item(0).getChildNodes().item(0).getNodeValue().trim();
 	            	sparqlQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " + sparqlQuery;
 	            	if(sparqlQuery.contains("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }")){
 	            		sparqlQuery = sparqlQuery.replace("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }", "");
@@ -1042,13 +1038,11 @@ public class QALDExperiment {
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
-			return ComparisonChain.start().
-			compare(o1.getSubject().toString(), o2.getSubject().toString()).
-			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-			compare(o1.getObject().toString(), o2.getObject().toString()).
-			result();
-		});
+		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> ComparisonChain.start().
+        compare(o1.getSubject().toString(), o2.getSubject().toString()).
+        compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+        compare(o1.getObject().toString(), o2.getObject().toString()).
+        result());
 		List<ElementFilter> filters = new ArrayList<>();
 		int cnt = 0;
 		// <s p o>
@@ -1107,13 +1101,11 @@ public class QALDExperiment {
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
-			return ComparisonChain.start().
-			compare(o1.getSubject().toString(), o2.getSubject().toString()).
-			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-			compare(o1.getObject().toString(), o2.getObject().toString()).
-			result();
-		});
+		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> ComparisonChain.start().
+        compare(o1.getSubject().toString(), o2.getSubject().toString()).
+        compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+        compare(o1.getObject().toString(), o2.getObject().toString()).
+        result());
 		List<ElementFilter> filters = new ArrayList<>();
 		int cnt = 0;
 		// <s p o>

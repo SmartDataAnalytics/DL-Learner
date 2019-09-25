@@ -18,10 +18,12 @@
  */
 package org.dllearner.core;
 
+import java.util.Comparator;
+
 /**
  * @author Lorenz Buehmann
  *
  */
-public interface Heuristic extends Component{
-
+public interface Heuristic<T> extends Component, Comparator<T> {
+	public double getNodeScore(T node);
 }

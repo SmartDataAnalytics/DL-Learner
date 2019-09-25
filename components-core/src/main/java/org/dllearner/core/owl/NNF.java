@@ -245,8 +245,9 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
     }
 
     @Override
-    public OWLClassExpression visit(OWLObjectExactCardinality desc) {
-        return desc.asIntersectionOfMinMax().accept(this);
+    public OWLClassExpression visit(OWLObjectExactCardinality ce) {
+        return dataFactory.getOWLObjectExactCardinality(ce.getCardinality(), ce.getProperty(), ce.getFiller().accept(this));
+//        return desc.asIntersectionOfMinMax().accept(this);
     }
 
     @Override

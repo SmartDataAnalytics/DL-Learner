@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.el;
 
-import java.util.Comparator;
-
 import org.dllearner.core.Heuristic;
 
 /**
@@ -31,6 +29,6 @@ import org.dllearner.core.Heuristic;
  * @author Jens Lehmann
  *
  */
-public interface ELHeuristic extends Comparator<SearchTreeNode>, Heuristic {
+public interface ELHeuristic extends Heuristic<SearchTreeNode> {
 
 }

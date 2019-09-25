@@ -18,17 +18,17 @@
  */
 package org.dllearner.algorithms.qtl.util.filters;
 
-import java.util.Set;
-
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.Filter;
+
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * A filter that drops statements whose object IRI is in given blacklist.
  * @author Lorenz Buehmann
  *
  */
-public class ObjectDropStatementFilter extends Filter<Statement> {
+public class ObjectDropStatementFilter implements Predicate<Statement> {
 	
 	
 	private Set<String> objectIriBlackList;
@@ -37,11 +37,8 @@ public class ObjectDropStatementFilter extends Filter<Statement> {
 		this.objectIriBlackList = objectIriBlackList;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.jena.util.iterator.Filter#accept(java.lang.Object)
-	 */
 	@Override
-	public boolean accept(Statement st) {
+	public boolean test(Statement st) {
 		return !objectIriBlackList.contains(st.getObject().toString());
 	}
 

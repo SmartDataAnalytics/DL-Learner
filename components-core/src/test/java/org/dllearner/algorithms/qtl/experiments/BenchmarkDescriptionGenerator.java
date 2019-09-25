@@ -164,9 +164,9 @@ public abstract class BenchmarkDescriptionGenerator {
 				length++;
 				tmp = tmp.stream()
 						.filter(tp -> tp.getSubject().isVariable())
-						.map(tp -> tp.getSubject())
+						.map(Triple::getSubject)
 						.map(s -> utils.extractIncomingTriplePatterns(query, s))
-						.flatMap(tps -> tps.stream())
+						.flatMap(Collection::stream)
 						.collect(Collectors.toSet());
 			}
 		} else if(type == SPARQLUtils.QueryType.OUT) {
@@ -175,9 +175,9 @@ public abstract class BenchmarkDescriptionGenerator {
 				length++;
 				tmp = tmp.stream()
 						.filter(tp -> tp.getObject().isVariable())
-						.map(tp -> tp.getObject())
+						.map(Triple::getObject)
 						.map(o -> utils.extractOutgoingTriplePatterns(query, o))
-						.flatMap(tps -> tps.stream())
+						.flatMap(Collection::stream)
 						.collect(Collectors.toSet());
 			}
 		} else {
@@ -196,7 +196,7 @@ public abstract class BenchmarkDescriptionGenerator {
 
 	private DescriptiveStatistics determineDefaultCBDSizes(Query query, List<String> resources) {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
+		NumberFormat df = DecimalFormat.getPercentInstance(Locale.ROOT);
 		AtomicInteger idx = new AtomicInteger(1);
 
 		CBDStructureTree cbdStructure = getDefaultCBDStructureTree();
@@ -236,7 +236,7 @@ public abstract class BenchmarkDescriptionGenerator {
 
 	private DescriptiveStatistics determineOptimalCBDSizes(Query query, List<String> resources) {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		NumberFormat df = DecimalFormat.getPercentInstance();
+		NumberFormat df = DecimalFormat.getPercentInstance(Locale.ROOT);
 		AtomicInteger idx = new AtomicInteger(1);
 
 		CBDStructureTree cbdStructure = QueryUtils.getOptimalCBDStructure(query);
@@ -287,9 +287,7 @@ public abstract class BenchmarkDescriptionGenerator {
 				Object val1 = mapping.putIfAbsent(tp.getSubject(), graph.insertVertex(parent, null, tp.getSubject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
 				Object val2 = mapping.putIfAbsent(tp.getObject(), graph.insertVertex(parent, null, tp.getObject().toString(query.getPrefixMapping()), 20, 20, 40, 30));
 			});
-			tps.forEach(tp -> {
-				graph.insertEdge(parent, null, tp.getPredicate().toString(query.getPrefixMapping()), mapping.get(tp.getSubject()), mapping.get(tp.getObject()));
-			});
+			tps.forEach(tp -> graph.insertEdge(parent, null, tp.getPredicate().toString(query.getPrefixMapping()), mapping.get(tp.getSubject()), mapping.get(tp.getObject())));
 
 		}
 		finally
@@ -306,7 +304,7 @@ public abstract class BenchmarkDescriptionGenerator {
 		mxGraphLayout layout = new mxOrthogonalLayout(graph);
 		layout.execute(graph.getDefaultParent());
 
-		Map<String, Object> edgeStyle = new HashMap<String, Object>();
+		Map<String, Object> edgeStyle = new HashMap<>();
 //edgeStyle.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ORTHOGONAL);
 		edgeStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CONNECTOR);
 		edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);

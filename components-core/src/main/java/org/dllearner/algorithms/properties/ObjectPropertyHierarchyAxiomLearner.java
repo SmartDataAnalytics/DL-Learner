@@ -54,6 +54,12 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> .} "
 			+ "WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }");
+
+	protected static final ParameterizedSparqlString PROPERTY_OVERLAP_WITH_POPULARITY_BATCH_QUERY = new ParameterizedSparqlString(
+			"SELECT ?p_other (COUNT(*) AS ?overlap) WHERE {"
+					+ "?s ?p ?o; ?p_other ?o . "
+					+ "?p_other a <http://www.w3.org/2002/07/owl#ObjectProperty> ; rdfs:range ?range . FILTER(?p != ?p_other)}"
+					+ " GROUP BY ?p_other");
 	
 	
 	// set strict mode, i.e. if for the property explicit domain and range is given
@@ -63,6 +69,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
 	protected double beta = 1.0;
+
+	@ConfigOption(defaultValue = "false", description = "compute everything in a single SPARQL query")
+	protected boolean batchMode = false;
+
 	
 	public ObjectPropertyHierarchyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -92,7 +102,14 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	@Override
 	protected void run() {
-		
+		if(batchMode) {
+			runBatched();
+		} else {
+			runIterative();
+		}
+	}
+
+	protected void runIterative() {
 		// get the candidates
 		SortedSet<OWLObjectProperty> candidates = getCandidates();
 
@@ -101,23 +118,23 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		for (OWLObjectProperty p : candidates) {
 			logger.debug("processing candidate property {}...", p);
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
-			
+
 			// get the popularity of the candidate
 			int candidatePopularity = reasoner.getPopularity(p);
-			
+
 			if(candidatePopularity == 0){// skip empty properties
 				logger.debug("Cannot compute equivalence statements for empty candidate property " + p);
 				continue;
 			}
-			
+
 			// get the number of overlapping triples, i.e. triples with the same subject and object
 			GIVEN_PROPERTY_OVERLAP_QUERY.setIri("p_other", p.toStringID());
 			ResultSet rs = executeSelectQuery(GIVEN_PROPERTY_OVERLAP_QUERY.toString());
 			int overlap = rs.next().getLiteral("overlap").getInt();
-			
+
 			// compute the score
 			AxiomScore score = computeScore(candidatePopularity, popularity, overlap);
-			
+
 			currentlyBestAxioms.add(new EvaluatedAxiom<>(getAxiom(entityToDescribe, p), score));
 		}
 	}
@@ -125,6 +142,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	/**
 	 * In this method we try to compute the overlap with each property in one single SPARQL query.
 	 * This method might be much slower as the query is much more complex.
+	 *
+	 * There are two options:
+	 * 1) compute the overlap in a single query, but the popularity for each overlapping property separately
+	 * 2) compute overlap and popularity in a single query
 	 */
 	protected void runBatched() {
 		
@@ -142,13 +163,15 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		} else {
 			query = PROPERTY_OVERLAP_QUERY.toString();
 		}
-		
+
+		// compute the property candidates p_i that have at least one (s,o) in common with the target property p
 		ResultSet rs = executeSelectQuery(query);
 		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
 	    int size = rsrw.size();
 	    rs = rsrw;
 		while (rs.hasNext()) {
 			QuerySolution qs = rsrw.next();
+
 			progressMonitor.learningProgressChanged(axiomType, rs.getRowNumber(), size);
 			
 			OWLObjectProperty candidate = df.getOWLObjectProperty(IRI.create(qs.getResource("p_other").getURI()));
@@ -208,10 +231,11 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	}
 	
 	@Override
-	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<T> evAxiom) {
+	protected Set<OWLObjectPropertyAssertionAxiom> getExamples(ParameterizedSparqlString queryTemplate,
+															   EvaluatedAxiom<T> evAxiom) {
 		T axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
-		
+		queryTemplate.setIri("p", entityToDescribe.toStringID());
+
 		OWLObjectProperty otherProperty;
 		if(axiom instanceof OWLNaryPropertyAxiom){// we assume a single atomic property
 			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(entityToDescribe).iterator().next()
@@ -219,50 +243,22 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		} else {
 			otherProperty = ((OWLSubObjectPropertyOfAxiom) axiom).getSuperProperty().asOWLObjectProperty();
 		}
-		posExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
+		queryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<>();
+		Set<OWLObjectPropertyAssertionAxiom> examples = new TreeSet<>();
 
-		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-
-		while (rs.hasNext()) {
-			QuerySolution qs = rs.next();
-			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
-		}
-
-		return posExamples;
-	}
-
-	@Override
-	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<T> evAxiom) {
-		T axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
-		
-		OWLObjectProperty otherProperty;
-		if(axiom instanceof OWLNaryPropertyAxiom){// we assume a single atomic property
-			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(entityToDescribe).iterator().next()
-					.asOWLObjectProperty();
-		} else {
-			otherProperty = ((OWLSubObjectPropertyOfAxiom) axiom).getSuperProperty().asOWLObjectProperty();
-		}
-		negExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
-
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
-
-		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
+		ResultSet rs = executeSelectQuery(queryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
+			examples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
-		return negExamples;
+		return examples;
 	}
-	
+
 	/**
 	 * @param beta the beta to set
 	 */
@@ -283,5 +279,20 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 	public double getBeta() {
 		return beta;
+	}
+
+	/**
+	 * If <code>true</code>, batch mode is used and only a single query will be used to compute the result. Otherwise,
+	 * iteration over all properties in the ontology is done, i.e. at lots of queries - but simpler ones - will
+	 * be executed.
+	 *
+	 * @param batchMode
+	 */
+	public void setBatchMode(boolean batchMode) {
+		this.batchMode = batchMode;
+	}
+
+	public boolean isBatchMode() {
+		return batchMode;
 	}
 }

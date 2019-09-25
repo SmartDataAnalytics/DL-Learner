@@ -18,6 +18,8 @@
  */
 package org.dllearner.kb.repository;
 
+import org.semanticweb.owlapi.model.OWLOntology;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -45,5 +47,7 @@ public interface OntologyRepository {
     Collection<OntologyRepositoryEntry> getEntries();
     
     List<Object> getMetaDataKeys();
+
+    OWLOntology getOntology(OntologyRepositoryEntry entry);
 
 }

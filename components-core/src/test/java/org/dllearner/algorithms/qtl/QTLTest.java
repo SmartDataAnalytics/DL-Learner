@@ -19,6 +19,7 @@
 package org.dllearner.algorithms.qtl;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -218,7 +219,7 @@ public class QTLTest {
 		System.out.println(filter.apply(bestSolution).getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(filter.apply(bestSolution)));
 		
-		QueryTreeUtils.asGraph(bestSolution, null, PrefixCCPrefixMapping.Full, new File("/tmp/tree.graphml"));
+		QueryTreeUtils.asGraph(bestSolution, null, PrefixCCPrefixMapping.Full, new File(System.getProperty("java.io.tmpdir") + File.separator + "tree.graphml"));
 	}
 
 	private static RDFResourceTree getQueryTree(String resource, CBDStructureTree cbdStructure,
@@ -227,7 +228,7 @@ public class QTLTest {
 		// get CBD
 		System.out.println("loading data for " + resource);
 		Monitor mon = MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
-		Model cbd = ((TreeBasedConciseBoundedDescriptionGenerator)cbdGen).getConciseBoundedDescription(resource, cbdStructure);
+		Model cbd = cbdGen.getConciseBoundedDescription(resource, cbdStructure);
 		mon.stop();
 
 		// rewrite NAN to NaN to avoid parse exception

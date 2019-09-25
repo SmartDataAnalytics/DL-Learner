@@ -231,6 +231,8 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 					+ JamonMonitorLogger.getStringForAllSortedByLabel());
 			System.exit(0);
 		}
+		
+		initialized = true;
 	}
 
     @Override

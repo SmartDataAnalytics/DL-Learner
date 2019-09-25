@@ -18,6 +18,8 @@
  */
 package org.dllearner.core;
 
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
@@ -29,12 +31,9 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 import org.apache.jena.sparql.resultset.ResultSetMem;
-import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.Unused;
@@ -53,12 +52,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import java.math.RoundingMode;
 import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+//import org.apache.jena.util.iterator.Filter;
 
 /**
  * @author Lorenz Bühmann
@@ -70,7 +73,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
 	
-	protected NumberFormat format = DecimalFormat.getPercentInstance();
+	protected NumberFormat format = DecimalFormat.getPercentInstance(Locale.ROOT);
 	
 	@ConfigOption(defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
@@ -157,14 +160,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     }
     
     /**
-	 * @param entityToDescribe the entityToDescribe to set
+	 * @param entityToDescribe the entity for which axioms will be computed
 	 */
 	public void setEntityToDescribe(E entityToDescribe) {
 		this.entityToDescribe = entityToDescribe;
 	}
 	
 	/**
-	 * @return the entityToDescribe
+	 * @return the entity for which axioms will be computed
 	 */
 	public E getEntityToDescribe() {
 		return entityToDescribe;
@@ -228,24 +231,31 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		startTime = System.currentTimeMillis();
 		
 		currentlyBestAxioms = new TreeSet<>();
-		
+
+		// check whether the knowledge base contains information about the entity, if not terminate
 		popularity = reasoner.getPopularity(entityToDescribe);
 		if(popularity == 0){
 			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID());
 			return;
 		}
-		
+
+		// if enabled, we check for existing axioms that will filtered out in the final result
 		if(returnOnlyNewAxioms){
 			getExistingAxioms();
 		}
-		
+
+		// if enabled, we generated a sample of the knowledge base and do the rest of the compuatation locally
 		if(useSampling){
 			generateSample();
 		} else {
 			qef = ksQef;
 			reasoner = ksReasoner;
 		}
-		
+
+		// compute the axiom type specific popularity of the entity to describe
+		popularity = getPopularity();
+
+		// start the real learning algorithm
 		progressMonitor.learningStarted(axiomType);
 		try {
 			learnAxioms();
@@ -258,15 +268,52 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		logger.info("...finished learning of " + axiomType.getName()
 				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
-				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
+				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis() - startTime));
+
+		showResult();
+
+	}
+
+	protected void showResult() {
+		DecimalFormat format = new DecimalFormat("0.0000");
+		format.setRoundingMode(RoundingMode.DOWN);
 		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
 			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
 		} else {
-			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
+			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates. " +
+								(returnOnlyNewAxioms
+										? currentlyBestAxioms.size() - existingAxioms.size() +
+										" out of them do not already exists in the knowledge base."
+										: ""));
 			if(!currentlyBestAxioms.isEmpty()){
-				logger.info("Best axiom candidate is " + currentlyBestAxioms.last());
+				EvaluatedAxiom<T> bestAxiom = currentlyBestAxioms.last();
+				String s = "Best axiom candidate is " + bestAxiom.hypothesis + " with an accuracy of " +
+						format.format(bestAxiom.getAccuracy());
+				if(returnOnlyNewAxioms) {
+					if(existingAxioms.contains(bestAxiom.hypothesis)) {
+						s += ", but it's already contained in the knowledge base.";
+						if(existingAxioms.size() != currentlyBestAxioms.size()) {
+							Optional<EvaluatedAxiom<T>> bestNewAxiom = currentlyBestAxioms.stream().filter(
+									ax -> !existingAxioms.contains(ax.hypothesis)).findFirst();
+							if(bestNewAxiom.isPresent()) {
+								s += " The best new one is " + bestNewAxiom.get().hypothesis + " with an accuracy of " +
+										format.format(bestNewAxiom.get().getAccuracy());
+							}
+						}
+					}
+				}
+				logger.info(s);
 			}
 		}
+	}
+
+	/**
+	 * Compute the popularity of the entity to describe. This depends on the axiom type, thus, the mehtod might
+	 * be overwritten in the corresponding algorithm classes.
+	 * @return the populairty of the entity to describe
+	 */
+	protected int getPopularity() {
+		return reasoner.getPopularity(entityToDescribe);
 	}
 	
 	private void generateSample(){
@@ -321,6 +368,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 //		ksReasoner.supportsSPARQL1_1();
 		reasoner = ksReasoner;
+		
+		initialized = true;
 	}
 	
 	/**
@@ -373,16 +422,20 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public EvaluatedAxiom<T> getCurrentlyBestEvaluatedAxiom() {
-		List<EvaluatedAxiom<T>> currentlyBestEvaluatedAxioms = getCurrentlyBestEvaluatedAxioms(1);
-		if(currentlyBestEvaluatedAxioms.isEmpty()){
+		if(currentlyBestAxioms.isEmpty()) {
 			return null;
 		}
-		return currentlyBestEvaluatedAxioms.get(0);
+		return currentlyBestAxioms.last();
 	}
 	
 	@Override
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
-		return new ArrayList<>(currentlyBestAxioms);
+		ArrayList<EvaluatedAxiom<T>> axioms = new ArrayList<>(currentlyBestAxioms);
+
+		// revert because highest element in tree set is last
+		Collections.reverse(axioms);
+
+		return axioms;
 	}
 
 	@Override
@@ -572,32 +625,21 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
-		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		Set<OWLObject> posExamples = new TreeSet<>();
-		
-		RDFNode node;
-		while(rs.hasNext()){
-			node = rs.next().get("s");
-			if(node.isResource()){
-				posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
-			} else if(node.isLiteral()){
-				posExamples.add(convertLiteral(node.asLiteral()));
-			}
-		}
-		
-		return (Set<S>) posExamples;
-//		throw new UnsupportedOperationException("Getting positive examples is not possible.");
-		
+	public Set<S> getPositiveExamples(EvaluatedAxiom<T> evAxiom) {
+		return getExamples(posExamplesQueryTemplate, evAxiom);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public Set<S> getNegativeExamples(EvaluatedAxiom<T> axiom){
-		
-		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		
+	public Set<S> getNegativeExamples(EvaluatedAxiom<T> evAxiom) {
+		return getExamples(negExamplesQueryTemplate, evAxiom);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Set<S> getExamples(ParameterizedSparqlString queryTemplate, EvaluatedAxiom<T> evAxiom) {
+		ResultSet rs = executeSelectQuery(queryTemplate.toString());
+
 		Set<OWLObject> negExamples = new TreeSet<>();
-		
+
 		while(rs.hasNext()){
 			RDFNode node = rs.next().get("s");
 			if(node.isResource()){
@@ -607,7 +649,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			}
 		}
 		return (Set<S>) negExamples;
-//		throw new UnsupportedOperationException("Getting negative examples is not possible.");
 	}
 	
 	public void explainScore(EvaluatedAxiom<T> evAxiom){
@@ -630,7 +671,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		sb.append("######################################");
 		System.out.println(sb.toString());
 	}
-	
+
 	public long getEvaluatedFramentSize(){
 		return sample.size();
 	}
@@ -696,22 +737,21 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		this.ks = ks;
 	}
 	
-	class OWLFilter extends Filter<OntClass>{
+	class OWLFilter implements Predicate<OntClass> {
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(OWL2.getURI());
 			}
 			return false;
 		}
-		
 	}
 	
-	class RDFSFilter extends Filter<OntClass>{
+	class RDFSFilter implements Predicate<OntClass>{
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(RDFS.getURI());
 			}
@@ -720,10 +760,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 	}
 	
-	class RDFFilter extends Filter<OntClass>{
+	class RDFFilter implements Predicate<OntClass>{
 
 		@Override
-		public boolean accept(OntClass cls) {
+		public boolean test(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(RDF.getURI());
 			}

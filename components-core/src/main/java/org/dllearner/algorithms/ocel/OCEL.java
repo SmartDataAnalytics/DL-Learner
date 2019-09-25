@@ -21,6 +21,7 @@ package org.dllearner.algorithms.ocel;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import org.apache.log4j.Level;
+import org.dllearner.accuracymethods.AccMethodNoWeakness;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -355,9 +356,7 @@ public class OCEL extends AbstractCELA {
 		if (lengthMetric == null) {
 			lengthMetric = OWLClassExpressionLengthMetric.getOCELMetric();
 		}
-		if (operator instanceof LengthLimitedRefinementOperator) {
-			((LengthLimitedRefinementOperator) operator).setLengthMetric(lengthMetric);
-		}
+		operator.setLengthMetric(lengthMetric);
 
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -373,6 +372,8 @@ public class OCEL extends AbstractCELA {
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
+		
+		initialized = true;
 	}
 
 	@Override
@@ -490,21 +491,21 @@ public class OCEL extends AbstractCELA {
 
 			if (writeSearchTree) {
 				// String treeString = "";
-				String treeString = "best node: " + bestNode + "\n";
+				StringBuilder treeString = new StringBuilder("best node: " + bestNode + "\n");
 				if (expandedNodes.size() > 1) {
-					treeString += "all expanded nodes:\n";
+					treeString.append("all expanded nodes:\n");
 					for (ExampleBasedNode n : expandedNodes) {
-						treeString += "   " + n + "\n";
+						treeString.append("   ").append(n).append("\n");
 					}
 				}
 				expandedNodes.clear();
-				treeString += TreeUtils.toTreeString(startNode);
-				treeString += "\n";
+				treeString.append(TreeUtils.toTreeString(startNode, heuristic));
+				treeString.append("\n");
 
 				if (replaceSearchTree)
-					Files.createFile(searchTreeFile, treeString);
+					Files.createFile(searchTreeFile, treeString.toString());
 				else
-					Files.appendToFile(searchTreeFile, treeString);
+					Files.appendToFile(searchTreeFile, treeString.toString());
 			}
 
 			// Anzahl Schleifendurchläufe
@@ -1119,7 +1120,7 @@ public class OCEL extends AbstractCELA {
 	 * The algorithm stops if:
 	 * 1. the object attribute stop is set to true (possibly by an outside source)
 	 * 2. the maximimum execution time is reached
-	 * 3. the maximum number of class OWLClassExpression tests is reached
+	 * 3. the maximum number of class description tests is reached
 	 *
 	 * Continuation criteria and result improvement
 	 * The algorithm continues (although it would normally stop) if
@@ -1417,7 +1418,7 @@ public class OCEL extends AbstractCELA {
 	@Autowired(required = false)
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
-		if (operator != null && operator instanceof LengthLimitedRefinementOperator) {
+		if (operator != null) {
 			operator.setLengthMetric(lengthMetric);
 		}
 	}

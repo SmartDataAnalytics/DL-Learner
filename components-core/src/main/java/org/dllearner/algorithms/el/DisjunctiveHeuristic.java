@@ -46,4 +46,8 @@ public class DisjunctiveHeuristic implements ELHeuristic {
 	public void init() throws ComponentInitException {
 	}
 
+	@Override
+	public double getNodeScore(SearchTreeNode node) {
+		return node.getScore().getAccuracy();
+	}
 }

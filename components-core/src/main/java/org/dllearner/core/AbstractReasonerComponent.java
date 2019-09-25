@@ -78,7 +78,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
-	private static final NumberFormat numberFormat = NumberFormat.getInstance();
+	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.ROOT);
 	@ConfigOption(description = "whether to use single instance checks", defaultValue = "false")
 	protected boolean useInstanceChecks = false;
 

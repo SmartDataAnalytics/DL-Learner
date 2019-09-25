@@ -42,6 +42,10 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOperation, TimeoutableOperation {
+
+	public enum BlankNodeScope {
+		TREE, DATASET
+	}
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -55,6 +59,8 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 	protected volatile boolean stop = false;
 
 	private boolean complete = true;
+
+	private BlankNodeScope blankNodeScope = BlankNodeScope.TREE;
 	
 
 	private void reset() {
@@ -111,6 +117,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		// d) else create new empty tree
 		RDFResourceTree lgg = new RDFResourceTree();
 
+		// keep name if both blank nodes
+		//TODO workaround for anchor nodes that are used for tuples
+		if(tree1.getData().isBlank() && tree1.getData().matches(tree2.getData())) {
+			lgg.setData(tree1.getData());
+		}
+		boolean isAnchorNode = tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar());
+		if(isAnchorNode) {
+			lgg.setAnchorVar(tree1.getAnchorVar());
+		}
+
+
 		// 2. compare the edges
 		// we only have to compare edges which are
 		// a) contained in both trees
@@ -156,6 +173,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //										addedChild.getStringRepresentation(),
 //										lggChild.getStringRepresentation());
 							add = false;
+							if(lggChild.hasAnchor()) {
+								add = true;
+								if(isSubTreeOf(lggChild, addedChild) && !addedChild.hasAnchor()) {
+									lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
+									it.remove();
+								}
+//								System.err.println("not add anchor " + lggChild.getAnchorVar());
+//								System.err.println(lggChild.getStringRepresentation());
+//								System.err.println("subsumes");
+//								System.err.println(addedChild.getStringRepresentation());
+							}
 							break;
 						} else if(isSubTreeOf(lggChild, addedChild)){
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
@@ -163,6 +191,9 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 //										addedChild.getStringRepresentation());
 							lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 							it.remove();
+							if(addedChild.hasAnchor()) {
+								System.err.println("removed anchor " + addedChild.getAnchorVar());
+							}
 						}
 					}
 					if(add){
@@ -242,11 +273,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 		RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 		RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
+		RDFResourceTree newTree;
 		if(d1 != null && d1.equals(d2)){
-			return new RDFResourceTree(d1);
+            newTree = new RDFResourceTree(d1);
 			// TODO collect literal values
-		}
-		return RDFResourceTree.newLiteralNode();
+		} else {
+            newTree = RDFResourceTree.newLiteralNode();
+        }
+        if(tree1.getAnchorVar() != null && tree1.getAnchorVar().matches(tree2.getAnchorVar())) {
+            newTree.setAnchorVar(tree1.getAnchorVar());
+        }
+		return newTree;
 	}
 
 	@Override
@@ -265,6 +302,10 @@ public abstract class AbstractLGGGenerator implements LGGGenerator, StoppableOpe
 
 	public boolean isComplete() {
 		return complete;
+	}
+
+	public void setBlankNodeScope(BlankNodeScope blankNodeScope) {
+		this.blankNodeScope = blankNodeScope;
 	}
 
 	private void addNumbering(int nodeId, RDFResourceTree tree){

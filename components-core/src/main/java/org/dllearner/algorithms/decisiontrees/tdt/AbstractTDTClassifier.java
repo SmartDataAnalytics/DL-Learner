@@ -196,7 +196,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		//start to learn the new current concept description
 		
 		
-
+		initialized = true;
 	}
 
 	@Override

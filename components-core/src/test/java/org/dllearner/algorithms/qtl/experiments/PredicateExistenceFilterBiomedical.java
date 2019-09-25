@@ -118,12 +118,10 @@ public class PredicateExistenceFilterBiomedical extends PredicateExistenceFilter
 		}
 		try {
 			Files.write(sb.toString(), new File(this.getClass().getClassLoader().getResource(PATH).toURI()), Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
-	}
+    }
 
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://biomedical.org");

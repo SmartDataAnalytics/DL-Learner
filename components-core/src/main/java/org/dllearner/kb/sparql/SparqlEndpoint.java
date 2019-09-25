@@ -53,7 +53,7 @@ public class SparqlEndpoint {
 	}
 
 	public SparqlEndpoint(URL url, String defaultGraphURI) {
-		this(url, Collections.singletonList(defaultGraphURI), Collections.<String>emptyList());
+		this(url, Collections.singletonList(defaultGraphURI), Collections.emptyList());
 	}
 
 	public URL getURL() {
@@ -61,7 +61,7 @@ public class SparqlEndpoint {
 	}
 
 	public static SparqlEndpoint create(String url, String defaultGraphURI) throws MalformedURLException {
-		return create(url, Lists.newArrayList(defaultGraphURI));
+		return create(url, defaultGraphURI == null ? Collections.emptyList() : Lists.newArrayList(defaultGraphURI));
 	}
 
 	public static SparqlEndpoint create(String url, List<String> defaultGraphURIs) throws MalformedURLException {

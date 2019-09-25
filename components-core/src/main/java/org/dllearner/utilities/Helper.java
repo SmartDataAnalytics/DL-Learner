@@ -20,6 +20,8 @@ package org.dllearner.utilities;
 
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
@@ -131,6 +133,7 @@ public class Helper {
 	}
 
 	// concepts case 1: no ignore or allowed list
+	@SuppressWarnings("unchecked")
 	public static <T extends OWLEntity> Set<T> computeEntities(AbstractReasonerComponent rs, EntityType<T> entityType) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
@@ -152,7 +155,8 @@ public class Helper {
 //		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public static <T extends OWLEntity> Set<T> computeEntitiesUsingIgnoreList(AbstractReasonerComponent rs, EntityType<T> entityType, Set<T> ignoredEntites) {
 		Set<T> entities;
 		
@@ -234,6 +238,73 @@ public class Helper {
 				return ar;
 		}
 		return null;
+	}
+
+	/**
+	 * Checks whether all entities in the given class expression do also occur in the knowledge base.
+	 *
+	 * @param ce The concept to check.
+	 * @return {@code true} if all entities of the class expression occur in the knowledge base,
+	 * otherwise {@code false}
+	 */
+	public static boolean checkConceptEntities(AbstractReasonerComponent rc, OWLClassExpression ce) {
+		return rc.getClasses().containsAll(ce.getClassesInSignature()) &&
+				rc.getObjectProperties().containsAll(ce.getObjectPropertiesInSignature()) &&
+				rc.getDatatypeProperties().containsAll(ce.getDataPropertiesInSignature());
+
+	}
+
+	public static void checkIndividuals(AbstractReasonerComponent reasoner, Set<OWLIndividual> individuals) throws ComponentInitException {
+		if (!(reasoner instanceof SPARQLReasoner)) {
+			SortedSet<OWLIndividual> allIndividuals = reasoner.getIndividuals();
+
+			if (!allIndividuals.containsAll(individuals)) {
+				Set<OWLIndividual> missing = Sets.difference(individuals, allIndividuals);
+				double percentage = (double) missing.size() / individuals.size();
+				percentage = Math.round(percentage * 1000.0) / 1000.0;
+				String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base " +
+						"(check spelling and prefixes)\n";
+				str += missing.toString();
+				if (missing.size() == individuals.size()) {
+					throw new ComponentInitException(str);
+				}
+				if (percentage < 0.10) {
+					logger.warn(str);
+				} else {
+					logger.error(str);
+				}
+			}
+		}
+	}
+
+	public static void displayProgressPercentage(int done, int total) {
+		int size = 5;
+		String iconLeftBoundary = "[";
+		String iconDone = "=";
+		String iconRemain = ".";
+		String iconRightBoundary = "]";
+
+		if (done > total) {
+			throw new IllegalArgumentException();
+		}
+		int donePercents = (100 * done) / total;
+		int doneLength = size * donePercents / 100;
+
+		StringBuilder bar = new StringBuilder(iconLeftBoundary);
+		for (int i = 0; i < size; i++) {
+			if (i < doneLength) {
+				bar.append(iconDone);
+			} else {
+				bar.append(iconRemain);
+			}
+		}
+		bar.append(iconRightBoundary);
+
+		System.out.print("\r" + bar + " " + donePercents + "%");
+
+		if (done == total) {
+			System.out.print("\n");
+		}
 	}
 
 }

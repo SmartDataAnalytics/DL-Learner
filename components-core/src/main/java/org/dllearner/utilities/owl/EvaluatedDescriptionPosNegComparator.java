@@ -20,6 +20,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
 
+import com.google.common.collect.ComparisonChain;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
 /**
@@ -37,22 +38,11 @@ public class EvaluatedDescriptionPosNegComparator implements Comparator<Evaluate
 	 */
 	@Override
 	public int compare(EvaluatedDescriptionPosNeg ed1, EvaluatedDescriptionPosNeg ed2) {
-		double acc1 = ed1.getAccuracy();
-		double acc2 = ed2.getAccuracy();
-		if(acc1 > acc2)
-			return 1;
-		else if(acc1 < acc2)
-			return -1;
-		else {
-			int length1 = ed1.getDescriptionLength();
-			int length2 = ed2.getDescriptionLength();
-			if(length1 < length2)
-				return 1;
-			else if(length1 > length2)
-				return -1;
-			else
-				return ed1.getDescription().compareTo(ed2.getDescription());
-		}
+		return ComparisonChain.start()
+				.compare(ed1.getAccuracy(), ed2.getAccuracy())
+				.compare(ed1.getDescriptionLength(), ed2.getDescriptionLength())
+				.compare(ed1.getDescription(), ed2.getDescription())
+				.result();
 	}
 
 }

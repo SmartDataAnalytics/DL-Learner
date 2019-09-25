@@ -21,8 +21,11 @@ package org.dllearner.kb.sparql;
 import com.google.common.collect.Lists;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.WebContent;
@@ -30,6 +33,7 @@ import org.apache.jena.riot.system.ErrorHandler;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.jena.riot.web.HttpNames;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.util.FmtUtils;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.QueryUtils;
@@ -84,6 +88,27 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 		this.endpoint = endpoint;
 	}
 
+	public Model getConciseBoundedDescription(LiteralLabel literal, CBDStructureTree structureTree) throws Exception {
+		logger.trace("Computing CBD for {} ...", literal);
+		long start = System.currentTimeMillis();
+		String query = generateQuery(literal, structureTree);
+		System.out.println(query);
+
+		if(workaround) {
+			return constructWithReplacement(endpoint, query);
+		}
+
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			Model model = qe.execConstruct();
+			long end = System.currentTimeMillis();
+			logger.trace("Got {} triples in {} ms.", model.size(), (end - start));
+			return model;
+		} catch(Exception e) {
+			logger.error("CBD retrieval failed when using query\n{}", query);
+			throw new Exception("CBD retrieval failed when using query\n" + query, e);
+		}
+	}
+
 	/* (non-Javadoc)
              * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
              */
@@ -108,20 +133,46 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	}
 
 	@Override
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+	public Model getConciseBoundedDescription(String resource, int depth, boolean withTypesForLeafs) {
 		throw new NotImplementedException("please use getConciseBoundedDescription(String resourceURI, CBDStructureTree structureTree) instead.");
 	}
 
 	@Override
-	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+	public void setAllowedPropertyNamespaces(Set<String> namespaces) {
 		this.allowedPropertyNamespaces.addAll(namespaces);
 	}
 	
 	@Override
-	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+	public void setAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
 	}
-	
+
+	/**
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
+	 * @param literal The example resource for which a CONSTRUCT query is created.
+	 * @return the SPARQL query
+	 */
+	private String generateQuery(LiteralLabel literal, CBDStructureTree structureTree){
+		reset();
+
+		// get paths to leaf nodes
+		List<List<CBDStructureTree>> pathsToLeafs = QueryTreeUtils.getPathsToLeafs(structureTree);
+
+		StringBuilder query = new StringBuilder();
+		String rootToken = FmtUtils.stringForNode(NodeFactory.createLiteral(literal));
+
+		query.append("CONSTRUCT {\n");
+		// the CONSTRUCT template
+		append(query, structureTree, rootToken, true);
+		query.append("} WHERE {\n");
+		reset();
+		// the query pattern
+		append(query, structureTree, rootToken, false);
+		query.append("}");
+
+		return query.toString();
+	}
+
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
 	 * @param resource The example resource for which a CONSTRUCT query is created.
@@ -292,7 +343,7 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 	}
 
 	@Override
-	public void addPropertiesToIgnore(Set<String> properties) {
+	public void setIgnoredProperties(Set<String> properties) {
 
 	}
 

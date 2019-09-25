@@ -90,14 +90,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 		
 		return ind2Axioms;
 	}
-	
-	public int compareTo(EvaluatedAxiom<T> other) {
-		return ComparisonChain.start().
-				compare(other.getScore().getAccuracy(), score.getAccuracy()).
-				compare(hypothesis, other.getAxiom()).
-				result();
-	}
-	
+
 	public static <T extends OWLAxiom> String prettyPrint(List<EvaluatedAxiom<T>> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {

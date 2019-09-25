@@ -19,14 +19,24 @@
  */
 package org.dllearner.confparser3;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
-
 import org.dllearner.cli.ConfFileOption;
+import org.dllearner.configuration.IConfiguration;
+import org.dllearner.configuration.spring.ApplicationContextBuilder;
+import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser.ConfParser;
+import org.dllearner.confparser.ConfParserConfiguration;
+import org.dllearner.confparser.ConfParserLegacy;
 import org.dllearner.confparser.ParseException;
 import org.junit.Test;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Conf parser tests.
@@ -38,7 +48,7 @@ public class ParseTest {
 
 	@Test
 	public void test() throws FileNotFoundException, ParseException, UnsupportedEncodingException {
-		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father.conf"));
+		ConfParser parser = ConfParserLegacy.parseFile(new File("../examples/family/father.conf"));
 		for(ConfFileOption option : parser.getConfOptions()) {
 			System.out.print(option.getBeanName() + "." + option.getPropertyName() + " = " + option.getValue().toString());
 			if(option.isBeanRef()) {
@@ -46,6 +56,22 @@ public class ParseTest {
 			} else {
 				System.out.println();
 			}	
+		}
+	}
+
+	@Test(expected = org.springframework.beans.factory.UnsatisfiedDependencyException.class)
+	public void testBrokenConf() throws Throwable {
+		try {
+			Resource confFileR = new FileSystemResource(new File("../test/father_broken.conf"));
+			List<Resource> springConfigResources = new ArrayList<>();
+			IConfiguration configuration = new ConfParserConfiguration(confFileR);
+
+			ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+			builder.buildApplicationContext(configuration, springConfigResources);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch(RuntimeException e) {
+			throw e.getCause();
 		}
 	}
 	

@@ -52,32 +52,23 @@ public class PrefixCCMap extends HashMap<String, String>{
 	}
 	
 	private void fillMap() {
-		InputStream is = null;
-		try {
-			is = this.getClass().getClassLoader().getResourceAsStream(LOCAL_FILE);
-			BufferedReader bufRdr = new BufferedReader(new InputStreamReader(is));
-			String line = null;
-			String key = null;
-			String value = null;
-			while ((line = bufRdr.readLine()) != null) {
-				String[] entry = line.split(",");
-				if(entry.length == 2){
-					key = entry[0].trim();
-					value = entry[1].trim();
-					
-					put(key, value);
+		try(InputStream is = this.getClass().getClassLoader().getResourceAsStream(LOCAL_FILE)) {
+			try(BufferedReader bufRdr = new BufferedReader(new InputStreamReader(is))) {
+				String line = null;
+				String key = null;
+				String value = null;
+				while ((line = bufRdr.readLine()) != null) {
+					String[] entry = line.split(",");
+					if(entry.length == 2){
+						key = entry[0].trim();
+						value = entry[1].trim();
+
+						put(key, value);
+					}
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if(is != null){
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 	

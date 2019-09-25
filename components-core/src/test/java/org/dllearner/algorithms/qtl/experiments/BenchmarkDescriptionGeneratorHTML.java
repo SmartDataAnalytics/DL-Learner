@@ -169,35 +169,35 @@ public class BenchmarkDescriptionGeneratorHTML extends BenchmarkDescriptionGener
 		sb.append("<tr>\n");
 
 		// column: ID
-		sb.append("<td>" + queryData.id + "</td>\n");
+		sb.append("<td>").append(queryData.id).append("</td>\n");
 
 		// column: SPARQL query
-		sb.append("<td><pre>" + queryData.query.toString().replace("<", "&lt;").replace(">", "&gt;") + "</pre></td>\n");
+		sb.append("<td><pre>").append(queryData.query.toString().replace("<", "&lt;").replace(">", "&gt;")).append("</pre></td>\n");
 
 		// column: SPARQL query type
-		sb.append("<td>" + queryData.queryType + "</td>\n");
+		sb.append("<td>").append(queryData.queryType).append("</td>\n");
 
 		// query graph
 //		QueryToGraphExporter.exportYedGraph(queryData.query, new File(""));
 //		sb.append("<td><img src=\"" + graphFile.getPath() + "\" alt=\"query graph\"></td>\n");
 
 		// column: depth
-		sb.append("<td class='number'>" + queryData.maxTreeDepth + "</td>\n");
+		sb.append("<td class='number'>").append(queryData.maxTreeDepth).append("</td>\n");
 
 		// column: #instances
-		sb.append("<td class='number'>" + queryData.nrOfInstances + "</td>\n");
+		sb.append("<td class='number'>").append(queryData.nrOfInstances).append("</td>\n");
 
 		// columns: optimal CBD sizes (min, max, avg)
 		DescriptiveStatistics optimalCBDSizeStats = queryData.optimalCBDSizeStats;
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMin() + "</td>\n");
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMax() + "</td>\n");
-		sb.append("<td class='number'>" + (int)optimalCBDSizeStats.getMean() + "</td>\n");
+		sb.append("<td class='number'>").append((int) optimalCBDSizeStats.getMin()).append("</td>\n");
+		sb.append("<td class='number'>").append((int) optimalCBDSizeStats.getMax()).append("</td>\n");
+		sb.append("<td class='number'>").append((int) optimalCBDSizeStats.getMean()).append("</td>\n");
 
 		// columns: generic CBD sizes (min, max, avg)
 		DescriptiveStatistics genericCBDSizeStats = queryData.defaultCBDSizesStats;
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMin() + "</td>\n");
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMax() + "</td>\n");
-		sb.append("<td class='number'>" + (int)genericCBDSizeStats.getMean() + "</td>\n");
+		sb.append("<td class='number'>").append((int) genericCBDSizeStats.getMin()).append("</td>\n");
+		sb.append("<td class='number'>").append((int) genericCBDSizeStats.getMax()).append("</td>\n");
+		sb.append("<td class='number'>").append((int) genericCBDSizeStats.getMean()).append("</td>\n");
 
 
 		sb.append("</tr>\n");

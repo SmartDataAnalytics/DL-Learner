@@ -55,12 +55,10 @@ public class VirtuosoUtils {
 			
 			@Override
 			public void visit(ElementTriplesBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
-					return ComparisonChain.start()
-							.compare(o1.getSubject().toString(), o2.getSubject().toString())
-							.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-							.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-				});
+				Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> ComparisonChain.start()
+                        .compare(o1.getSubject().toString(), o2.getSubject().toString())
+                        .compare(o1.getPredicate().toString(), o2.getPredicate().toString())
+                        .compare(o1.getObject().toString(), o2.getObject().toString()).result());
 
 				Iterator<Triple> iterator = el.patternElts();
 				while (iterator.hasNext()) {
@@ -102,12 +100,10 @@ public class VirtuosoUtils {
 			
 			@Override
 			public void visit(ElementPathBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
-					return ComparisonChain.start()
-							.compare(o1.getSubject().toString(), o2.getSubject().toString())
-							.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-							.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-				});
+				Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> ComparisonChain.start()
+                        .compare(o1.getSubject().toString(), o2.getSubject().toString())
+                        .compare(o1.getPredicate().toString(), o2.getPredicate().toString())
+                        .compare(o1.getObject().toString(), o2.getObject().toString()).result());
 
 				Iterator<TriplePath> iterator = el.patternElts();
 				while (iterator.hasNext()) {

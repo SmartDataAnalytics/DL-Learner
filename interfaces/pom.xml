@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>interfaces</artifactId>
@@ -10,7 +11,7 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.3.0</version>
+		<version>1.4.0</version>
 	</parent>
 
 	<properties>
@@ -30,7 +31,6 @@
 					<plugin>
 						<groupId>org.apache.tomcat.maven</groupId>
 						<artifactId>tomcat7-maven-plugin</artifactId>
-						<version>2.2</version>
 						<executions>
 							<execution>
 								<id>tomcat-run</id>
@@ -70,7 +70,7 @@
 					<plugin>
 						<groupId>com.github.fracpete</groupId>
 						<artifactId>latex-maven-plugin</artifactId>
-						<version>1.4.2</version>
+						<version>1.4.4</version>
 						<executions>
 							<execution>
 								<phase>prepare-package</phase>
@@ -87,7 +87,6 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
-						<version>1.9</version>
 						<executions>
 							<execution>
 								<goals>
@@ -98,7 +97,8 @@
 						<configuration>
 							<!-- put dependency JARs to /lib folder -->
 							<repositoryLayout>flat</repositoryLayout>
-							<!-- shorter classpath which avoid exceptions especially under Windows environment-->
+							<!-- shorter classpath which avoid exceptions especially under Windows
+								environment -->
 							<useWildcardClassPath>true</useWildcardClassPath>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repositoryName>lib</repositoryName>
@@ -110,7 +110,8 @@
 							<!-- Include the target configuration directory in the classpath -->
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
-								-Xms256m -Xmx2g -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
+								-Xms256m -Xmx2g
+								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
 							</extraJvmArguments>
 							<installArtifacts>false</installArtifacts>
 							<platforms>
@@ -139,7 +140,7 @@
 							<execution>
 								<phase>package</phase>
 								<goals>
-									<goal>attached</goal>
+									<goal>single</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -149,6 +150,28 @@
 							<descriptors>
 								<descriptor>src/main/assemble/archive.xml</descriptor>
 							</descriptors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>extended-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+								<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
+								<exclude>org/dllearner/test/SpringTest.java</exclude>
+								<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
+								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -166,7 +189,6 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
-						<version>1.9</version>
 						<executions>
 							<execution>
 								<goals>
@@ -179,7 +201,8 @@
 							<assembleDirectory>${project.build.directory}/${dist-dir}</assembleDirectory>
 							<repoPath>/usr/share/dl-learner/lib</repoPath>
 							<repositoryName>${install-dir}/lib</repositoryName>
-							<extraJvmArguments>-Xms256m -Xmx1024m -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
+							<extraJvmArguments>-Xms256m -Xmx1024m
+								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
 							<configurationDirectory>/</configurationDirectory>
 							<platforms>
 								<platform>unix</platform>
@@ -199,7 +222,6 @@
 					<plugin>
 						<artifactId>jdeb</artifactId>
 						<groupId>org.vafer</groupId>
-						<version>1.3</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -264,6 +286,31 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+								<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
+								<exclude>org/dllearner/test/SpringTest.java</exclude>
+								<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
+								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+								<exclude>org/dllearner/test/junit/ExampleTests.java</exclude>
+							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<build>
@@ -283,11 +330,12 @@
 				<inherited>true</inherited>
 				<configuration>
 					<schemaDirectory>src/main/xsd</schemaDirectory>
+					<javaSource>${compiler.version}</javaSource>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>tomcat-maven-plugin</artifactId>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -299,6 +347,7 @@
 				<version>2.6</version>
 				<executions>
 					<execution>
+						<phase>generate-sources</phase>
 						<id>javacc</id>
 						<goals>
 							<goal>javacc</goal>
@@ -330,23 +379,8 @@
 			</plugin>
 			<!--Surefire - for JUnits -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
-						<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
-						<exclude>org/dllearner/test/SpringTest.java</exclude>
-						<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
-						<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
-					</excludes>
-					<argLine>-Dlog4j.configuration=log4j.properties</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.3.2</version>
 				<executions>
 					<execution>
 						<goals>
@@ -363,49 +397,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>xmlbeans-maven-plugin</artifactId>
-										<versionRange>[2.3.3,)</versionRange>
-										<goals>
-											<goal>xmlbeans</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>javacc-maven-plugin</artifactId>
-										<versionRange>[2.6,)</versionRange>
-										<goals>
-											<goal>javacc</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -451,11 +442,19 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.3</version>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.jws</groupId>
+			<artifactId>javax.jws-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
 		</dependency>
 	</dependencies>
 

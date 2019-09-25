@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.pattern;
 
+import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.*;
@@ -38,6 +39,8 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	public OWLAxiom rename(OWLAxiom axiom){
 		Map<OWLEntity, OWLEntity> renaming = new HashMap<>();
 		expressionRenamer = new OWLClassExpressionRenamer(df, renaming);
+		boolean multipleClasses = axiom.getClassesInSignature().size() > 1;
+		expressionRenamer.setMultipleClasses(multipleClasses);
 		axiom.accept(this);
 		return renamedAxiom;
 	}
@@ -83,6 +86,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 		for (OWLClassExpression classExpression : classExpressions) {
 			renamedClassExpressions.add(expressionRenamer.rename(classExpression));
 		}
+		renamedClassExpressions = Sets.newHashSet(df.getOWLClass(IRI.create(PatternConstants.NS + "A_1")), PatternConstants.CLASS_SET);
 		renamedAxiom = df.getOWLDisjointClassesAxiom(renamedClassExpressions);
 	}
 

@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl.experiments;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -69,6 +70,8 @@ import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.experiments.datasets.EvaluationDataset;
+import org.dllearner.algorithms.qtl.experiments.datasets.QALD6DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBaseInv;
@@ -90,6 +93,7 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
+import org.dllearner.utilities.owl.DLSyntaxObjectRendererExt;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -218,7 +222,7 @@ public class QTLEvaluation {
 
 	private int nrOfThreads;
 
-	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
+	OWLObjectRenderer owlRenderer = new DLSyntaxObjectRendererExt();
 
 	DescriptiveStatistics treeSizeStats = new DescriptiveStatistics();
 
@@ -463,7 +467,7 @@ public class QTLEvaluation {
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
-		List<String> queries = dataset.getSparqlQueries().values().stream().map(q -> q.toString()).collect(Collectors.toList());
+		List<String> queries = dataset.getSparqlQueries().values().stream().map(Query::toString).collect(Collectors.toList());
 		logger.info("#loaded queries: " + queries.size());
 
 		// filter for debugging purposes
@@ -489,7 +493,7 @@ public class QTLEvaluation {
 		// check for queries that do not return any result (should not happen, but we never know)
 		Set<String> emptyQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.isEmpty())
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} empty queries.", emptyQueries.size());
 		queries.removeAll(emptyQueries);
@@ -497,7 +501,7 @@ public class QTLEvaluation {
 		// min. pos examples
 		Set<String> lowNrOfExamplesQueries = query2Examples.entrySet().stream()
 				.filter(e -> e.getValue().correctPosExampleCandidates.size() < 2)
-				.map(e -> e.getKey())
+				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 		logger.info("got {} queries with < 2 pos. examples.", emptyQueries.size());
 		queries.removeAll(lowNrOfExamplesQueries);
@@ -625,7 +629,7 @@ public class QTLEvaluation {
 									lp.setPositiveExamples(examples.posExamplesMapping.keySet());
 									lp.setNegativeExamples(examples.negExamplesMapping.keySet());
 									QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-									la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+									la.setRenderer(new DLSyntaxObjectRendererExt());
 									la.setReasoner(dataset.getReasoner());
 									la.setEntailment(Entailment.SIMPLE);
 									la.setTreeFactory(queryTreeFactory);
@@ -692,7 +696,7 @@ public class QTLEvaluation {
 
 									for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 										if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-											Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
+											Files.append(sparqlQuery + "\n", new File(System.getProperty("java.io.tmpdir") + File.separator + "negCovered.txt"), Charsets.UTF_8);
 											break;
 										}
 									}
@@ -723,7 +727,7 @@ public class QTLEvaluation {
 								} finally {
 									int cnt = currentNrOfFinishedRuns.incrementAndGet();
 									logger.info("***********Evaluation Progress:"
-											+ NumberFormat.getPercentInstance().format((double)cnt / totalNrOfQTLRuns)
+											+ NumberFormat.getPercentInstance(Locale.ROOT).format((double)cnt / totalNrOfQTLRuns)
 											+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
 											+ "***********");
 								}
@@ -904,12 +908,9 @@ public class QTLEvaluation {
 					types.add(child.getData());
 				}
 			}
-			Node mostFrequentType = Ordering.natural().onResultOf(new Function<Multiset.Entry<Node>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Node> entry) {
-				    return entry.getCount();
-				  }
-				}).max(types.entrySet()).getElement();
+			Node mostFrequentType = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Node>, Integer>) Multiset.Entry::getCount)
+					.max(types.entrySet()).getElement();
 			RDFResourceTree solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
 			return solution;
@@ -924,12 +925,9 @@ public class QTLEvaluation {
 					}
 				}
 			}
-			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(new Function<Multiset.Entry<Pair<Node, Node>>, Integer>() {
-				  @Override
-				  public Integer apply(Multiset.Entry<Pair<Node, Node>> entry) {
-				    return entry.getCount();
-				  }
-				}).max(pairs.entrySet()).getElement();
+			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(
+					(Function<Multiset.Entry<Pair<Node, Node>>, Integer>) Multiset.Entry::getCount)
+					.max(pairs.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
 			return solution;}
@@ -1004,7 +1002,7 @@ public class QTLEvaluation {
 //		lp.init();
 
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-		la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+		la.setRenderer(new DLSyntaxObjectRendererExt());
 		la.setReasoner(dataset.getReasoner());
 		la.setEntailment(Entailment.RDFS);
 		la.setTreeFactory(queryTreeFactory);
@@ -1023,7 +1021,7 @@ public class QTLEvaluation {
 	}
 	
 	private void solutionsFromCache(String sparqlQuery, int possibleNrOfExamples, double noise) {
-		HashFunction hf = Hashing.md5();
+		HashFunction hf = Hashing.goodFastHash(128);
 		String hash = hf.newHasher()
 				.putString(sparqlQuery, Charsets.UTF_8)
 				.putInt(possibleNrOfExamples)
@@ -1128,7 +1126,7 @@ public class QTLEvaluation {
 	}
 
 	private String hash(String query) {
-		return Hashing.md5().newHasher().putString(query, Charsets.UTF_8).hash().toString();
+		return Hashing.goodFastHash(128).newHasher().putString(query, Charsets.UTF_8).hash().toString();
 	}
 
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
@@ -1354,12 +1352,10 @@ public class QTLEvaluation {
 			negExamplesSet.addAll(result);
 		} else {
 			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-			Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> {
-				return ComparisonChain.start()
-						.compare(o1.size(), o2.size())
-						.compare(o1.hashCode(), o2.hashCode())
-						.result();
-			});
+			Set<Set<Triple>> powerSet = new TreeSet<>((o1, o2) -> ComparisonChain.start()
+                    .compare(o1.size(), o2.size())
+                    .compare(o1.hashCode(), o2.hashCode())
+                    .result());
 			powerSet.addAll(Sets.powerSet(triplePatterns));
 			
 			for (Set<Triple> set : powerSet) {
@@ -1529,7 +1525,7 @@ public class QTLEvaluation {
 		List<Query> queries = QueryRewriter.split(query);
 
 		List<String> resources = getResult(queries.remove(0).toString());
-		queries.stream().map(q -> getResult(q.toString())).forEach(l -> resources.retainAll(l));
+		queries.stream().map(q -> getResult(q.toString())).forEach(resources::retainAll);
 
 		return resources;
 	}
@@ -1600,13 +1596,11 @@ public class QTLEvaluation {
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> {
-			return ComparisonChain.start().
-			compare(o1.getSubject().toString(), o2.getSubject().toString()).
-			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-			compare(o1.getObject().toString(), o2.getObject().toString()).
-			result();
-		});
+		Set<Triple> newTriplePatterns = new TreeSet<>((o1, o2) -> ComparisonChain.start().
+        compare(o1.getSubject().toString(), o2.getSubject().toString()).
+        compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+        compare(o1.getObject().toString(), o2.getObject().toString()).
+        result());
 		List<ElementFilter> filters = new ArrayList<>();
 		int cnt = 0;
 		// <s p o>
@@ -1702,7 +1696,7 @@ public class QTLEvaluation {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
+		Files.write(Joiner.on("\n").join(learnedResources), new File(System.getProperty("java.io.tmpdir") + File.separator + "result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();

@@ -13,6 +13,7 @@ import org.apache.jena.vocabulary.RDFS;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.*;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.*;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
@@ -42,6 +43,7 @@ import java.util.prefs.Preferences;
 public class SPARQLSampleDebugging {
 	
 	private SparqlEndpoint endpoint;
+	private SparqlEndpointKS ks;
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
 	private int sampleSize = 10;
@@ -70,6 +72,7 @@ public class SPARQLSampleDebugging {
 	
 	public SPARQLSampleDebugging(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
+		this.ks = new SparqlEndpointKS(endpoint);
 		initDBConnection();
 		dbpediaOntology = loadDBpediaOntology();
 		dbpediaReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbpediaOntology);
@@ -197,7 +200,7 @@ public class SPARQLSampleDebugging {
 	private OWLOntology extractSampleModule(Set<String> resources){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "/tmp/cache");
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		Model model = ModelFactory.createDefaultModel();
 		for(String resource : resources){
 			model.add(cbdGen.getConciseBoundedDescription(resource, depth));
@@ -210,7 +213,7 @@ public class SPARQLSampleDebugging {
 	private OWLOntology extractSampleModule(String resource){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "/tmp/cache");
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		Model model = cbdGen.getConciseBoundedDescription(resource, 3);
 		OWLOntology data = convert(model);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");

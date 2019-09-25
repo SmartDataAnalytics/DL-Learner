@@ -22,6 +22,8 @@ import com.google.common.collect.ComparisonChain;
 import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
+import org.semanticweb.owlapi.util.AlwaysOutputId;
+import org.semanticweb.owlapi.util.AxiomAppearance;
 import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
@@ -29,6 +31,10 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.semanticweb.owlapi.util.OWLAPIPreconditions.checkNotNull;
 
 /**
  * A converter of OWL axioms or OWL ontology changes into SPARQL 1.1 Update commands.
@@ -41,12 +47,14 @@ public class OWL2SPARULConverter
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
-			OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance) {
-		super(manager, ontology, useStrongTyping, individualAppearance);
+							   OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance,
+							   AxiomAppearance axiomAppearance, AtomicInteger nextNode, Map<Object, Integer> blankNodeMap) {
+		super(manager, ontology, useStrongTyping, individualAppearance, axiomAppearance, nextNode, blankNodeMap);
 	}
-	
+
 	public OWL2SPARULConverter(OWLOntology ontology, boolean useStrongTyping) {
-		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping, new OWLAnonymousIndividualsWithMultipleOccurrences());
+		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping,
+			 new OWLAnonymousIndividualsWithMultipleOccurrences(), new AlwaysOutputId(), new AtomicInteger(), Collections.emptyMap());
 	}
 
 	/**
@@ -126,13 +134,14 @@ public class OWL2SPARULConverter
 	@Nonnull
 	@Override
 	protected RDFResourceBlankNode getAnonymousNode(@Nonnull Object key) {
-		return new RDFResourceBlankNode(System.identityHashCode(key), false, false);
+		return new RDFResourceBlankNode(System.identityHashCode(key), false,false, false);
 	}
 
 	@Nonnull
 	@Override
-	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object o) {
-		return new RDFResourceBlankNode(false, false);
+	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object key, boolean isAxiom) {
+		checkNotNull(key, "key cannot be null");
+		return new RDFResourceBlankNode(false, false, isAxiom);
 	}
 
 	@Nonnull

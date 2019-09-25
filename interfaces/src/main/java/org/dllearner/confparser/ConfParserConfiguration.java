@@ -1,24 +1,22 @@
 package org.dllearner.confparser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections4.BidiMap;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
+import org.dllearner.confparser.json.ConfParserJson;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,17 +40,25 @@ public class ConfParserConfiguration implements IConfiguration {
         	} else {
         		baseDir = null;
         	}
-            parser = new ConfParser(source.getInputStream());
-            parser.Start();
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(source.getInputStream());
+            bufferedInputStream.mark(1);
+            int peek = bufferedInputStream.read();
+            bufferedInputStream.reset();
+            if (peek == '{') {
+                parser = new ConfParserJson(bufferedInputStream);
+            } else {
+                parser = new ConfParserLegacy(bufferedInputStream);
+            }
+            parser.init();
             
             // setup rendering TODO put it into CLI
             ConfFileOption renderingOption = parser.getConfOptionsByProperty("rendering");
             if(renderingOption != null) {
-            	StringRenderer.setRenderer(renderingOption.getPropertyValue());
+            	StringRenderer.setRenderer((String) renderingOption.getValue());
             } else {
             	StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
             }
-        } catch (ParseException | IOException e) {
+        } catch (IOException | ComponentInitException e) {
             throw new RuntimeException(e);
         }
     }

@@ -20,6 +20,7 @@ package org.dllearner.core;
 
 import java.io.File;
 
+import com.google.common.base.StandardSystemProperty;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -70,7 +71,7 @@ public class FatherExample {
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
 		alg.setWriteSearchTree(true);
-		alg.setSearchTreeFile("/tmp/dllearner/search-tree.log");
+		alg.setSearchTreeFile(System.getProperty("java.io.tmpdir") + File.separator + "dllearner" + File.separator + "search-tree.log");
 		alg.setReplaceSearchTree(true);
 		alg.init();
 		

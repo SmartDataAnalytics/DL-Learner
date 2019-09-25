@@ -20,11 +20,10 @@ package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -70,17 +69,34 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	}
 
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
+		ExampleLoader exampleLoaderHelper = this.getExampleLoaderHelper();
+		if (exampleLoaderHelper != null && !exampleLoaderHelper.isInitialized()) {
+			logger.info("Loading examples by expression");
+			exampleLoaderHelper.setPosOnlyLP(this);
+			exampleLoaderHelper.init();
+		}
 
 		Random rand = new Random(1);
 
-		if(getReasoner()!=null) {
-			individuals = new LinkedList<>(getReasoner().getIndividuals());
-			Collections.shuffle(individuals, rand);
+		if(getReasoner() != null) {
+			if(reasoner instanceof SPARQLReasoner) {
+				throw new ComponentInitException("SPARQL reasoner currently not supported for PosOnly learning problem");
+			}
+
+			// sanity check whether examples are contained in KB
+			Helper.checkIndividuals(reasoner, positiveExamples);
+
+			SortedSet<OWLIndividual> allIndividuals = getReasoner().getIndividuals();
+
+			this.individuals = new LinkedList<>(allIndividuals);
+			Collections.shuffle(this.individuals, rand);
 		}
 
 		positiveExamplesShuffled = new LinkedList<>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
+		
+		initialized = true;
 	}
 
 	public SortedSet<OWLIndividual> getPositiveExamples() {
@@ -98,7 +114,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosOnly computeScore(OWLClassExpression description, double noise) {
+	public ScorePosOnly<OWLNamedIndividual> computeScore(OWLClassExpression description, double noise) {
 		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 
 		Set<OWLIndividual> instancesCovered = new TreeSet<>();
@@ -119,7 +135,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		return new ScorePosOnly(instancesCovered, instancesNotCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));
 	}
 
-	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
+	private double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 
 		// instead of using the standard operation, we use optimisation
 		// and approximation here
@@ -128,7 +144,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 		int instancesCovered = 0;
 		int instancesNotCovered = 0;
-		int total = 0;
+		int total;
 		boolean estimatedA = false;
 
 		double lowerBorderA = 0;
@@ -248,7 +264,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	// exact computation for 5 heuristics; each one adapted to super class
 	// learning;
 	// each one takes the noise parameter into account
-	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
+	private double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 
 		nanoStartTime = System.nanoTime();
 
@@ -290,7 +306,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	}
 
 	@Override
-	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
+	@SuppressWarnings("unchecked")
+	public EvaluatedDescription<ScorePosOnly<OWLNamedIndividual>> evaluate(OWLClassExpression description, double noise) {
 		ScorePosOnly score = computeScore(description, noise);
 		return new EvaluatedDescriptionPosOnly(description, score);
 	}

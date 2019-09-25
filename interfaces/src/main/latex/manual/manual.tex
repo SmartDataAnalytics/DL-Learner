@@ -463,20 +463,21 @@ DL-Learner is open source and component based. If you want to develop a specific
 If you want to create a new component, then you first have to decide on the type of your component. To implement a concrete component, you can implement one of the following interfaces (list is incomplete):
 
 \begin{itemize}
- \item org.dllearner.core.KnowledgeSource
- \item org.dllearner.core.ReasonerComponent
- \item org.dllearner.core.LearningProblem
- \item org.dllearner.core.LearningAlgorithm
+ \item \texttt{org.dllearner.core.KnowledgeSource}
+ \item \texttt{org.dllearner.core.ReasonerComponent}
+ \item \texttt{org.dllearner.core.LearningProblem}
+ \item \texttt{org.dllearner.core.LearningAlgorithm}
 \end{itemize}
 
 %You then have to add your component to \verb|lib/components.ini| such that it is registered in the component manager when DL-Learner starts up. If you want to use configuration options in your component, you need to create a static method as follows:
 That is sufficient for using your component programmatically in combination with existing DL-Learner components.
-If your class name is \verb|org.example.TestAlgorithm|, then you can instantiate your class in a conf file via:
+If your class name is \texttt{org.example.TestAlgorithm}, then you can instantiate your class in a conf file via:
 \begin{verbatim}
 c.type = "org.example.TestAlgorithm"
 \end{verbatim}
 
-As you have probably seen by now in various conf files, DL-Learner allows to configure components. This is done via standard Java Beans. If you want to create a conf option \verb|testOption|, you just need to create a variable with getters and setters in your code:
+As you have probably seen by now in various conf files, DL-Learner allows to configure components. This is done via standard Java Beans. If you want to create a conf option 
+\texttt{testOption}, you just need to create a variable with getters and setters in your code:
 
 \begin{verbatim}
 public class TestAlgorithm implements LearningAlgorithm {
@@ -594,7 +595,7 @@ This quick introduction only serves as an entry point to get you started. For mo
  \item Tracker (bugs, features): \url{https://github.com/AKSW/DL-Learner/issues}
  \item Mailing Lists: \url{http://sourceforge.net/p/dl-learner/mailman/}
  \item Contact: \href{mailto:jens.lehmann@cs.uni-bonn.de}{jens.lehmann@cs.uni-bonn.de} (please use the mailing list if possible)
- \item Latest Release: \url{https://github.com/AKSW/DL-Learner/releases/tag/v1.3}
+ \item Latest Release: \url{https://github.com/AKSW/DL-Learner/releases/tag/1.3.0}
 \end{itemize}
 
 \nocite{*}
