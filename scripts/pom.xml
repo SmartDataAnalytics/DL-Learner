@@ -43,6 +43,10 @@
 					<artifactId>jena</artifactId>
 					<groupId>com.hp.hpl.jena</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>arq</artifactId>
+					<groupId>com.hp.hpl.jena</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		
