@@ -256,6 +256,12 @@
             <groupId>ml.dmlc</groupId>
             <artifactId>xgboost4j</artifactId>
             <version>0.90</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
