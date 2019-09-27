@@ -1952,8 +1952,8 @@ http://dbpedia.org/ontology/chaplain
 http://dbpedia.org/ontology/chef
 http://dbpedia.org/ontology/chiefEditor
 http://dbpedia.org/ontology/chiefPlace
-http://dbpedia.org/ontology/child
-http://dbpedia.org/ontology/childOrganisation
+#http://dbpedia.org/ontology/child
+#http://dbpedia.org/ontology/childOrganisation
 http://dbpedia.org/ontology/choreographer
 http://dbpedia.org/ontology/cinematography
 http://dbpedia.org/ontology/citizenship
