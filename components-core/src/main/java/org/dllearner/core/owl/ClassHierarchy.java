@@ -18,11 +18,9 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -31,7 +29,6 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -124,31 +121,54 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	public ClassHierarchy clone() {
 		return new ClassHierarchy(getHierarchyUp(), getHierarchyDown());		
 	}
-	
-	public Set<OWLAxiom> toOWLAxioms(){
-		return toOWLAxioms(OWL_THING);
+
+	/**
+	 * Converts the class hierarchy to a set of subclass axioms.
+	 *
+	 * @return a set of subclass axioms
+	 */
+	public Set<OWLAxiom> toOWLAxioms() {
+		return getEntities().stream().flatMap(cls ->
+				Optional.ofNullable(getChildren(cls)).map(Collection::stream).orElseGet(Stream::empty)
+						.map(sub -> df.getOWLSubClassOfAxiom(sub, cls))
+		).collect(Collectors.toSet());
 	}
-	
-	public Set<OWLAxiom> toOWLAxioms(OWLClassExpression concept){
+
+	/**
+	 * Converts the class hierarchy starting from the given concept <code>ce</code> to a set of subclass axioms.
+	 *
+	 * @param ce the root
+	 * @return a set of subclass axioms
+	 */
+	public Set<OWLAxiom> toOWLAxioms(OWLClassExpression ce) {
 		Set<OWLAxiom> axioms = new HashSet<>();
-		Set<OWLClassExpression> subConcepts = getChildren(concept);
-		if (subConcepts != null) {
-			for (OWLClassExpression sub : subConcepts){
-				axioms.add(df.getOWLSubClassOfAxiom(sub, concept));
-				axioms.addAll(toOWLAxioms(sub));
+		Set<OWLClassExpression> visited = new HashSet<>();
+		Set<OWLClassExpression> subclasses = getChildren(ce);
+		if (subclasses != null) {
+			for (OWLClassExpression sub : subclasses) {
+				axioms.add(df.getOWLSubClassOfAxiom(sub, ce));
+				toOWLAxioms(sub, axioms, visited);
 			}
 		}
 		return axioms;
 	}
+
+	private void toOWLAxioms(OWLClassExpression ce, Set<OWLAxiom> axioms, Set<OWLClassExpression> visited){
+		visited.add(ce);
+
+		Optional.ofNullable(getChildren(ce)).map(Collection::stream).orElseGet(Stream::empty)
+				.filter(cls -> !visited.contains(cls))
+				.forEach(sub -> {
+					axioms.add(df.getOWLSubClassOfAxiom(sub, ce));
+					toOWLAxioms(sub, axioms, visited);
+				});
+	}
 	
 	public int getDepth2Root(OWLClassExpression concept){
 		SortedSet<OWLClassExpression> superClasses = getParents(concept);
-		int depth = 0;
+		int depth = 1;
 		if(superClasses != null){
-			depth = 1;
-			for(OWLClassExpression superClass : superClasses){
-				depth += getDepth2Root(superClass);
-			}
+			depth += superClasses.stream().mapToInt(this::getDepth2Root).max().getAsInt();
 		}
 		return depth;
 	}
@@ -172,4 +192,6 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	public OWLClassExpression getBottomConcept() {
 		return OWL_NOTHING;
 	}
+
+
 }
