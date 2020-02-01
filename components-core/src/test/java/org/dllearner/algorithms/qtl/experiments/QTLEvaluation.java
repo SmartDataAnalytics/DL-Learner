@@ -103,6 +103,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -233,7 +234,13 @@ public class QTLEvaluation {
 			"Queen_Victoria"
 	);
 
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
+	public QTLEvaluation(EvaluationDataset dataset,
+						 File benchmarkDirectory,
+						 boolean write2DB,
+						 boolean override,
+						 int maxQTLRuntime,
+						 boolean useEmailNotification,
+						 int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
@@ -421,7 +428,7 @@ public class QTLEvaluation {
 	private List<String> getSparqlQueries(File queriesFile) throws IOException {
 		List<String> sparqlQueries = new ArrayList<>();
 		
-		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
+		for (String queryString : Files.readLines(queriesFile, StandardCharsets.UTF_8)) {
 //			Query q = QueryFactory.create(queryString);
 //			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
 //			if(subjectObjectJoinDepth < maxTreeDepth) {
@@ -603,11 +610,11 @@ public class QTLEvaluation {
 									File dir = new File(benchmarkDirectory, "data/" + hash(sparqlQuery));
 									dir.mkdirs();
 									Files.write(Joiner.on("\n").join(examples.correctPosExamples),
-												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tp"), Charsets.UTF_8);
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tp"), StandardCharsets.UTF_8);
 									Files.write(Joiner.on("\n").join(examples.correctNegExamples),
-												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tn"), Charsets.UTF_8);
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".tn"), StandardCharsets.UTF_8);
 									Files.write(Joiner.on("\n").join(examples.falsePosExamples),
-												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".fp"), Charsets.UTF_8);
+												new File(dir, "examples_" + nrOfExamples + "_" + noise + ".fp"), StandardCharsets.UTF_8);
 
 									// compute baseline
 									logger.info("Computing baseline...");
@@ -696,7 +703,7 @@ public class QTLEvaluation {
 
 									for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 										if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-											Files.append(sparqlQuery + "\n", new File(System.getProperty("java.io.tmpdir") + File.separator + "negCovered.txt"), Charsets.UTF_8);
+											Files.append(sparqlQuery + "\n", new File(System.getProperty("java.io.tmpdir") + File.separator + "negCovered.txt"), StandardCharsets.UTF_8);
 											break;
 										}
 									}
@@ -720,7 +727,7 @@ public class QTLEvaluation {
 										StringWriter sw = new StringWriter();
 										PrintWriter pw = new PrintWriter(sw);
 										e.printStackTrace(pw);
-										Files.append(sparqlQuery + "\n" + sw.toString(), new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+										Files.append(sparqlQuery + "\n" + sw.toString(), new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), StandardCharsets.UTF_8);
 									} catch (IOException e1) {
 										e1.printStackTrace();
 									}
@@ -773,7 +780,7 @@ public class QTLEvaluation {
 							logger.info(result);
 							
 							try {
-								Files.write(result, statsFile, Charsets.UTF_8);
+								Files.write(result, statsFile, StandardCharsets.UTF_8);
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -822,7 +829,7 @@ public class QTLEvaluation {
 				
 				File examplesVsNoise = new File(benchmarkDirectory, "examplesVsNoise-" + heuristicName + "-" + measureName + ".tsv");
 				try {
-					Files.write(content, examplesVsNoise, Charsets.UTF_8);
+					Files.write(content, examplesVsNoise, StandardCharsets.UTF_8);
 				} catch (IOException e) {
 					logger.error("failed to write stats to file", e);
 				}
@@ -1023,7 +1030,7 @@ public class QTLEvaluation {
 	private void solutionsFromCache(String sparqlQuery, int possibleNrOfExamples, double noise) {
 		HashFunction hf = Hashing.goodFastHash(128);
 		String hash = hf.newHasher()
-				.putString(sparqlQuery, Charsets.UTF_8)
+				.putString(sparqlQuery, StandardCharsets.UTF_8)
 				.putInt(possibleNrOfExamples)
 				.putDouble(noise)
 				.hash().toString();
@@ -1126,7 +1133,7 @@ public class QTLEvaluation {
 	}
 
 	private String hash(String query) {
-		return Hashing.goodFastHash(128).newHasher().putString(query, Charsets.UTF_8).hash().toString();
+		return Hashing.goodFastHash(128).newHasher().putString(query, StandardCharsets.UTF_8).hash().toString();
 	}
 
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
@@ -1147,10 +1154,10 @@ public class QTLEvaluation {
 		List<String> posExamples;
 		File file = new File(examplesDirectory, "examples.tp");
 		if(file.exists()) {
-			posExamples = Files.readLines(file, Charsets.UTF_8);
+			posExamples = Files.readLines(file, StandardCharsets.UTF_8);
 		} else {
 			posExamples = getResult(sparqlQuery, false);
-			Files.write(Joiner.on("\n").join(posExamples), file, Charsets.UTF_8);
+			Files.write(Joiner.on("\n").join(posExamples), file, StandardCharsets.UTF_8);
 		}
 		Collections.sort(posExamples);
 		logger.info("#Pos. examples: " + posExamples.size());
@@ -1160,10 +1167,10 @@ public class QTLEvaluation {
 		List<String> negExamples;
 		file = new File(examplesDirectory, "examples-" + maxNrOfNegExamples + ".tn");
 		if(file.exists()) {
-			negExamples = Files.readLines(file, Charsets.UTF_8);
+			negExamples = Files.readLines(file, StandardCharsets.UTF_8);
 		} else {
 			negExamples = new NegativeExampleSPARQLQueryGenerator(qef).getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
-			Files.write(Joiner.on("\n").join(negExamples), file, Charsets.UTF_8);
+			Files.write(Joiner.on("\n").join(negExamples), file, StandardCharsets.UTF_8);
 		}
 		Collections.sort(negExamples);
 		logger.info("#Neg. examples: " + negExamples.size());
@@ -1173,10 +1180,10 @@ public class QTLEvaluation {
 		List<String> noiseCandidates;
 		file = new File(examplesDirectory, "examples-" + maxNrOfNoiseCandidates + ".fp");
 		if(file.exists()) {
-			noiseCandidates = Files.readLines(file, Charsets.UTF_8);
+			noiseCandidates = Files.readLines(file, StandardCharsets.UTF_8);
 		} else {
 			noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
-			Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
+			Files.write(Joiner.on("\n").join(noiseCandidates), file, StandardCharsets.UTF_8);
 		}
 		logger.info("#False pos. example candidates: " + noiseCandidates.size());
 
@@ -1696,7 +1703,7 @@ public class QTLEvaluation {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		Files.write(Joiner.on("\n").join(learnedResources), new File(System.getProperty("java.io.tmpdir") + File.separator + "result.txt"), Charsets.UTF_8);
+		Files.write(Joiner.on("\n").join(learnedResources), new File(System.getProperty("java.io.tmpdir") + File.separator + "result.txt"), StandardCharsets.UTF_8);
 		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();

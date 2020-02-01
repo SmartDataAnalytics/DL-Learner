@@ -13,6 +13,10 @@
 		<version>1.4.1-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<automatic.module.name>org.dllearner</automatic.module.name>
+	</properties>
+
 	<profiles>
 		<profile>
 			<id>release</id>

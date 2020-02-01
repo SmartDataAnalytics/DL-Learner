@@ -1883,7 +1883,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		} else if(description.isOWLThing()) {
-			return Sets.newTreeSet();
+			return new TreeSet<>();
 		} else if(description.isOWLNothing()) {
 			query = SPARQLQueryUtils.SELECT_LEAF_CLASSES_OWL;
 		} else {

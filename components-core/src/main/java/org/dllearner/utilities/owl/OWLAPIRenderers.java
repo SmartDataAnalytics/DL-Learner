@@ -29,6 +29,7 @@ import org.semanticweb.owlapi.owlxml.renderer.OWLXMLWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A collection of various render methods provided by 
@@ -103,7 +104,7 @@ public class OWLAPIRenderers {
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
 			manager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
-			str = new String(out.toByteArray(), "UTF-8");
+			str = out.toString(StandardCharsets.UTF_8.name());
 		} catch (OWLOntologyCreationException | OWLOntologyStorageException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -118,8 +119,8 @@ public class OWLAPIRenderers {
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
 			manager.saveOntology(ontology, new TurtleDocumentFormat(), out);
-			str = new String(out.toByteArray(), "UTF-8");
-		} catch (OWLOntologyCreationException | UnsupportedEncodingException | OWLOntologyStorageException e) {
+			str = out.toString(StandardCharsets.UTF_8.name());
+		} catch (OWLOntologyCreationException | OWLOntologyStorageException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		if(shortVersion) {
