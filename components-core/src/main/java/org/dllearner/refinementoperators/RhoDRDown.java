@@ -197,6 +197,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
 
+	@ConfigOption(description="support of disjunction (owl:unionOf), e.g. C\u2294 D ", defaultValue="true")
+	private boolean useDisjunction = true;
+
 	@ConfigOption(description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
@@ -1035,7 +1038,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					else
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 				// combinations has several numbers => generate disjunct
-				} else {
+				} else if(useDisjunction) {
 
 					// check whether the combination makes sense, i.e. whether
 					// all lengths mentioned in it have corresponding elements
@@ -1862,6 +1865,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useNegation = useNegation;
 	}
 
+	public void setUseDisjunction(boolean useDisjunction) {
+		this.useDisjunction = useDisjunction;
+	}
+
+	public boolean isUseDisjunction() {
+		return useDisjunction;
+	}
+
 	public boolean isUseBooleanDatatypes() {
 		return useBooleanDatatypes;
 	}
@@ -1994,6 +2005,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setMaxNrOfSplits(int maxNrOfSplits) {
 		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
+	public void setSplits(Map<OWLDataProperty, List<OWLLiteral>> splits) {
+		this.splits = splits;
 	}
 
 	public boolean isDisjointChecks() {
