@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.experiments;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.FileWriteMode;
@@ -64,7 +65,7 @@ public class QTLTuplesExperiment {
         qtl.setTreeFactory(tf);
         qtl.setMaxTreeDepth(depth);
 
-        out = new File("/tmp/qtl.out");
+        out = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl.out");
     }
 
     /**
@@ -218,7 +219,7 @@ public class QTLTuplesExperiment {
 
         SparqlEndpoint examplesEndpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred", Lists.newArrayList());
         SparqlEndpoint dataEndpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred?infer=false", Lists.newArrayList());
-        LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), examplesEndpoint, dataEndpoint);
+        LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), examplesEndpoint, dataEndpoint);
 
 //        SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/watdiv1000k", Lists.newArrayList());
 //        WatDivEvaluationDataset ds = new WatDivEvaluationDataset(new File("/tmp/test"), endpoint);

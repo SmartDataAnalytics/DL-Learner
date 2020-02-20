@@ -21,6 +21,7 @@ package org.dllearner.reasoning;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.base.StandardSystemProperty;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.*;
@@ -1258,7 +1259,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	}
 
 	public static void main(String[] args) throws Exception{
-		OWLOntology o = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("/tmp/test2.rdf"));
+		OWLOntology o = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File(System.getProperty("java.io.tmpdir") + File.separator + "test2.rdf"));
 		System.out.println(o.getClassesInSignature());
 		System.out.println(o.getDataPropertiesInSignature());
 		System.out.println(o.getIndividualsInSignature().size());

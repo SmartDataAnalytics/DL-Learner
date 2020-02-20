@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
@@ -55,8 +56,6 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 	private static final Logger log = LoggerFactory.getLogger(LUBMEvaluationDataset.class);
 
 	private static final String QUERIES_FILE = "src/test/resources/org/dllearner/algorithms/qtl/lubm_queries.txt";
-
-	private static final String CACHE_DIR = "/tmp/qtl/benchmark/lubm/cache";
 
 
 	public LUBMEvaluationDataset(File benchmarkDirectory, SparqlEndpoint examplesEndpoint, SparqlEndpoint dataEndpoint) {
@@ -151,7 +150,7 @@ public class LUBMEvaluationDataset extends EvaluationDataset {
 
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = SparqlEndpoint.create("http://localhost:7200/repositories/lubm-inferred-owlhorst", Lists.newArrayList());
-		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File("/tmp/test"), endpoint);
+		LUBMEvaluationDataset ds = new LUBMEvaluationDataset(new File(System.getProperty("java.io.tmpdir") + File.separator + "test"), endpoint);
 		QueryExecutionFactory qef = ds.getKS().getQueryExecutionFactory();
 		Map<String, Query> queries = ds.getSparqlQueries();
 		System.out.println(queries.size());

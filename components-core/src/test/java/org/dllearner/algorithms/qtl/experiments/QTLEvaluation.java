@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl.experiments;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.*;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -695,7 +696,7 @@ public class QTLEvaluation {
 
 									for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 										if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-											Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
+											Files.append(sparqlQuery + "\n", new File(System.getProperty("java.io.tmpdir") + File.separator + "negCovered.txt"), Charsets.UTF_8);
 											break;
 										}
 									}
@@ -1695,7 +1696,7 @@ public class QTLEvaluation {
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		Files.write(Joiner.on("\n").join(learnedResources), new File("/tmp/result.txt"), Charsets.UTF_8);
+		Files.write(Joiner.on("\n").join(learnedResources), new File(System.getProperty("java.io.tmpdir") + File.separator + "result.txt"), Charsets.UTF_8);
 		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n{}", learnedSPARQLQuery);
 			return new Score();

@@ -18,9 +18,12 @@
  */
 package org.dllearner.utilities;
 
+import org.dllearner.algorithms.ocel.ExampleBasedNode;
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.core.Heuristic;
 import org.dllearner.utilities.datastructures.AbstractSearchTree;
+
+import javax.annotation.Nonnull;
 
 public class TreeUtils {
 
@@ -49,13 +52,30 @@ public class TreeUtils {
 		if(depth!=0)
 			treeString.append("|--> ");
 		treeString.append(node.toString())
-				.append(heuristic != null ? ("[score: " + heuristic.getNodeScore(node) + "]") : "")
+				.append(addNodeScore(node, heuristic))
 				.append("\n");
 		for (Object child :
 		     node.getChildren()) {
 			treeString.append(TreeUtils.<T>toTreeString((T) child, heuristic,depth+1));
 		}
 		return treeString;
+	}
+
+	@Nonnull
+	private static <T extends AbstractSearchTreeNode> String addNodeScore(T node, Heuristic<T> heuristic) {
+		if (heuristic == null)
+			return "";
+
+		if (node instanceof ExampleBasedNode) {
+			if (!((ExampleBasedNode) node).isQualityEvaluated()) {
+				return "";
+			}
+			if (((ExampleBasedNode) node).isTooWeak()) {
+				return "[score:too weak]";
+			}
+		}
+
+		return "[score: " + heuristic.getNodeScore(node) + "]";
 	}
 
 }
