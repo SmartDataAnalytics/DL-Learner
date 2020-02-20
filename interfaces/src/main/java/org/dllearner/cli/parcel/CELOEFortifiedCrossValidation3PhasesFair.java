@@ -1,31 +1,25 @@
 package org.dllearner.cli.parcel;
 
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.Fortification.FortificationUtils;
-import org.dllearner.algorithms.Fortification.JaccardSimilarity;
+import org.dllearner.algorithms.parcel.celoe.CELOEPartial;
+import org.dllearner.cli.parcel.fortification.FortificationUtils;
+import org.dllearner.cli.parcel.fortification.JaccardSimilarity;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -35,9 +29,9 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Performs cross validation for the given problem. Supports k-fold cross-validation and
- * 
+ *
  * @author An C. Tran
- * 
+ *
  */
 public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
@@ -123,7 +117,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 	/**
 	 * Main method
-	 * 
+	 *
 	 * @param la
 	 * @param lp
 	 * @param rs
@@ -204,7 +198,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			trainingNeg.removeAll(fortNeg);
 
 			trainingSetsPos.add(i, trainingPos);
-			trainingSetsNeg.add(i, trainingNeg);			
+			trainingSetsNeg.add(i, trainingNeg);
 		}	//end of calculating datasets (training, test, fortification)
 
 		// ---------------------------------
@@ -302,7 +296,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 		Stat completenessFortifyAvg = new Stat();
 		Stat completenessFortifyDev = new Stat();
 		Stat completenessFortifyMax = new Stat();
-		Stat completenessFortifyMin = new Stat();		
+		Stat completenessFortifyMin = new Stat();
 
 		Stat fmeasureFortifyAvg = new Stat();
 		Stat fmeasureFortifyDev = new Stat();
@@ -314,19 +308,19 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 		Stat avgFortifyCoverageTraingMax = new Stat();
 		Stat avgFortifyCoverageTraingMin = new Stat();
 
-		Stat avgFortifyCoverageTestAvg = new Stat();	
+		Stat avgFortifyCoverageTestAvg = new Stat();
 		Stat avgFortifyCoverageTestDev = new Stat();
 		Stat avgFortifyCoverageTestMax = new Stat();
 		Stat avgFortifyCoverageTestMin = new Stat();
 
 
 		//----------------------------------------------------------------------
-		//loading ontology into Pellet reasoner for checking 
-		//the orthogonality and satisfiability (fortification training strategy) 
+		//loading ontology into Pellet reasoner for checking
+		//the orthogonality and satisfiability (fortification training strategy)
 		//----------------------------------------------------------------------
-		long ontologyLoadStarttime = System.nanoTime();		
+		long ontologyLoadStarttime = System.nanoTime();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = ((OWLFile)la.getReasoner().getSources().iterator().next()).createOWLOntology(manager);			
+		OWLOntology ontology = ((OWLFile)la.getReasoner().getSources().iterator().next()).createOWLOntology(manager);
 		outputWriter("Ontology created, axiom count: " + ontology.getAxiomCount());
 		PelletReasoner pelletReasoner = PelletReasonerFactory.getInstance().createReasoner(ontology);
 		outputWriter("Pellet creared and binded with the ontology: " + pelletReasoner.getReasonerName());
@@ -335,7 +329,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 		//----------------------------------------------------------------------
 
 
-		boolean celoeFirstOnFirstDefinition = ((CELOE)la).getStopOnFirstDefinition();
+		boolean celoeFirstOnFirstDefinition = ((CELOEPartial)la).isStopOnFirstDefinition();
 
 		for (int kk = 0; kk < noOfRuns; kk++) {
 
@@ -368,7 +362,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			fmeasureLabelFortifyStat = new Stat();
 
 			avgFortifyCoverageTraingStat = new Stat();
-			avgFortifyCoverageTestStat = new Stat();	
+			avgFortifyCoverageTestStat = new Stat();
 
 			fortifiedRuntime = new Stat();
 
@@ -397,20 +391,20 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			accuracyPercentageFortifyStepStat = new Stat[noOfStrategies][6];		//6 elements for six values of 5%, 10%, ..., 50%
 			completenessPercentageFortifyStepStat = new Stat[noOfStrategies][6];
 			correctnessPercentageFortifyStepStat = new Stat[noOfStrategies][6];
-			fmeasurePercentageFortifyStepStat = new Stat[noOfStrategies][6];			
+			fmeasurePercentageFortifyStepStat = new Stat[noOfStrategies][6];
 
 			//initial fortification accuracy by PERCENTAGE
 			for (int i=0; i<noOfStrategies; i++) {
 				for (int j=0; j<6; j++) {
 					accuracyPercentageFortifyStepStat[i][j] = new Stat();
 					completenessPercentageFortifyStepStat[i][j] = new Stat();
-					correctnessPercentageFortifyStepStat[i][j] = new Stat();				
+					correctnessPercentageFortifyStepStat[i][j] = new Stat();
 					fmeasurePercentageFortifyStepStat[i][j] = new Stat();
 				}
 			}
 
 
-			//number of cpdef corresponding to 5%, 10%, 20%, ..., 50% (for stat.) 
+			//number of cpdef corresponding to 5%, 10%, 20%, ..., 50% (for stat.)
 			noOfCpdefUsedMultiStepFortStat = new Stat[noOfStrategies];
 			for (int i=0; i<noOfStrategies; i++)
 				noOfCpdefUsedMultiStepFortStat[i] = new Stat();
@@ -431,12 +425,12 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				//1. reserve the pos/neg examples and start the learner to get the counter partial definitions
 				//2. store the counter partial definitions
 				//3. reserve the pos/neg back to the original set and start the learner again to get the definition
-				//4. do the test step and apply the fortification if necessary 
+				//4. do the test step and apply the fortification if necessary
 
 
 				//-----------------------------------------------------
-				//	1. Learn COUNTER PARTIAL DEFINITIONS 
-				//		Reverse the pos/neg and let the learner starts  
+				//	1. Learn COUNTER PARTIAL DEFINITIONS
+				//		Reverse the pos/neg and let the learner starts
 				//-----------------------------------------------------
 
 				//reverse the pos/neg examples
@@ -452,24 +446,24 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				}
 
 				//hold original noise + timeout values
-				double orgNoise = ((CELOE)la).getNoisePercentage();
-				int orgTimeout = ((CELOE)la).getMaxExecutionTimeInSeconds();
+				double orgNoise = ((CELOEPartial)la).getNoisePercentage();
+				long orgTimeout = ((CELOEPartial)la).getMaxExecutionTimeInSeconds();
 
-				outputWriter("** Phase 1 - Learning counter partial definition");				
+				outputWriter("** Phase 1 - Learning counter partial definition");
 				outputWriter("Noise: " + fortificationNoise + "%, timeout="
 						+ (fortificationTimeout > 0? fortificationTimeout : orgTimeout));
 
 				if (fortificationStopOnFirstPosDefinition == 0)
-					((CELOE)la).setStopOnFirstDefinition(false);
+					((CELOEPartial)la).setStopOnFirstDefinition(false);
 				else if (fortificationStopOnFirstPosDefinition == 1)
-					((CELOE)la).setStopOnFirstDefinition(true);
-				
-				System.out.println("Stop on first definition: " + ((CELOE)la).getStopOnFirstDefinition());
-				
+					((CELOEPartial)la).setStopOnFirstDefinition(true);
+
+				System.out.println("Stop on first definition: " + ((CELOEPartial)la).isStopOnFirstDefinition());
+
 				//adjust noise + timeout for fortification
-				((CELOE)la).setNoisePercentage(fortificationNoise);
+				((CELOEPartial)la).setNoisePercentage(fortificationNoise);
 				if (fortificationTimeout > 0)
-					((CELOE)la).setMaxExecutionTimeInSeconds(fortificationTimeout);
+					((CELOEPartial)la).setMaxExecutionTimeInSeconds(fortificationTimeout);
 
 
 				//start the learner
@@ -483,9 +477,9 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				/**
 				 * all counter partial definition sorted by the training neg. coverage (coverage of training neg. example)
 				 */
-				TreeSet<CELOE.PartialDefinition> counterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.CoverageComparator()); 
+				TreeSet<CELOEPartial.PartialDefinition> counterPartialDefinitions = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.CoverageComparator());
 
-				counterPartialDefinitions.addAll(((CELOE)la).getPartialDefinitions());			
+				counterPartialDefinitions.addAll(((CELOEPartial)la).getPartialDefinitions());
 
 				outputWriter("Finish learning, number of counter partial definitions: " + counterPartialDefinitions.size());
 
@@ -506,15 +500,15 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				try {
 					lp.init();
 					la.init();
-					((CELOE)la).setStopOnFirstDefinition(true);
+					((CELOEPartial)la).setStopOnFirstDefinition(true);
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}
 
 				//set the noise + timeout + stopOnFirstDefinition to the original values
-				((CELOE)la).setNoisePercentage(orgNoise);
-				((CELOE)la).setMaxExecutionTimeInSeconds(orgTimeout);
-				((CELOE)la).setStopOnFirstDefinition(celoeFirstOnFirstDefinition);
+				((CELOEPartial)la).setNoisePercentage(orgNoise);
+				((CELOEPartial)la).setMaxExecutionTimeInSeconds(orgTimeout);
+				((CELOEPartial)la).setStopOnFirstDefinition(celoeFirstOnFirstDefinition);
 
 
 				outputWriter("\n** Phase 2 - Learning the main concept");
@@ -538,9 +532,8 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				//get the learned concept
 				OWLClassExpression concept = la.getCurrentlyBestDescription();
 
-				long noOfDescriptionGeneratedPdef = la.getTotalNumberOfDescriptionsGenerated();
-
-				totalNumberOfDescriptions.addNumber(noOfDescriptionGeneratedPdef);
+//				long noOfDescriptionGeneratedPdef = la.getTotalNumberOfDescriptionsGenerated(); // TODO not available yet
+//				totalNumberOfDescriptions.addNumber(noOfDescriptionGeneratedPdef);
 
 				//----------------------------------------------
 				//check if another "FAIR" evaluation is needed
@@ -548,18 +541,18 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				boolean fairEvaluationNeeded = false;
 				OWLClassExpression conceptFair = null;
 
-				if (fairComparison && algorithmDurationPdef/(double) 1000000000 >= ((CELOE)la).getMaxExecutionTimeInSeconds()) {
+				if (fairComparison && algorithmDurationPdef/(double) 1000000000 >= ((CELOEPartial)la).getMaxExecutionTimeInSeconds()) {
 					fairEvaluationNeeded = true;
 
 
-					int fairLearningTimeout = orgTimeout;
+					long fairLearningTimeout = orgTimeout;
 					if (fortificationTimeout == 0)
 						fairLearningTimeout *= 2;
-					else 
+					else
 						fairLearningTimeout += fortificationTimeout;
 
 
-					outputWriter("\n** Phase 3 - Learning the main concept again with double timeout value (for fair comparison): " 
+					outputWriter("\n** Phase 3 - Learning the main concept again with double timeout value (for fair comparison): "
 							+ fairLearningTimeout + "s");
 
 					//init the learner
@@ -569,13 +562,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					try {
 						lp.init();
 						la.init();
-						((CELOE)la).setStopOnFirstDefinition(true);
+						((CELOEPartial)la).setStopOnFirstDefinition(true);
 					} catch (ComponentInitException e) {
 						e.printStackTrace();
 					}
 
 					//set the fair learning timeout
-					((CELOE)la).setMaxExecutionTimeInSeconds(fairLearningTimeout);
+					((CELOEPartial)la).setMaxExecutionTimeInSeconds(fairLearningTimeout);
 
 
 					//-----------------------------
@@ -587,9 +580,9 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					fairLearningTimeStat.addNumber(algorithmDurationFair / (double) 1000000000);
 
 					//reset the timeout value
-					((CELOE)la).setMaxExecutionTimeInSeconds(orgTimeout);
+					((CELOEPartial)la).setMaxExecutionTimeInSeconds(orgTimeout);
 
-					conceptFair = ((CELOE)la).getCurrentlyBestDescription();
+					conceptFair = ((CELOEPartial)la).getCurrentlyBestDescription();
 				}
 				else {
 					fairLearningTimeStat.addNumber(algorithmDurationPdef);
@@ -606,7 +599,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				int correctTrainingNegClassified = getCorrectNegClassified(rs, concept,	curFoldNegTrainingSet);
 				int correctTrainingExamples = correctTrainingPosClassified	+ correctTrainingNegClassified;
 
-				double trainingAccuracy = 100 * ((double) correctTrainingExamples / 
+				double trainingAccuracy = 100 * ((double) correctTrainingExamples /
 						(curFoldPosTrainingSet.size() + curFoldNegTrainingSet.size()));
 				double trainingCompleteness = 100*(double)correctTrainingPosClassified/curFoldPosTrainingSet.size();
 				double trainingCorrectness = 100*(double)correctTrainingNegClassified/curFoldNegTrainingSet.size();
@@ -634,16 +627,16 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				//calculate testing coverage
 				Set<OWLIndividual> cpTest = rs.hasType(concept, curFoldPosTestSet);			//cp
-				Set<OWLIndividual> upTest = Helper.difference(curFoldPosTestSet, cpTest);		//up
+				Set<OWLIndividual> upTest = Sets.difference(curFoldPosTestSet, cpTest);		//up
 				Set<OWLIndividual> cnTest = rs.hasType(concept, curFoldNegTestSet);			//cn
 
 				// calculate test accuracies
 				int correctTestPosClassified = cpTest.size(); 	//covered positive examples		//curFoldPosTestSet.size() - upTest.size();	//getCorrectPosClassified(rs, concept,	curFoldPosTestSet);
-				int correctTestNegClassified = curFoldNegTestSet.size() - cnTest.size();		//getCorrectNegClassified(rs, concept,	curFoldNegTestSet);				
+				int correctTestNegClassified = curFoldNegTestSet.size() - cnTest.size();		//getCorrectNegClassified(rs, concept,	curFoldNegTestSet);
 				int correctTestExamples = correctTestPosClassified + correctTestNegClassified;
 
-				double testingAccuracyCurrFold = 100 * ((double) correctTestExamples / 
-						(curFoldPosTestSet.size() +	curFoldNegTestSet.size()));				
+				double testingAccuracyCurrFold = 100 * ((double) correctTestExamples /
+						(curFoldPosTestSet.size() +	curFoldNegTestSet.size()));
 				double testingCompleteness = 100*(double)correctTestPosClassified/curFoldPosTestSet.size();
 				double testingCorrectness = 100*(double)correctTestNegClassified/curFoldNegTestSet.size();
 
@@ -653,23 +646,23 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				// calculate test F-Score
-				int negAsPos = cnTest.size(); 	
+				int negAsPos = cnTest.size();
 				double testPrecision = correctTestPosClassified + negAsPos == 0 ? 0 : correctTestPosClassified
 						/ (double) (correctTestPosClassified + negAsPos);
 				double testRecall = correctTestPosClassified / (double) curFoldPosTestSet.size();
 
-				double fMeasureTestingFold = 100 * Heuristics.getFScore(testRecall, testPrecision); 
+				double fMeasureTestingFold = 100 * Heuristics.getFScore(testRecall, testPrecision);
 				fMeasure.addNumber(fMeasureTestingFold);
 
-				length.addNumber(concept.getLength());
+				length.addNumber(OWLClassExpressionUtils.getLength(concept));
 
 				//--------------------
 				// FAIR accuracy
 				//--------------------
-				double fairAccuracyCurrFold = testingAccuracyCurrFold;				
+				double fairAccuracyCurrFold = testingAccuracyCurrFold;
 				double fairCompleteness = testingCompleteness;
 				double fairCorrectness = testingCorrectness;
-				double fairFMeasureCurrFold = fMeasureTestingFold; 
+				double fairFMeasureCurrFold = fMeasureTestingFold;
 
 				if (fairEvaluationNeeded) {
 					//calculate FAIR coverage
@@ -679,22 +672,22 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 					// calculate FAIR accuracy
 					int correctFairPosClassified = cpFair.size(); 	//covered positive examples		//curFoldPosTestSet.size() - upTest.size();	//getCorrectPosClassified(rs, concept,	curFoldPosTestSet);
-					int correctFairNegClassified = curFoldNegTestSet.size() - cnFair.size();		//getCorrectNegClassified(rs, concept,	curFoldNegTestSet);				
+					int correctFairNegClassified = curFoldNegTestSet.size() - cnFair.size();		//getCorrectNegClassified(rs, concept,	curFoldNegTestSet);
 					int correctFairExamples = correctFairPosClassified + correctFairNegClassified;
 
-					fairAccuracyCurrFold = 100 * ((double) correctFairExamples / 
-							(curFoldPosTestSet.size() +	curFoldNegTestSet.size()));				
+					fairAccuracyCurrFold = 100 * ((double) correctFairExamples /
+							(curFoldPosTestSet.size() +	curFoldNegTestSet.size()));
 					fairCompleteness = 100*(double)correctFairPosClassified/curFoldPosTestSet.size();
 					fairCorrectness = 100*(double)correctFairNegClassified/curFoldNegTestSet.size();
 
 					// calculate FAIR F-measure
-					int fairNegAsPos = cnTest.size(); 	
+					int fairNegAsPos = cnTest.size();
 					double fairPrecision = correctFairPosClassified + fairNegAsPos == 0 ? 0 : correctFairPosClassified
 							/ (double) (correctFairPosClassified + fairNegAsPos);
 					double fairRecall = correctFairPosClassified / (double) curFoldPosTestSet.size();
 
-					fairFMeasureCurrFold = 100 * Heuristics.getFScore(fairRecall, fairPrecision); 
-				}	//fair evaluation 
+					fairFMeasureCurrFold = 100 * Heuristics.getFScore(fairRecall, fairPrecision);
+				}	//fair evaluation
 
 				fairAccuracyStat.addNumber(fairAccuracyCurrFold);
 				fairCorrectnessStat.addNumber(fairCorrectness);
@@ -704,17 +697,17 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				//==================================================
 				//FORTIFICATION
-				//==================================================				
-				FortificationUtils.FortificationResult[] multiStepFortificationResult = new FortificationUtils.FortificationResult[noOfStrategies];				
+				//==================================================
+				FortificationUtils.FortificationResult[] multiStepFortificationResult = new FortificationUtils.FortificationResult[noOfStrategies];
 
 
 				//---------------------------------
 				// Fortification - ALL CPDEF
 				// (BLIND Fortification)
 				//---------------------------------
-				//NOTE: 
+				//NOTE:
 				//Since this will iterate all cpdef, we will calculate score for all other fortification strategies
-				// training coverage (done), jaccard, fortification training, 
+				// training coverage (done), jaccard, fortification training,
 
 				outputWriter("---------------------------------------------------------------");
 				outputWriter("BLIND fortification - All counter partial defintions are used");
@@ -722,8 +715,8 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				//outputWriter("List of counter partial defintions i");
 
 				//get the set of pos and neg (in the test set) covered by counter partial definition
-				Set<OWLIndividual> cpdefPositiveCovered = new HashSet<Individual>();
-				Set<OWLIndividual> cpdefNegativeCovered = new HashSet<Individual>();
+				Set<OWLIndividual> cpdefPositiveCovered = new HashSet<>();
+				Set<OWLIndividual> cpdefNegativeCovered = new HashSet<>();
 
 				long totalCPDefLength = 0;
 
@@ -736,22 +729,22 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				Set<OWLIndividual> fortificationTrainingNeg= fortificationSetsNeg.get(currFold);
 
 				//both positive and negative FV
-				Set<OWLIndividual> allFortificationExamples = new HashSet<Individual>();
+				Set<OWLIndividual> allFortificationExamples = new HashSet<>();
 
 				allFortificationExamples.addAll(fortificationTrainingPos);
 				allFortificationExamples.addAll(fortificationTrainingNeg);	//duplicate will be remove automatically
 
 
 				//New Jaccard Similarity
-				JaccardSimilarity newJaccardSimilarity = new JaccardSimilarity(pelletReasoner);				
+				JaccardSimilarity newJaccardSimilarity = new JaccardSimilarity(pelletReasoner);
 
 				//------------------------------------------------------------
-				//start the BLIND fortification and 
+				//start the BLIND fortification and
 				// 	calculate the scores for other methods (use a common loop)
 				//------------------------------------------------------------
 				int tmp_id = 1;	//assign id for each cpdef
 				int count = 1;	//used to count the number of cpdef
-				for (CELOE.PartialDefinition cpdef : counterPartialDefinitions) {
+				for (CELOEPartial.PartialDefinition cpdef : counterPartialDefinitions) {
 
 					//assign id for cpdef for debugging purpose
 					cpdef.setId("#" + tmp_id++);
@@ -779,13 +772,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					int cp = fortCp.size();
 					int cn = fortCn.size();
 
-					//these are used to compute common instances between cpdef and learnt concept 
+					//these are used to compute common instances between cpdef and learnt concept
 					fortCp.removeAll(conceptCp);
 					fortCn.removeAll(conceptCn);
 
-					double fortificationValidationScore = FortificationUtils.fortificationScore(pelletReasoner, cpdef.getDescription(), concept, 
-							cp, cn, fortificationTrainingPos.size(), fortificationTrainingNeg.size(), 
-							cp-fortCp.size(), cn-fortCn.size(), ((CELOE)la).getMaximumHorizontalExpansion());
+					double fortificationValidationScore = FortificationUtils.fortificationScore(pelletReasoner, cpdef.getDescription(), concept,
+							cp, cn, fortificationTrainingPos.size(), fortificationTrainingNeg.size(),
+							cp-fortCp.size(), cn-fortCn.size(), ((CELOEPartial)la).getMaximumHorizontalExpansion());
 
 
 					//----------------------------
@@ -816,19 +809,19 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					double trainingCoverageScore = cpdefCn.size()/(double)curFoldNegTrainingSet.size();
 
 
-					//----------------------------------				
+					//----------------------------------
 					//Assign all scores to the CPDEF
 					//new scoring: 21/4/2013
 					//----------------------------------
-					double allScores = conceptOverlapSimilairtyScore + fortificationValidationScore 
+					double allScores = conceptOverlapSimilairtyScore + fortificationValidationScore
 					+ trainingCoverageScore*0.5;
-					
+
 					double randomScore = new Random().nextDouble();
 
-					cpdef.setAdditionValue(0, trainingCoverageScore);		//no of neg. examples in training set covered by the cpdef					
+					cpdef.setAdditionValue(0, trainingCoverageScore);		//no of neg. examples in training set covered by the cpdef
 					cpdef.setAdditionValue(1, conceptOverlapSimilairtyScore);		//can be used to infer jaccard overlap score
 					cpdef.setAdditionValue(2, fortificationValidationScore);	//fortification validation strategy
-					cpdef.setAdditionValue(3, similarityPosNegScore);						
+					cpdef.setAdditionValue(3, similarityPosNegScore);
 					cpdef.setAdditionValue(4, newJaccardSimilarityScore);
 					cpdef.setAdditionValue(5, allScores);
 					cpdef.setAdditionValue(6, randomScore);
@@ -841,7 +834,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					boolean cnChanged = cpdefNegativeCovered.addAll(cpdefCn);
 
 
-					totalCPDefLength += cpdef.getDescription().getLength();					
+					totalCPDefLength += OWLClassExpressionUtils.getLength(cpdef.getDescription());
 
 					//print the cpdef which covers some pos. examples
 					//if (cpdefCp.size() > 0)
@@ -859,7 +852,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
 					}
 
-					avgCPDefLengthStat.addNumber(cpdef.getDescription().getLength());
+					avgCPDefLengthStat.addNumber(OWLClassExpressionUtils.getLength(cpdef.getDescription()));
 
 				}	//end of BLIND fortification (loop through all cpdef)
 
@@ -867,9 +860,9 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				outputWriter( " * Blind fortifcation summary: cp=" + cpdefPositiveCovered + " --- cn=" + cpdefNegativeCovered);
 
 				outputWriter("test set errors pos (" + upTest.size() + "): " + upTest);
-				outputWriter("test set errors neg (" + cnTest.size() + "): " + cnTest);				
+				outputWriter("test set errors neg (" + cnTest.size() + "): " + cnTest);
 
-				//-----------------------------------------				
+				//-----------------------------------------
 				//calculate BLIND fortification accuracy
 				//-----------------------------------------
 
@@ -920,7 +913,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				//-------------------------------
 				//end of BLIND fortification
 				//-------------------------------
-				
+
 
 				//========================================================
 				// process other fortification strategies (except BLIND)
@@ -929,7 +922,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				int INDEX;
 
 				//---------------------------------------
-				/// 1. Fortification - TRAINGING COVERAGE				
+				/// 1. Fortification - TRAINGING COVERAGE
 				//---------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - TRAINGING COVERAGE");
@@ -937,7 +930,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.TRAINING_COVERAGE_INDEX;
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, counterPartialDefinitions, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -955,7 +948,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 2. Fortification - CONCEPT SIMILARITY & OVERLAP				
+				/// 2. Fortification - CONCEPT SIMILARITY & OVERLAP
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - CONCEPT SIMILARITY & OVERLAP");
@@ -963,11 +956,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.CONCEPT_OVERL_SIM_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> similarityAndOverlapCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(1));
+				SortedSet<CELOEPartial.PartialDefinition> similarityAndOverlapCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(1));
 				similarityAndOverlapCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, similarityAndOverlapCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -985,7 +978,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 3. Fortification - FORTIFICATION VALIDATION				
+				/// 3. Fortification - FORTIFICATION VALIDATION
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - FORTIFICATION VALIDATION");
@@ -993,11 +986,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.FORTIFICATION_VALIDATION_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> fortificationValidationCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(2));
+				SortedSet<CELOEPartial.PartialDefinition> fortificationValidationCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(2));
 				fortificationValidationCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, fortificationValidationCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1015,7 +1008,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 4. Fortification - SIMILARITY NEG-POS				
+				/// 4. Fortification - SIMILARITY NEG-POS
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - SIMILARITY NEG-POS");
@@ -1023,11 +1016,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.SIMILARITY_POS_NEG_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> similarityNegPosCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(3));
+				SortedSet<CELOEPartial.PartialDefinition> similarityNegPosCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(3));
 				similarityNegPosCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, similarityNegPosCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1045,7 +1038,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 5. Fortification - JACCARD OVERLAP				
+				/// 5. Fortification - JACCARD OVERLAP
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - JACCARD OVERLAP");
@@ -1053,11 +1046,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.NEW_JACCARD_OVERLAP_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> jaccardOverlapCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4));
+				SortedSet<CELOEPartial.PartialDefinition> jaccardOverlapCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4));
 				jaccardOverlapCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, jaccardOverlapCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1075,7 +1068,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 6. Fortification - JACCARD DISTANCE				
+				/// 6. Fortification - JACCARD DISTANCE
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - JACCARD DISTANCE");
@@ -1083,11 +1076,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.NEW_JACCARD_DISTANCE_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> jaccardDistanceCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4, false));
+				SortedSet<CELOEPartial.PartialDefinition> jaccardDistanceCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(4, false));
 				jaccardDistanceCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, jaccardDistanceCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1106,7 +1099,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//------------------------------------------------
-				/// 7. Fortification - COMBINATION				
+				/// 7. Fortification - COMBINATION
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - COMBINATION SCORES");
@@ -1114,11 +1107,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.CONBINATION_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> combinationScoreCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(5));
+				SortedSet<CELOEPartial.PartialDefinition> combinationScoreCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(5));
 				combinationScoreCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, combinationScoreCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1134,10 +1127,10 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
 
-				
-				
+
+
 				//------------------------------------------------
-				/// 7. Fortification - COMBINATION				
+				/// 7. Fortification - COMBINATION
 				//------------------------------------------------
 				outputWriter("---------------------------------------------");
 				outputWriter("Fortification - RANDOM");
@@ -1145,11 +1138,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				INDEX = FortificationUtils.RANDOM_INDEX;
 
-				SortedSet<CELOE.PartialDefinition> randomCpdef = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(6));
+				SortedSet<CELOEPartial.PartialDefinition> randomCpdef = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.AdditionalValueComparator(6));
 				randomCpdef.addAll(counterPartialDefinitions);
 
 
-				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set				
+				//counter partial definition is sorted by training coverage by default ==> don't need to sort the cpdef set
 				multiStepFortificationResult[INDEX] = FortificationUtils.fortifyAccuracyMultiSteps(
 						rs, concept, randomCpdef, curFoldPosTestSet, curFoldNegTestSet, false);
 
@@ -1164,13 +1157,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					fmeasurePercentageFortifyStepStat[INDEX][i].
 					addNumber(multiStepFortificationResult[INDEX].fortificationFmeasure[i+1]);
 				}
-				
+
 
 				//------------------------------
-				// Fortification with				
+				// Fortification with
 				// 	LABLED TEST DATA
 				//------------------------------
-				//if there exists covered negative examples ==> check if there are any counter partial definitions 
+				//if there exists covered negative examples ==> check if there are any counter partial definitions
 				//can be used to remove covered negative examples
 
 				int fixedNeg = 0;
@@ -1181,24 +1174,24 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				/**
 				 * selected cpdef which are selected based on the test labled data
-				 * given a set of wrong classified neg., select a set of cpdef to remove the wrong classified neg examples 
+				 * given a set of wrong classified neg., select a set of cpdef to remove the wrong classified neg examples
 				 * the cpdef are sorted based on the training neg. example coverage
 				 */
-				TreeSet<CELOE.PartialDefinition> selectedCounterPartialDefinitions = new TreeSet<CELOE.PartialDefinition>(new FortificationUtils.CoverageComparator());
+				TreeSet<CELOEPartial.PartialDefinition> selectedCounterPartialDefinitions = new TreeSet<CELOEPartial.PartialDefinition>(new FortificationUtils.CoverageComparator());
 
 				if (cnTest.size() > 0) {
 
-					TreeSet<OWLIndividual> tempCoveredNeg = new TreeSet<Individual>(new FortificationUtils.URIComparator());
+					TreeSet<OWLIndividual> tempCoveredNeg = new TreeSet<>();
 					tempCoveredNeg.addAll(cnTest);
 
-					TreeSet<OWLIndividual> tempUncoveredPos = new TreeSet<Individual>(new FortificationUtils.URIComparator());
+					TreeSet<OWLIndividual> tempUncoveredPos = new TreeSet<>();
 					tempUncoveredPos.addAll(upTest);
 
 					//check each counter partial definitions
-					for (CELOE.PartialDefinition cpdef : counterPartialDefinitions) {
+					for (CELOEPartial.PartialDefinition cpdef : counterPartialDefinitions) {
 
 						//set of neg examples covered by the counter partial definition
-						Set<OWLIndividual> desCoveredNeg = new HashSet<Individual>(rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
+						Set<OWLIndividual> desCoveredNeg = new HashSet<>(rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
 
 						//if the current counter partial definition can help to remove some neg examples
 						//int oldNoOfCoveredNeg=tempCoveredNeg.size();
@@ -1208,12 +1201,12 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 							selectedCounterPartialDefinitions.add(cpdef);
 
 							//check if it may remove some positive examples or not
-							Set<OWLIndividual> desCoveredPos = new HashSet<Individual>(rs.hasType(cpdef.getDescription(), curFoldPosTestSet));
+							Set<OWLIndividual> desCoveredPos = new HashSet<>(rs.hasType(cpdef.getDescription(), curFoldPosTestSet));
 							tempUncoveredPos.addAll(desCoveredPos);
 
 							//count the total number of counter partial definition selected and their total length
 							selectedCpdef++;
-							totalSelectedCpdefLength += cpdef.getDescription().getLength();			
+							totalSelectedCpdefLength += OWLClassExpressionUtils.getLength(cpdef.getDescription());
 							avgTrainingCoverage += cpdef.getCoverage();
 						}
 
@@ -1222,13 +1215,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					}
 
 					fixedNeg = cnTest.size() - tempCoveredNeg.size();
-					fixedPos = tempUncoveredPos.size() - upTest.size();	
+					fixedPos = tempUncoveredPos.size() - upTest.size();
 					avgTrainingCoverage /= selectedCpdef;
 				}  //labelled fortification
 
 
-				noOfLabelFortifyDefinitions.addNumber(selectedCpdef);				
-				avgLabelFortifyCpdefCoverage.addNumber(avgTrainingCoverage);			
+				noOfLabelFortifyDefinitions.addNumber(selectedCpdef);
+				avgLabelFortifyCpdefCoverage.addNumber(avgTrainingCoverage);
 
 
 				//-----------------------------
@@ -1236,19 +1229,19 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				// 	  stat calculation
 				//-----------------------------
 				//def length
-				double labelFortifiedDefinitionLength = concept.getLength() + totalSelectedCpdefLength + selectedCpdef;	//-1 from the selected cpdef and +1 for NOT
+				double labelFortifiedDefinitionLength = OWLClassExpressionUtils.getLength(concept) + totalSelectedCpdefLength + selectedCpdef;	//-1 from the selected cpdef and +1 for NOT
 				lableFortifyDefinitionLengthStat.addNumber(labelFortifiedDefinitionLength);
 
 				double avgLabelFortifyDefinitionLength = 0;
 
 				if (selectedCpdef > 0) {
-					avgLabelFortifyDefinitionLength = (double)totalSelectedCpdefLength/selectedCpdef;									
+					avgLabelFortifyDefinitionLength = (double)totalSelectedCpdefLength/selectedCpdef;
 					avgLabelCpdefLengthStat.addNumber(totalSelectedCpdefLength/(double)selectedCpdef);
 				}
 
 				//accuracy
 				double fortifiedAccuracy = 100 * ((double)(correctTestExamples + fixedNeg - fixedPos)/
-						(curFoldPosTestSet.size() + curFoldNegTestSet.size()));				
+						(curFoldPosTestSet.size() + curFoldNegTestSet.size()));
 				accuracyLabelFortifyStat.addNumber(fortifiedAccuracy);
 
 				//completeness
@@ -1256,7 +1249,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				completenessLabelFortifyStat.addNumber(fortifiedCompleteness);
 
 				//correctness
-				double fortifiedCorrectness = 100 * ((double)(correctTestNegClassified + fixedNeg)/curFoldNegTestSet.size());				
+				double fortifiedCorrectness = 100 * ((double)(correctTestNegClassified + fixedNeg)/curFoldNegTestSet.size());
 				correctnessLabelFortifyStat.addNumber(fortifiedCorrectness);
 
 				//precision, recall, f-measure
@@ -1272,19 +1265,19 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 
-				outputWriter("---------------------------------------------");								
-				outputWriter("LABEL fortify counter partial definitions: ");			
-				outputWriter("---------------------------------------------");				
+				outputWriter("---------------------------------------------");
+				outputWriter("LABEL fortify counter partial definitions: ");
+				outputWriter("---------------------------------------------");
 				count = 1;
-				//output the selected counter partial definition information				
-				if (selectedCpdef > 0) {										
-					for (CELOE.PartialDefinition cpdef : selectedCounterPartialDefinitions) {
+				//output the selected counter partial definition information
+				if (selectedCpdef > 0) {
+					for (CELOEPartial.PartialDefinition cpdef : selectedCounterPartialDefinitions) {
 
 						outputWriter(count++ + cpdef.getId() + ". " + FortificationUtils.getCpdefString(cpdef, baseURI, prefixes)
 								+ ", cp=" + rs.hasType(cpdef.getDescription(), curFoldPosTestSet)
 								+ ", cn=" + rs.hasType(cpdef.getDescription(), curFoldNegTestSet));
 
-					}			
+					}
 				}	//end of labelled fortification STAT
 
 
@@ -1297,20 +1290,20 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					noOfCpdefUsedMultiStepFortStat[i].addNumber(noOfCpdefMultiStep[i]);
 
 					//minimal value of 50% of the cpdef used in the fortification
-					//NOTE: no of cpdef descreases after added into other sets for fortification 
+					//NOTE: no of cpdef descreases after added into other sets for fortification
 					//	Cause has not been investigated
 					minOfHalfCpdef = (minOfHalfCpdef > noOfCpdefMultiStep[i])? noOfCpdefMultiStep[i] : minOfHalfCpdef;
 
 					//minimal number of counter partial definitions till the current run
 					//the above problem happens for this case as well
-					minCpdef = (minCpdef > multiStepFortificationResult[i].fortificationAccuracyStepByStep.length)? 
-							multiStepFortificationResult[i].fortificationAccuracyStepByStep.length : minCpdef;		
+					minCpdef = (minCpdef > multiStepFortificationResult[i].fortificationAccuracyStepByStep.length)?
+							multiStepFortificationResult[i].fortificationAccuracyStepByStep.length : minCpdef;
 				}
 
 
 
 
-				//create data structure to hold the fortification result				
+				//create data structure to hold the fortification result
 				if (currFold == 0) {	//have  not initiallised
 					accuracyHalfFullStep = new double[noOfStrategies][minOfHalfCpdef];	//4 strategies
 					fmeasureHalfFullStep = new double[noOfStrategies][minOfHalfCpdef];
@@ -1332,14 +1325,14 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				}
 
 
-				//sum up the accuracy and fmeasure directly, do not use Stat for simplicity 
+				//sum up the accuracy and fmeasure directly, do not use Stat for simplicity
 				outputWriter("*** Calculate full step accuracy: minCpdef = " + minCpdef);
 
-				outputWriter("\tcounter partial deifnition size=" + 
+				outputWriter("\tcounter partial deifnition size=" +
 						counterPartialDefinitions.size());
 
 				//calculate accuracy, fmeasure by HALF FULL of the cpdef
-				for (int i=0; i<noOfStrategies; i++) { 
+				for (int i=0; i<noOfStrategies; i++) {
 					for (int j=0; j<minOfHalfCpdef; j++) {
 						//calculate the accuracy and fmeasure of full step fortification
 						accuracyHalfFullStep[i][j] += multiStepFortificationResult[i].fortificationAccuracyStepByStep[j];
@@ -1349,7 +1342,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 				//calculate accuracy, fmeasure FULL STEP by STEP
-				for (int i=0; i<noOfStrategies; i++) { 
+				for (int i=0; i<noOfStrategies; i++) {
 					for (int j=0; j<minCpdef; j++) {
 						//calculate the accuracy and fmeasure of full step fortification
 						accuracyFullStepStat[i][j].addNumber(multiStepFortificationResult[i].fortificationAccuracyStepByStep[j]);
@@ -1365,11 +1358,11 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				// of the CURRENT fold
 				//--------------------------------
 				outputWriter("Fold " + currFold + "/" + folds + ":");
-				outputWriter("  concept: " + concept.toKBSyntaxString(baseURI, prefixes));
+				outputWriter("  concept: " + concept.toString());
 
 				//training and test error
-				outputWriter("  training: " + correctTrainingPosClassified + "/" + curFoldPosTrainingSet.size() + 
-						" correct positive and " + 
+				outputWriter("  training: " + correctTrainingPosClassified + "/" + curFoldPosTrainingSet.size() +
+						" correct positive and " +
 						(correctTrainingNegClassified) + "/" + curFoldNegTrainingSet.size() + " correct negative examples");
 
 				outputWriter("  testing: " + correctTestPosClassified + "/"
@@ -1381,16 +1374,16 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				outputWriter("  runtime fortified: " + df.format((algorithmDurationCpdef+algorithmDurationPdef)/1000000000d) + "s");
 
 				//def. length
-				outputWriter("  def. length: " + concept.getLength());
+				outputWriter("  def. length: " + OWLClassExpressionUtils.getLength(concept));
 				outputWriter("  def. length label fortify: " + labelFortifiedDefinitionLength);
 				outputWriter("  avg. def. length label fortify: " + avgLabelFortifyDefinitionLength);
 				outputWriter("  total cpdef length: " + totalCPDefLength);
 				outputWriter("  avg cpdef. length: " + avgCPDefLength);
 
 				outputWriter("  no of cpdef: " + counterPartialDefinitions.size());
-				outputWriter("  no of cpdef used in the multi-step fortification: " + FortificationUtils.arrayToString(noOfCpdefMultiStep));
+				outputWriter("  no of cpdef used in the multi-step fortification: " + Arrays.toString(noOfCpdefMultiStep));
 
-				outputWriter("  F-Measure on training set: " + df.format(fMeasureTrainingFold));				
+				outputWriter("  F-Measure on training set: " + df.format(fMeasureTrainingFold));
 				outputWriter("  F-Measure on test set: " + df.format(fMeasureTestingFold));
 				outputWriter("  F-Measure on test set label fortification: " + df.format(labelFortifiedFmeasure));
 				outputWriter("  F-measure on test set blind fortification: " + df.format(blindFmeasure));
@@ -1405,25 +1398,25 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				outputWriter("  accuracy label fortification: " + df.format(fortifiedAccuracy) + "% ("
 						+ "corr:" + df.format(fortifiedCorrectness)
-						+ "%, comp:" + df.format(fortifiedCompleteness) 
+						+ "%, comp:" + df.format(fortifiedCompleteness)
 						+ ")");
 
-				outputWriter("  accuracy blind fortification: " + df.format(blindFortificationAccuracy) + 
+				outputWriter("  accuracy blind fortification: " + df.format(blindFortificationAccuracy) +
 						"% ( corr:" + df.format(blindFortificationCorrectness)
-						+ "%, comp:" + df.format(blindFortificationCompleteness) 
+						+ "%, comp:" + df.format(blindFortificationCompleteness)
 						+ ")");
 
 				outputWriter("\n  FAIR evaluation");
 				outputWriter("\taccuracy: " + df.format(fairAccuracyCurrFold)
-						+ "%, correctness: " + df.format(fairCorrectness) 
-						+ "%, completeness: " + df.format(fairCompleteness));				
+						+ "%, correctness: " + df.format(fairCorrectness)
+						+ "%, completeness: " + df.format(fairCompleteness));
 				outputWriter("\tf-measure: " + df.format(fairFMeasureCurrFold));
 
 				outputWriter("");
 
-				//output the fortified accuracy at 5%, 10%, ..., 50%				
+				//output the fortified accuracy at 5%, 10%, ..., 50%
 				for (int i=0; i<noOfStrategies; i++) {
-					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ": " 
+					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + ": "
 							+ FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationAccuracy)
 							+ " -- correctness: " + FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationCorrectness)
 							+ " -- completeness: " + FortificationUtils.arrayToString(df, multiStepFortificationResult[i].fortificationCompleteness)
@@ -1432,7 +1425,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 					outputWriter("");
 				}	//output fortified accuracy at 5%, 10%, ..., 50%
 
-				outputWriter("  total number of descriptions: " + noOfDescriptionGeneratedPdef);
+//				outputWriter("  total number of descriptions: " + noOfDescriptionGeneratedPdef);
 				outputWriter("  no of counter partial def used in the lable fortification: " + selectedCpdef);
 
 
@@ -1456,12 +1449,12 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				outputWriter("  F-Measure on test set: " + statOutput(df, fMeasure, "%"));
 				outputWriter("  F-Measure on test set fortified: " + statOutput(df, fmeasureLabelFortifyStat, "%"));
 				outputWriter("  F-Measure FAIR on test set fortified: " + statOutput(df, fairFmeasureStat, "%"));
-				outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") + 
+				outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") +
 						" -- correctness: " + statOutput(df, trainingCorrectnessStat, "%") +
 						"-- completeness: " + statOutput(df, trainingCompletenessStat, "%"));
 				outputWriter("  predictive accuracy on test set: " + statOutput(df, accuracy, "%") +
 						" -- correctness: " + statOutput(df, testingCorrectnessStat, "%") +
-						"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));				
+						"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));
 
 				outputWriter("  fortified accuracy on test set: " + statOutput(df, accuracyLabelFortifyStat, "%") +
 						" -- fortified correctness: " + statOutput(df, correctnessLabelFortifyStat, "%") +
@@ -1473,14 +1466,14 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 				outputWriter("\n  FAIR evaluation");
 				outputWriter("\taccuracy: " + statOutput(df, fairAccuracyStat, "%")
-						+ "-- correctness: " + statOutput(df, fairCorrectnessStat, "%") 
-						+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));				
+						+ "-- correctness: " + statOutput(df, fairCorrectnessStat, "%")
+						+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));
 				outputWriter("\tf-measure: " + statOutput(df, fairFmeasureStat, "%"));
 
 				outputWriter("----------");
 
-				for (int i=0; i< noOfStrategies; i++) {					
-					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + "(cpdef:" + FortificationUtils.arrayToString(noOfCpdefMultiStep) + "):");
+				for (int i=0; i< noOfStrategies; i++) {
+					outputWriter("  multi-step fortified accuracy by " + FortificationUtils.strategyNames[i] + "(cpdef:" + Arrays.toString(noOfCpdefMultiStep) + "):");
 
 					outputWriter("\t 5%: " + statOutput(df, accuracyPercentageFortifyStepStat[i][0], "%")
 							+ " -- correctness: " + statOutput(df, correctnessPercentageFortifyStepStat[i][0], "%")
@@ -1526,7 +1519,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 			//---------------------------------
 			//end of k-fold cross validation
-			//output result of the k-fold 
+			//output result of the k-fold
 			//---------------------------------
 
 			//final cumulative statistical data of a run
@@ -1549,13 +1542,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			outputWriter("  F-Measure label fortification on test set: " + statOutput(df, fmeasureLabelFortifyStat, "%"));
 			outputWriter("  F-Measure blind fortification on test set: " + statOutput(df, fmeasureBlindFortifyStat, "%"));
 
-			outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") + 
+			outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") +
 					" -- correctness: " + statOutput(df, trainingCorrectnessStat, "%") +
 					"-- completeness: " + statOutput(df, trainingCompletenessStat, "%"));
 
 			outputWriter("  predictive accuracy on test set: " + statOutput(df, accuracy, "%") +
 					" -- correctness: " + statOutput(df, testingCorrectnessStat, "%") +
-					"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));				
+					"-- completeness: " + statOutput(df, testingCompletenessStat, "%"));
 
 			outputWriter("  fortified accuracy on test set: " + statOutput(df, accuracyLabelFortifyStat, "%") +
 					" -- fortified correctness: " + statOutput(df, correctnessLabelFortifyStat, "%") +
@@ -1567,8 +1560,8 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 			outputWriter("\n  FAIR evaluation");
 			outputWriter("\taccuracy: " + statOutput(df, fairAccuracyStat, "%")
-					+ "-- correctness: " + statOutput(df, fairCorrectnessStat, "%") 
-					+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));				
+					+ "-- correctness: " + statOutput(df, fairCorrectnessStat, "%")
+					+ "%, completeness: " + statOutput(df, fairCompletenessStat, "%"));
 			outputWriter("\tf-measure: " + statOutput(df, fairFmeasureStat, "%"));
 
 			//------------------------------------------------------------
@@ -1578,17 +1571,17 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			//double cutOffAvg[][], cutOffDev[][];
 			//cutOffAvg = new double[3][noOfStrategies];	//0: accuracy, 1: correctness, 2: completeness
 			//cutOffDev = new double[3][noOfStrategies];
-			
+
 			//cut-off point is the max number of the labelled fortification definitions
 			if (noOfLabelFortifyDefinitions.getMean() > 0)	//this is for a weird side-affect of the floating point such that the getMax return a very small number >0 even if the acutuall value is zero
-				cutOffPoint = (int)Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()));								
-		
+				cutOffPoint = (int)Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()));
+
 			outputWriter("\n  CUT-OFF point computation: " + cutOffPoint);
-			
+
 			if (cutOffPoint == 0) {
 				outputWriter("\tNo fortifying definition is used, the accuracy is unchanged");
-				outputWriter("\t\taccuracy: " + df.format(accuracy.getMean()) + ", " + df.format(accuracy.getStandardDeviation()) + 
-						"; correctness: " +	df.format(testingCorrectnessStat.getMean()) + ", " + df.format(testingCorrectnessStat.getStandardDeviation()) + 
+				outputWriter("\t\taccuracy: " + df.format(accuracy.getMean()) + ", " + df.format(accuracy.getStandardDeviation()) +
+						"; correctness: " +	df.format(testingCorrectnessStat.getMean()) + ", " + df.format(testingCorrectnessStat.getStandardDeviation()) +
 						"; completeness: " + df.format(testingCompletenessStat.getMean()) + ", " + df.format(testingCompletenessStat.getStandardDeviation()));
 
 			}
@@ -1596,27 +1589,27 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				cutOffPoint--;
 				for (int i=0; i < noOfStrategies; i++) {
 					outputWriter("\t" + FortificationUtils.strategyNames[i] + ":");
-					outputWriter("\t  accuracy: " + df.format(accuracyFullStepStat[i][cutOffPoint].getMean()) + 
+					outputWriter("\t  accuracy: " + df.format(accuracyFullStepStat[i][cutOffPoint].getMean()) +
 							", " + df.format(accuracyFullStepStat[i][cutOffPoint].getStandardDeviation()) +
 							"; correctness: " + df.format(correctnessFullStepStat[i][cutOffPoint].getMean()) +
 							", " + df.format(correctnessFullStepStat[i][cutOffPoint].getStandardDeviation()) +
 							"; completeness: " + df.format(completenessFullStepStat[i][cutOffPoint].getMean()) +
-							", " + df.format(completenessFullStepStat[i][cutOffPoint].getStandardDeviation()) 
+							", " + df.format(completenessFullStepStat[i][cutOffPoint].getStandardDeviation())
 							);
 					/*
-					cutOffAvg[0][i] = accuracyFullStepStat[i][cutOffPoint].getMean();							
+					cutOffAvg[0][i] = accuracyFullStepStat[i][cutOffPoint].getMean();
 					cutOffAvg[1][i] = correctnessFullStepStat[i][cutOffPoint].getMean();
 					cutOffAvg[2][i] = completenessFullStepStat[i][cutOffPoint].getMean();
-					
+
 					cutOffDev[0][i] = accuracyFullStepStat[i][cutOffPoint].getStandardDeviation();
 					cutOffDev[1][i] = correctnessFullStepStat[i][cutOffPoint].getStandardDeviation();
 					cutOffDev[2][i] = completenessFullStepStat[i][cutOffPoint].getStandardDeviation();
-					*/							
+					*/
 				}
 			}
-			
+
 			outputWriter("");
-		
+
 			//fortification by PERCENTAGE
 			for (int i=0; i< noOfStrategies; i++) {
 
@@ -1684,17 +1677,17 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			//this is for copying to word document
 			//-----------------------------------------
 			outputWriter("======= RESULT SUMMARY PERCENTAGE (5%, 10%, 20%, 30%, 40%, 50%) =======");
-			//fmeasure			
+			//fmeasure
 			outputWriter("\n***f-measure test/blind");
 			outputWriter(df.format(fMeasure.getMean()) + "  " + df.format(fMeasure.getStandardDeviation())
 					+ "\n" + df.format(fmeasureBlindFortifyStat.getMean()) + "  " + df.format(fmeasureBlindFortifyStat.getStandardDeviation())
 			);
 
 			//for each strategy: strategy name, f-measure (5-50%)
-			for (int i=0; i<noOfStrategies; i++) {				
-				outputWriter("fmeasure - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {
+				outputWriter("fmeasure - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");
 				for (int j=0; j<6; j++)
-					outputWriter(df.format(fmeasurePercentageFortifyStepStat[i][j].getMean()) 
+					outputWriter(df.format(fmeasurePercentageFortifyStepStat[i][j].getMean())
 							+ "\n" + df.format(fmeasurePercentageFortifyStepStat[i][j].getStandardDeviation()));
 			}
 
@@ -1703,13 +1696,13 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			outputWriter("\n***accuracy test/blind");
 			outputWriter(df.format(accuracy.getMean()) + "  " + df.format(accuracy.getStandardDeviation())
 					+ "\n" + df.format(accuracyBlindFortifyStat.getMean()) + "  " + df.format(accuracyBlindFortifyStat.getStandardDeviation())
-			); 
+			);
 
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i < noOfStrategies; i++) {				
-				outputWriter("accuracy - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i < noOfStrategies; i++) {
+				outputWriter("accuracy - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");
 				for (int j=0; j<6; j++)
-					outputWriter(df.format(accuracyPercentageFortifyStepStat[i][j].getMean()) 
+					outputWriter(df.format(accuracyPercentageFortifyStepStat[i][j].getMean())
 							+ "\n" + df.format(accuracyPercentageFortifyStepStat[i][j].getStandardDeviation()));
 			}
 
@@ -1720,10 +1713,10 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			);
 
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<noOfStrategies; i++) {				
-				outputWriter("correctness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {
+				outputWriter("correctness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");
 				for (int j=0; j<6; j++)
-					outputWriter(df.format(correctnessPercentageFortifyStepStat[i][j].getMean()) 
+					outputWriter(df.format(correctnessPercentageFortifyStepStat[i][j].getMean())
 							+ "\n" + df.format(correctnessPercentageFortifyStepStat[i][j].getStandardDeviation()));
 			}
 
@@ -1734,10 +1727,10 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			);
 
 			//for each strategy: strategy name, accuracy (5-50%)
-			for (int i=0; i<noOfStrategies; i++) {				
-				outputWriter("completeness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");				
+			for (int i=0; i<noOfStrategies; i++) {
+				outputWriter("completeness - " + FortificationUtils.strategyNames[i] + " by percentage (5%, 10%, 20%, 30%, 40%, 50%)");
 				for (int j=0; j<6; j++)
-					outputWriter(df.format(completenessPercentageFortifyStepStat[i][j].getMean()) 
+					outputWriter(df.format(completenessPercentageFortifyStepStat[i][j].getMean())
 							+ "\n" + df.format(completenessPercentageFortifyStepStat[i][j].getStandardDeviation()));
 			}
 
@@ -1788,8 +1781,8 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			}
 
 			//---------------------------------------------------
-			// this is used to copy into EXCEL to draw charts 
-			//---------------------------------------------------			
+			// this is used to copy into EXCEL to draw charts
+			//---------------------------------------------------
 			outputWriter("======= FULL STEP SUMMARY ALL strategies & dimentions=======");
 			//accuracy(6), correctness(6), completeness(6), fmeasure(6)
 
@@ -1806,7 +1799,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			String allCpdefFortificationComp = "";
 			String allCpdefFortificationFm = "";
 
-			for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+			for (int i=0; i<noOfStrategies; i++) {	//6 strategies
 				strategies += FortificationUtils.strategyNames[i] + ", ";
 
 				//test data (no fortification
@@ -1826,35 +1819,35 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 			outputWriter(noCpdefFortificationAcc + "\t" + noCpdefFortificationCor + "\t" + noCpdefFortificationComp + "\t" + noCpdefFortificationFm);
 
-			
-			for (int j=0; j<minCpdef; j++) {	//all cpdefs	
+
+			for (int j=0; j<minCpdef; j++) {	//all cpdefs
 				String allResult = "";	//contains all data of one cpdef
 
 				String bestAcc = "\t", bestCor = "\t", bestComp = "\t", bestFm = "";
 
-				if ((j == Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMin()))) || 
-						(j == Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()))) || 
+				if ((j == Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMin()))) ||
+						(j == Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMax()))) ||
 						(j == Math.round(Math.ceil(noOfLabelFortifyDefinitions.getMean())))) {
 
 					bestAcc = df.format(accuracyLabelFortifyStat.getMean()) + "\t";
 					bestCor = df.format(correctnessLabelFortifyStat.getMean()) + "\t";
 					bestComp = df.format(completenessLabelFortifyStat.getMean()) + "\t";
 					bestFm = df.format(fmeasureLabelFortifyStat.getMean()) + "\t";
-				
-					
+
+
 
 				}
 
 				//accuracy
-				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies
 					allResult += df.format(accuracyFullStepStat[i][j].getMean()) + "\t"
 					+ df.format(accuracyFullStepStat[i][j].getStandardDeviation()) + "\t";
-				}		
+				}
 
 				allResult += bestAcc;
 
 				//correctness
-				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies
 					allResult += df.format(correctnessFullStepStat[i][j].getMean()) + "\t"
 					+ df.format(correctnessFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -1862,7 +1855,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				allResult += bestCor;
 
 				//completeness
-				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies
 					allResult += df.format(completenessFullStepStat[i][j].getMean()) + "\t"
 					+ df.format(completenessFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -1870,7 +1863,7 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 				allResult += bestComp;
 
 				//f-measure
-				for (int i=0; i<noOfStrategies; i++) {	//6 strategies										
+				for (int i=0; i<noOfStrategies; i++) {	//6 strategies
 					allResult += df.format(fmeasureFullStepStat[i][j].getMean()) + "\t"
 					+ df.format(fmeasureFullStepStat[i][j].getStandardDeviation()) + "\t";
 				}
@@ -1890,8 +1883,8 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 
 
 
-			//TODO: multiple runs have not been revised			
-			if (noOfRuns > 1) {	
+			//TODO: multiple runs have not been revised
+			if (noOfRuns > 1) {
 				// runtime
 				runtimeAvg.addNumber(runtime.getMean());
 				runtimeMax.addNumber(runtime.getMax());
@@ -1950,79 +1943,79 @@ public class CELOEFortifiedCrossValidation3PhasesFair extends CrossValidation {
 			}
 		} // for kk folds
 
-		
-		if (noOfRuns > 1) {	
+
+		if (noOfRuns > 1) {
 			outputWriter("");
 			outputWriter("Finished " + noOfRuns + " time(s) of the " + folds + "-folds cross-validations");
 
-			outputWriter("runtime: " + 				
+			outputWriter("runtime: " +
 					"\n\t avg.: " + statOutput(df, runtimeAvg, "s") +
 					"\n\t dev.: " + statOutput(df, runtimeDev, "s") +
-					"\n\t max.: " + statOutput(df, runtimeMax, "s") + 
+					"\n\t max.: " + statOutput(df, runtimeMax, "s") +
 					"\n\t min.: " + statOutput(df, runtimeMin, "s"));
 
 
-			outputWriter("no of descriptions: " + 
+			outputWriter("no of descriptions: " +
 					"\n\t avg.: " + statOutput(df, noOfDescriptionsAgv, "") +
 					"\n\t dev.: " + statOutput(df, noOfDescriptionsDev, "") +
 					"\n\t max.: " + statOutput(df, noOfDescriptionsMax, "") +
 					"\n\t min.: " + statOutput(df, noOfDescriptionsMin, ""));
 
-			outputWriter("definition length: " + 
-					"\n\t avg.: " + statOutput(df, defLenAvg, "") + 
+			outputWriter("definition length: " +
+					"\n\t avg.: " + statOutput(df, defLenAvg, "") +
 					"\n\t dev.: " + statOutput(df, defLenDev, "") +
-					"\n\t max.: " + statOutput(df, defLenMax, "") + 
+					"\n\t max.: " + statOutput(df, defLenMax, "") +
 					"\n\t min.: " + statOutput(df, defLenMin, ""));
 
-			outputWriter("accuracy on training set:" + 
+			outputWriter("accuracy on training set:" +
 					"\n\t avg.: " + statOutput(df, trainingAccAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingAccDev, "%") +
-					"\n\t max.: " + statOutput(df, trainingAccMax, "%") + 
+					"\n\t max.: " + statOutput(df, trainingAccMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingAccMin, "%"));
 
-			outputWriter("correctness on training set: " + 
+			outputWriter("correctness on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingCorAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingCorDev, "%") +
-					"\n\t max.: " + statOutput(df, trainingCorMax, "%") + 
+					"\n\t max.: " + statOutput(df, trainingCorMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingCorMin, "%"));
 
-			outputWriter("completeness on training set: " + 
+			outputWriter("completeness on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingComAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingComDev, "%") +
-					"\n\t max.: " + statOutput(df, trainingComMax, "%") + 
+					"\n\t max.: " + statOutput(df, trainingComMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingComMin, "%"));
 
-			outputWriter("FMesure on training set: " + 
+			outputWriter("FMesure on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingFMesureAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingFMesureDev, "%") +
 					"\n\t max.: " + statOutput(df, trainingFMesureMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingFMesureMin, "%"));
 
-			outputWriter("accuracy on testing set: " + 
-					"\n\t avg.: " + statOutput(df, testingAccAvg, "%") + 
+			outputWriter("accuracy on testing set: " +
+					"\n\t avg.: " + statOutput(df, testingAccAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingAccDev, "%") +
-					"\n\t max.: " + statOutput(df, testingAccMax, "%") + 
+					"\n\t max.: " + statOutput(df, testingAccMax, "%") +
 					"\n\t min.: " + statOutput(df, testingAccMin, "%"));
 
-			outputWriter("correctness on testing set: " + 
+			outputWriter("correctness on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingCorAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingCorDev, "%") +
-					"\n\t max.: " + statOutput(df, testingCorMax, "%") + 
+					"\n\t max.: " + statOutput(df, testingCorMax, "%") +
 					"\n\t min.: " + statOutput(df, testingCorMin, "%"));
 
-			outputWriter("completeness on testing set: " + 
-					"\n\t avg.: " + statOutput(df, testingComAvg, "%") + 
+			outputWriter("completeness on testing set: " +
+					"\n\t avg.: " + statOutput(df, testingComAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingComDev, "%") +
-					"\n\t max.: " + statOutput(df, testingComMax, "%") + 
+					"\n\t max.: " + statOutput(df, testingComMax, "%") +
 					"\n\t min.: " + statOutput(df, testingComMin, "%"));
 
-			outputWriter("FMesure on testing set: " + 
+			outputWriter("FMesure on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingFMesureAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingFMesureDev, "%") +
 					"\n\t max.: " + statOutput(df, testingFMesureMax, "%") +
 					"\n\t min.: " + statOutput(df, testingFMesureMin, "%"));
 		}
-		
+
 	}  //no of runs
 
 }

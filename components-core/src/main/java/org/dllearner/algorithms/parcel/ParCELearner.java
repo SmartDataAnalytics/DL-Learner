@@ -42,7 +42,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Exprerssion Learning")
+@ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Expression Learning")
 public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 
@@ -311,7 +311,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// register a MBean for debugging purpose
 		try {
 			ObjectName parCELearnerBean = new ObjectName(
-					"org.dllearner.algorithms.ParCEL.ParCELearnerMBean:type=ParCELearnerBean");
+					"org.dllearner.algorithms.parcel.ParCELearnerMBean:type=ParCELearnerBean");
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 			if (!mbs.isRegistered(parCELearnerBean))
 				mbs.registerMBean(this, parCELearnerBean);
@@ -378,10 +378,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 			if (timeout)
 				break;
 
-			ParCELNode nodeToProcess = null;
-			
-			nodeToProcess = searchTree.pollLast();
-			
+			ParCELNode nodeToProcess = searchTree.pollLast();
 
 			// TODO: why this? why "blocking" concept does not help in this case?
 			// remove this checking will exploit the heap memory and no definition found

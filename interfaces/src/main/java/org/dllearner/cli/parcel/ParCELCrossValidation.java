@@ -11,10 +11,6 @@ import org.dllearner.algorithms.parcel.ParCELAbstract;
 import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.algorithms.parcelex.ParCELExAbstract;
-import org.dllearner.algorithms.parcel.ParCELAbstract;
-import org.dllearner.algorithms.parcel.ParCELExtraNode;
-import org.dllearner.algorithms.parcel.ParCELPosNegLP;
-import org.dllearner.algorithms.parcelex.ParCELExAbstract;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -22,7 +18,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -31,12 +26,12 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 /**
  * Add ParCEL cross validation support to Jens Lehmann work (
  * {@link CrossValidation}). In this cross validation,
- * some more addition dimensions will be investigated such as: 
- * number partial definitions, partial definition length, etc.   
- *  
- * 
+ * some more addition dimensions will be investigated such as:
+ * number partial definitions, partial definition length, etc.
+ *
+ *
  * @author An C. Tran
- * 
+ *
  */
 
 public class ParCELCrossValidation extends CrossValidation {
@@ -44,7 +39,7 @@ public class ParCELCrossValidation extends CrossValidation {
 	protected Stat learningTime;
 	protected Stat noOfPartialDef;
 	protected Stat partialDefinitionLength;
-	
+
 	//protected Stat minimalDescriptionNeeded;
 	//protected Stat learningtimeForBestDescription;
 
@@ -58,12 +53,12 @@ public class ParCELCrossValidation extends CrossValidation {
 
 	public ParCELCrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs,
 			int folds, boolean leaveOneOut, int noOfRuns) {
-		super(la, lp, rs, folds, leaveOneOut);
+		super(la, lp, rs, folds, leaveOneOut); // TODO nrOfRuns not available in CV class
 	}
 
 	/**
 	 * This is for ParCEL cross validation
-	 * 
+	 *
 	 * @param la
 	 * @param lp
 	 * @param rs
@@ -77,9 +72,9 @@ public class ParCELCrossValidation extends CrossValidation {
 		super(); // do nothing
 
 		//--------------------------
-		//setting up 
+		//setting up
 		//--------------------------
-		DecimalFormat df = new DecimalFormat();	
+		DecimalFormat df = new DecimalFormat();
 
 		// the training and test sets used later on
 		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<>();
@@ -90,7 +85,7 @@ public class ParCELCrossValidation extends CrossValidation {
 		// get examples and shuffle them too
 		Set<OWLIndividual> posExamples = lp.getPositiveExamples();
 		List<OWLIndividual> posExamplesList = new LinkedList<>(posExamples);
-		//Collections.shuffle(posExamplesList, new Random(1));			
+		//Collections.shuffle(posExamplesList, new Random(1));
 		Set<OWLIndividual> negExamples = lp.getNegativeExamples();
 		List<OWLIndividual> negExamplesList = new LinkedList<>(negExamples);
 		//Collections.shuffle(negExamplesList, new Random(2));
@@ -128,7 +123,7 @@ public class ParCELCrossValidation extends CrossValidation {
 		//-------------------------------
 		else {
 			// calculating where to split the sets, ; note that we split
-			// positive and negative examples separately such that the 
+			// positive and negative examples separately such that the
 			// distribution of positive and negative examples remains similar
 			// (note that there are better but more complex ways to implement this,
 			// which guarantee that the sum of the elements of a fold for pos
@@ -147,8 +142,8 @@ public class ParCELCrossValidation extends CrossValidation {
 				testSetsPos.add(i, testPos);
 				testSetsNeg.add(i, testNeg);
 				trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
-				trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));				
-			}	
+				trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));
+			}
 
 		}
 
@@ -162,7 +157,7 @@ public class ParCELCrossValidation extends CrossValidation {
 		Stat learningTimeMax = new Stat();
 		Stat learningTimeMin = new Stat();
 		Stat learningTimeDev = new Stat();
-		
+
 		Stat runtimeAvg = new Stat();
 		Stat runtimeMax = new Stat();
 		Stat runtimeMin = new Stat();
@@ -212,17 +207,17 @@ public class ParCELCrossValidation extends CrossValidation {
 		Stat testingComMax = new Stat();
 		Stat testingComMin = new Stat();
 		Stat testingComDev = new Stat();
-		
+
 		Stat testingFMeasureAvg = new Stat();
 		Stat testingFMeasureMax = new Stat();
 		Stat testingFMeasureMin = new Stat();
 		Stat testingFMeasureDev = new Stat();
-		
+
 		Stat trainingFMeasureAvg = new Stat();
 		Stat trainingFMeasureMax = new Stat();
 		Stat trainingFMeasureMin = new Stat();
 		Stat trainingFMeasureDev = new Stat();
-		
+
 		Stat noOfDescriptionsAgv = new Stat();
 		Stat noOfDescriptionsMax = new Stat();
 		Stat noOfDescriptionsMin = new Stat();
@@ -232,28 +227,28 @@ public class ParCELCrossValidation extends CrossValidation {
 
 			learningTime = new Stat();
 
-			
+
 			//runtime
 			runtime = new Stat();
 			noOfPartialDef = new Stat();
 			partialDefinitionLength = new Stat();
-			length = new Stat();			
+			length = new Stat();
 			accuracyTraining = new Stat();
 			trainingCorrectnessStat= new Stat();
 			trainingCompletenessStat = new Stat();
 			accuracy = new Stat();
 			testingCorrectnessStat = new Stat();
 			testingCompletenessStat = new Stat();
-			
+
 			// statistical values
 
 			fMeasure = new Stat();
 			fMeasureTraining = new Stat();
 			totalNumberOfDescriptions= new Stat();
-			
+
 			minimalDescriptionNeeded = new Stat();
 			learningTimeForBestDescription = new Stat();
-			
+
 			for(int currFold=0; (currFold<folds); currFold++) {
 
 				if (this.interupted) {
@@ -266,7 +261,7 @@ public class ParCELCrossValidation extends CrossValidation {
 				lp.setPositiveExamples(trainingSetsPos.get(currFold));
 				lp.setNegativeExamples(trainingSetsNeg.get(currFold));
 
-				try {			
+				try {
 					lp.init();
 					la.init();
 				} catch (ComponentInitException e) {
@@ -283,7 +278,7 @@ public class ParCELCrossValidation extends CrossValidation {
 
 				long algorithmDuration = System.nanoTime() - algorithmStartTime;
 				runtime.addNumber(algorithmDuration/(double)1000000000);
-				
+
 				//learning time, does not include the reduction time
 				long learningMili = ((ParCELAbstract)la).getLearningTime();
 				learningTime.addNumber(learningMili);
@@ -305,12 +300,12 @@ public class ParCELCrossValidation extends CrossValidation {
 				outputWriter("test set errors pos: " + tmp2);
 				outputWriter("test set errors neg: " + tmp3);
 
-				// calculate training accuracies 
+				// calculate training accuracies
 				int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
 				int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainingSetsNeg.get(currFold));
 				int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
 				double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
-						trainingSetsNeg.get(currFold).size()));			
+						trainingSetsNeg.get(currFold).size()));
 
 				double trainingCompleteness = 100*(double)trainingCorrectPosClassified/trainingSetsPos.get(currFold).size();
 				double trainingCorrectness = 100*(double)trainingCorrectNegClassified/trainingSetsNeg.get(currFold).size();
@@ -344,28 +339,28 @@ public class ParCELCrossValidation extends CrossValidation {
 				double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
 				double recall = correctPosClassified / (double) testSetsPos.get(currFold).size();
 				//			System.out.println(precision);System.out.println(recall);
-				fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
+				fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));
 
 				length.addNumber(OWLClassExpressionUtils.getLength(concept));
-				totalNumberOfDescriptions.addNumber(la.getTotalNumberOfDescriptionsGenerated());
+//				totalNumberOfDescriptions.addNumber(la.getTotalNumberOfDescriptionsGenerated()); // TODO not avaliable yet
 
 				outputWriter("Fold " + currFold + ":");
-				outputWriter("  training: " + trainingCorrectPosClassified + "/" + trainingSetsPos.get(currFold).size() + 
+				outputWriter("  training: " + trainingCorrectPosClassified + "/" + trainingSetsPos.get(currFold).size() +
 						" positive and " + trainingCorrectNegClassified + "/" + trainingSetsNeg.get(currFold).size() + " negative examples");
-				outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
+				outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, "
 						+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
 				//outputWriter("  concept: " + concept);
-				outputWriter("  accuracy: " + df.format(currAccuracy) +  
-						"% (corr:"+ df.format(testingCorrectness) + 
-						"%, comp:" + testingCompleteness + "%) --- " + 
-						df.format(trainingAccuracy) + "% (corr:"+ trainingCorrectness + 
+				outputWriter("  accuracy: " + df.format(currAccuracy) +
+						"% (corr:"+ df.format(testingCorrectness) +
+						"%, comp:" + testingCompleteness + "%) --- " +
+						df.format(trainingAccuracy) + "% (corr:"+ trainingCorrectness +
 						", comp:" + trainingCompleteness + "%) on training set)");
 				outputWriter("  definition length: " + df.format(OWLClassExpressionUtils.getLength(concept)));
 				outputWriter("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
-				outputWriter("  learning time: " + df.format(learningMili/(double)1000) + "s");				
-				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated());
-				
-				
+				outputWriter("  learning time: " + df.format(learningMili/(double)1000) + "s");
+//				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated()); // TODO not avaliable yet
+
+
 				double minDescriptions = 0;
 				double minLearningTime = 0;
 				for (ParCELExtraNode pdef : ((ParCELAbstract)la).getReducedPartialDefinition()) {
@@ -373,14 +368,14 @@ public class ParCELCrossValidation extends CrossValidation {
 						minDescriptions = pdef.getExtraInfo();
 						minLearningTime = pdef.getGenerationTime();
 					}
-					
+
 				}
-				
+
 				//outputWriter("  minimal number of descriptions needed: " + minDescriptions);
 				minimalDescriptionNeeded.addNumber(minDescriptions);
 				learningTimeForBestDescription.addNumber(minLearningTime);
-									
-				
+
+
 				if (la instanceof ParCELAbstract) {
 					int pn = ((ParCELAbstract)la).getNoOfReducedPartialDefinition();
 					this.noOfPartialDef.addNumber(pn);
@@ -388,20 +383,20 @@ public class ParCELCrossValidation extends CrossValidation {
 
 					double pl = OWLClassExpressionUtils.getLength(concept)/(double)pn;
 					this.partialDefinitionLength.addNumber(pl);
-					outputWriter("  avarage partial definition length: " + pl);		
+					outputWriter("  avarage partial definition length: " + pl);
 
 					//show more information on counter partial definitions
-					
+
 					if (la instanceof ParCELExAbstract) {
 						ParCELExAbstract pdllexla = (ParCELExAbstract)la;
 						/*
-						outputWriter("  number of partial definitions for each type: 1:" + pdllexla.getNumberOfPartialDefinitions(1) + 
-								"; 2:" + pdllexla.getNumberOfPartialDefinitions(2) + 
+						outputWriter("  number of partial definitions for each type: 1:" + pdllexla.getNumberOfPartialDefinitions(1) +
+								"; 2:" + pdllexla.getNumberOfPartialDefinitions(2) +
 								"; 3:" + pdllexla.getNumberOfPartialDefinitions(3) +
 								"; 4:" + pdllexla.getNumberOfPartialDefinitions(4));
 						*/
 						outputWriter("  number of counter partial definition used: " + pdllexla.getNumberOfCounterPartialDefinitionUsed() + "/" + pdllexla.getNumberOfCounterPartialDefinitions());
-						
+
 						//check how did the learner terminate: by partial definition or counter partial definition
 						if (pdllexla.terminatedByCounterDefinitions()) {
 							outputWriter("  terminated by counter partial definitions");
@@ -415,7 +410,7 @@ public class ParCELCrossValidation extends CrossValidation {
 							outputWriter("  neither terminated by partial definition nor counter partial definition");
 					}
 				}
-				
+
 				outputWriter("----------");
 				outputWriter("Aggregate data from fold 0 to fold " + currFold);
 				outputWriter("  runtime: " + statOutput(df, runtime, "s"));
@@ -423,7 +418,7 @@ public class ParCELCrossValidation extends CrossValidation {
 				outputWriter("  length: " + statOutput(df, length, ""));
 				outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 				outputWriter("  F-Measure: " + statOutput(df, fMeasure, "%"));
-				outputWriter("  accuracy on training set: " + statOutput(df, accuracyTraining, "%")); 
+				outputWriter("  accuracy on training set: " + statOutput(df, accuracyTraining, "%"));
 				outputWriter("     correctness: " + statOutput(df, trainingCorrectnessStat, "%"));
 				outputWriter("     completeness: " + statOutput(df, trainingCompletenessStat, "%"));
 				outputWriter("  predictive accuracy on testing set: " + statOutput(df, accuracy, "%"));
@@ -432,8 +427,8 @@ public class ParCELCrossValidation extends CrossValidation {
 				//outputWriter("  minimal descriptions needed: " + statOutput(df, minimalDescriptionNeeded, ""));
 				//outputWriter("  minimal learning time: " + statOutput(df, learningTimeForBestDescription, ""));
 				outputWriter("----------");
-				
-				
+
+
 				//sleep after each run (fer MBean collecting information purpose)
 				try {
 					Thread.sleep(5000);
@@ -447,7 +442,7 @@ public class ParCELCrossValidation extends CrossValidation {
 
 			//---------------------------------
 			//end of k-fold cross validation
-			//output result of the k-fold 
+			//output result of the k-fold
 			//---------------------------------
 
 			outputWriter("");
@@ -458,187 +453,187 @@ public class ParCELCrossValidation extends CrossValidation {
 			outputWriter("  no of partial definitions: " + statOutput(df, noOfPartialDef, ""));
 			outputWriter("  avg. partial definition length: " + statOutput(df, partialDefinitionLength, ""));
 			outputWriter("  definition length: " + statOutput(df, length, ""));
-			outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+			outputWriter("  F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 			outputWriter("  F-Measure: " + statOutput(df, fMeasure, "%"));
-			outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") + 
-					" - corr: " + statOutput(df, trainingCorrectnessStat, "%") + 
-					", comp: " + statOutput(df, trainingCompletenessStat, "%"));		
-			outputWriter("  predictive accuracy: " + statOutput(df, accuracy, "%") + 
-					" - corr: " + statOutput(df, testingCorrectnessStat, "%") + 
+			outputWriter("  predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%") +
+					" - corr: " + statOutput(df, trainingCorrectnessStat, "%") +
+					", comp: " + statOutput(df, trainingCompletenessStat, "%"));
+			outputWriter("  predictive accuracy: " + statOutput(df, accuracy, "%") +
+					" - corr: " + statOutput(df, testingCorrectnessStat, "%") +
 					", comp: " + statOutput(df, testingCompletenessStat, "%"));
-			
+
 			//if (la instanceof ParCELExAbstract)
 			//	outputWriter("  terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 
-			
+
 			//output for copying to excel/
-			
+
 			//runtime
 			runtimeAvg.addNumber(runtime.getMean());
 			runtimeMax.addNumber(runtime.getMax());
 			runtimeMin.addNumber(runtime.getMin());
 			runtimeDev.addNumber(runtime.getStandardDeviation());
-			
+
 			//learning time
 			learningTimeAvg.addNumber(learningTime.getMean());
 			learningTimeDev.addNumber(learningTime.getStandardDeviation());
 			learningTimeMax.addNumber(learningTime.getMax());
-			learningTimeMin.addNumber(learningTime.getMin());			
+			learningTimeMin.addNumber(learningTime.getMin());
 
-			//number of partial definitions			
+			//number of partial definitions
 			noOfPartialDefAvg.addNumber(noOfPartialDef.getMean());
 			noOfPartialDefMax.addNumber(noOfPartialDef.getMax());
 			noOfPartialDefMin.addNumber(noOfPartialDef.getMin());
 			noOfPartialDefDev.addNumber(noOfPartialDef.getStandardDeviation());
-			
+
 			avgPartialDefLenAvg.addNumber(partialDefinitionLength.getMean());
 			avgPartialDefLenMax.addNumber(partialDefinitionLength.getMax());
 			avgPartialDefLenMin.addNumber(partialDefinitionLength.getMin());
 			avgPartialDefLenDev.addNumber(partialDefinitionLength.getStandardDeviation());
-			
-			defLenAvg.addNumber(length.getMean());			
+
+			defLenAvg.addNumber(length.getMean());
 			defLenMax.addNumber(length.getMax());
 			defLenMin.addNumber(length.getMin());
 			defLenDev.addNumber(length.getStandardDeviation());
-			
+
 			trainingAccAvg.addNumber(accuracyTraining.getMean());
 			trainingAccDev.addNumber(accuracyTraining.getStandardDeviation());
 			trainingAccMax.addNumber(accuracyTraining.getMax());
 			trainingAccMin.addNumber(accuracyTraining.getMin());
-			
+
 			trainingCorAvg.addNumber(trainingCorrectnessStat.getMean());
 			trainingCorDev.addNumber(trainingCorrectnessStat.getStandardDeviation());
 			trainingCorMax.addNumber(trainingCorrectnessStat.getMax());
 			trainingCorMin.addNumber(trainingCorrectnessStat.getMin());
-			
+
 			trainingComAvg.addNumber(trainingCompletenessStat.getMean());
 			trainingComDev.addNumber(trainingCompletenessStat.getStandardDeviation());
 			trainingComMax.addNumber(trainingCompletenessStat.getMax());
 			trainingComMin.addNumber(trainingCompletenessStat.getMin());
-			
+
 			testingAccAvg.addNumber(accuracy.getMean());
 			testingAccMax.addNumber(accuracy.getMax());
 			testingAccMin.addNumber(accuracy.getMin());
 			testingAccDev.addNumber(accuracy.getStandardDeviation());
-			
-			
+
+
 			testingCorAvg.addNumber(testingCorrectnessStat.getMean());
 			testingCorDev.addNumber(testingCorrectnessStat.getStandardDeviation());
 			testingCorMax.addNumber(testingCorrectnessStat.getMax());
 			testingCorMin.addNumber(testingCorrectnessStat.getMin());
-			
+
 			testingComAvg.addNumber(testingCompletenessStat.getMean());
 			testingComDev.addNumber(testingCompletenessStat.getStandardDeviation());
 			testingComMax.addNumber(testingCompletenessStat.getMax());
 			testingComMin.addNumber(testingCompletenessStat.getMin());
-			
+
 			testingFMeasureAvg.addNumber(fMeasure.getMean());
 			testingFMeasureDev.addNumber(fMeasure.getStandardDeviation());
 			testingFMeasureMax.addNumber(fMeasure.getMax());
 			testingFMeasureMin.addNumber(fMeasure.getMin());
-						
+
 			trainingFMeasureAvg.addNumber(fMeasureTraining.getMean());
 			trainingFMeasureDev.addNumber(fMeasureTraining.getStandardDeviation());
 			trainingFMeasureMax.addNumber(fMeasureTraining.getMax());
 			trainingFMeasureMin.addNumber(fMeasureTraining.getMin());
-			
+
 			noOfDescriptionsAgv.addNumber(totalNumberOfDescriptions.getMean());
 			noOfDescriptionsMax.addNumber(totalNumberOfDescriptions.getMax());
 			noOfDescriptionsMin.addNumber(totalNumberOfDescriptions.getMin());
 			noOfDescriptionsDev.addNumber(totalNumberOfDescriptions.getStandardDeviation());
-			
+
 		}	//for kk folds
-		
+
 		if (noOfRuns > 1) {
-			
+
 			outputWriter("");
 			outputWriter("Finished " + noOfRuns + " time(s) of the " + folds + "-folds cross-validations");
-			
-			outputWriter("runtime: " + 
+
+			outputWriter("runtime: " +
 					"\n\t avg.: " + statOutput(df, runtimeAvg, "s") +
 					"\n\t dev.: " + statOutput(df, runtimeDev, "s") +
 					"\n\t max.: " + statOutput(df, runtimeMax, "s") +
 					"\n\t min.: " + statOutput(df, runtimeMin, "s"));
-			
-			outputWriter("learning time: " + 
+
+			outputWriter("learning time: " +
 					"\n\t avg.: " + statOutput(df, learningTimeAvg, "s") +
 					"\n\t dev.: " + statOutput(df, learningTimeDev, "s") +
 					"\n\t max.: " + statOutput(df, learningTimeMax, "s") +
 					"\n\t min.: " + statOutput(df, learningTimeMin, "s"));
-			
-			outputWriter("no of descriptions: " + 
+
+			outputWriter("no of descriptions: " +
 					"\n\t avg.: " + statOutput(df, noOfDescriptionsAgv, "") +
 					"\n\t dev.: " + statOutput(df, noOfDescriptionsDev, "") +
 					"\n\t max.: " + statOutput(df, noOfDescriptionsMax, "") +
 					"\n\t min.: " + statOutput(df, noOfDescriptionsMin, ""));
-			
-			outputWriter("number of partial definitions: " + 
+
+			outputWriter("number of partial definitions: " +
 					"\n\t avg.: " + statOutput(df, noOfPartialDefAvg, "") +
 					"\n\t dev.: " + statOutput(df, noOfPartialDefDev, "") +
 					"\n\t max.: " + statOutput(df, noOfPartialDefMax, "") +
 					"\n\t min.: " + statOutput(df, noOfPartialDefMin, ""));
-			
-			outputWriter("avg. partial definition length: " + 
-					"\n\t avg.: " + statOutput(df, avgPartialDefLenAvg, "") + 				
+
+			outputWriter("avg. partial definition length: " +
+					"\n\t avg.: " + statOutput(df, avgPartialDefLenAvg, "") +
 					"\n\t dev.: " + statOutput(df, avgPartialDefLenDev, "") +
 					"\n\t max.: " + statOutput(df, avgPartialDefLenMax, "") +
 					"\n\t min.: " + statOutput(df, avgPartialDefLenMin, ""));
-			
-			outputWriter("definition length: " + 
+
+			outputWriter("definition length: " +
 					"\n\t avg.: " + statOutput(df, defLenAvg, "") +
 					"\n\t dev.: " + statOutput(df, defLenDev, "") +
 					"\n\t max.: " + statOutput(df, defLenMax, "") +
 					"\n\t min.: " + statOutput(df, defLenMin, ""));
-			
-			outputWriter("accuracy on training set:" + 
-					"\n\t avg.: " + statOutput(df, trainingAccAvg, "%") + 
+
+			outputWriter("accuracy on training set:" +
+					"\n\t avg.: " + statOutput(df, trainingAccAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingAccDev, "%") +
 					"\n\t max.: " + statOutput(df, trainingAccMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingAccMin, "%"));
-			
-			outputWriter("correctness on training set: " + 
+
+			outputWriter("correctness on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingCorAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingCorDev, "%") +
 					"\n\t max.: " + statOutput(df, trainingCorMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingCorMin, "%"));
-			
-			outputWriter("completeness on training set: " + 
+
+			outputWriter("completeness on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingComAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingComDev, "%") +
 					"\n\t max.: " + statOutput(df, trainingComMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingComMin, "%"));
-			
-			outputWriter("FMeasure on training set: " + 
+
+			outputWriter("FMeasure on training set: " +
 					"\n\t avg.: " + statOutput(df, trainingFMeasureAvg, "%") +
 					"\n\t dev.: " + statOutput(df, trainingFMeasureDev, "%") +
 					"\n\t max.: " + statOutput(df, trainingFMeasureMax, "%") +
 					"\n\t min.: " + statOutput(df, trainingFMeasureMin, "%"));
-			
-			outputWriter("accuracy on testing set: " + 
+
+			outputWriter("accuracy on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingAccAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingAccDev, "%") +
 					"\n\t max.: " + statOutput(df, testingAccMax, "%") +
 					"\n\t min.: " + statOutput(df, testingAccMin, "%"));
-			
-			outputWriter("correctness on testing set: " + 
+
+			outputWriter("correctness on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingCorAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingCorDev, "%") +
 					"\n\t max.: " + statOutput(df, testingCorMax, "%") +
 					"\n\t min.: " + statOutput(df, testingCorMin, "%"));
-			
-			outputWriter("completeness on testing set: " + 
+
+			outputWriter("completeness on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingComAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingComDev, "%") +
 					"\n\t max.: " + statOutput(df, testingComMax, "%") +
 					"\n\t min.: " + statOutput(df, testingComMin, "%"));
-			
-			outputWriter("FMeasure on testing set: " + 
+
+			outputWriter("FMeasure on testing set: " +
 					"\n\t avg.: " + statOutput(df, testingFMeasureAvg, "%") +
 					"\n\t dev.: " + statOutput(df, testingFMeasureDev, "%") +
 					"\n\t max.: " + statOutput(df, testingFMeasureMax, "%") +
 					"\n\t min.: " + statOutput(df, testingFMeasureMin, "%"));
 		}
-		
+
 		//if (la instanceof ParCELExAbstract)
 		//	outputWriter("terminated by: partial def.: " + terminatedBypartialDefinition + "; counter partial def.: " + terminatedByCounterPartialDefinitions);
 

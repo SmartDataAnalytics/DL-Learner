@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.parcel.split;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -201,7 +202,8 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 	 *         given individual
 	 */
 	private Map<OWLDataProperty, ValueCountSet> getInstanceValueRelation(OWLIndividual individual,
-                                                                         boolean positiveExample, Set<OWLIndividual> visitedIndividuals) {
+                                                                         boolean positiveExample,
+																		 Set<OWLIndividual> visitedIndividuals) {
 
 		if (visitedIndividuals == null)
 			visitedIndividuals = new HashSet<>();
@@ -224,6 +226,17 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		// process data properties
 		// NOTE: filter the double data property
 		// ---------------------------------------
+//		dataPropertyValues.entrySet().stream()
+//				.filter(numericDatatypeProperties::contains)
+//				.forEach(dp -> {
+//							ValueCountSet values = new ValueCountSet();
+//							dataPropertyValues.get(dp).stream()
+//									.map(OWLLiteral::getLiteral)
+//									.map(Double::parseDouble)
+//									.map(val -> new ValueCount(val, positiveExample))
+//									.forEach(values::add);
+//							relations.computeIfPresent(dp, )
+//				});
 		for (OWLDataProperty dp : dataPropertyValues.keySet()) {
 
 			if (this.numericDatatypeProperties.contains(dp)) {
@@ -257,7 +270,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 				if (subRelations != null) {
 					for (OWLDataProperty dp : subRelations.keySet()) {
 						// if the data property exist, update its values
-						if (relations.keySet().contains(dp))
+						if (relations.containsKey(dp))
 							relations.get(dp).addAll(subRelations.get(dp));
 						// otherwise, create a new map <data property - values and add it into the
 						// return value

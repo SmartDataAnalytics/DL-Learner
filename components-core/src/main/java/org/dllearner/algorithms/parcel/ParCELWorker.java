@@ -110,7 +110,6 @@ public class ParCELWorker extends ParCELWorkerAbstract {
                     + ParCELStringUtilities.replaceString(nodeToProcess.toString(), this.baseURI,
                     this.prefix));
 
-        TreeSet<OWLClassExpression> refinements; // will hold the refinement result (set of Descriptions)
 
         HashSet<ParCELExtraNode> definitionsFound = new HashSet<>(); // hold the
         // partial
@@ -123,7 +122,8 @@ public class ParCELWorker extends ParCELWorkerAbstract {
         int horizExp = nodeToProcess.getHorizontalExpansion();
 
         // 1. refine node
-        refinements = refineNode(nodeToProcess);
+        TreeSet<OWLClassExpression> refinements = refineNode(nodeToProcess);
+        System.out.println(refinements.size());
 
         if (refinements != null) {
             if (logger.isTraceEnabled())

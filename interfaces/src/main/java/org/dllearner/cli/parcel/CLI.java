@@ -201,7 +201,7 @@ public class CLI {
 					}
 					else {
 						logger.info("Cross validation with NO FORTIFICATION");
-						new CrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
+						new CrossValidation(la, lp, rs, nrOfFolds, false); // TODO nrOfRuns not available in CV
 					}
 				}
 	

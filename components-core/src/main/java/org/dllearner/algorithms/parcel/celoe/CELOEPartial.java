@@ -1076,7 +1076,11 @@ public class CELOEPartial extends AbstractCELA implements Cloneable{
 	public long getTotalRuntimeNs() {
 		return totalRuntimeNs;
 	}
-	
+
+	public HashSet<PartialDefinition> getPartialDefinitions() {
+		return partialDefinitions;
+	}
+
 	/**
 	 * @return the expandAccuracy100Nodes
 	 */
