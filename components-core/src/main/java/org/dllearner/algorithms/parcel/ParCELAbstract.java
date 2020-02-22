@@ -25,17 +25,11 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	@ConfigOption(defaultValue = "4", description = "Number of workers will be created to serve the learner")
 	protected int numberOfWorkers = 4; // 
 
-	@ConfigOption(defaultValue = "0", description = "Maximum execution of the algorithm in seconds")
-	protected int maxExecutionTimeInSeconds = 0;
-
 	@ConfigOption(defaultValue = "0.0", description = "The percentage of noise within the examples")
 	protected double noisePercentage = 0.0;
 
 	@ConfigOption(defaultValue = "10", description = "Max number of splits will be applied for data properties with double range. This parameter is not used if a Splitter is provided")
 	protected int maxNoOfSplits = 10;
-
-	@ConfigOption(defaultValue = "empty set", description = "Set of concepts that will be ignored in learning the target concept")
-	protected Set<OWLClass> ignoredConcepts = null;
 
 	@ConfigOption(defaultValue = "0", description = "Minimal coverage that a partial definition must approach so that it can be used")
 	protected double minimalCoverage = 0;		//0 means no constrain on this condition

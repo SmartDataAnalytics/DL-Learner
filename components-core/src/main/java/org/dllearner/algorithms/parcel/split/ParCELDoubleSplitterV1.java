@@ -109,7 +109,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		Map<OWLDataProperty, ValueCountSet> relations = new HashMap<>();
 
 		for (OWLIndividual ind : positiveExamples) {
-			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, true, null);
+			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, true, new HashSet<>()); // TODO shouldn't the set be global
 
 			for (OWLDataProperty pro : individualRelations.keySet()) {
 				if (relations.containsKey(pro))
@@ -121,7 +121,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 		// generate relation for negative examples
 		for (OWLIndividual ind : negativeExamples) {
-			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, false, null);
+			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, false, new HashSet<>()); // TODO shouldn't the set be global
 
 			for (OWLDataProperty pro : individualRelations.keySet()) {
 				if (relations.containsKey(pro))
@@ -205,8 +205,8 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
                                                                          boolean positiveExample,
 																		 Set<OWLIndividual> visitedIndividuals) {
 
-		if (visitedIndividuals == null)
-			visitedIndividuals = new HashSet<>();
+//		if (visitedIndividuals == null)
+//			visitedIndividuals = new HashSet<>();
 
 		// if the individual visited
 		if (visitedIndividuals.contains(individual))
@@ -245,42 +245,36 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 				// the result
 				ValueCountSet values = new ValueCountSet();
 				for (OWLLiteral lit : dataPropertyValues.get(dp)) {
-					ValueCount newValue = new ValueCount(Double.parseDouble(lit.getLiteral()),
-							positiveExample); // (value, pos)
+					ValueCount newValue = new ValueCount(Double.parseDouble(lit.getLiteral()), positiveExample);
 					values.add(newValue);
 				}
 
-				// if the data property exist, update its values
-				if (relations.containsKey(dp))
-					relations.get(dp).addAll(values);
-				// otherwise, create a new map <data property - values and add it into the return
-				// value
-				else
-					relations.put(dp, values);
+				relations.merge(dp, values, (set1, set2) -> {
+					set1.addAll(set2);
+					return set1;
+				});
 			}
 		}
 
 		// process each object property: call this method recursively
-		for (OWLObjectPropertyExpression op : objectPropertyValues.keySet()) {
-			for (OWLIndividual ind : objectPropertyValues.get(op)) {
-				Map<OWLDataProperty, ValueCountSet> subRelations = getInstanceValueRelation(ind,
-						positiveExample, visitedIndividuals);
+		objectPropertyValues.forEach((op, individuals) ->
+				individuals.forEach(ind -> {
+							Map<OWLDataProperty, ValueCountSet> subRelations = getInstanceValueRelation(ind,
+									positiveExample, visitedIndividuals);
 
-				// sub-relation == null if the ind had been visited
-				if (subRelations != null) {
-					for (OWLDataProperty dp : subRelations.keySet()) {
-						// if the data property exist, update its values
-						if (relations.containsKey(dp))
-							relations.get(dp).addAll(subRelations.get(dp));
-						// otherwise, create a new map <data property - values and add it into the
-						// return value
-						else
-							relations.put(dp, subRelations.get(dp));
-					}
-				}
-
-			}
-		}
+							// sub-relation == null if the ind had been visited
+							if (subRelations != null) {
+								for (OWLDataProperty dp : subRelations.keySet()) {
+									// if the data property exist, update its values
+									relations.merge(dp, subRelations.get(dp), (set1, set2) -> {
+										set1.addAll(set2);
+										return set1;
+									});
+								}
+							}
+						}
+				)
+		);
 
 		return relations;
 	}

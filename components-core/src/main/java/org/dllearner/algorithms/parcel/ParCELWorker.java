@@ -123,7 +123,7 @@ public class ParCELWorker extends ParCELWorkerAbstract {
 
         // 1. refine node
         TreeSet<OWLClassExpression> refinements = refineNode(nodeToProcess);
-        System.out.println(refinements.size());
+//        System.out.println("ParCEL Worker " + name  + ":" + refinements);
 
         if (refinements != null) {
             if (logger.isTraceEnabled())
