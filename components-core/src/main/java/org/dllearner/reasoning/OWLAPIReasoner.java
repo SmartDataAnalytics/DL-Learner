@@ -18,10 +18,15 @@
  */
 package org.dllearner.reasoning;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.google.common.base.StandardSystemProperty;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.*;
@@ -47,11 +52,6 @@ import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.alternateimpls.ThreadSafeOWLReasoner;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
 
 //import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 //import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -165,11 +165,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             }
         }
 
-        //Now merge all of the knowledge sources into one ontology instance.
+        // Now merge all of the knowledge sources into one ontology instance.
         try {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
-            ontology = manager.createOntology(IRI.generateDocumentIRI(), new HashSet<>(owlAPIOntologies));
+			// we have to do this because e.g. data range axioms from imports won't by found via EntitySearcher.getRange method
+			Set<OWLAxiom> allAxioms = owlAPIOntologies.stream()
+					.flatMap(o -> o.getLogicalAxioms(Imports.INCLUDED).stream())
+					.collect(Collectors.toSet());
+			ontology = manager.createOntology(allAxioms, IRI.generateDocumentIRI());
 
 			//we have to add all import declarations manually here, because these are not OWL axioms
             List<OWLOntologyChange> addImports = new ArrayList<>();
