@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.parcel;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -24,7 +26,7 @@ public class ParCELEvaluationResult {
 	protected double accuracy = 0.0;
 	protected double correctness = 0.0;
 	protected double completeness = 0.0;
-	protected Set<OWLIndividual> coveredPossitiveExamples = null;
+	protected Set<OWLIndividual> coveredPositiveExamples = null;
 	protected Set<OWLIndividual> coveredNegativeExamples = null;
 
 	/**
@@ -57,14 +59,14 @@ public class ParCELEvaluationResult {
 	 * @param accuracy
 	 * @param correctness
 	 * @param completeness
-	 * @param coveredPossitiveExamples
+	 * @param coveredPositiveExamples
 	 */
 	public ParCELEvaluationResult(double accuracy, double correctness, double completeness,
-			Set<OWLIndividual> coveredPossitiveExamples) {
+			Set<OWLIndividual> coveredPositiveExamples) {
 		this.accuracy = accuracy;
 		this.correctness = correctness;
 		this.completeness = completeness;
-		this.coveredPossitiveExamples = coveredPossitiveExamples;
+		this.coveredPositiveExamples = coveredPositiveExamples;
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class ParCELEvaluationResult {
 		this.accuracy = accuracy;
 		this.correctness = correctness;
 		this.completeness = completeness;
-		this.coveredPossitiveExamples = coveredPositiveExamples;
+		this.coveredPositiveExamples = coveredPositiveExamples;
 		this.coveredNegativeExamples = coveredNegativeExamples;
 	}
 
@@ -115,12 +117,12 @@ public class ParCELEvaluationResult {
 		this.completeness = completeness;
 	}
 
-	public Set<OWLIndividual> getCoveredPossitiveExamples() {
-		return coveredPossitiveExamples;
+	public Set<OWLIndividual> getCoveredPositiveExamples() {
+		return coveredPositiveExamples;
 	}
 
-	public void setCoveredPossitiveExamples(Set<OWLIndividual> coveredPossitiveExamples) {
-		this.coveredPossitiveExamples = coveredPossitiveExamples;
+	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
+		this.coveredPositiveExamples = coveredPositiveExamples;
 	}
 
 	public Set<OWLIndividual> getCoveredNegativeExamples() {
@@ -131,4 +133,14 @@ public class ParCELEvaluationResult {
 		this.coveredNegativeExamples = coveredNegativeExamples;
 	}
 
+	@Override
+	public String toString() {
+		return "ParCELEvaluationResult{" +
+				"accuracy=" + accuracy +
+				", correctness=" + correctness +
+				", completeness=" + completeness +
+				", coveredPositiveExamples=" + Optional.ofNullable(coveredPositiveExamples).map(Set::size).map(Object::toString).orElse("n/a") +
+				", coveredNegativeExamples=" + Optional.ofNullable(coveredNegativeExamples).map(Set::size).map(Objects::toString).orElse("n/a") +
+				'}';
+	}
 }

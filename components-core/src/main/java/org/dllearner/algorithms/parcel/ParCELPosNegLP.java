@@ -325,7 +325,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 		Set<OWLIndividual> coveredPositiveExamples = new HashSet<>();
 
 		// create a new set which contains all members of the uncovered positive examples
-		Set<OWLIndividual> localUncoveredPositiveExamples = null;
+		Set<OWLIndividual> localUncoveredPositiveExamples;
 
 		if (this.uncoveredPositiveExamples != null) {
 			synchronized (this.uncoveredPositiveExamples) {
@@ -485,7 +485,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 		result.completeness = cp / (double) positiveExamples.size();
 
 		if (coveredPositiveExamples.size() > 0)
-			result.coveredPossitiveExamples = coveredPositiveExamples;
+			result.coveredPositiveExamples = coveredPositiveExamples;
 
 		if (coveredNegativeExamples.size() > 0)
 			result.coveredNegativeExamples = coveredNegativeExamples;

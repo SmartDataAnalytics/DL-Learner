@@ -318,7 +318,7 @@ public class ParCELWorkerExV1 implements Runnable {
 
 		ParCELExtraNode newNode = new ParCELExtraNode(parentNode, description,
 				evaluationResult.getAccuracy(), evaluationResult.getCorrectness(),
-				evaluationResult.getCompleteness(), evaluationResult.getCoveredPossitiveExamples());
+				evaluationResult.getCompleteness(), evaluationResult.getCoveredPositiveExamples());
 
 		// newNode.setCorrectness(evaluationResult.getCorrectness());
 		// newNode.setCompleteness(evaluationResult.getCompleteness());
