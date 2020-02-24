@@ -20,6 +20,7 @@ package org.dllearner.core.owl;
 
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -93,6 +94,6 @@ public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty
 	
 	@Override
 	public DatatypePropertyHierarchy clone() {
-		return new DatatypePropertyHierarchy(getHierarchyUp(), getHierarchyDown());		
+		return new DatatypePropertyHierarchy(new TreeMap<>(getHierarchyUp()), new TreeMap<>(getHierarchyDown()));
 	}
 }
