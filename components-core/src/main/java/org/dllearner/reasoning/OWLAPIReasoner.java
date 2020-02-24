@@ -171,7 +171,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
 			// we have to do this because e.g. data range axioms from imports won't by found via EntitySearcher.getRange method
 			Set<OWLAxiom> allAxioms = owlAPIOntologies.stream()
-					.flatMap(o -> o.getLogicalAxioms(Imports.INCLUDED).stream())
+//					.flatMap(o -> o.getLogicalAxioms(Imports.INCLUDED).stream()) // and for whatever reason, Pellet fails when we just use logical axioms and declaration axioms are missing
+					.flatMap(o -> o.getAxioms(Imports.INCLUDED).stream())
 					.collect(Collectors.toSet());
 			ontology = manager.createOntology(allAxioms, IRI.generateDocumentIRI());
 
