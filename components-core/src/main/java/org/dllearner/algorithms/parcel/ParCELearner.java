@@ -31,6 +31,7 @@ import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.*;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
@@ -92,9 +93,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
      */
 	private HashSet<OWLIndividual> uncoveredPositiveExamples;
 
-	/**
-	 * The description and root node of the search tree
-	 */
+	@ConfigOption(defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
+			exampleValue = "ex:Male or http://example.org/ontology/Female")
 	private OWLClassExpression startClass; // description of the root node
 	private ParCELNode startNode; 	// root of the search tree
 
@@ -914,7 +915,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	public void setNoiseAllowed(double noiseAllowed) {
 		this.noiseAllowed = noiseAllowed;
 	}
-	
-	
-	
+
+	public void setStartClass(OWLClassExpression startClass) {
+		this.startClass = startClass;
+	}
 }
