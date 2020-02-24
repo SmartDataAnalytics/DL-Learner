@@ -119,7 +119,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	
 	@Override
 	public ClassHierarchy clone() {
-		return new ClassHierarchy(getHierarchyUp(), getHierarchyDown());
+		return new ClassHierarchy(new TreeMap<>(getHierarchyUp()), new TreeMap<>(getHierarchyDown()));
 	}
 
 	/**
