@@ -75,28 +75,12 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 
 
 	/**
-	 * Search tree. It hold all evaluated descriptions that are not correct and not weak
-	 * ==> candidate for partial definitions
-	 * Nodes in the search tree must be ordered using heuristic so that it can help the searching 
-	 * 		more efficiently (best search rather than 'blind' breadth first of depth first)
-	 * NOTE: node = (description + accuracy/correctness/completeness/... value) 
-	 */
-	//private ConcurrentSkipListSet<ParCELNode> searchTree;		//thread safe set
-
-	/**
 	 * contains tasks submitted to thread pool
 	 */
 	BlockingQueue<Runnable> taskQueue;
-										
 
 	
-	/**
-	 *	partial definition (they should be shorted by completeness
-	 *	so that we can get the best partial definition at any time
-	 *	if not, we can use a hashset here 
-	 */
-	//private SortedSet<PDLLExtraNode> partialDefinitions;		//correct but may be incomplete definitions found
-	//private SortedSet<PDLLExtraNode> counterPartialDefinitions;
+
 	
 	
 	//examples
@@ -732,34 +716,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		descriptionTested = 0;
 		maxAccuracy = 0;
 	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Check if the learner can be terminated
-	 * 
-	 * @return True if termination condition is true (asked to stop, complete definition found, or timeout),
-	 * 			false otherwise 
-	 */
-	private boolean isTerminateCriteriaSatisfied() {		
-		return 	stop || 
-				done ||
-				counterDone ||
-				timeout;
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Set heuristic will be used 
-	 * 
-	 * @param newHeuristic
-	 */
-	public void setHeuristic(ParCELHeuristic newHeuristic) {
-		this.heuristic = newHeuristic;
-		
-		if (logger.isInfoEnabled())
-			logger.info("Changing heuristic to " + newHeuristic.getClass().getName());
-	}
-	
+
 	
 	/**=========================================================================================================<br>
 	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true

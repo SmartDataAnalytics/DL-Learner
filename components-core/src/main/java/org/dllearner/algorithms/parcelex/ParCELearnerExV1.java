@@ -14,17 +14,14 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
-import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.*;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
@@ -32,17 +29,9 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @ComponentAnn(name="ParCELearnerExV1", shortName="parcelearnerExV1", version=0.1, description="Parallel Class Expression Logic Learning")
-public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMBean {	
-
-	private RefinementOperator refinementOperator = null;	//auto-wired will be used for this property
-	
-	private ParCELDoubleSplitterAbstract splitter = null;
-
-	private static Logger logger = Logger.getLogger(ParCELearnerExV1.class);	
-	
+public class ParCELearnerExV1 extends ParCELExAbstract {
 
 	private int noOfCompactedPartialDefinition = 0;
 
@@ -51,19 +40,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	 * contains tasks submitted to thread pool
 	 */
 	BlockingQueue<Runnable> taskQueue;
-	
-	
-	
-	/**
-	 * Refinement operator pool which provides refinement operators
-	 */	
-	private ParCELRefinementOperatorPool refinementOperatorPool;
-	
-
-	//examples
-	private Set<OWLIndividual> positiveExamples;
-	private Set<OWLIndividual> negativeExamples;
-	
 	
 	/**
 	 * This may be considered as the noise allowed in learning, 
@@ -81,40 +57,8 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	private HashSet<OWLIndividual> coveredNegativeExamples;
 
 
-	/**
-	 * Start description and root node of the search tree
-	 */
-	private OWLClassExpression startClass;        //description in of the root node
-	private ParCELNode startNode;			//root of the search tree	
+	private ParCELNode startNode;			//root of the search tree
 
-	
-	//---------------------------------------------------------
-	//flags to indicate the status of the application
-	//---------------------------------------------------------
-	/**
-	 * A reducer is stopped (reasons: done, timeout, out of memory, etc.)
-	 */
-	private boolean stop = false;
-	
-	
-	/**
-	 * Reducer found a complete definition?
-	 */
-	private boolean done = false;		
-	private boolean counterDone = false;
-	
-	/**
-	 * Reducer get the timeout
-	 */
-	private boolean timeout = false;
-	
-	
-	//configuration for worker pool
-    private int minNumberOfWorker = 2;
-    private int maxNumberOfWorker = 2;      //max number of workers will be created
-    private int maxTaskQueueLength = 1000;
-    private long keepAliveTime = 100;       //100ms
-    
 
     /**
      * Descriptions that can be combined with the counter partial definitions to become partial definitions
@@ -130,14 +74,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 
 	
 	private int noOfTask = 0;
-		
 
-	//just for pretty representation of description
-	private String baseURI = null;
-	private Map<String, String> prefix;
-	
-	DecimalFormat df = new DecimalFormat();
-		
 	
 	/**=========================================================================================================<br>
 	 * Constructor for the learning algorithm
@@ -211,50 +148,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 		//----------------------------------
 		//create refinement operator pool
 		//----------------------------------
-		if (refinementOperator == null) {
-			//-----------------------------------------
-			//prepare for refinement operator creation
-			//-----------------------------------------
-			Set<OWLClass> usedConcepts = new TreeSet<>(reasoner.getClasses());
-			
-			
-			//remove the ignored concepts out of the list of concepts will be used by refinement operator
-			if (this.ignoredConcepts != null) { 
-				try {
-					usedConcepts.removeAll(ignoredConcepts);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			ClassHierarchy classHiearachy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
-			Map<OWLDataProperty, List<Double>> splits = null;
-			
-			//create a splitter and refinement operator pool
-			//there are two options: i) using object pool, ii) using set of objects (removed from this revision) 
-			if (this.splitter != null) {
-				splitter.setReasoner(reasoner);
-				splitter.setPositiveExamples(positiveExamples);
-				splitter.setNegativeExamples(negativeExamples);
-				splitter.init();
-
-				splits = splitter.computeSplits();
-				
-				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, splits, numberOfWorkers + 1);
-
-			}			
-			else {	//no splitter provided
-				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1, maxNoOfSplits);
-			}
-						
-			refinementOperatorPool.getFactory().setUseDisjunction(false);
-			refinementOperatorPool.getFactory().setUseNegation(false);
-			refinementOperatorPool.getFactory().setUseHasValue(this.getUseHasValue());
-
-		}		
+		createRefinementOperatorPool();
 
 		baseURI = reasoner.getBaseURI();
 		prefix = reasoner.getPrefixes();
@@ -745,33 +639,9 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	}
 	
 	
-	/**=========================================================================================================<br>
-	 * Check if the learner can be terminated
-	 * 
-	 * @return True if termination condition is true (asked to stop, complete definition found, or timeout),
-	 * 			false otherwise 
-	 */
-	private boolean isTerminateCriteriaSatisfied() {		
-		return 	stop || 
-				done ||
-				counterDone ||
-				timeout;
-	}
+
 	
-	
-	/**=========================================================================================================<br>
-	 * Set heuristic will be used 
-	 * 
-	 * @param newHeuristic
-	 */
-	public void setHeuristic(ParCELHeuristic newHeuristic) {
-		this.heuristic = newHeuristic;
-		
-		if (logger.isInfoEnabled())
-			logger.info("Changing heuristic to " + newHeuristic.getClass().getName());
-	}
-	
-	
+
 	/**=========================================================================================================<br>
 	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true
 	 */
@@ -984,20 +854,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	// setters and getters for configuration options
 	//------------------------------------------------
 	
-	@Autowired(required=false)
-	public void setRefinementOperator(RefinementOperator refinementOp) {
-		this.refinementOperator = refinementOp;
-	}
-	
-	public RefinementOperator getRefinementOperator() {
-		return this.refinementOperator;
-	}
-	
-	@Autowired(required=false)
-	public void setSplitter(ParCELDoubleSplitterAbstract splitter) {
-		this.splitter = splitter;
-	}
-	
 
 	public int getNoOfReducedPartialDefinition() {
 		return this.noOfCompactedPartialDefinition;
@@ -1007,12 +863,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	public boolean terminatedByCounterDefinitions() {
 		return this.counterDone;
 	}
-	
-	@Override
-	public boolean terminatedByPartialDefinitions() {
-		return this.done;
-	}
-
 	
 	public SortedSet<ParCELExtraNode> getCurrentCounterPartialDefinitions() {
 		return this.counterPartialDefinitions;
@@ -1033,11 +883,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract implements ParCELearnerMB
 	public double getCurrentlyBestAccuracy() {		
 		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
 				(double)(positiveExamples.size() + negativeExamples.size());
-	}
-	
-	@Override
-	public int getWorkerPoolSize() {
-		return this.workerPool.getQueue().size();
 	}
 	
 	@Override

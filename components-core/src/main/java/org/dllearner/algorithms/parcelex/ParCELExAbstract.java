@@ -33,7 +33,10 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	protected long miliStarttime = Long.MIN_VALUE;
 	protected long miliLearningTime = Long.MIN_VALUE;
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	//---------------------------------------------------------
+	//flags to indicate the status of the application
+	//---------------------------------------------------------
+	protected boolean counterDone = false;
 
 	/**
 	 * 
@@ -158,12 +161,17 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	 */
 	public abstract boolean terminatedByCounterDefinitions();
 
-	
-	/**
-	 * Check whether the learner is terminated by the partial definitions
-	 *  
-	 * @return True if the learner is terminated by the partial definitions, false otherwise
+	/**=========================================================================================================<br>
+	 * Check if the learner can be terminated
+	 *
+	 * @return True if termination condition is true (asked to stop, complete definition found, or timeout),
+	 * 			false otherwise
 	 */
-	public abstract boolean terminatedByPartialDefinitions();	
+	protected boolean isTerminateCriteriaSatisfied() {
+		return 	stop ||
+				done ||
+				counterDone ||
+				timeout;
+	}
 
 }

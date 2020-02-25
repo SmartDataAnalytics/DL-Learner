@@ -805,34 +805,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		maxAccuracy = 0;
 	}
 	
-	
-	/**=========================================================================================================<br>
-	 * Check if the learner can be terminated
-	 * 
-	 * @return True if termination condition is true (asked to stop, complete definition found, or timeout),
-	 * 			false otherwise 
-	 */
-	private boolean isTerminateCriteriaSatisfied() {		
-		return 	stop || 
-				done ||
-				counterDone ||
-				timeout;
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Set heuristic will be used 
-	 * 
-	 * @param newHeuristic
-	 */
-	public void setHeuristic(ParCELHeuristic newHeuristic) {
-		this.heuristic = newHeuristic;
-		
-		if (logger.isInfoEnabled())
-			logger.info("Changing heuristic to " + newHeuristic.getClass().getName());
-	}
-	
-	
 	/**=========================================================================================================<br>
 	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true
 	 */

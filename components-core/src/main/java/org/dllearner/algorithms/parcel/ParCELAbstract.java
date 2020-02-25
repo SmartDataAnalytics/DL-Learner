@@ -1,15 +1,27 @@
 package org.dllearner.algorithms.parcel;
 
+import java.lang.invoke.MethodHandles;
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
+import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract class for all ParCEL algorithms family
@@ -17,7 +29,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author An C. Tran
  * 
  */
-public abstract class ParCELAbstract extends AbstractCELA {
+public abstract class ParCELAbstract extends AbstractCELA implements ParCELearnerMBean {
+
+	protected static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
 	// ----------------------------------
 	// configuration options 
@@ -27,6 +41,7 @@ public abstract class ParCELAbstract extends AbstractCELA {
 
 	@ConfigOption(defaultValue = "0.0", description = "The percentage of noise within the examples")
 	protected double noisePercentage = 0.0;
+	protected double noiseAllowed; // = this.noisePercentage/100d;
 
 	@ConfigOption(defaultValue = "10", description = "Max number of splits will be applied for data properties with double range. This parameter is not used if a Splitter is provided")
 	protected int maxNoOfSplits = 10;
@@ -36,6 +51,13 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	
 	@ConfigOption(defaultValue = "false", description = "Use value restriction or not")
 	protected boolean useHasValue = false;
+
+	@ConfigOption(defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
+			exampleValue = "ex:Male or http://example.org/ontology/Female")
+	protected OWLClassExpression startClass; // description of the root node
+
+	protected ParCELDoubleSplitterAbstract splitter = null;
 	
 	
 	protected int maxHorizExp = 0;
@@ -86,9 +108,56 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	 * Pool of workers
 	 */
 	protected ThreadPoolExecutor workerPool;
-	
-	
-	
+
+	// configuration for worker pool
+	protected int minNumberOfWorker = 2;
+	protected int maxNumberOfWorker = 4; 	// max number of workers will be created
+	protected final int maxTaskQueueLength = 2000;
+	protected final long keepAliveTime = 100; 	// ms
+
+	//examples
+	protected Set<OWLIndividual> positiveExamples;
+	protected Set<OWLIndividual> negativeExamples;
+
+	/**
+	 * Refinement operator pool which provides refinement operators
+	 */
+	protected ParCELRefinementOperatorPool refinementOperatorPool;
+
+	protected RefinementOperator refinementOperator;
+
+	/**
+	 * contains tasks submitted to thread pool
+	 */
+	protected BlockingQueue<Runnable> taskQueue;
+
+
+	// just for pretty representation of description
+	protected String baseURI;
+	protected Map<String, String> prefix;
+
+	protected final DecimalFormat df = new DecimalFormat();
+
+	// ---------------------------------------------------------
+	// flags to indicate the status of the application
+	// ---------------------------------------------------------
+	/**
+	 * The learner is stopped (reasons: done, timeout, out of memory, etc.)
+	 */
+	protected volatile boolean stop = false;
+
+	/**
+	 * All positive examples are covered
+	 */
+	protected volatile boolean done = false;
+
+	/**
+	 * Learner get timeout
+	 */
+	protected volatile boolean timeout = false;
+
+
+
 	//------------------------------------------
 	// Common constructors and methods
 	//------------------------------------------
@@ -111,6 +180,51 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	 */
 	public ParCELAbstract(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
+	}
+
+	protected void createRefinementOperatorPool() throws ComponentInitException {
+		if (refinementOperator == null) {
+			// -----------------------------------------
+			// prepare for refinement operator creation
+			// -----------------------------------------
+			Set<OWLClass> usedConcepts = new TreeSet<>(reasoner.getClasses());
+
+			// remove the ignored concepts out of the list of concepts will be used by refinement
+			// operator
+			if (this.ignoredConcepts != null) {
+				try {
+					usedConcepts.removeAll(ignoredConcepts);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} //set ignored concept is applicable
+
+			ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+
+			// create a splitter and refinement operator pool
+			// there are two options: i) using object pool, ii) using set of objects (removed from
+			// this revision)
+			if (this.splitter != null) {
+				splitter.setReasoner(reasoner);
+				splitter.setPositiveExamples(positiveExamples);
+				splitter.setNegativeExamples(negativeExamples);
+				splitter.init();
+
+				Map<OWLDataProperty, List<Double>> splits = splitter.computeSplits();
+
+				// i) option 1: create an object pool
+				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHierarchy,
+						startClass, splits, numberOfWorkers + 1);
+			}
+			else { // no splitter provided create an object pool
+				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHierarchy,
+						startClass, numberOfWorkers + 1, maxNoOfSplits);
+			}
+
+			refinementOperatorPool.getFactory().setUseDisjunction(false);
+			refinementOperatorPool.getFactory().setUseNegation(true);
+			refinementOperatorPool.getFactory().setUseHasValue(this.useHasValue);
+		}
 	}
 
 	/**
@@ -334,5 +448,102 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	
 	public void setUseHasValue(boolean useHasValue) {
 		this.useHasValue = useHasValue;
+	}
+
+	@Autowired(required = false)
+	public void setRefinementOperator(RefinementOperator refinementOp) {
+		this.refinementOperator = refinementOp;
+	}
+
+	public RefinementOperator getRefinementOperator() {
+		return this.refinementOperator;
+	}
+
+	@Autowired(required = false)
+	public void setSplitter(ParCELDoubleSplitterAbstract splitter) {
+		this.splitter = splitter;
+	}
+
+	public void setStartClass(OWLClassExpression startClass) {
+		this.startClass = startClass;
+	}
+
+	@Override
+	public int getWorkerPoolSize() {
+		return this.workerPool.getQueue().size();
+	}
+
+	/**
+	 * ============================================================================================
+	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true
+	 */
+	@Override
+	public void stop() {
+
+		if (!stop) {
+			stop = true;
+			workerPool.shutdownNow();
+
+			//wait until all workers are terminated
+			try {
+				//System.out.println("-------------Waiting for worker pool----------------");
+				workerPool.awaitTermination(10, TimeUnit.SECONDS);
+			}
+			catch (InterruptedException ie) {
+				logger.error(ie);
+			}
+		}
+	}
+
+	/**=========================================================================================================<br>
+	 * Set heuristic will be used
+	 *
+	 * @param newHeuristic
+	 */
+	public void setHeuristic(ParCELHeuristic newHeuristic) {
+		this.heuristic = newHeuristic;
+
+		if (logger.isInfoEnabled())
+			logger.info("Changing heuristic to " + newHeuristic.getClass().getName());
+	}
+
+	public boolean isTimeout() {
+		return timeout;
+	}
+
+	public boolean isDone() {
+		return done;
+	}
+
+	@Override
+	public boolean isRunning() {
+		return !stop && !done && !timeout;
+	}
+
+	/**
+	 * ============================================================================================
+	 * Check if the learner can be terminated
+	 *
+	 * @return True if termination condition is true (manual stop inquiry, complete definition
+	 *         found, or timeout), false otherwise
+	 */
+	protected boolean isTerminateCriteriaSatisfied() {
+		return stop || done || timeout;
+		//return stop || done || timeout;// ||
+		// (Runtime.getRuntime().totalMemory() >= this.maxHeapSize
+		// && Runtime.getRuntime().freeMemory() < this.outOfMemory);
+	}
+
+	/**
+	 * Check whether the learner is terminated by the partial definitions
+	 *
+	 * @return True if the learner is terminated by the partial definitions, false otherwise
+	 */
+	public boolean terminatedByPartialDefinitions() {
+		return this.done;
+	}
+
+	protected double getNoiseAllowed() {
+		return noiseAllowed;
 	}
 }

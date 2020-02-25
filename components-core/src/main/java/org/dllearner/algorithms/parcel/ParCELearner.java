@@ -13,67 +13,25 @@ package org.dllearner.algorithms.parcel;
  *	@author An C. Tran
  */
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.*;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
-import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
-
-import org.apache.log4j.Logger;
 import org.dllearner.core.*;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Expression Learning")
 public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
-
-	/**
-	 * Refinement operator pool which provides refinement operators
-	 */
-	private ParCELRefinementOperatorPool refinementOperatorPool;
-
-	private RefinementOperator refinementOperator = null; 
-
-	
-	//splitter used to split the numerical data properties
-	private ParCELDoubleSplitterAbstract splitter = null;
-
-	private static final Logger logger = Logger.getLogger(ParCELearner.class);
-
-	
 	// will be used in MBean for debugging purpose
 	private int noOfCompactedPartialDefinition = 0;
-
-	private final DecimalFormat df = new DecimalFormat();
-
-	/**
-	 * contains tasks submitted to thread pool
-	 */
-	BlockingQueue<Runnable> taskQueue;
-
-	// examples
-	private Set<OWLIndividual> positiveExamples;
-	private Set<OWLIndividual> negativeExamples;
 
 	private int noOfUncoveredPositiveExamples;
 
@@ -83,9 +41,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 */
 	private int uncoveredPositiveExampleAllowed = 0;
 	
-	private double noiseAllowed; // = this.noisePercentage/100d;
-
-	
 	/**
      * Holds the uncovered positive example, this will be updated when the worker found a partial
      * definition since the callback method "definitionFound" is synchronized", there is no need to
@@ -93,38 +48,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
      */
 	private HashSet<OWLIndividual> uncoveredPositiveExamples;
 
-	@ConfigOption(defaultValue = "owl:Thing",
-			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
-			exampleValue = "ex:Male or http://example.org/ontology/Female")
-	private OWLClassExpression startClass; // description of the root node
 	private ParCELNode startNode; 	// root of the search tree
 
-	// ---------------------------------------------------------
-	// flags to indicate the status of the application
-	// ---------------------------------------------------------
-	/**
-	 * The learner is stopped (reasons: done, timeout, out of memory, etc.)
-	 */
-	private boolean stop = false;
-
-	
-	/**
-	 * All positive examples are covered
-	 */
-	private boolean done = false;
-
-	
-	/**
-	 * Learner get timeout
-	 */
-	private boolean timeout = false;
-	
-	
-	// configuration for worker pool
-	private int minNumberOfWorker = 2;
-	private int maxNumberOfWorker = 4; 	// max number of workers will be created
-	private final int maxTaskQueueLength = 2000;
-	private final long keepAliveTime = 100; 	// ms
 
 	// ------------------------------------------------
 	// variables for statistical purpose
@@ -142,9 +67,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	// number of task created (for debugging purpose only)  
 	private int noOfTask = 0;
 
-	// just for pretty representation of description
-	private String baseURI = null;
-	private Map<String, String> prefix = null;
 
 	/**
 	 * ============================================================================================
@@ -194,7 +116,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// check the learning problem, this learning algorithm support PDLLPosNegLP only
 		if (!(learningProblem instanceof ParCELPosNegLP))
 			throw new ComponentInitException(learningProblem.getClass() + " is not supported by '"
-					+ getName() + "' learning algorithm");
+					+ getName() + "' learning algorithm. Only ParCELPosNegLP is supported.");
 
 		// get the positive and negative examples from the learning problem
 		positiveExamples = ((ParCELPosNegLP) learningProblem).getPositiveExamples();
@@ -202,8 +124,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 		// clone the positive examples for this set to avoid affecting the Learning Problem
 		// this will be used to check the coverage of the partial definition (completeness)
-		this.uncoveredPositiveExamples = new HashSet<>();
-		this.uncoveredPositiveExamples.addAll(this.positiveExamples);
+		this.uncoveredPositiveExamples = new HashSet<>(this.positiveExamples);
 
 		((ParCELPosNegLP) this.learningProblem).setUncoveredPositiveExamples(this.positiveExamples);
 
@@ -212,8 +133,10 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		if (this.heuristic == null)
 			heuristic = new ParCELDefaultHeuristic();
 
-		// this will be revise later using least common super class of all observations
-		startClass = dataFactory.getOWLThing();
+		// this will be revised later using least common super class of all observations
+		if (startClass == null) {
+			startClass = dataFactory.getOWLThing();
+		}
 
 		//TODO check this - what is noise? for positive or negative examples?
 		//----------------------
@@ -223,56 +146,12 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		//----------------------
 
 		// initial the existing uncovered positive examples
-		((ParCELPosNegLP) this.learningProblem)
-				.setUncoveredPositiveExamples(uncoveredPositiveExamples);
+		((ParCELPosNegLP) this.learningProblem).setUncoveredPositiveExamples(uncoveredPositiveExamples);
 
 		// ----------------------------------
 		// create refinement operator pool
 		// ----------------------------------
-		if (refinementOperator == null) {
-			// -----------------------------------------
-			// prepare for refinement operator creation
-			// -----------------------------------------
-			Set<OWLClass> usedConcepts = new TreeSet<>(reasoner.getClasses());
-
-			// remove the ignored concepts out of the list of concepts will be used by refinement
-			// operator
-			if (this.ignoredConcepts != null) {
-				try {
-					usedConcepts.removeAll(ignoredConcepts);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} //set ignored concept is applicable
-
-			ClassHierarchy classHiearachy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
-			Map<OWLDataProperty, List<Double>> splits = null;
-
-			
-			// create a splitter and refinement operator pool
-			// there are two options: i) using object pool, ii) using set of objects (removed from
-			// this revision)
-			if (this.splitter != null) {
-				splitter.setReasoner(reasoner);
-				splitter.setPositiveExamples(positiveExamples);
-				splitter.setNegativeExamples(negativeExamples);
-				splitter.init();
-
-				splits = splitter.computeSplits();
-
-				// i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy,
-						startClass, splits, numberOfWorkers + 1);
-			} 
-			else { // no splitter provided create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy,
-						startClass, numberOfWorkers + 1, maxNoOfSplits);
-			}
-
-			refinementOperatorPool.getFactory().setUseDisjunction(false);
-			refinementOperatorPool.getFactory().setUseNegation(true);
-			refinementOperatorPool.getFactory().setUseHasValue(this.useHasValue);
-		}
+		createRefinementOperatorPool();
 
 		baseURI = reasoner.getBaseURI();
 		prefix = reasoner.getPrefixes();
@@ -606,56 +485,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 			currentMaxHorizExp = newHozExp;
 	}
 	
-
-	/**
-	 * ============================================================================================
-	 * Check if the learner can be terminated
-	 * 
-	 * @return True if termination condition is true (manual stop inquiry, complete definition
-	 *         found, or timeout), false otherwise
-	 */
-	private boolean isTerminateCriteriaSatisfied() {
-		return stop || done || timeout;
-		//return stop || done || timeout;// ||
-		// (Runtime.getRuntime().totalMemory() >= this.maxHeapSize
-		// && Runtime.getRuntime().freeMemory() < this.outOfMemory);
-	}
-
-	/**
-	 * ============================================================================================
-	 * Set heuristic will be used
-	 * 
-	 * @param newHeuristic
-	 */
-	public void setHeuristic(ParCELHeuristic newHeuristic) {
-		this.heuristic = newHeuristic;
-
-		if (logger.isInfoEnabled())
-			logger.info("Changing heuristic to " + newHeuristic.getClass().getName());
-	}
-
-	/**
-	 * ============================================================================================
-	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true
-	 */
-	@Override
-	public void stop() {
-
-		if (!stop) {
-			stop = true;
-			workerPool.shutdownNow();
-			
-			//wait until all workers are terminated
-			try {
-				//System.out.println("-------------Waiting for worker pool----------------");
-				workerPool.awaitTermination(10, TimeUnit.SECONDS);
-			}
-			catch (InterruptedException ie) {
-				logger.error(ie);
-			}
-		}
-	}
-
 	/**
 	 * ============================================================================================
 	 * Get the currently best description in the set of partial definition
@@ -746,19 +575,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return 1 - (uncoveredPositiveExamples.size() / (double) positiveExamples.size());
 	}
 
-	/**
-	 * ============================================================================================
-	 * =============<br>
-	 * Get the list of learning problem supported by this learning algorithm
-	 * 
-	 * @return List of supported learning problem
-	 */
-	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
-		problems.add(ParCELPosNegLP.class);
-		return problems;
-	}
-
 	// methods related to the compactness: get compact definition, set compactor
 	public SortedSet<ParCELExtraNode> getReducedPartialDefinition(ParCELReducer reducer) {
 		return reducer.reduce(partialDefinitions, positiveExamples,
@@ -785,11 +601,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return bestDescriptionLength;
 	}
 
-	@Override
-	public boolean isRunning() {
-		return !stop && !done && !timeout;
-	}
-
 	public int getSearchTreeSize() {
 		return (searchTree != null ? searchTree.size() : -1);
 	}
@@ -814,39 +625,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return heuristic;
 	}
 
-	public String getBaseURI() {
-		return baseURI;
-	}
-
-	public Map<String, String> getPrefix() {
-		return prefix;
-	}
-
-	public boolean isTimeout() {
-		return timeout;
-	}
-
-	public boolean isDone() {
-		return done;
-	}
-
 	@Override
 	public long getLearningTime() {
 		return miliLearningTime;
-	}
-
-	@Autowired(required = false)
-	public void setRefinementOperator(RefinementOperator refinementOp) {
-		this.refinementOperator = refinementOp;
-	}
-
-	public RefinementOperator getRefinementOperator() {
-		return this.refinementOperator;
-	}
-
-	@Autowired(required = false)
-	public void setSplitter(ParCELDoubleSplitterAbstract splitter) {
-		this.splitter = splitter;
 	}
 
 	public int getNoOfReducedPartialDefinition() {
@@ -897,26 +678,12 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
 				(double)(positiveExamples.size() + negativeExamples.size());
 	}
-	
-	@Override
-	public int getWorkerPoolSize() {
-		return this.workerPool.getQueue().size();
-	}
-	
+
 	@Override
 	public int getCurrentlyMaxExpansion() {
 		return this.currentMaxHorizExp;
 	}
 
-	public double getNoiseAllowed() {
-		return noiseAllowed;
-	}
 
-	public void setNoiseAllowed(double noiseAllowed) {
-		this.noiseAllowed = noiseAllowed;
-	}
 
-	public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
-	}
 }
