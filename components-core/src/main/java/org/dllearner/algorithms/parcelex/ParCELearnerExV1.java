@@ -14,46 +14,25 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
-import java.util.*;
-import java.util.concurrent.*;
-
-import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
-import org.dllearner.core.*;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @ComponentAnn(name="ParCELearnerExV1", shortName="parcelearnerExV1", version=0.1, description="Parallel Class Expression Logic Learning")
 public class ParCELearnerExV1 extends ParCELExAbstract {
 
 	private int noOfCompactedPartialDefinition = 0;
 
-	
-	/**
-	 * contains tasks submitted to thread pool
-	 */
-	BlockingQueue<Runnable> taskQueue;
-	
-	/**
-	 * This may be considered as the noise allowed in learning, 
-	 * 	i.e. the maximum number of positive examples can be discard (uncovered)
-	 */
-	private int uncoveredPositiveExampleAllowed;
-	
-	
-	/**
-	 * 	Holds the uncovered positive examples, this will be updated when the worker found a partial definition
-	 *	since the callback method "partialDefinitionFound" is synchronized,
-	 * 	there is no need to create a thread-safe for this set
-	 */
-	private HashSet<OWLIndividual> uncoveredPositiveExamples;
 	private HashSet<OWLIndividual> coveredNegativeExamples;
 
 
@@ -69,10 +48,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	//some properties for statistical purpose
 	private int descriptionTested;	//total number of descriptions tested (generated and calculated accuracy, correctess,...)
 
-	private double maxAccuracy = 0.0d;
-	private int bestDescriptionLength = 0;
-
-	
 	private int noOfTask = 0;
 
 	
@@ -180,57 +155,11 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	 */
 	@Override
 	public void start() {
-		
-		// register a MBean for debugging purpose
-		/*
-		try {
-			ObjectName parCELExV1Bean = new ObjectName(
-					"org.dllearner.algorithms.parcel.ParCELearnerMBean:type=ParCELearnerExV1Bean");
-			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			if (!mbs.isRegistered(parCELExV1Bean))
-				mbs.registerMBean(this, parCELExV1Bean);
-		} catch (Exception e) {
-			e.printStackTra
-		*/
-		
-		stop = false;
-		done = false;
-		timeout = false;
-		counterDone = false;
-		
-		this.noOfCompactedPartialDefinition = 0;
-			
 		reset();
-		
 
-		//create a start node in the search tree
-		allDescriptions.add(startClass);	//currently, start class is always Thing
-		
-		//add the first node into the search tree
-		startNode = new ParCELNode(null, startClass,
-				this.positiveExamples.size()/(double)(this.positiveExamples.size() + this.negativeExamples.size()), 0, 1);
-		
-		startNode.setCoveredPositiveExamples(positiveExamples);
-		startNode.setCoveredNegativeExamples(negativeExamples);
-			
-		searchTree.add(startNode);	//add the root node into the search tree
-		
-		
-		//---------------------------------------------
-		// create worker pool
-		//---------------------------------------------
-		//taskQueue = new ArrayBlockingQueue<Runnable>(maxTaskQueueLength);		
-		taskQueue = new LinkedBlockingQueue<>(maxTaskQueueLength);
-			
-		workerPool = new ThreadPoolExecutor(minNumberOfWorker, maxNumberOfWorker, keepAliveTime, 
-				TimeUnit.MILLISECONDS, taskQueue, new ParCELWorkerThreadFactory());
-		
-	
-		if (logger.isInfoEnabled())
-			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize() + 
-					", max pool size: " + workerPool.getMaximumPoolSize());
-		
-		
+		createWorkerPool();
+
+
 		//start time of reducer, statistical purpose only
 		miliStarttime = System.currentTimeMillis();
 		
@@ -240,17 +169,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 		//----------------------------------------------------------
 		while (!isTerminateCriteriaSatisfied()) {
 
-			//-------------------
-			//check for timeout
-            //-------------------
-			timeout = (this.maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - miliStarttime) > this.maxExecutionTimeInSeconds*1000);
-				
-			if (timeout)
-				break;
-			
-			ParCELNode nodeToProcess;
-			
-			nodeToProcess = searchTree.pollLast();
+			ParCELNode nodeToProcess = searchTree.pollLast();
 					
 			//TODO: why this? why "blocking" concept does not help in this case?
 			//remove this checking will exploit the heap memory and no definition found
@@ -444,103 +363,22 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 							
 							logger.debug("===============");
 							
-						} //for end of printing the learning tree
+						}
 
-					}	//if in the debug mode: Print the learning tree 
+					}
 				}
 			}					
 		}		
 		
 		super.aggregateCounterPartialDefinitionInf();
 		
-	}	//start()
+	}
 
 	
 	private void createNewTask(ParCELNode nodeToProcess) {
 		workerPool.execute(new ParCELWorkerExV1(this, this.refinementOperatorPool,
 				(ParCELPosNegLP)learningProblem, nodeToProcess, "PDLLTask-" + (noOfTask++)));
 	}
-	
-
-	
-	/**=========================================================================================================<br>
-	 * Callback method for worker when a partial definition found 
-	 * 		(callback for an evaluation request from reducer)<br>
-	 * If a definition (partial) found, do the following tasks:<br>
-	 * 	1. Add the definition into the partial definition set<br>
-	 * 	2. Update: uncovered positive examples, max accuracy, best description length
-	 * 	2. Check for the completeness of the learning. If yes, stop the learning<br>
-	 * 
-	 * @param definitions New partial definitions
-	 */
-	@Override
-	public void newPartialDefinitionsFound(Set<ParCELExtraNode> definitions) {
-
-		for (ParCELExtraNode def : definitions) {
-
-			//NOTE: in the previous version, this node will be added back into the search tree
-			//		it is not necessary since in DLLearn, a definition may be revised to get a better one but
-			//			in this approach, we do not refine partial definition.
-		
-			//remove uncovered positive examples by the positive examples covered by the new partial definition
-			int uncoveredPositiveExamplesRemoved;
-			int uncoveredPositiveExamplesSize;		//for avoiding synchronized uncoveredPositiveExamples later on
-			
-			synchronized (uncoveredPositiveExamples) {
-				uncoveredPositiveExamplesRemoved = this.uncoveredPositiveExamples.size();
-				this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
-				uncoveredPositiveExamplesSize = this.uncoveredPositiveExamples.size();
-			}
-			 
-			uncoveredPositiveExamplesRemoved -= uncoveredPositiveExamplesSize;
-			
-			if (uncoveredPositiveExamplesRemoved > 0) {
-							
-				//set the generation time for the new partial definition
-				def.setGenerationTime(System.currentTimeMillis() - miliStarttime);						
-				synchronized (partialDefinitions) {
-					partialDefinitions.add(def);
-				}
-				
-				//update the uncovered positive examples for the learning problem
-				((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(uncoveredPositiveExamples);
-				
-				if (logger.isTraceEnabled()) {
-					logger.trace("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
-							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size() 
-							);					
-				}
-				else if (logger.isDebugEnabled())
-					logger.debug("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
-							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size()
-							);
-				else if (logger.isInfoEnabled()) {
-					logger.info("PARTIAL definition found. Uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
-				}
-
-				//update the max accuracy and max description length
-				if (def.getAccuracy() > this.maxAccuracy) {
-					this.maxAccuracy = def.getAccuracy();
-					this.bestDescriptionLength = new OWLClassExpressionLengthCalculator().getLength(def.getDescription());
-				}
-				
-				//check if the complete definition found
-				if (uncoveredPositiveExamplesSize <= uncoveredPositiveExampleAllowed) {
-					this.done = true;
-					//stop();
-				}
-
-				
-			}
-			
-
-		}	//for each partial definition
-		
-	}	//definitionFound()
-	
-	
 	
 	/**
 	 * This function is used to process the counter partial definitions: description which 
@@ -571,18 +409,12 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 				
 				//NOTE: when a partial definition found, we update the set of uncovered positive examples for the Learning Problem
 				//			but there is no need to do it for the counter partial definition, i.e. no update for covered negative examples
-				if (logger.isTraceEnabled()) {
+				if (logger.isTraceEnabled() || logger.isDebugEnabled()) {
 					logger.trace("COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
 							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);					
-				}
-				else if (logger.isDebugEnabled())
-					logger.debug("COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
-							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
-							);
-				else if (logger.isInfoEnabled()) {
+				} else if (logger.isInfoEnabled()) {
 					logger.info("COUNTER PARTIAL definition found. Total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size());
 				}
 				
@@ -598,27 +430,19 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	}
 	
 	/**=========================================================================================================<br>
-	 * 	Callback method for worker to call when it gets an evaluated node which is neither a partial definition 
-	 * 		nor a weak description<br>
-	 *	
-	 *	NOTE: there is not need for using synchronisation for this method since the thread safe 
-	 *		data structure is currently using  
-	 * 
-	 * @param newNodes New nodes to add to the search tree
-	 */
-	@Override
-	public void newRefinementDescriptions(Set<ParCELNode> newNodes) {		
-		searchTree.addAll(newNodes);
-	}
-
-	
-	/**=========================================================================================================<br>
 	 * Reset all necessary properties for a new learning
 	 * 	1. Create new search tree
 	 * 	2. Create an empty description set, which hold all generated description (to avoid redundancy)
 	 * 	3. Create an empty 
 	 */
 	private void reset() {
+		stop = false;
+		done = false;
+		timeout = false;
+		counterDone = false;
+
+		this.noOfCompactedPartialDefinition = 0;
+
 		this.searchTree = new ConcurrentSkipListSet<>(heuristic);
 		
 		//allDescriptions = new TreeSet<Description>(new ConceptComparator());
@@ -636,11 +460,22 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 		
 		descriptionTested = 0;
 		maxAccuracy = 0;
-	}
-	
-	
 
-	
+		//create a start node in the search tree
+		allDescriptions.add(startClass);	//currently, start class is always Thing
+
+		//add the first node into the search tree
+		startNode = new ParCELNode(null, startClass,
+								   this.positiveExamples.size()/(double)(this.positiveExamples.size() + this.negativeExamples.size()), 0, 1);
+
+		startNode.setCoveredPositiveExamples(positiveExamples);
+		startNode.setCoveredNegativeExamples(negativeExamples);
+
+		searchTree.add(startNode);	//add the root node into the search tree
+
+
+	}
+
 
 	/**=========================================================================================================<br>
 	 * Stop the learning algorithm: Stop the workers and set the "stop" flag to true
@@ -670,82 +505,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	}
 
 
-	/**
-	 * =========================================================================================================<br>
-	 * Get the currently best description in the set of partial definition
-	 */
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		if (partialDefinitions.size() > 0) {
-			return partialDefinitions.iterator().next().getDescription();
-		} else
-			return null;
-	}
-
-
-	/**=========================================================================================================<br>
-	 * Get all partial definition without any associated information such as accuracy, correctness, etc. 
-	 */
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return PLOENodesToDescriptions(partialDefinitions);
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Convert a set of PLOENode into a list of descriptions
-	 * 
-	 * @param nodes Set of PLOENode need to be converted
-	 * 
-	 * @return Set of descriptions corresponding to the given set of PLOENode
-	 */
-	private List<OWLClassExpression> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
-		List<OWLClassExpression> result = new LinkedList<>();
-		for (ParCELExtraNode node : nodes)
-			result.add(node.getDescription());
-		return result;
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * The same as getCurrentBestDescription.  An evaluated description is a description with 
-	 * its evaluated properties including accuracy and correctness  
-	 */
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		if (partialDefinitions.size() > 0) {
-			ParCELNode firstNode = partialDefinitions.iterator().next();
-			return new EvaluatedDescription(firstNode.getDescription(), new ParCELScore(firstNode));
-		}
-		else
-			return null;
-	}
-
-	
-	/**=========================================================================================================<br>
-	 * Get all partial definitions found so far 
-	 */
-	@Override
-	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
-		return extraPLOENodesToEvaluatedDescriptions(partialDefinitions);
-	}
-
-	
-	/**=========================================================================================================<br>
-	 * Method for PLOENode - EvaluatedDescription conversion
-	 * 
-	 * @param partialDefs Set of ExtraPLOENode nodes which will be converted into EvaluatedDescription 
-	 * 
-	 * @return Set of corresponding EvaluatedDescription  
-	 */
-	private NavigableSet<? extends EvaluatedDescription<? extends Score>> extraPLOENodesToEvaluatedDescriptions(Set<ParCELExtraNode> partialDefs) {
-		TreeSet<EvaluatedDescription<? extends Score>> result = new TreeSet<>(new EvaluatedDescriptionComparator());
-		for (ParCELExtraNode node : partialDefs) {
-			result.add(new EvaluatedDescription(node.getDescription(), new ParCELScore(node)));
-		}
-		return result;
-	}
-	
 	
 	/**=========================================================================================================<br>
 	 * Get the overall completeness of all partial definition found
@@ -755,19 +514,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	public double getCurrentlyOveralMaxCompleteness() {
 		return 1 - (uncoveredPositiveExamples.size()/(double)positiveExamples.size());
 	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Get the list of learning problem supported by this learning algorithm
-	 * 
-	 * @return List of supported learning problem 
-	 */
-	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
-		problems.add(ParCELPosNegLP.class);
-		return problems;
-	}
-
 
 	//methods related to the compactness: get compact definition, set compactor
 	public SortedSet<ParCELExtraNode> getReducedPartialDefinition(ParCELReducer reducer) {
@@ -788,108 +534,19 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	//------------------------------------------
 	// getters for learning results
 	//------------------------------------------
-	
-	public double getMaxAccuracy() {
-		return maxAccuracy;
-	}
-	
-	
-	public int getCurrentlyBestDescriptionLength() {
-		return bestDescriptionLength;
-	}
-	
-	
-	@Override
-	public boolean isRunning() {
-		return !stop && !done && !timeout;
-	}
-	
-	
 	public int getClassExpressionTests() {
 		return descriptionTested;
-	}
-	
-	
-	public int getSearchTreeSize() {		
-		return (searchTree!= null? searchTree.size() : -1);
-	}
-
-	
-	public Set<ParCELExtraNode> getPartialDefinitions() {
-		return partialDefinitions;
-	}
-	
-	
-	/*
-	public Set<PDLLNode> getSearchTree() {
-		return searchTree;
-	}
-	*/
-	
-	public Collection<ParCELNode> getSearchTree() {
-		return searchTree;
-	}
-		
-	
-	public ParCELHeuristic getHeuristic() {
-		return heuristic;
-	}
-	
-	
-	public boolean isTimeout() {
-		return timeout;
-	}
-	
-	
-	public boolean isDone() {
-		return done; 
-	}
-	
-	
-	public long getLearningTime() {
-		return miliLearningTime;
 	}
 	
 	//------------------------------------------------
 	// setters and getters for configuration options
 	//------------------------------------------------
-	
-
 	public int getNoOfReducedPartialDefinition() {
 		return this.noOfCompactedPartialDefinition;
 	}
-	
-	@Override
-	public boolean terminatedByCounterDefinitions() {
-		return this.counterDone;
-	}
-	
+
 	public SortedSet<ParCELExtraNode> getCurrentCounterPartialDefinitions() {
 		return this.counterPartialDefinitions;
 	}
 
-	@Override
-	public long getTotalNumberOfDescriptionsGenerated() {
-		return allDescriptions.size();
-	}
-
-	@Override
-	public long getTotalDescriptions() {
-		
-		return allDescriptions.size();
-	}
-	
-	@Override
-	public double getCurrentlyBestAccuracy() {		
-		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
-				(double)(positiveExamples.size() + negativeExamples.size());
-	}
-	
-	@Override
-	public int getCurrentlyMaxExpansion() {
-		// TODO Auto-generated method stub
-		return this.maxHorizExp;
-	}
-
-	
 }

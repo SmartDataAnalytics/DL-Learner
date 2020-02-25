@@ -1,27 +1,25 @@
 package org.dllearner.algorithms.parcel;
 
-import java.lang.invoke.MethodHandles;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.refinementoperators.RefinementOperator;
+import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.lang.invoke.MethodHandles;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Abstract class for all ParCEL algorithms family
@@ -61,7 +59,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	
 	
 	protected int maxHorizExp = 0;
-	
+
 	//-------------------------------------------
 	//common variables for the learner
 	//-------------------------------------------
@@ -138,6 +136,19 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 	protected final DecimalFormat df = new DecimalFormat();
 
+	/**
+	 * This may be considered as the noise allowed in learning, i.e. the maximum number of positive
+	 * examples can be discard (uncovered)
+	 */
+	protected int uncoveredPositiveExampleAllowed = 0;
+
+	/**
+	 * Holds the uncovered positive example, this will be updated when the worker found a partial
+	 * definition since the callback method "definitionFound" is synchronized", there is no need to
+	 * create a thread-safe for this set
+	 */
+	protected Set<OWLIndividual> uncoveredPositiveExamples;
+
 	// ---------------------------------------------------------
 	// flags to indicate the status of the application
 	// ---------------------------------------------------------
@@ -156,15 +167,24 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 */
 	protected volatile boolean timeout = false;
 
+	// ------------------------------------------------
+	// variables for statistical purpose
+	// ------------------------------------------------
+	protected long miliStarttime = Long.MIN_VALUE;
+	protected long miliLearningTime = Long.MIN_VALUE;
 
+	// some properties for statistical purpose
+	protected int currentMaxHorizExp = 0;
+	protected int bestDescriptionLength = 0;
+	protected double maxAccuracy = 0.0d;
 
-	//------------------------------------------
-	// Common constructors and methods
-	//------------------------------------------
-	
-	/**
-	 * Default constructor
-	 */
+	// will be used in MBean for debugging purpose
+	protected int noOfCompactedPartialDefinition;
+	protected int noOfUncoveredPositiveExamples;
+
+	// number of task created (for debugging purpose only)
+	protected int noOfTask = 0;
+
 	public ParCELAbstract() {
 		super();
 	}
@@ -180,6 +200,85 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 */
 	public ParCELAbstract(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
+	}
+
+	/**
+	 * ============================================================================================
+	 * Callback method for worker when partial definitions found (callback for an evaluation request
+	 * from reducer)<br>
+	 * If a definition (partial) found, do the following tasks:<br>
+	 * 1. Add the definition into the partial definition set<br>
+	 * 2. Update: uncovered positive examples, max accuracy, best description length<br>
+	 * 3. Check for the completeness of the learning. If yes, stop the learning<br>
+	 *
+	 * @param definitions
+	 *            New partial definitions
+	 */
+	public void newPartialDefinitionsFound(Set<ParCELExtraNode> definitions) {
+
+		for (ParCELExtraNode def : definitions) {
+			// NOTE: in the previous version, this node will be added back into the search tree
+			// it is not necessary since in DLLearn, a definition may be revised to get a better one
+			// but
+			// in this approach, we do not refine partial definition.
+
+			// remove uncovered positive examples by the positive examples covered by the new
+			// partial definition
+			int uncoveredPositiveExamplesRemoved;
+			int uncoveredPositiveExamplesSize;
+
+			//re-calculate the generation time of pdef
+			def.setGenerationTime(def.getGenerationTime() - miliStarttime);
+
+			synchronized (uncoveredPositiveExamples) {
+				uncoveredPositiveExamplesRemoved = this.uncoveredPositiveExamples.size();
+				this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
+				uncoveredPositiveExamplesSize = this.uncoveredPositiveExamples.size();
+			}	//end of uncovere dPositive examples synchronise
+
+			uncoveredPositiveExamplesRemoved -= uncoveredPositiveExamplesSize;
+
+			if (uncoveredPositiveExamplesRemoved > 0) {
+
+				// set the generation time for the new partial definition
+				//def.setGenerationTime(System.currentTimeMillis() - miliStarttime);	//this is set by workers
+				synchronized (partialDefinitions) {
+					partialDefinitions.add(def);
+				}
+
+				// for used in bean (for tracing purpose)
+				this.noOfUncoveredPositiveExamples -= uncoveredPositiveExamplesRemoved;
+
+				((ParCELPosNegLP) this.learningProblem)
+						.setUncoveredPositiveExamples(uncoveredPositiveExamples);
+
+				if (logger.isTraceEnabled() || logger.isDebugEnabled()) {
+					logger.trace("PARTIAL definition found: "
+										 + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
+										 + "\n\t - covered positive examples ("
+										 + def.getCoveredPositiveExamples().size() + "): "
+										 + def.getCoveredPositiveExamples()
+										 + "\n\t - uncovered positive examples left: "
+										 + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
+				} else if (logger.isInfoEnabled()) {
+					logger.info("PARTIAL definition found, uncovered positive examples left: "
+										+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
+				}
+
+			}
+
+			// update the max accuracy and max description length
+			if (def.getAccuracy() > this.maxAccuracy) {
+				this.maxAccuracy = def.getAccuracy();
+				this.bestDescriptionLength = new OWLClassExpressionLengthCalculator().getLength(def.getDescription());
+			}
+
+			// check if the complete definition found
+			if (uncoveredPositiveExamplesSize <= uncoveredPositiveExampleAllowed) {
+				this.done = true;
+				// stop();
+			}
+		}
 	}
 
 	protected void createRefinementOperatorPool() throws ComponentInitException {
@@ -227,6 +326,17 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		}
 	}
 
+	protected void createWorkerPool() {
+		taskQueue = new LinkedBlockingQueue<>(maxTaskQueueLength);
+
+		workerPool = new ThreadPoolExecutor(minNumberOfWorker, maxNumberOfWorker, keepAliveTime,
+											TimeUnit.MILLISECONDS, taskQueue, new ParCELWorkerThreadFactory());
+
+		if (logger.isInfoEnabled())
+			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize() +
+								", max pool size: " + workerPool.getMaximumPoolSize());
+	}
+
 	/**
 	 * Get the union of all the best (reduced) partial definitions
 	 *
@@ -262,14 +372,6 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 
 	/**
-	 * Get all unreduced partial definitions
-	 * 
-	 * @return unreduced partial definitions
-	 */
-	public abstract Set<ParCELExtraNode> getPartialDefinitions();
-
-	
-	/**
 	 * Get the max overall completeness so far 
 	 * 
 	 * @return max overall completeness
@@ -290,7 +392,9 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 * 
 	 * @return number of reduced partial definitions
 	 */
-	public abstract int getNoOfReducedPartialDefinition();
+	public int getNoOfReducedPartialDefinition() {
+		return noOfCompactedPartialDefinition;
+	}
 
 		
 	/**
@@ -316,35 +420,35 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 			maxHorizExp = newHozExp;
 		}
 	}
-	
-	
-	
+
 	public int getMaximumHorizontalExpansion() {
 		return maxHorizExp;
 	}
-	
-	
+
+
 	/**
-	 * This will be called by the workers to return the new partial definitions found  
-	 * 
-	 * @param definitions New partial definitions
+	 * ============================================================================================
+	 * Callback method for worker when the evaluated node is not a partial definition and weak node
+	 * either<br>
+	 *
+	 * NOTE: there is not need for using synchronisation for this method since the thread safe data
+	 * structure is currently using
+	 *
+	 * @param newNodes
+	 *            New nodes to add to the search tree
 	 */
-	public abstract void newPartialDefinitionsFound(Set<ParCELExtraNode> definitions);
-	
-	
-	/**
-	 * This will be called by the workers to pass the new refinements descriptions 
-	 * 
-	 * @param newNodes New refinement descriptions
-	 */
-	public abstract void newRefinementDescriptions(Set<ParCELNode> newNodes);
+	public void newRefinementDescriptions(Set<ParCELNode> newNodes) {
+		searchTree.addAll(newNodes);
+	}
 	
 	
 	/*
 	 * 
 	 * Get the learning time in milisecond. Learning time does not include the reduction time
 	 */
-	public abstract long getLearningTime();	
+	public long getLearningTime() {
+		return miliLearningTime;
+	}
 	
 	/**
 	 * Get total number of partial definitions found so far
@@ -508,6 +612,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	}
 
 	public boolean isTimeout() {
+		timeout = (this.maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - miliStarttime) > this.maxExecutionTimeInSeconds * 1000);
 		return timeout;
 	}
 
@@ -528,8 +633,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 *         found, or timeout), false otherwise
 	 */
 	protected boolean isTerminateCriteriaSatisfied() {
-		return stop || done || timeout;
-		//return stop || done || timeout;// ||
+		return stop || done || isTimeout();
 		// (Runtime.getRuntime().totalMemory() >= this.maxHeapSize
 		// && Runtime.getRuntime().freeMemory() < this.outOfMemory);
 	}
@@ -545,5 +649,139 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 	protected double getNoiseAllowed() {
 		return noiseAllowed;
+	}
+
+	/**
+	 * ============================================================================================
+	 * Get the currently best description in the set of partial definition
+	 */
+	@Override
+	public OWLClassExpression getCurrentlyBestDescription() {
+		if (partialDefinitions.size() > 0) {
+			return partialDefinitions.iterator().next().getDescription();
+		} else
+			return null;
+	}
+
+	/**
+	 * ============================================================================================
+	 * Get all partial definition without any associated information such as accuracy, correctness,
+	 * etc.
+	 */
+	@Override
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
+		return PLOENodesToDescriptions(partialDefinitions);
+	}
+
+	/**
+	 * ============================================================================================
+	 * Convert a set of PLOENode into a list of descriptions
+	 *
+	 * @param nodes
+	 *            Set of PLOENode need to be converted
+	 *
+	 * @return Set of descriptions corresponding to the given set of PLOENode
+	 */
+	private List<OWLClassExpression> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
+		List<OWLClassExpression> result = new LinkedList<>();
+		for (ParCELExtraNode node : nodes)
+			result.add(node.getDescription());
+		return result;
+	}
+
+	/**
+	 * ============================================================================================
+	 * The same as getCurrentBestDescription. An evaluated description is a description with its
+	 * evaluated properties including accuracy and correctness
+	 */
+	@Override
+	public EvaluatedDescription<? extends Score> getCurrentlyBestEvaluatedDescription() {
+		if (!partialDefinitions.isEmpty()) {
+			ParCELNode firstNode = partialDefinitions.first();
+			return new EvaluatedDescription<>(firstNode.getDescription(), new ParCELScore(firstNode));
+		} else
+			return null;
+	}
+
+	/**
+	 * ============================================================================================
+	 * Get all partial definitions found so far
+	 */
+	@Override
+	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
+		return extraPLOENodesToEvaluatedDescriptions(partialDefinitions);
+	}
+
+	/**
+	 * ============================================================================================
+	 * Method for PLOENode - EvaluatedDescription conversion
+	 *
+	 * @param partialDefs
+	 *            Set of ExtraPLOENode nodes which will be converted into EvaluatedDescription
+	 *
+	 * @return Set of corresponding EvaluatedDescription
+	 */
+	private NavigableSet<? extends EvaluatedDescription<? extends Score>> extraPLOENodesToEvaluatedDescriptions(
+			Set<ParCELExtraNode> partialDefs) {
+		TreeSet<EvaluatedDescription<? extends Score>> result = new TreeSet<>(
+				new EvaluatedDescriptionComparator());
+		for (ParCELExtraNode node : partialDefs) {
+			result.add(new EvaluatedDescription<>(node.getDescription(), new ParCELScore(node)));
+		}
+		return result;
+	}
+	/**
+	 * Get all unreduced partial definitions
+	 *
+	 * @return unreduced partial definitions
+	 */
+	public Set<ParCELExtraNode> getPartialDefinitions() {
+		return partialDefinitions;
+	}
+
+
+	public Collection<ParCELNode> getSearchTree() {
+		return searchTree;
+	}
+
+	public ParCELHeuristic getHeuristic() {
+		return heuristic;
+	}
+
+	public int getSearchTreeSize() {
+		return (searchTree != null ? searchTree.size() : -1);
+	}
+
+	public long getMiliStarttime() {
+		return this.miliStarttime;
+	}
+
+	public long getMiliLearningTime() {
+		return miliLearningTime;
+	}
+
+	public double getMaxAccuracy() {
+		return maxAccuracy;
+	}
+
+	public int getCurrentlyBestDescriptionLength() {
+		return bestDescriptionLength;
+	}
+
+
+	@Override
+	public long getTotalDescriptions() {
+		return allDescriptions.size();
+	}
+
+	@Override
+	public double getCurrentlyBestAccuracy() {
+		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
+				(double)(positiveExamples.size() + negativeExamples.size());
+	}
+
+	@Override
+	public int getCurrentlyMaxExpansion() {
+		return this.currentMaxHorizExp;
 	}
 }

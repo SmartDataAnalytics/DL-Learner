@@ -13,60 +13,25 @@ package org.dllearner.algorithms.parcel;
  *	@author An C. Tran
  */
 
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.concurrent.*;
-
-import org.dllearner.core.*;
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import java.util.HashSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.RejectedExecutionException;
 
 @ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Expression Learning")
 public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
-	// will be used in MBean for debugging purpose
-	private int noOfCompactedPartialDefinition = 0;
-
-	private int noOfUncoveredPositiveExamples;
-
-	/**
-	 * This may be considered as the noise allowed in learning, i.e. the maximum number of positive
-	 * examples can be discard (uncovered)
-	 */
-	private int uncoveredPositiveExampleAllowed = 0;
-	
-	/**
-     * Holds the uncovered positive example, this will be updated when the worker found a partial
-     * definition since the callback method "definitionFound" is synchronized", there is no need to
-     * create a thread-safe for this set
-     */
-	private HashSet<OWLIndividual> uncoveredPositiveExamples;
-
 	private ParCELNode startNode; 	// root of the search tree
-
-
-	// ------------------------------------------------
-	// variables for statistical purpose
-	// ------------------------------------------------
-	private long miliStarttime = 0;
-	private long miliLearningTime = 0;
-
-	// some properties for statistical purpose
-	
-	private int currentMaxHorizExp = 0;
-	private int bestDescriptionLength = 0;
-	private double maxAccuracy = 0.0d;
-	
-
-	// number of task created (for debugging purpose only)  
-	private int noOfTask = 0;
-
 
 	/**
 	 * ============================================================================================
@@ -113,7 +78,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	@Override
 	public void init() throws ComponentInitException {
 
-		// check the learning problem, this learning algorithm support PDLLPosNegLP only
+		// check the learning problem, this learning algorithm support ParCELPosNegLP only
 		if (!(learningProblem instanceof ParCELPosNegLP))
 			throw new ComponentInitException(learningProblem.getClass() + " is not supported by '"
 					+ getName() + "' learning algorithm. Only ParCELPosNegLP is supported.");
@@ -125,8 +90,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// clone the positive examples for this set to avoid affecting the Learning Problem
 		// this will be used to check the coverage of the partial definition (completeness)
 		this.uncoveredPositiveExamples = new HashSet<>(this.positiveExamples);
-
-		((ParCELPosNegLP) this.learningProblem).setUncoveredPositiveExamples(this.positiveExamples);
 
 		// initial heuristic which will be used by reducer to sort the search tree
 		// the heuristic need to get some constant from the configurator for scoring the description
@@ -167,6 +130,45 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 	} // init()
 
+	protected void reset() {
+		// register a MBean for debugging purpose
+		try {
+			ObjectName parCELearnerBean = new ObjectName(
+					"org.dllearner.algorithms.parcel.ParCELearnerMBean:type=ParCELearnerBean");
+			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+			if (!mbs.isRegistered(parCELearnerBean))
+				mbs.registerMBean(this, parCELearnerBean);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		stop = false;
+		done = false;
+		timeout = false;
+
+		//allDescriptions = new TreeSet<Description>(new ConceptComparator());
+		allDescriptions = new ConcurrentSkipListSet<>();
+
+		searchTree = new ConcurrentSkipListSet<>(heuristic);
+
+		partialDefinitions = new TreeSet<>(new ParCELCorrectnessComparator());
+
+		maxAccuracy = 0;		//currently max accuracy
+		this.noOfCompactedPartialDefinition = 0;
+		this.noOfUncoveredPositiveExamples = this.positiveExamples.size();
+
+
+		// create a start node in the search tree
+		// currently, start class is always Thing (initialised in the init() method)
+		allDescriptions.add(startClass);
+
+		// create a start node and add it into the search tree
+		startNode = new ParCELNode((ParCELNode) null, startClass, this.positiveExamples.size()
+				/ (double) (this.positiveExamples.size() + this.negativeExamples.size()), 0, 1.0);
+
+		searchTree.add(startNode); // add the root node into the search tree
+	}
+
 	/**
 	 * ============================================================================================
 	 * Start reducer: <br>
@@ -186,60 +188,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 */
 	@Override
 	public void start() {
+		reset();
 
-		
-		// register a MBean for debugging purpose
-		try {
-			ObjectName parCELearnerBean = new ObjectName(
-					"org.dllearner.algorithms.parcel.ParCELearnerMBean:type=ParCELearnerBean");
-			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			if (!mbs.isRegistered(parCELearnerBean))
-				mbs.registerMBean(this, parCELearnerBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		stop = false;
-		done = false;
-		timeout = false;
-	
-		//allDescriptions = new TreeSet<Description>(new ConceptComparator());		
-		allDescriptions = new ConcurrentSkipListSet<>();
-		
-		searchTree = new ConcurrentSkipListSet<>(heuristic);
-		
-		//System.out.println("[ParCELLearner] Heuristic ExpansionPenaltyFactor: " + ((ParCELDefaultHeuristic)heuristic).getExpansionPenaltyFactor());
-
-		partialDefinitions = new TreeSet<>(new ParCELCorrectnessComparator());
-
-		maxAccuracy = 0;		//currently max accuracy	
-		this.noOfCompactedPartialDefinition = 0;
-		this.noOfUncoveredPositiveExamples = this.positiveExamples.size();
-
-
-		// create a start node in the search tree
-		// currently, start class is always Thing (initialised in the init() method)
-		allDescriptions.add(startClass); 
-
-		// create a start node and add it into the search tree
-		startNode = new ParCELNode((ParCELNode) null, startClass, this.positiveExamples.size()
-				/ (double) (this.positiveExamples.size() + this.negativeExamples.size()), 0, 1.0);
-
-		searchTree.add(startNode); // add the root node into the search tree
-
-		// ---------------------------------------------
-		// create worker pool
-		// ---------------------------------------------
-		// taskQueue = new ArrayBlockingQueue<Runnable>(maxTaskQueueLength);
-		taskQueue = new LinkedBlockingQueue<>(maxTaskQueueLength);
-
-		workerPool = new ThreadPoolExecutor(minNumberOfWorker, maxNumberOfWorker, keepAliveTime,
-				TimeUnit.MILLISECONDS, taskQueue, new ParCELWorkerThreadFactory());
-
-
-		if (logger.isInfoEnabled())
-			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize()
-					+ ", max pool size: " + workerPool.getMaximumPoolSize());
+		createWorkerPool();
 
 		// start time of the learner
 		miliStarttime = System.currentTimeMillis();
@@ -249,14 +200,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// termination meets
 		// ----------------------------------------------------------
 		while (!isTerminateCriteriaSatisfied()) {
-
-			// -------------------
-			// check for timeout
-			// -------------------
-			timeout = (this.maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - miliStarttime) > this.maxExecutionTimeInSeconds * 1000);
-
-			if (timeout)
-				break;
 
 			ParCELNode nodeToProcess = searchTree.pollLast();
 
@@ -354,215 +297,16 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 					 * parent.getParent(); } }
 					 */
 					
-				}	//for each reduced partial definitions
-			}	//synchronise partial definitions for reduction
+				}
+			}
 		}
 
-	} // start()
+	}
 
-	
 	//create a new task given a PDLLNode
 	private void createNewTask(ParCELNode nodeToProcess) {
 		workerPool.execute(new ParCELWorker(this, this.refinementOperatorPool,
-				(ParCELPosNegLP) learningProblem, nodeToProcess, "ParCELTask-" + (noOfTask++)));
-	}
-
-	/**
-	 * ============================================================================================
-	 * Callback method for worker when partial definitions found (callback for an evaluation request
-	 * from reducer)<br>
-	 * If a definition (partial) found, do the following tasks:<br>
-	 * 1. Add the definition into the partial definition set<br>
-	 * 2. Update: uncovered positive examples, max accuracy, best description length<br>
-	 * 3. Check for the completeness of the learning. If yes, stop the learning<br>
-	 * 
-	 * @param definitions
-	 *            New partial definitions
-	 */
-	@Override
-	public void newPartialDefinitionsFound(Set<ParCELExtraNode> definitions) {
-
-		for (ParCELExtraNode def : definitions) {
-			// NOTE: in the previous version, this node will be added back into the search tree
-			// it is not necessary since in DLLearn, a definition may be revised to get a better one
-			// but
-			// in this approach, we do not refine partial definition.
-
-			// remove uncovered positive examples by the positive examples covered by the new
-			// partial definition
-			int uncoveredPositiveExamplesRemoved;
-			int uncoveredPositiveExamplesSize;
-			
-			//re-calculate the generation time of pdef
-			def.setGenerationTime(def.getGenerationTime() - miliStarttime);
-			
-			synchronized (uncoveredPositiveExamples) {
-				uncoveredPositiveExamplesRemoved = this.uncoveredPositiveExamples.size();
-				this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
-				uncoveredPositiveExamplesSize = this.uncoveredPositiveExamples.size();
-			}	//end of uncovere dPositive examples synchronise 
-
-			uncoveredPositiveExamplesRemoved -= uncoveredPositiveExamplesSize;
-
-			if (uncoveredPositiveExamplesRemoved > 0) {
-
-				// set the generation time for the new partial definition
-				//def.setGenerationTime(System.currentTimeMillis() - miliStarttime);	//this is set by workers
-				synchronized (partialDefinitions) {
-					partialDefinitions.add(def);
-				}
-
-				// for used in bean (for tracing purpose)
-				this.noOfUncoveredPositiveExamples -= uncoveredPositiveExamplesRemoved;
-
-				((ParCELPosNegLP) this.learningProblem)
-						.setUncoveredPositiveExamples(uncoveredPositiveExamples);
-
-				if (logger.isTraceEnabled()) {
-					logger.trace("PARTIAL definition found: "
-							+ OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
-							+ "\n\t - covered positive examples ("
-							+ def.getCoveredPositiveExamples().size() + "): "
-							+ def.getCoveredPositiveExamples()
-							+ "\n\t - uncovered positive examples left: "
-							+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
-				} else if (logger.isDebugEnabled())
-					logger.debug("PARTIAL definition found: "
-							+ OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
-							+ "\n\t - covered positive examples ("
-							+ def.getCoveredPositiveExamples().size() + "): "
-							+ def.getCoveredPositiveExamples()
-							+ "\n\t - uncovered positive examples left: "
-							+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
-				else if (logger.isInfoEnabled()) {
-					logger.info("PARTIAL definition found, uncovered positive examples left: "
-							+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
-				}
-
-			}
-
-			// update the max accuracy and max description length
-			if (def.getAccuracy() > this.maxAccuracy) {
-				this.maxAccuracy = def.getAccuracy();
-				this.bestDescriptionLength = new OWLClassExpressionLengthCalculator().getLength(def.getDescription());
-			}
-
-			// check if the complete definition found
-			if (uncoveredPositiveExamplesSize <= uncoveredPositiveExampleAllowed) {
-				this.done = true;
-				// stop();
-			}
-
-		} // for each partial definition
-
-	} // newDefinitionFound()
-
-	/**
-	 * ============================================================================================
-	 * Callback method for worker when the evaluated node is not a partial definition and weak node
-	 * either<br>
-	 * 
-	 * NOTE: there is not need for using synchronisation for this method since the thread safe data
-	 * structure is currently using
-	 * 
-	 * @param newNodes
-	 *            New nodes to add to the search tree
-	 */
-	@Override
-	public void newRefinementDescriptions(Set<ParCELNode> newNodes) {
-			searchTree.addAll(newNodes);
-	}
-
-	
-	/**
-	 * ============================================================================================
-	 * Update the max horizontal expansion used
-	 * 
-	 * @param newHozExp
-	 */
-	public synchronized void updateMaxHorizontalExpansion(int newHozExp) {
-		if (newHozExp > currentMaxHorizExp)
-			currentMaxHorizExp = newHozExp;
-	}
-	
-	/**
-	 * ============================================================================================
-	 * Get the currently best description in the set of partial definition
-	 */
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		if (partialDefinitions.size() > 0) {
-			return partialDefinitions.iterator().next().getDescription();
-		} else
-			return null;
-	}
-
-	/**
-	 * ============================================================================================
-	 * Get all partial definition without any associated information such as accuracy, correctness,
-	 * etc.
-	 */
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return PLOENodesToDescriptions(partialDefinitions);
-	}
-
-	/**
-	 * ============================================================================================
-	 * Convert a set of PLOENode into a list of descriptions
-	 * 
-	 * @param nodes
-	 *            Set of PLOENode need to be converted
-	 * 
-	 * @return Set of descriptions corresponding to the given set of PLOENode
-	 */
-	private List<OWLClassExpression> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
-		List<OWLClassExpression> result = new LinkedList<>();
-		for (ParCELExtraNode node : nodes)
-			result.add(node.getDescription());
-		return result;
-	}
-
-	/**
-	 * ============================================================================================
-	 * The same as getCurrentBestDescription. An evaluated description is a description with its
-	 * evaluated properties including accuracy and correctness
-	 */
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		if (partialDefinitions.size() > 0) {
-			ParCELNode firstNode = partialDefinitions.iterator().next();
-			return new EvaluatedDescription(firstNode.getDescription(), new ParCELScore(firstNode));
-		} else
-			return null;
-	}
-
-	/**
-	 * ============================================================================================
-	 * Get all partial definitions found so far
-	 */
-	@Override
-	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
-		return extraPLOENodesToEvaluatedDescriptions(partialDefinitions);
-	}
-
-	/**
-	 * ============================================================================================
-	 * Method for PLOENode - EvaluatedDescription conversion
-	 * 
-	 * @param partialDefs
-	 *            Set of ExtraPLOENode nodes which will be converted into EvaluatedDescription
-	 * 
-	 * @return Set of corresponding EvaluatedDescription
-	 */
-	private NavigableSet<? extends EvaluatedDescription<? extends Score>> extraPLOENodesToEvaluatedDescriptions(
-			Set<ParCELExtraNode> partialDefs) {
-		TreeSet<EvaluatedDescription<? extends Score>> result = new TreeSet<>(
-				new EvaluatedDescriptionComparator());
-		for (ParCELExtraNode node : partialDefs) {
-			result.add(new EvaluatedDescription(node.getDescription(), new ParCELScore(node)));
-		}
-		return result;
+											(ParCELPosNegLP) learningProblem, nodeToProcess, "ParCELTask-" + (noOfTask++)));
 	}
 
 	/**
@@ -589,51 +333,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		this.reducer = newCompactor;
 	}
 
-	// ------------------------------------------
-	// getters for learning results
-	// ------------------------------------------
-
-	public double getMaxAccuracy() {
-		return maxAccuracy;
-	}
-
-	public int getCurrentlyBestDescriptionLength() {
-		return bestDescriptionLength;
-	}
-
-	public int getSearchTreeSize() {
-		return (searchTree != null ? searchTree.size() : -1);
-	}
-
-	public int getMaximumHorizontalExpansion() {
-		return currentMaxHorizExp;
-	}
-
-	public Set<ParCELExtraNode> getPartialDefinitions() {
-		return partialDefinitions;
-	}
-
-	/*
-	 * public Set<PDLLNode> getSearchTree() { return searchTree; }
-	 */
-
-	public Collection<ParCELNode> getSearchTree() {
-		return searchTree;
-	}
-
-	public ParCELHeuristic getHeuristic() {
-		return heuristic;
-	}
-
-	@Override
-	public long getLearningTime() {
-		return miliLearningTime;
-	}
-
-	public int getNoOfReducedPartialDefinition() {
-		return this.noOfCompactedPartialDefinition;
-	}
-	
 
 	// =============== MBean section =====================
 	/*
@@ -661,29 +360,4 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return this.noOfUncoveredPositiveExamples;
 	}
 	*/
-	
-	@Override
-	public long getTotalNumberOfDescriptionsGenerated() {
-		return allDescriptions.size();
-	}
-
-	@Override
-	public long getTotalDescriptions() {
-		
-		return allDescriptions.size();
-	}
-
-	@Override
-	public double getCurrentlyBestAccuracy() {		
-		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
-				(double)(positiveExamples.size() + negativeExamples.size());
-	}
-
-	@Override
-	public int getCurrentlyMaxExpansion() {
-		return this.currentMaxHorizExp;
-	}
-
-
-
 }

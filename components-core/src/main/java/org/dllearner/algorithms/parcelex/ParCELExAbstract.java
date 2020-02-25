@@ -27,16 +27,11 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	protected int[] partialDefinitionType = new int[5];
 	protected int counterPartialDefinitionUsed = 0;
 
-	// ------------------------------------------------
-	// variables for statistical purpose
-	// ------------------------------------------------
-	protected long miliStarttime = Long.MIN_VALUE;
-	protected long miliLearningTime = Long.MIN_VALUE;
 
 	//---------------------------------------------------------
 	//flags to indicate the status of the application
 	//---------------------------------------------------------
-	protected boolean counterDone = false;
+	protected volatile boolean counterDone = false;
 
 	/**
 	 * 
@@ -149,17 +144,15 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	}
 	
 
-	public long getMiliStarttime() {
-		return this.miliStarttime;
-	}
-
-	
 	/**
 	 * Check whether the learner terminated by the counter partial definitions
 	 * 
 	 * @return True if the learner is terminated by the counter partial definitions, false otherwise
 	 */
-	public abstract boolean terminatedByCounterDefinitions();
+	public boolean terminatedByCounterDefinitions() {
+		return this.counterDone;
+	}
+
 
 	/**=========================================================================================================<br>
 	 * Check if the learner can be terminated
@@ -167,6 +160,7 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	 * @return True if termination condition is true (asked to stop, complete definition found, or timeout),
 	 * 			false otherwise
 	 */
+	@Override
 	protected boolean isTerminateCriteriaSatisfied() {
 		return 	stop ||
 				done ||

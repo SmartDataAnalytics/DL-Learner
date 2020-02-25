@@ -1,10 +1,5 @@
 package org.dllearner.algorithms.parcelex;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
 import org.dllearner.algorithms.parcel.*;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
@@ -12,6 +7,9 @@ import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.HashSet;
+import java.util.TreeSet;
 
 
 /**
@@ -24,33 +22,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author An C. Tran
  *
  */
-public class ParCELWorkerExV1 implements Runnable {
-
-	//name of worker (for debugging purpose)	
-	private String name;
-
-	//refinement operator used in refinement
-	private ParCELRefinementOperatorPool refinementOperatorPool;
-	private RefinementOperator refinementOperator;
-	
-	//reducer, used to make the callback to pass the result and get the next description for processing
-	private ParCELExAbstract learner;
-
-	//learning proble, provides accuracy & correctness calculation
-	private ParCELPosNegLP learningProblem;	
-
-
-	//the node to be processed
-	private ParCELNode nodeToProcess;
-
-	private Logger logger = Logger.getLogger(ParCELWorkerExV1.class);
-
-	//these properties can be referred in Reducer. However, we put it here for faster access
-	private String baseURI;
-	private Map<String, String> prefix;
+public class ParCELWorkerExV1 extends ParCELWorkerAbstract<ParCELExAbstract> {
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-
 
 	/**=========================================================================================================<br>
 	 * Constructor for Worker class. A worker needs the following things: 
@@ -58,26 +32,13 @@ public class ParCELWorkerExV1 implements Runnable {
 	 *  
 	 * @param learner A reference to reducer which will be used to make a callback to return the result to
 	 * @param refinementOperatorPool Refinement operator pool used to refine the given node
-	 * @param learningProblem2 A learning problem used to calculate description accuracy, correctness, etc.
+	 * @param learningProblem A learning problem used to calculate description accuracy, correctness, etc.
 	 * @param nodeToProcess Node will being processed
 	 * @param name Name of the worker, assigned by reduce (for tracing purpose only)
 	 */
 	public ParCELWorkerExV1(ParCELExAbstract learner, ParCELRefinementOperatorPool refinementOperatorPool, 
-			ParCELPosNegLP learningProblem2, ParCELNode nodeToProcess, String name) {		
-
-		super();
-
-		this.learner = learner;
-		this.refinementOperatorPool = refinementOperatorPool;
-		this.refinementOperator = null;
-
-		this.learningProblem = learningProblem2;
-
-		this.nodeToProcess = nodeToProcess;
-		this.name = name;
-
-		this.baseURI = learner.getBaseURI();
-		this.prefix = learner.getPrefix();	
+			ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {
+		super(learner, refinementOperatorPool, learningProblem, nodeToProcess, name);
 	}
 
 	
@@ -86,28 +47,15 @@ public class ParCELWorkerExV1 implements Runnable {
 	 * Constructor for Worker class. A worker needs the following things: 
 	 * 		i) reducer (reference), ii) refinement operator, iii) start description, iv) worker name
 	 *  
-	 * @param reducer A reference to reducer which will be used to make a callback to return the result to
+	 * @param learner A reference to reducer which will be used to make a callback to return the result to
 	 * @param refinementOperator Refinement operator used to refine the given node 
 	 * @param learningProblem A learning problem used to calculate description accuracy, correctness, etc.
 	 * @param nodeToProcess Node will being processed
 	 * @param name Name of the worker, assigned by reduce (for tracing purpose only)
 	 */
-	public ParCELWorkerExV1(ParCELearnerExV1 reducer, RefinementOperator refinementOperator, 
-			ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {		
-
-		super();
-
-		this.learner = reducer;
-		this.refinementOperator = refinementOperator;
-		this.refinementOperatorPool = null;
-
-		this.learningProblem = learningProblem;
-
-		this.nodeToProcess = nodeToProcess;
-		this.name = name;
-
-		this.baseURI = reducer.getBaseURI();
-		this.prefix = reducer.getPrefix();	
+	public ParCELWorkerExV1(ParCELearnerExV1 learner, RefinementOperator refinementOperator,
+			ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {
+		super(learner, refinementOperator, learningProblem, nodeToProcess, name);
 	}
 
 	

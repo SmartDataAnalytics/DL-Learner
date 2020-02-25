@@ -16,28 +16,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  *
  * @author An C. Tran
  */
-public class ParCELWorker extends ParCELWorkerAbstract {
-
-
-    // refinement operator used in refinement
-    private final ParCELRefinementOperatorPool refinementOperatorPool;
-    private RefinementOperator refinementOperator;
-
-    // reducer, used to make the callback to pass the result and get the next description for
-    // processing
-    private final ParCELearner learner;
-
-    // learning proble, provides accuracy & correctness calculation
-    private final ParCELPosNegLP learningProblem;
-
-    // the node to be processed
-    private final ParCELNode nodeToProcess;
-
-    private final Logger logger = Logger.getLogger(this.getClass());
-
-    // these properties can be referred in Reducer. However, we put it here for faster access
-    private final String baseURI;
-    private final Map<String, String> prefix;
+public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
 
     /**
      * Constructor for Worker class. A worker needs the following things: i) reducer (reference),
@@ -52,20 +31,7 @@ public class ParCELWorker extends ParCELWorkerAbstract {
      */
     public ParCELWorker(ParCELearner learner, ParCELRefinementOperatorPool refinementOperatorPool,
                         ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {
-
-        super();
-
-        this.learner = learner;
-        this.refinementOperatorPool = refinementOperatorPool;
-        this.refinementOperator = null;
-
-        this.learningProblem = learningProblem;
-
-        this.nodeToProcess = nodeToProcess;
-        this.name = name;
-
-        this.baseURI = learner.getBaseURI();
-        this.prefix = learner.getPrefix();
+        super(learner, refinementOperatorPool, learningProblem, nodeToProcess, name);
     }
 
 
@@ -82,20 +48,7 @@ public class ParCELWorker extends ParCELWorkerAbstract {
      */
     public ParCELWorker(ParCELearner learner, RefinementOperator refinementOperator,
                         ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {
-
-        super();
-
-        this.learner = learner;
-        this.refinementOperator = refinementOperator;
-        this.refinementOperatorPool = null;
-
-        this.learningProblem = learningProblem;
-
-        this.nodeToProcess = nodeToProcess;
-        this.name = name;
-
-        this.baseURI = learner.getBaseURI();
-        this.prefix = learner.getPrefix();
+        super(learner, refinementOperator, learningProblem, nodeToProcess, name);
     }
 
     /**
