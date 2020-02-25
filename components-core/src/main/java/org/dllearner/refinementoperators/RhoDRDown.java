@@ -338,21 +338,24 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 
 		// compute splits for numeric data properties
-		if(useNumericDatatypes) {
-			if(reasoner instanceof SPARQLReasoner
-					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
-				// TODO SPARQL support for splits
-				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
-			} else {
-				// create default splitter if none was set
-				if(numericValuesSplitter == null) {
-					numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
-				}
-				splits.putAll(numericValuesSplitter.computeSplits());
-				if (logger.isDebugEnabled()) {
-					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
+		if (useNumericDatatypes) {
+			if (splits == null) { // just compute those if haven't been set from external
+				if (reasoner instanceof SPARQLReasoner
+						&& !((SPARQLReasoner) reasoner).isUseGenericSplitsCode()) {
+					// TODO SPARQL support for splits
+					logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
+				} else {
+					// create default splitter if none was set
+					if (numericValuesSplitter == null) {
+						numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+					}
+					splits.putAll(numericValuesSplitter.computeSplits());
+					if (logger.isDebugEnabled()) {
+						logger.debug("Numeric Splits: {}", splits);
+					}
 				}
 			}
+
 		}
 
 		// compute splits for time data properties
