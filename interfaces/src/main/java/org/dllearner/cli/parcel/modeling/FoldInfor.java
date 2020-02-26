@@ -3,8 +3,7 @@ package org.dllearner.cli.parcel.modeling;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dllearner.algorithms.parcel.ParCELReducer;
-import org.dllearner.algorithms.parcel.ParCELReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 
 /**
  * Represents the information of a partial definition in one fold of validation, including:

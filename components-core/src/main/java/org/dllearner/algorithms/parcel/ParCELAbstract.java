@@ -2,6 +2,8 @@ package org.dllearner.algorithms.parcel;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
@@ -10,7 +12,6 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -190,6 +191,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 	public ParCELAbstract() {
 		super();
+		this.reducer = new ParCELImprovedCoverageGreedyReducer();
 	}
 
 	/**
@@ -203,6 +205,10 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 */
 	public ParCELAbstract(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
+
+		// default compactor used by this algorithm
+		this.reducer = new ParCELImprovedCoverageGreedyReducer();
+		//this.reducer = new ParCELPredScoreReducer();
 	}
 
 

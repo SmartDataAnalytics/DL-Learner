@@ -1,7 +1,9 @@
-package org.dllearner.algorithms.parcel;
+package org.dllearner.algorithms.parcel.reducer;
 
 import java.util.*;
 
+import org.dllearner.algorithms.parcel.ParCELCorrectnessComparator;
+import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
@@ -27,7 +29,7 @@ public class ParCELCoverageGreedyReducer implements ParCELReducer {
 	 */
 	@Override
 	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
-			Set<OWLIndividual> positiveExamples) {
+											 Set<OWLIndividual> positiveExamples) {
 		return reduce(partialDefinitions, positiveExamples, 0);
 	}
 

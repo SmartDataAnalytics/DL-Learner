@@ -17,6 +17,8 @@ import java.util.concurrent.*;
 
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
+import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -30,10 +32,6 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 @ComponentAnn(name="ParCELearnerExV2", shortName="parcelLearnerExV2", version=0.1, description="Parallel Class Expression Logic Learning with Exception V2")
 public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMBean {
 		
-	
-
-	private ParCELReducer reducer = null;
-	
 	private int noOfReducedPartialDefinition = 0;
 
 
@@ -45,10 +43,6 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 	 */
 	public ParCELearnerExV2(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		
-		//default compactor used by this algorithm
-		this.reducer = new ParCELImprovedCoverageGreedyReducer();
-		//this.reducer = new ParCELPredScoreReducer();
 	}
 	
 
@@ -188,58 +182,12 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 	 */
 	@Override
 	public void start() {
-		
-		// register a MBean for debugging purpose
-		/*
-		try {
-			ObjectName parCELExV2Bean = new ObjectName(
-					"org.dllearner.algorithms.ParCELEx:type=ParCELearnerExV2");
-			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			if (!mbs.isRegistered(parCELExV2Bean))
-				mbs.registerMBean(this, parCELExV2Bean);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
-		
-		stop = false;
-		done = false;
-		timeout = false;
-		counterDone = false;
-		
-		this.noOfReducedPartialDefinition = -1;
-			
+
 		reset();
-		
 
-		//create a start node in the search tree
-		allDescriptions.add(startClass);	//currently, start class is always Thing
-		
-		//add the first node into the search tree
-		ParCELNode startNode = new ParCELNode(null, startClass,
-				this.positiveExamples.size()/(double)(this.positiveExamples.size() + this.negativeExamples.size()), 0, 1);
-		
-		startNode.setCoveredPositiveExamples(positiveExamples);
-		startNode.setCoveredNegativeExamples(negativeExamples);
-			
-		searchTree.add(startNode);	//add the root node into the search tree
-		
-		
-		//---------------------------------------------
-		// create worker pool
-		//---------------------------------------------
-		//taskQueue = new ArrayBlockingQueue<Runnable>(maxTaskQueueLength);		
-		taskQueue = new LinkedBlockingQueue<>(maxTaskQueueLength);
-			
-		workerPool = new ThreadPoolExecutor(minNumberOfWorker, maxNumberOfWorker, keepAliveTime, 
-				TimeUnit.MILLISECONDS, taskQueue, new ParCELWorkerThreadFactory());
-		
+		initSearchTree();
 
-		
-		
-		if (logger.isInfoEnabled())
-			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize() + 
-					", max pool size: " + workerPool.getMaximumPoolSize());
+		createWorkerPool();
 		
 		
 		//start time of reducer, statistical purpose only
@@ -547,32 +495,6 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 	}
 	
 	/**=========================================================================================================<br>
-	 * 	Callback method for worker to call when it gets an evaluated node which is neither a partial definition 
-	 * 		nor a weak description<br>
-	 *	
-	 *	NOTE: there is not need for using synchronisation for this method since the thread safe 
-	 *		data structure is currently using  
-	 * 
-	 * @param newNodes New nodes to add to the search tree
-	 */
-	public void newRefinementDescriptions(Set<ParCELNode> newNodes) {		
-		searchTree.addAll(newNodes);
-	}
-	
-	
-	
-	/**=========================================================================================================<br>
-	 * Update the max horizontal expansion used
-	 * @param newHozExp
-	 */
-	public synchronized void updateMaxHorizontalExpansion(int newHozExp) {				
-		if (maxHorizExp < newHozExp) {
-			maxHorizExp = newHozExp;
-		}
-	}
-
-	
-	/**=========================================================================================================<br>
 	 * Reset all necessary properties for a new learning
 	 * 	1. Create new search tree
 	 * 	2. Create an empty description set, which hold all generated description (to avoid redundancy)
@@ -595,6 +517,13 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		
 		descriptionTested = 0;
 		maxAccuracy = 0;
+
+		stop = false;
+		done = false;
+		timeout = false;
+		counterDone = false;
+
+		this.noOfReducedPartialDefinition = -1;
 	}
 
 	

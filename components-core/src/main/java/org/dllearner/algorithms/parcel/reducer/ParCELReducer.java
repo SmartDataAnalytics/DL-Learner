@@ -1,4 +1,4 @@
-package org.dllearner.algorithms.parcel;
+package org.dllearner.algorithms.parcel.reducer;
 
 /**
  * Interface for ParCEL reducer
@@ -10,6 +10,7 @@ package org.dllearner.algorithms.parcel;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 public interface ParCELReducer {

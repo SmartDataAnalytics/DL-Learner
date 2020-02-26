@@ -13,7 +13,7 @@ import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.parcel.ParCELAbstract;
 import org.dllearner.algorithms.parcel.ParCELDefaultHeuristic;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
-import org.dllearner.algorithms.parcel.ParCELReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.algorithms.parcelex.ParCELExAbstract;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.configuration.IConfiguration;

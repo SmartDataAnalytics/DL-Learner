@@ -1,20 +1,24 @@
-package org.dllearner.algorithms.parcel;
+package org.dllearner.algorithms.parcel.reducer;
 
 import java.util.*;
 
+import org.dllearner.algorithms.parcel.ParCELDefinitionGenerationTimeComparator;
+import org.dllearner.algorithms.parcel.ParCELExtraNode;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
- * Compact set of partial definitions using Definition Length Greedy Reduction strategy
+ * Compact two a partial definitions using Generation Time Greedy strategy
  * 
  * @author An C. Tran
  * 
  */
-public class ParCELDefinitionLengthReducer implements ParCELReducer {
+
+public class ParCELGenerationTimeReducer implements ParCELReducer {
 
 	@Override
 	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
-			Set<OWLIndividual> positiveExamples) {
+											 Set<OWLIndividual> positiveExamples) {
 		return reduce(partialDefinitions, positiveExamples, 0);
 	}
 
@@ -24,7 +28,8 @@ public class ParCELDefinitionLengthReducer implements ParCELReducer {
 		Set<OWLIndividual> positiveExamplesTmp = new HashSet<>(positiveExamples);
 
 		TreeSet<ParCELExtraNode> newSortedPartialDefinitions = new TreeSet<>(
-                new ParCELDefinitionLengthComparator());
+                new ParCELDefinitionGenerationTimeComparator());
+
 		synchronized (partialDefinitions) {
 			newSortedPartialDefinitions.addAll(partialDefinitions);
 		}
@@ -33,6 +38,7 @@ public class ParCELDefinitionLengthReducer implements ParCELReducer {
                 new ParCELDefinitionGenerationTimeComparator());
 
 		Iterator<ParCELExtraNode> partialDefinitionIterator = newSortedPartialDefinitions.iterator();
+		
 		while ((positiveExamplesTmp.size() > uncoveredPositiveExamples)
 				&& (partialDefinitionIterator.hasNext())) {
 			ParCELExtraNode node = partialDefinitionIterator.next();

@@ -14,19 +14,18 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
-import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @ComponentAnn(name="ParCELearnerExV1", shortName="parcelearnerExV1", version=0.1, description="Parallel Class Expression Logic Learning")
 public class ParCELearnerExV1 extends ParCELExAbstract {
@@ -48,9 +47,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	 */
 	public ParCELearnerExV1(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		
-		//default compactor used by this algorithm
-		this.reducer = new ParCELImprovedCoverageGreedyReducer();			
 	}
 	
 
@@ -60,9 +56,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	 */
 	public ParCELearnerExV1() {
 		super();
-		//this.compactor = new PDLLGenerationTimeCompactor();		
-		this.reducer = new ParCELImprovedCoverageGreedyReducer();
-		//this.compactor = new PDLLDefinitionLengthCompactor();
 	}
 	/**=========================================================================================================<br>
 	 * Get the name of this learning algorithm

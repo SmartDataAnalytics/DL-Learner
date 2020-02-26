@@ -11,6 +11,7 @@ package org.dllearner.algorithms.parcel;
 import java.util.Comparator;
 
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 public class ParCELDefinitionGenerationTimeComparator implements
         Comparator<ParCELExtraNode> {
@@ -25,11 +26,11 @@ public class ParCELDefinitionGenerationTimeComparator implements
         else if (genTime1 > genTime2)
             return 1;
         else {
-            if (new OWLClassExpressionLengthCalculator().getLength(node1.getDescription()) <
-                    new OWLClassExpressionLengthCalculator().getLength(node2.getDescription()))
+            if (OWLClassExpressionUtils.getLength(node1.getDescription()) <
+                    OWLClassExpressionUtils.getLength(node2.getDescription()))
                 return -1;
-            else if (new OWLClassExpressionLengthCalculator().getLength(node1.getDescription()) >
-                    new OWLClassExpressionLengthCalculator().getLength(node2.getDescription()))
+            else if (OWLClassExpressionUtils.getLength(node1.getDescription()) >
+                    OWLClassExpressionUtils.getLength(node2.getDescription()))
                 return 1;
             else
                 return node1.getDescription().compareTo(node2.getDescription());

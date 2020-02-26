@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.parcel.ParCELAbstract;
 import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
-import org.dllearner.algorithms.parcel.ParCELReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.cli.CrossValidation;
 import org.dllearner.cli.parcel.modeling.PhaseInfor;
 import org.dllearner.core.AbstractCELA;

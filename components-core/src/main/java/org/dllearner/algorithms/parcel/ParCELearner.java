@@ -13,6 +13,7 @@ package org.dllearner.algorithms.parcel;
  *	@author An C. Tran
  */
 
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -36,15 +37,12 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 * Constructor for PDLL learning algorithm
 	 * 
 	 * @param learningProblem
-	 *            Must be a PDLLPosNegLP
+	 *            Must be a ParCELPosNegLP
 	 * @param reasoningService
 	 *            A reasoner
 	 */
 	public ParCELearner(ParCELPosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-
-		// default compactor used by this algorithm
-		this.reducer = new ParCELImprovedCoverageGreedyReducer();
 	}
 
 	/**
@@ -53,10 +51,6 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 */
 	public ParCELearner() {
 		super();
-		
-		this.reducer = new ParCELImprovedCoverageGreedyReducer();
-		// this.compactor = new PDLLGenerationTimeCompactor();
-		// this.compactor = new PDLLDefinitionLengthCompactor();
 	}
 
 	/**

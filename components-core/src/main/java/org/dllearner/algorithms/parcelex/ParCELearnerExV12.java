@@ -29,14 +29,13 @@ import org.dllearner.algorithms.parcel.ParCELDefaultHeuristic;
 import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.algorithms.parcel.ParCELCoveredNegativeExampleComparator;
 import org.dllearner.algorithms.parcel.ParCELHeuristic;
-import org.dllearner.algorithms.parcel.ParCELImprovedCoverageGreedyReducer;
-//import org.dllearner.algorithms.parcel.ParCELImprovedCoverageGreedyReducer_V2;
+import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer;
+//import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer_V2;
 
 import org.dllearner.algorithms.parcel.ParCELNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
-import org.dllearner.algorithms.parcel.ParCELReducer;
+import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.algorithms.parcel.ParCELRefinementOperatorPool;
-import org.dllearner.algorithms.parcel.ParCELScore;
 import org.dllearner.algorithms.parcel.ParCELStringUtilities;
 import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.algorithms.celoe.OENode;
@@ -45,7 +44,6 @@ import org.dllearner.core.*;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.refinementoperators.RefinementOperator;
 
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClass;

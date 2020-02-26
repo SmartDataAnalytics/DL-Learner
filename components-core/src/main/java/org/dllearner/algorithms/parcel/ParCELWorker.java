@@ -132,69 +132,6 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
     }
 
     /**
-     * Refine a node using RhoDRDown. The refined node will be increased the max horizontal
-     * expansion value by 1
-     *
-     * @param node Node to be refined
-     * @return Set of descriptions that are the results of refinement
-     */
-    private TreeSet<OWLClassExpression> refineNode(ParCELNode node) {
-        int horizExp = node.getHorizontalExpansion();
-
-        if (logger.isTraceEnabled())
-            logger.trace("[" + this.name + "] Refining: "
-                    + ParCELStringUtilities.replaceString(node.toString(), baseURI, prefix));
-
-        boolean refirementOperatorBorrowed = false;
-
-        // borrow refinement operator if necessary
-        if (this.refinementOperator == null) {
-            if (this.refinementOperatorPool == null) {
-                logger.error("Neither refinement operator nor refinement operator pool provided");
-                return null;
-            } else {
-                try {
-                    // logger.info("borrowing a refinement operator (" +
-                    // refinementOperatorPool.getNumIdle() + ")");
-                    this.refinementOperator = this.refinementOperatorPool.borrowObject();
-                    refirementOperatorBorrowed = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        TreeSet<OWLClassExpression> refinements = null;
-        try {
-            // TODO that's odd, we should just restrict the whole code to LengthLimitedRefinementOperator
-            if (refinementOperator instanceof LengthLimitedRefinementOperator) {
-                refinements = (TreeSet<OWLClassExpression>) ((LengthLimitedRefinementOperator) refinementOperator).refine(node.getDescription(), horizExp + 1);
-            } else {
-                refinements = (TreeSet<OWLClassExpression>) refinementOperator.refine(node.getDescription());
-            }
-
-            node.incHorizontalExpansion();
-            node.setRefinementCount(refinements.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // return the refinement operator
-        if (refirementOperatorBorrowed) {
-            try {
-                if (refinementOperator != null)
-                    refinementOperatorPool.returnObject(refinementOperator);
-                else
-                    logger.error("Cannot return the borrowed refinement operator");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return refinements;
-    }
-
-    /**
      * Calculate accuracy, correctness of a description and examples that are covered by this
      * description
      *

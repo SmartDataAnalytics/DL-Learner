@@ -1,4 +1,4 @@
-package org.dllearner.algorithms.parcel;
+package org.dllearner.algorithms.parcel.reducer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +8,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.parcel.ParCELCompletenessComparator;
+import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -37,7 +39,7 @@ public class ParCELImprovedCoverageGreedyReducer_V2 implements ParCELReducer {
 	 */
 	@Override
 	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
-			Set<OWLIndividual> positiveExamples)
+											 Set<OWLIndividual> positiveExamples)
 	{
 		return this.reduce(partialDefinitions, positiveExamples, 0);
 	}

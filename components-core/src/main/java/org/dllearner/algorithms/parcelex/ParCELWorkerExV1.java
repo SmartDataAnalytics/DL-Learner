@@ -1,12 +1,9 @@
 package org.dllearner.algorithms.parcelex;
 
 import org.dllearner.algorithms.parcel.*;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -22,9 +19,7 @@ import java.util.TreeSet;
  * @author An C. Tran
  *
  */
-public class ParCELWorkerExV1 extends ParCELWorkerAbstract<ParCELExAbstract> {
-
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+public class ParCELWorkerExV1 extends ParCELExWorkerAbstract<ParCELExAbstract> {
 
 	/**=========================================================================================================<br>
 	 * Constructor for Worker class. A worker needs the following things: 
@@ -112,13 +107,12 @@ public class ParCELWorkerExV1 extends ParCELWorkerAbstract<ParCELExAbstract> {
 						 *		+ correctness(D) = 1, i.e. cn(D) = empty ==> partial definition
 						 *		+ correctness(D) < 1, i.e. cn(D) != empty ==> potential description 
 						 */
-
+						newNode.setGenerationTime(learner.getMiliStarttime() - System.currentTimeMillis());
 						if (newNode.getCompleteness() == 0.0d) {
 
 							//COUNTER PARTIAL DEFINITION
 							if (newNode.getCorrectness() < 1d) {
 								newNode.setType(0);
-								newNode.setGenerationTime(learner.getMiliStarttime() - System.currentTimeMillis());
 								newNode.setDescription(df.getOWLObjectComplementOf(newNode.getDescription()));
 								newCounterPartialDefinitions.add(newNode);								
 							}
@@ -128,7 +122,6 @@ public class ParCELWorkerExV1 extends ParCELWorkerAbstract<ParCELExAbstract> {
 
 							//PARTIAL DEFINITION
 							if (newNode.getCorrectness() == 1.0d) {
-								newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
 								newNode.setType(1);
 								newPartialDefinitions.add(newNode);
 							}
@@ -157,137 +150,5 @@ public class ParCELWorkerExV1 extends ParCELWorkerAbstract<ParCELExAbstract> {
 		
 		learner.newRefinementDescriptions(newNodes);		//don't need to check for empty since newNodes is never empty 
 
-	}
-
-	/**=========================================================================================================<br>
-	 * Refine a node using RhoDRDown. The refined node will be increased the max horizontal expansion value by 1
-	 * 
-	 * @param node Node to be refined
-	 * 
-	 * @return Set of descriptions that are the results of refinement  
-	 */
-	private TreeSet<OWLClassExpression> refineNode(ParCELNode node) {
-		int horizExp = node.getHorizontalExpansion();
-
-		if (logger.isTraceEnabled())
-			logger.trace("[" + this.name + "] Refining: " + ParCELStringUtilities.replaceString(node.toString(), baseURI, prefix));
-		
-		boolean refirementOperatorBorrowed = false;
-		
-		//borrow refinement operator if necessary
-		if (this.refinementOperator == null) {
-			if (this.refinementOperatorPool == null) {
-				logger.error("Neither refinement operator nor refinement operator pool provided");
-				return null;
-			} 
-			else { 
-				try {
-					//logger.info("borrowing a refinement operator (" + refinementOperatorPool.getNumIdle() + ")");
-					this.refinementOperator = this.refinementOperatorPool.borrowObject();
-					refirementOperatorBorrowed = true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-			
-		TreeSet<OWLClassExpression> refinements = null;
-		try {
-			refinements = (TreeSet<OWLClassExpression>) ((LengthLimitedRefinementOperator)refinementOperator).refine(node.getDescription(), horizExp+1);
-			node.incHorizontalExpansion();
-			node.setRefinementCount(refinements.size());
-		}
-		catch (Exception e) {
-			logger.error("Cannot refine " + node.getDescription());
-			return null;
-		}
-		
-		
-		//return the refinement operator
-		if (refirementOperatorBorrowed) {
-			try {
-				if (refinementOperator != null)
-					refinementOperatorPool.returnObject(refinementOperator);
-				else
-					logger.error("Cannot return the borrowed refinement operator");
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return refinements;
-	}
-	
-	
-	/**
-	 * ============================================================================================
-	 * =============<br>
-	 * Calculate accuracy, correctness of a description and examples that are covered by this
-	 * description<br>
-	 * This version is used in the learning with exception
-	 * 
-	 * @param description
-	 *            Description which is being calculated
-	 * @param parentNode
-	 *            The node which contains the description which is used in the refinement that
-	 *            result the input description
-	 * 
-	 * @return Null if the description is processed before, or a node which contains the description
-	 */
-	private ParCELExtraNode checkAndCreateNewNodeV2(OWLClassExpression description, ParCELNode parentNode) {
-
-		// redundancy check
-		boolean nonRedundant = learner.addDescription(description);
-		if (!nonRedundant)
-			return null; // false, node cannot be added
-
-		/**
-		 * <ol>
-		 * <li>cp(D) = empty</li>
-		 * <ul>
-		 * <li>cn(D) = empty: weak description ==> may be ignored</li>
-		 * <li>cn(D) != empty: counter partial definition, especially used in learning with
-		 * exceptions</li>
-		 * </ul>
-		 * <li>cp(D) != empty</li>
-		 * <ul>
-		 * <li>cn(D) = empty: partial definition</li>
-		 * <li>cn(D) != empty: potential description</li>
-		 * </ul>
-		 * </ol>
-		 */
-		ParCELEvaluationResult evaluationResult = learningProblem
-				.getAccuracyAndCorrectnessEx(description);
-
-		// cover no positive example && no negative example ==> weak description
-		if ((evaluationResult.getCompleteness() == 0) && (evaluationResult.getCorrectness() == 1))
-			return null;
-
-		ParCELExtraNode newNode = new ParCELExtraNode(parentNode, description,
-				evaluationResult.getAccuracy(), evaluationResult.getCorrectness(),
-				evaluationResult.getCompleteness(), evaluationResult.getCoveredPositiveExamples());
-
-		// newNode.setCorrectness(evaluationResult.getCorrectness());
-		// newNode.setCompleteness(evaluationResult.getCompleteness());
-		// newNode.setCoveredPositiveExamples(evaluationResult.getCoveredPossitiveExamples());
-		newNode.setCoveredNegativeExamples(evaluationResult.getCoveredNegativeExamples());
-
-		if (parentNode != null)
-			parentNode.addChild(newNode);
-
-		return newNode;
-
-	} // addNode()
-
-
-
-	/**
-	 * Get the node which is currently being processed
-	 * 
-	 * @return The node currently being processed
-	 */
-	public ParCELNode getProcessingNode() {
-		return this.nodeToProcess;
 	}
 }
