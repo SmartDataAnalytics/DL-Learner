@@ -833,83 +833,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 	}
 
 
-	/**
-	 * =========================================================================================================<br>
-	 * Get the currently best description in the set of partial definition
-	 */
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		if (partialDefinitions.size() > 0) {
-			return partialDefinitions.iterator().next().getDescription();
-		} else
-			return null;
-	}
-
-
-	/**=========================================================================================================<br>
-	 * Get all partial definition without any associated information such as accuracy, correctness, etc. 
-	 */
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return PLOENodesToDescriptions(partialDefinitions);
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * Convert a set of PLOENode into a list of descriptions
-	 * 
-	 * @param nodes Set of PLOENode need to be converted
-	 * 
-	 * @return Set of descriptions corresponding to the given set of PLOENode
-	 */
-	private List<OWLClassExpression> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
-		List<OWLClassExpression> result = new LinkedList<>();
-		for (ParCELExtraNode node : nodes)
-			result.add(node.getDescription());
-		return result;
-	}
-	
-	
-	/**=========================================================================================================<br>
-	 * The same as getCurrentBestDescription.  An evaluated description is a description with 
-	 * its evaluated properties including accuracy and correctness  
-	 */
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		if (partialDefinitions.size() > 0) {
-			ParCELNode firstNode = partialDefinitions.iterator().next();
-			return new EvaluatedDescription(firstNode.getDescription(), new ParCELScore(firstNode));
-		}
-		else
-			return null;
-	}
-
-	
-	/**=========================================================================================================<br>
-	 * Get all partial definitions found so far 
-	 */
-	@Override
-	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
-		return extraPLOENodesToEvaluatedDescriptions(partialDefinitions);
-	}
-
-	
-	/**=========================================================================================================<br>
-	 * Method for PLOENode - EvaluatedDescription conversion
-	 * 
-	 * @param partialDefs Set of ExtraPLOENode nodes which will be converted into EvaluatedDescription 
-	 * 
-	 * @return Set of corresponding EvaluatedDescription  
-	 */
-	private NavigableSet<? extends EvaluatedDescription<? extends Score>> extraPLOENodesToEvaluatedDescriptions(Set<ParCELExtraNode> partialDefs) {
-		TreeSet<EvaluatedDescription<? extends Score>> result = new TreeSet<>(new EvaluatedDescriptionComparator());
-		for (ParCELExtraNode node : partialDefs) {
-			result.add(new EvaluatedDescription(node.getDescription(), new ParCELScore(node)));
-		}
-		return result;
-	}
-	
-	
 	/**=========================================================================================================<br>
 	 * Get the overall completeness of all partial definition found
 	 * 
@@ -919,17 +842,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		return 1 - (uncoveredPositiveExamples.size()/(double)positiveExamples.size());
 	}
 	
-	
-	/**=========================================================================================================<br>
-	 * Get the list of learning problem supported by this learning algorithm
-	 * 
-	 * @return List of supported learning problem 
-	 */
-	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
-		problems.add(ParCELPosNegLP.class);
-		return problems;
-	}
 
 
 	//methods related to the compactness: get compact definition, set compactor

@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.parcel;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
@@ -10,6 +11,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -20,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for all ParCEL algorithms family
@@ -202,6 +205,17 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		super(learningProblem, reasoningService);
 	}
 
+
+	protected void initSearchTree() {
+		// create a start node in the search tree
+		// currently, start class is always Thing (initialised in the init() method)
+		allDescriptions.add(startClass);
+
+		double accuracy = this.positiveExamples.size() / (double) (this.positiveExamples.size() + this.negativeExamples.size());
+		ParCELNode startNode = new ParCELNode(null, startClass, accuracy, 0, 1.0);
+		searchTree.add(startNode);
+	}
+
 	/**
 	 * ============================================================================================
 	 * Callback method for worker when partial definitions found (callback for an evaluation request
@@ -270,7 +284,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 			// update the max accuracy and max description length
 			if (def.getAccuracy() > this.maxAccuracy) {
 				this.maxAccuracy = def.getAccuracy();
-				this.bestDescriptionLength = new OWLClassExpressionLengthCalculator().getLength(def.getDescription());
+				this.bestDescriptionLength = OWLClassExpressionUtils.getLength(def.getDescription());
 			}
 
 			// check if the complete definition found
@@ -291,11 +305,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 			// remove the ignored concepts out of the list of concepts will be used by refinement
 			// operator
 			if (this.ignoredConcepts != null) {
-				try {
-					usedConcepts.removeAll(ignoredConcepts);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				usedConcepts.removeAll(ignoredConcepts);
 			} //set ignored concept is applicable
 
 			ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
@@ -343,12 +353,9 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 * @return An union of all reduced partial definitions
 	 */
 	public OWLClassExpression getUnionCurrenlyBestDescription() {
-		List<OWLClassExpression> compactedDescriptions = new LinkedList<>();
-
-		SortedSet<ParCELExtraNode> compactedPartialdefinition = this.getReducedPartialDefinition();
-
-		for (ParCELExtraNode def : compactedPartialdefinition)
-			compactedDescriptions.add(def.getDescription());
+		List<OWLClassExpression> compactedDescriptions = getReducedPartialDefinition().stream()
+				.map(OENode::getDescription)
+				.collect(Collectors.toList());
 
 		return new OWLObjectUnionOfImplExt(compactedDescriptions);
 	}
@@ -360,12 +367,9 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 * @return An union of all reduced partial definitions
 	 */
 	public OWLClassExpression getUnionCurrenlyBestDescription(ParCELReducer reducer) {
-		List<OWLClassExpression> compactedDescriptions = new LinkedList<>();
-
-		SortedSet<ParCELExtraNode> compactedPartialdefinition = this.getReducedPartialDefinition(reducer);
-
-		for (ParCELExtraNode def : compactedPartialdefinition)
-			compactedDescriptions.add(def.getDescription());
+		List<OWLClassExpression> compactedDescriptions = getReducedPartialDefinition(reducer).stream()
+				.map(OENode::getDescription)
+				.collect(Collectors.toList());
 
 		return new OWLObjectUnionOfImplExt(compactedDescriptions);
 	}
@@ -657,7 +661,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 */
 	@Override
 	public OWLClassExpression getCurrentlyBestDescription() {
-		if (partialDefinitions.size() > 0) {
+		if (!partialDefinitions.isEmpty()) {
 			return partialDefinitions.iterator().next().getDescription();
 		} else
 			return null;
@@ -783,5 +787,37 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	@Override
 	public int getCurrentlyMaxExpansion() {
 		return this.currentMaxHorizExp;
+	}
+
+	protected void printSearchTree(ParCELExtraNode node) {
+		List<OENode> processingNodes = new LinkedList<>();
+
+		processingNodes.add(node);
+
+		processingNodes.addAll(node.getCompositeNodes());
+
+		for (OENode n : processingNodes) {
+			OENode parent = n.getParent();
+			while (parent != null) {
+				logger.debug("  <-- " + OWLAPIRenderers.toManchesterOWLSyntax(parent.getDescription()));
+				//" [acc:" +  df.format(parent.getAccuracy()) +
+				//", correctness:" + df.format(parent.getCorrectness()) + ", completeness:" + df.format(parent.getCompleteness()) +
+				//", score:" + df.format(this.heuristic.getScore(parent)) + "]");
+
+				//print out the children nodes
+				Collection<OENode> children = parent.getChildren();
+				for (OENode child : children) {
+					OENode tmp = child;
+					logger.debug("    --> " + OWLAPIRenderers.toManchesterOWLSyntax(tmp.getDescription()));
+					//" [acc:" +  df.format(tmp.getAccuracy()) +
+					//", correctness:" + df.format(tmp.getCorrectness()) + ", completeness:" + df.format(tmp.getCompleteness()) +
+					//", score:" + df.format(this.heuristic.getScore(tmp)) + "]");
+				}
+				parent = parent.getParent();
+			}	//while parent is not null
+
+			logger.debug("===============");
+
+		}
 	}
 }

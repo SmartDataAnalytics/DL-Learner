@@ -85,8 +85,6 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		// get a list of double data type properties for filtering out other properties
 		this.numericDatatypeProperties = new HashSet<>(reasoner.getDoubleDatatypeProperties());
 
-		//logger.info("Numeric data properties: " + numericDatatypeProperties);
-
 		//get a list of integer datatype properties
 		this.numericDatatypeProperties.addAll(reasoner.getIntDatatypeProperties());
 		
@@ -111,24 +109,20 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		for (OWLIndividual ind : positiveExamples) {
 			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, true, new HashSet<>()); // TODO shouldn't the set be global
 
-			for (OWLDataProperty pro : individualRelations.keySet()) {
-				if (relations.containsKey(pro))
-					relations.get(pro).addAll(individualRelations.get(pro));
-				else
-					relations.put(pro, individualRelations.get(pro));
-			}
+			individualRelations.forEach((dp, values) -> relations.merge(dp, values, (set1, set2) -> {
+				set1.addAll(set2);
+				return set1;
+			}));
 		}
 
 		// generate relation for negative examples
 		for (OWLIndividual ind : negativeExamples) {
 			Map<OWLDataProperty, ValueCountSet> individualRelations = getInstanceValueRelation(ind, false, new HashSet<>()); // TODO shouldn't the set be global
 
-			for (OWLDataProperty pro : individualRelations.keySet()) {
-				if (relations.containsKey(pro))
-					relations.get(pro).addAll(individualRelations.get(pro));
-				else
-					relations.put(pro, individualRelations.get(pro));
-			}
+			individualRelations.forEach((dp, values) -> relations.merge(dp, values, (set1, set2) -> {
+				set1.addAll(set2);
+				return set1;
+			}));
 		}
 
 		// -------------------------------------------------
@@ -138,11 +132,9 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		Map<OWLDataProperty, List<Double>> splits = new TreeMap<>();
 
 		// - - - . + + + + + . = . = . = . + . = . = . - . = . - - -
-		for (OWLDataProperty dp : relations.keySet()) {
-
-			if (relations.get(dp).size() > 0) {
+		relations.forEach((dp, propertyValues) -> {
+			if(!propertyValues.isEmpty()) {
 				List<Double> values = new ArrayList<>();
-				ValueCountSet propertyValues = relations.get(dp);
 
 				int priorType = propertyValues.first().getType();
 				double priorValue = propertyValues.first().getValue();
@@ -155,7 +147,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 					// current value belongs to both pos. and neg.
 					if ((currentType == 3) || (currentType != priorType)) {
 						//calculate the middle/avg. value
-						//TODO: how to identify the splitting strategy here? For examples: time,... 
+						//TODO: how to identify the splitting strategy here? For examples: time,...
 						values.add((priorValue + currentValue) / 2.0);
 
 						//Double newValue = new Double(new TimeSplitter().calculateSplit((int)priorValue, (int)currentValue));
@@ -173,14 +165,13 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 				// add processed property into the result set (splits)
 				splits.put(dp, values);
-				
+
 				if (logger.isInfoEnabled())
 					logger.info("Splitting: " + dp + ", no of values: " + relations.get(dp).size()
 							+ ", splits: " + values.size());
-				
 			}
-		}
-		
+		});
+
 		if (logger.isInfoEnabled())
 			logger.info("Splitting result: " + splits);
 

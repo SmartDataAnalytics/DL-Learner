@@ -31,8 +31,6 @@ import java.util.concurrent.RejectedExecutionException;
 @ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Expression Learning")
 public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
-	private ParCELNode startNode; 	// root of the search tree
-
 	/**
 	 * ============================================================================================
 	 * Constructor for PDLL learning algorithm
@@ -73,7 +71,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 	/**
 	 * ============================================================================================
-	 * Initial the learning algorithm:
+	 * Initialize the learning algorithm:
 	 */
 	@Override
 	public void init() throws ComponentInitException {
@@ -128,7 +126,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 		minNumberOfWorker = maxNumberOfWorker = numberOfWorkers;
 
-	} // init()
+	}
 
 	protected void reset() {
 		// register a MBean for debugging purpose
@@ -153,20 +151,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 		partialDefinitions = new TreeSet<>(new ParCELCorrectnessComparator());
 
-		maxAccuracy = 0;		//currently max accuracy
-		this.noOfCompactedPartialDefinition = 0;
-		this.noOfUncoveredPositiveExamples = this.positiveExamples.size();
-
-
-		// create a start node in the search tree
-		// currently, start class is always Thing (initialised in the init() method)
-		allDescriptions.add(startClass);
-
-		// create a start node and add it into the search tree
-		startNode = new ParCELNode((ParCELNode) null, startClass, this.positiveExamples.size()
-				/ (double) (this.positiveExamples.size() + this.negativeExamples.size()), 0, 1.0);
-
-		searchTree.add(startNode); // add the root node into the search tree
+		maxAccuracy = 0;
+		noOfCompactedPartialDefinition = 0;
+		noOfUncoveredPositiveExamples = this.positiveExamples.size();
 	}
 
 	/**
@@ -189,6 +176,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	@Override
 	public void start() {
 		reset();
+
+		initSearchTree();
 
 		createWorkerPool();
 

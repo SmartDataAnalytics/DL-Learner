@@ -48,15 +48,6 @@ public class ParCELCrossValidation extends CrossValidation {
 	protected boolean interupted = false;
 
 	/**
-	 * Default constructor
-	 */
-
-	public ParCELCrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs,
-			int folds, boolean leaveOneOut, int noOfRuns) {
-		super(la, lp, rs, folds, leaveOneOut); // TODO nrOfRuns not available in CV class
-	}
-
-	/**
 	 * This is for ParCEL cross validation
 	 *
 	 * @param la
@@ -342,7 +333,7 @@ public class ParCELCrossValidation extends CrossValidation {
 				fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));
 
 				length.addNumber(OWLClassExpressionUtils.getLength(concept));
-//				totalNumberOfDescriptions.addNumber(la.getTotalNumberOfDescriptionsGenerated()); // TODO not avaliable yet
+//				totalNumberOfDescriptions.addNumber(la.getTotalNumberOfDescriptionsGenerated()); // TODO not available yet
 
 				outputWriter("Fold " + currFold + ":");
 				outputWriter("  training: " + trainingCorrectPosClassified + "/" + trainingSetsPos.get(currFold).size() +
@@ -355,10 +346,10 @@ public class ParCELCrossValidation extends CrossValidation {
 						"%, comp:" + testingCompleteness + "%) --- " +
 						df.format(trainingAccuracy) + "% (corr:"+ trainingCorrectness +
 						", comp:" + trainingCompleteness + "%) on training set)");
-				outputWriter("  definition length: " + df.format(OWLClassExpressionUtils.getLength(concept)));
+				outputWriter("  definition length: " + OWLClassExpressionUtils.getLength(concept));
 				outputWriter("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
 				outputWriter("  learning time: " + df.format(learningMili/(double)1000) + "s");
-//				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated()); // TODO not avaliable yet
+//				outputWriter("  total number of descriptions: " + la.getTotalNumberOfDescriptionsGenerated()); // TODO not available yet
 
 
 				double minDescriptions = 0;

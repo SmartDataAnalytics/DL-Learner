@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.parcelex;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.dllearner.algorithms.parcel.ParCELAbstract;
 import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * Abstract class for all ParCELEx (ParCEL with Exceptions or Two-way ParCEL) algorithms family
@@ -27,11 +29,16 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	protected int[] partialDefinitionType = new int[5];
 	protected int counterPartialDefinitionUsed = 0;
 
+	protected HashSet<OWLIndividual> coveredNegativeExamples;
+
 
 	//---------------------------------------------------------
 	//flags to indicate the status of the application
 	//---------------------------------------------------------
 	protected volatile boolean counterDone = false;
+
+	//some properties for statistical purpose
+	protected int descriptionTested;	//total number of descriptions tested (generated and calculated accuracy, correctess,...)
 
 	/**
 	 * 

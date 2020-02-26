@@ -14,6 +14,11 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -23,34 +28,18 @@ import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-
 @ComponentAnn(name="ParCELearnerExV1", shortName="parcelearnerExV1", version=0.1, description="Parallel Class Expression Logic Learning")
 public class ParCELearnerExV1 extends ParCELExAbstract {
 
 	private int noOfCompactedPartialDefinition = 0;
-
-	private HashSet<OWLIndividual> coveredNegativeExamples;
-
-
-	private ParCELNode startNode;			//root of the search tree
 
 
     /**
      * Descriptions that can be combined with the counter partial definitions to become partial definitions
      */
     SortedSet<ParCELExtraNode> potentialPartialDefinitions;
-    
-	
-	//some properties for statistical purpose
-	private int descriptionTested;	//total number of descriptions tested (generated and calculated accuracy, correctess,...)
 
-	private int noOfTask = 0;
 
-	
 	/**=========================================================================================================<br>
 	 * Constructor for the learning algorithm
 	 * 
@@ -156,6 +145,8 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 	@Override
 	public void start() {
 		reset();
+
+		initSearchTree();
 
 		createWorkerPool();
 
@@ -335,36 +326,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 					
 					//print out the learning tree
 					if (logger.isDebugEnabled()) {
-						List<OENode> processingNodes = new LinkedList<>();
-						
-						processingNodes.add(def);
-
-						processingNodes.addAll(def.getCompositeNodes());
-						
-						for (OENode n : processingNodes) {
-							OENode parent = n.getParent();
-							while (parent != null) {
-								logger.debug("  <-- " + OWLAPIRenderers.toManchesterOWLSyntax(parent.getDescription()));
-										//" [acc:" +  df.format(parent.getAccuracy()) +
-										//", correctness:" + df.format(parent.getCorrectness()) + ", completeness:" + df.format(parent.getCompleteness()) +
-										//", score:" + df.format(this.heuristic.getScore(parent)) + "]");
-								
-								//print out the children nodes
-								Collection<OENode> children = parent.getChildren();
-								for (OENode child : children) {
-									OENode tmp = child;
-									logger.debug("    --> " + OWLAPIRenderers.toManchesterOWLSyntax(tmp.getDescription()));
-											//" [acc:" +  df.format(tmp.getAccuracy()) +
-											//", correctness:" + df.format(tmp.getCorrectness()) + ", completeness:" + df.format(tmp.getCompleteness()) + 
-											//", score:" + df.format(this.heuristic.getScore(tmp)) + "]");
-								}
-								parent = parent.getParent();
-							}	//while parent is not null
-							
-							logger.debug("===============");
-							
-						}
-
+						printSearchTree(def);
 					}
 				}
 			}					
@@ -373,6 +335,8 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 		super.aggregateCounterPartialDefinitionInf();
 		
 	}
+
+
 
 	
 	private void createNewTask(ParCELNode nodeToProcess) {
@@ -463,16 +427,6 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 
 		//create a start node in the search tree
 		allDescriptions.add(startClass);	//currently, start class is always Thing
-
-		//add the first node into the search tree
-		startNode = new ParCELNode(null, startClass,
-								   this.positiveExamples.size()/(double)(this.positiveExamples.size() + this.negativeExamples.size()), 0, 1);
-
-		startNode.setCoveredPositiveExamples(positiveExamples);
-		startNode.setCoveredNegativeExamples(negativeExamples);
-
-		searchTree.add(startNode);	//add the root node into the search tree
-
 
 	}
 
