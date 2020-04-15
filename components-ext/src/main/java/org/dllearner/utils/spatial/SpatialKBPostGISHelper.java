@@ -140,6 +140,12 @@ public class SpatialKBPostGISHelper {
     }
 
     public void addSpatialFeature(String featureIRIStr, String geomIRIStr, String wktStr) {
+        if (!featureIRIStr.startsWith("http"))
+            featureIRIStr = ns + featureIRIStr;
+
+        if (!geomIRIStr.startsWith("http"))
+            geomIRIStr = ns + geomIRIStr;
+
         OWLNamedIndividual featureIndividual =
                 df.getOWLNamedIndividual(IRI.create(featureIRIStr));
 
