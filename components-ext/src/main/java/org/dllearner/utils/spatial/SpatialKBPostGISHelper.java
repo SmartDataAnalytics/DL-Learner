@@ -139,18 +139,8 @@ public class SpatialKBPostGISHelper {
         }
     }
 
-    public void addSpatialFeature(String featureIRIStr, String geomIRIStr, String wktStr) {
-        if (!featureIRIStr.startsWith("http"))
-            featureIRIStr = ns + featureIRIStr;
-
-        if (!geomIRIStr.startsWith("http"))
-            geomIRIStr = ns + geomIRIStr;
-
-        OWLNamedIndividual featureIndividual =
-                df.getOWLNamedIndividual(IRI.create(featureIRIStr));
-
-        OWLNamedIndividual geomIndividual =
-                df.getOWLNamedIndividual(IRI.create(geomIRIStr));
+    public void addSpatialFeature(
+            OWLIndividual featureIndividual, OWLIndividual geomIndividual, String wktStr) {
 
         OWLLiteral wktLit = df.getOWLLiteral(wktStr, wktDType);
 
@@ -203,5 +193,9 @@ public class SpatialKBPostGISHelper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public OWLOntology getOntology() {
+        return this.ontology;
     }
 }
