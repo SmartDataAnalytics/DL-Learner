@@ -12,19 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-enum PolygonType {
-    POINT("point"), LINESTRING("linestring"), POLYGON("polygon");
-
-    private String tableName;
-
-    PolygonType(String tableName) {
-        this.tableName = tableName;
-    }
-
-    String getTableName() {
-        return this.tableName;
-    }
-}
+enum PolygonType { POINT, LINESTRING, POLYGON }
 
 /**
  * Helper class to perform all the tedious tasks like loading data into
@@ -39,7 +27,20 @@ public class SpatialKBPostGISHelper {
     private static OWLDataFactory df = man.getOWLDataFactory();
 
     public static final String ns = "http://dl-learner/spatial#";
-    public static final OWLDatatype wktDType = df.getOWLDatatype(IRI.create("http://www.opengis.net/ont/geosparql#wktLiteral"));
+
+    public static final OWLDatatype wktDType = df.getOWLDatatype(
+            IRI.create("http://www.opengis.net/ont/geosparql#wktLiteral"));
+
+    public static final OWLClass areaFeatureClass =
+            df.getOWLClass(IRI.create(ns + "AreaFeature"));
+    public static final OWLClass lineFeatureClass =
+            df.getOWLClass(IRI.create(ns + "LineFeature"));
+    public static final OWLClass pointFeatureClass =
+            df.getOWLClass(IRI.create(ns + "PointFeature"));
+
+    public static final String areaGeomTableName = "polygon";
+    public static final String lineGeomTableName = "line_string";
+    public static final String pointGeomTableName = "point";
 
     private int dummyIndividualCntr = 1;
 
@@ -50,7 +51,9 @@ public class SpatialKBPostGISHelper {
         return df.getOWLNamedIndividual(IRI.create(iriStr));
     }
 
-    private OWLNamedIndividual getGeometryIndividual(OWLNamedIndividual individual, int propertyPathIdx) {
+    private OWLNamedIndividual getGeometryIndividual(
+            OWLNamedIndividual individual, int propertyPathIdx) {
+
         if (propertyPathIdx == propertyPathToGeometry.size())
             return individual;
 
@@ -75,7 +78,6 @@ public class SpatialKBPostGISHelper {
                 .collect(Collectors.toSet());
 
         assert wktValues.size() == 1;
-
         return wktValues.iterator().next();
     }
 
@@ -123,12 +125,12 @@ public class SpatialKBPostGISHelper {
             String wktStr = p.getValue().getLiteral();
 
             String queryStr =
-                    "INSERT INTO " + getType(wktStr).getTableName() + " " +
+                    "INSERT INTO " + getTableName(wktStr) + " " +
                     "VALUES (?, ST_GeomFromText(?))";
 
             try {
                 PreparedStatement statement = conn.prepareStatement(queryStr);
-                statement.setString(1, geomIndividual.toString());
+                statement.setString(1, geomIndividual.toStringID());
                 statement.setString(2, wktStr);
 
                 statement.execute();
@@ -139,8 +141,35 @@ public class SpatialKBPostGISHelper {
         }
     }
 
+    private String getTableName(String wktStr) {
+        if (wktStr.startsWith("POINT"))
+            return pointGeomTableName;
+        else if (wktStr.startsWith("LINE"))
+            return lineGeomTableName;
+        else if (wktStr.startsWith("POLYGON"))
+            return areaGeomTableName;
+        else
+            throw new RuntimeException("Unknown polygon type " + wktStr);
+    }
+
+    private OWLClass getSpatialFeatureCls(String wktStr) {
+        if (wktStr.startsWith("POINT"))
+            return pointFeatureClass;
+        else if (wktStr.startsWith("LINE"))
+            return lineFeatureClass;
+        else if (wktStr.startsWith("POLYGON"))
+            return areaFeatureClass;
+        else
+            throw new RuntimeException("Unknown polygon type " + wktStr);
+    }
+
     public void addSpatialFeature(
             OWLIndividual featureIndividual, OWLIndividual geomIndividual, String wktStr) {
+
+        OWLClass featureClass = getSpatialFeatureCls(wktStr);
+        man.addAxiom(
+                ontology,
+                df.getOWLClassAssertionAxiom(featureClass, featureIndividual));
 
         OWLLiteral wktLit = df.getOWLLiteral(wktStr, wktDType);
 
@@ -148,28 +177,30 @@ public class SpatialKBPostGISHelper {
         for (int propertyPathIdx = 0; propertyPathIdx < propertyPathToGeometry.size(); propertyPathIdx++) {
             if (propertyPathIdx == propertyPathToGeometry.size()-1) {
 
-                OWLAxiom axiom = df.getOWLObjectPropertyAssertionAxiom(
-                        propertyPathToGeometry.get(propertyPathIdx),
-                        currLastIndividualInPropertyChain,
-                        geomIndividual);
-
-                man.addAxiom(ontology, axiom);
+                man.addAxiom(
+                        ontology,
+                        df.getOWLObjectPropertyAssertionAxiom(
+                                propertyPathToGeometry.get(propertyPathIdx),
+                                currLastIndividualInPropertyChain,
+                                geomIndividual));
 
             } else {
                 OWLIndividual dummyIndividual = getDummyIndividual();
 
-                OWLAxiom axiom = df.getOWLObjectPropertyAssertionAxiom(
-                        propertyPathToGeometry.get(propertyPathIdx),
-                        currLastIndividualInPropertyChain,
-                        dummyIndividual);
-
-                man.addAxiom(ontology, axiom);
+                man.addAxiom(
+                        ontology,
+                        df.getOWLObjectPropertyAssertionAxiom(
+                                propertyPathToGeometry.get(propertyPathIdx),
+                                currLastIndividualInPropertyChain,
+                                dummyIndividual));
 
                 currLastIndividualInPropertyChain = dummyIndividual;
             }
         }
 
-        OWLAxiom axiom = df.getOWLDataPropertyAssertionAxiom(wktLiteralProperty, geomIndividual, wktLit);
+        OWLAxiom axiom = df.getOWLDataPropertyAssertionAxiom(
+                wktLiteralProperty, geomIndividual, wktLit);
+
         man.addAxiom(ontology, axiom);
     }
 
@@ -177,17 +208,17 @@ public class SpatialKBPostGISHelper {
         try {
             Statement statement = conn.createStatement();
             statement.execute(
-                    "CREATE TABLE " + PolygonType.POINT.getTableName() +
+                    "CREATE TABLE " + pointGeomTableName +
                             " (iri character varying(255), the_geom geometry(Point))");
 
             statement = conn.createStatement();
             statement.execute(
-                    "CREATE TABLE " + PolygonType.LINESTRING.getTableName() +
+                    "CREATE TABLE " + lineGeomTableName +
                             " (iri character varying(255), the_geom geometry(Linestring))");
 
             statement = conn.createStatement();
             statement.execute(
-                    "CREATE TABLE " + PolygonType.POLYGON.getTableName() +
+                    "CREATE TABLE " + areaGeomTableName +
                             " (iri character varying(255), the_geom geometry(Polygon))");
 
         } catch (SQLException e) {
