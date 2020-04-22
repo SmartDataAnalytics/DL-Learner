@@ -5,8 +5,11 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.spatial.SpatialReasonerPostGIS;
 import org.semanticweb.owlapi.model.*;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
@@ -58,7 +61,11 @@ public class ExperimentsArtificial {
         KnowledgeSource ks = new OWLFile(path);
         ks.init();
 
-        ClosedWorldReasoner cwr = new ClosedWorldReasoner(ks);
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
         cwr.init();
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
@@ -73,7 +80,10 @@ public class ExperimentsArtificial {
 
         reasoner.init();
 
-        Set<OWLIndividual> allIndividuals = reasoner.getIndividuals();
+        Set<OWLIndividual> allIndividuals =
+                reasoner.getIndividuals(
+                        new OWLClassImpl(
+                                IRI.create("http://dl-learner.org/spatial#SpatialFeature")));
 
         List<Double> results = new ArrayList<>(10);
         for (int i=0; i<10; i++) {
