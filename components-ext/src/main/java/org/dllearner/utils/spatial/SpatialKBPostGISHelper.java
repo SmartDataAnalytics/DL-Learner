@@ -26,7 +26,7 @@ public class SpatialKBPostGISHelper {
     private static OWLOntologyManager man = OWLManager.createOWLOntologyManager();
     private static OWLDataFactory df = man.getOWLDataFactory();
 
-    public static final String ns = "http://dl-learner/spatial#";
+    public static final String ns = "http://dl-learner.org/spatial#";
 
     public static final OWLDatatype wktDType = df.getOWLDatatype(
             IRI.create("http://www.opengis.net/ont/geosparql#wktLiteral"));
