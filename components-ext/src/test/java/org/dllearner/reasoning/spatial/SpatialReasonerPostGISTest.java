@@ -126,7 +126,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
 
-        reasoner.addGeometryPropertyPath(Lists.newArrayList(geometryPropertyPath));
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
         reasoner.init();
 
@@ -318,7 +318,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
 
-        reasoner.addGeometryPropertyPath(Lists.newArrayList(geometryPropertyPath));
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
         reasoner.init();
 
