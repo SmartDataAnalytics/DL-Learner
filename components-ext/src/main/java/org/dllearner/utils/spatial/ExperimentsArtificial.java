@@ -26,12 +26,11 @@ public class ExperimentsArtificial {
     private static String dataDir = "/path/to/data/dir/";
     private static List<String> dataFolders = Lists.newArrayList(
             "artificial01", "artificial02", "artificial03",
-            "artificial04", "artificial05", "artificial06",
-            "artificial07", "artificial08", "artificial09",
-            "artificial10");
+            "artificial04", "artificial05");
     private static List<Integer> datasetSizes = Lists.newArrayList(
-            10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000,
-            500000, 1000000);
+            500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+            5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
+            10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000, 14500, 1500);
 
     private static OWLDataProperty wktLiteralDTypeProperty =
             new OWLDataPropertyImpl(
@@ -70,7 +69,7 @@ public class ExperimentsArtificial {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dataFolder);
+        reasoner.setDbName(dataFolder + "_" + datasetSize);
         reasoner.setDbUser("postgres");
         reasoner.setDbUserPW("postgres");
         reasoner.setHostname("localhost");
