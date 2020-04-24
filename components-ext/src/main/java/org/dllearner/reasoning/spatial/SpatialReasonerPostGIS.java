@@ -917,7 +917,135 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isPartOf(OWLIndividual part, OWLIndividual whole) {
-        throw new NotImplementedException();
+        String partTable = getTable(part);
+        String wholeTable = getTable(whole);
+
+        OWLIndividual partGeom;
+        OWLIndividual wholeGeom;
+
+        try {
+            partGeom = feature2geom.get(part);
+            wholeGeom = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (wholeTable.equals(pointFeatureTableName) &&
+                (partTable.equals(lineFeatureTableName) || partTable.equals(areaFeatureTableName))) {
+            return false;
+        } else if (wholeTable.equals(lineFeatureTableName) && partTable.equals(areaFeatureTableName)) {
+            return false;
+        }
+
+        String queryStr = "";
+
+        if (wholeTable.equals(pointFeatureTableName)) {
+            // point - point
+            queryStr +=
+                "SELECT " +
+                    "part.the_geom=whole.the_geom p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=?";
+        } else if (wholeTable.equals(lineFeatureTableName)) {
+            // line - point
+            if (partTable.equals(pointFeatureTableName)) {
+                queryStr +=
+                "SELECT " +
+                    "ST_Intersects(part.the_geom, whole.the_geom) p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+
+            // line - line
+            } else {
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Equals(whole.the_geom, part.the_geom) " +
+                    ") p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            }
+
+        } else if (wholeTable.equals(areaFeatureTableName)) {
+            if (partTable.equals(pointFeatureTableName)) {
+                // area - point
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Intersects(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else if (partTable.equals(lineFeatureTableName)) {
+                // area - line
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else {
+                // area - area
+                queryStr +=
+                "SELECT " +
+                    "ST_Contains(whole.the_geom, part.the_geom) p " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            }
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, partGeom.toStringID());
+            statement.setString(2, wholeGeom.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean isPartOf = resSet.getBoolean("p");
+            return isPartOf;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -1007,11 +1135,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     tableName + " l, " +
                     areaFeatureTableName + " r " +
                 "WHERE " +
-                    "(" +
-                        "ST_Contains(l.the_geom, r.the_geom) " +
-                    "OR " +
-                        "ST_Equals(l.the_geom, r.the_geom) " +
-                    ") " +
+                    "ST_Contains(l.the_geom, r.the_geom) " +
                 "AND " +
                     "l.iri=?";
         }
