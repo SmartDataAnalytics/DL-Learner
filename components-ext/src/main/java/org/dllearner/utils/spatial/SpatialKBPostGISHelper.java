@@ -91,18 +91,6 @@ public class SpatialKBPostGISHelper {
                 .collect(Collectors.toSet());
     }
 
-    private PolygonType getType(String wktLiteral) {
-        if (wktLiteral.startsWith("POINT")) {
-            return PolygonType.POINT;
-        } else if (wktLiteral.startsWith("LINE")) {
-            return PolygonType.LINESTRING;
-        } else if (wktLiteral.startsWith("POLY")) {
-            return PolygonType.POLYGON;
-        } else {
-            throw new RuntimeException("Unhandled polygon type of " + wktLiteral);
-        }
-    }
-
     public SpatialKBPostGISHelper(
             List<OWLObjectProperty> propertyPathToGeometry,
             OWLDataProperty wktLiteralProperty) {
@@ -224,6 +212,14 @@ public class SpatialKBPostGISHelper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getGeometryCollection() {
+        String values = getWKTLiterals().stream()
+                .map(Pair::getValue)
+                .map(OWLLiteral::getLiteral).reduce("", (l, r) -> l + "," + r);
+
+        return "GEOMETRYCOLLECTION(" + values.substring(1) + ")";
     }
 
     public OWLOntology getOntology() {
