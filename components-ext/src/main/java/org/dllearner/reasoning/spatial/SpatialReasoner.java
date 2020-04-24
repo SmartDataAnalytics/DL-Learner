@@ -38,7 +38,15 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsConnectedWith(OWLIndividual spatialFeatureIndividual);
 
     // Discrete from
+//    boolean isDiscreteFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
+
+//    Stream<OWLIndividual> getIndividualsDiscreteFrom(OWLIndividual spatialFeatureIndividual);
+
     // Overlaps with
+    boolean overlapsWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
+
+    Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual);
+
     // Part of
     // Has part
     // Proper part of
