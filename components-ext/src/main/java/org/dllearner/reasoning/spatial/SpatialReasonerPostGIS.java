@@ -687,6 +687,148 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean overlapsWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual) {
+        String tableName = getTable(spatialFeatureIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        /* Note: ST_Overlaps( ) doesn't do here. This is the description from
+         * the PostGIS website:
+         * "Geometry A contains Geometry B if and only if no points of B lie in
+         *  the exterior of A, and at least one point of the interior of B lies
+         *  in the interior of A. An important subtlety of this definition is
+         *  that A does not contain its boundary, but A does contain itself."
+         *
+         * So the rather means 'partially overlaps' in our definition.
+         */
+
+        String queryStr = "";
+
+        if (tableName.equals(pointFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "l.the_geom=r.the_geom " +
+                "AND " +
+                    "l.iri=?" +
+                "UNION " +
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? ";
+
+        } else {
+            queryStr +=
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom)" +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom)";
+            if (tableName.equals(areaFeatureTableName)) {
+                queryStr +=
+                    "OR " +
+                        "ST_Overlaps(ST_Boundary(l.the_geom), r.the_geom) ";
+            }
+            queryStr +=
+                    ") " +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri o " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) ";
+            if (tableName.equals(lineFeatureTableName)) {
+                queryStr +=
+                    "OR " +
+                        "ST_Overlaps(l.the_geom, ST_Boundary(r.the_geom)) ";
+            }
+            queryStr +=
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom)" +
+                    ") " +
+                "AND " +
+                    "l.iri=?";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+            statement.setString(2, geomIndividual.toStringID());
+            statement.setString(3, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("o");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;
