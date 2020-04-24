@@ -689,7 +689,91 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean overlapsWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(spatialFeatureIndividual1);
+        String tableName2 = getTable(spatialFeatureIndividual2);
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+
+        try {
+            geomIndividual1 = feature2geom.get(spatialFeatureIndividual1);
+            geomIndividual2 = feature2geom.get(spatialFeatureIndividual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (tableName1.equals(pointFeatureTableName) || tableName2.equals(pointFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "ST_Intersects(l.the_geom, r.the_geom) o " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r ";
+
+        } else if (tableName1.equals(lineFeatureTableName) && tableName2.equals(areaFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "(" +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Overlaps(l.the_geom, ST_Boundary(r.the_geom)) " +
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom) " +
+                    ") o " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r ";
+        } else if (tableName1.equals(areaFeatureTableName) && tableName2.equals(lineFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "(" +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Overlaps(ST_Boundary(l.the_geom), r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    ") o " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r ";
+        } else {
+            queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom) " +
+                    ") o " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r ";
+        }
+
+        queryStr +=
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual1.toStringID());
+            statement.setString(2, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean areOverlapping = resSet.getBoolean("o");
+            return areOverlapping;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -769,13 +853,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     "( " +
                         "ST_Overlaps(l.the_geom, r.the_geom) " +
                     "OR " +
-                        "ST_Contains(l.the_geom, r.the_geom) " +
-                    "OR " +
-                        "ST_Contains(r.the_geom, l.the_geom)";
+                        "ST_Contains(l.the_geom, r.the_geom) ";
             if (tableName.equals(areaFeatureTableName)) {
                 queryStr +=
                     "OR " +
                         "ST_Overlaps(ST_Boundary(l.the_geom), r.the_geom) ";
+            } else {
+                queryStr +=
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom) ";
             }
             queryStr +=
                     ") " +
