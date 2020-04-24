@@ -48,6 +48,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual);
 
     // Part of
+    boolean isPartOf(OWLIndividual part, OWLIndividual whole);
+
+    Stream<OWLIndividual> getIndividualsPartOf(OWLIndividual whole);
+
     // Has part
     // Proper part of
     // Has proper part
