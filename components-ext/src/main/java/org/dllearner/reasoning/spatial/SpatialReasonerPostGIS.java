@@ -1635,6 +1635,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean partiallyOverlaps(
+            OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public  Stream<OWLIndividual> getIndividualsPartiallyOverlappingWith(
+            OWLIndividual spatialFeatureIndividual) {
+
+        throw new NotImplementedException();
+    }
+
     // ---
 
     @Override
