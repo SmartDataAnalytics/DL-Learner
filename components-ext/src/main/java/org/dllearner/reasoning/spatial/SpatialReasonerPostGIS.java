@@ -1746,7 +1746,99 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsPartiallyOverlappingWith(
             OWLIndividual spatialFeatureIndividual) {
 
-        throw new NotImplementedException();
+        String tableName = getTable(spatialFeatureIndividual);
+
+        if (tableName.equals(pointFeatureTableName)) {
+            return Stream.empty();
+        }
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (tableName.equals(lineFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "r.iri po " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Overlaps(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri po " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, ST_Boundary(r.the_geom)) " +
+                    "OR " +
+                        "(ST_Intersects(l.the_geom, r.the_geom) " +
+                        "AND NOT ST_Contains(r.the_geom, l.the_geom)) " +
+                    ") " +
+                "AND " +
+                    "l.iri=? ";
+        } else {
+            // area feature
+            queryStr +=
+                "SELECT " +
+                    "r.iri po " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(ST_Boundary(l.the_geom), r.the_geom) " +
+                    "OR " +
+                        "(ST_Intersects(l.the_geom, r.the_geom) " +
+                        "AND NOT ST_Contains(l.the_geom, r.the_geom))" +
+                    ") " +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri po " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Overlaps(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+            statement.setString(2, geomIndividual.toStringID());
+
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("po");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---

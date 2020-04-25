@@ -2785,4 +2785,387 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f14-f13", reasoner.partiallyOverlaps(feature014, feature013));
         assertFalse("f14-f14", reasoner.partiallyOverlaps(feature014, feature014));
     }
+
+    @Test
+    public void testGetIndividualsPartiallyOverlappingWith() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        // points
+        // -- on area boundary
+        OWLIndividual feature001 = i("feature001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(feature001, geom001, "POINT(13.8022 51.0591)");
+
+        // -- inside area
+        OWLIndividual feature002 = i("feature002");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(feature002, geom002,"POINT(13.8022 51.0586)");
+
+        // -- same as feature002
+        OWLIndividual feature003 = i("feature003");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(feature003, geom003,"POINT(13.8022 51.0586)");
+
+        // -- outside
+        OWLIndividual feature004 = i("feature004");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(feature004, geom004, "POINT(13.8005 51.0593)");
+
+
+        // line strings
+        OWLIndividual feature005 = i("feature005");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(feature005, geom005,
+                "LINESTRING(13.8022 51.0591,13.8029 51.0588,13.8038 51.0589,13.8037 51.0581,13.8043 51.05837)");
+
+        OWLIndividual feature006 = i("feature006");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(feature006, geom006,
+                "LINESTRING(13.8022 51.0591,13.8029 51.0588,13.8038 51.0589,13.8037 51.0581,13.8043 51.05837)");
+
+        // -- does not overlap with above line string
+        OWLIndividual feature007 = i("feature007");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(feature007, geom007,
+                "LINESTRING(13.8038 51.0589,13.8037 51.0581,13.8043 51.05837)");
+
+        // -- does overlap with feature005
+        OWLIndividual feature008 = i("feature008");
+        OWLIndividual geom008 = i("geom008");
+        kbHelper.addSpatialFeature(feature008, geom008,
+                "LINESTRING(13.8038 51.0589,13.8037 51.0581,13.8043 51.05837,13.8043 51.0577)");
+
+        // off
+        OWLIndividual feature009 = i("feature009");
+        OWLIndividual geom009 = i("geom009");
+        kbHelper.addSpatialFeature(feature009, geom009,
+                "LINESTRING(13.8038 51.0565,13.8042 51.0571,13.8050 51.0563,13.8041 51.0564,13.8042 51.0567)");
+
+        // crosses feature011/012
+        OWLIndividual feature010 = i("feature010");
+        OWLIndividual geom010 = i("geom010");
+        kbHelper.addSpatialFeature(feature010, geom010,
+                "LINESTRING(13.8007 51.0587,13.8031 51.0577)");
+
+        // areas
+        OWLIndividual feature011 = i("feature011");
+        OWLIndividual geom011 = i("geom011");
+        kbHelper.addSpatialFeature(feature011, geom011,
+                "POLYGON((13.8013 51.0589,13.8022 51.0591," +
+                        "13.8029 51.0588,13.8030 51.0581,13.8017 51.0579," +
+                        "13.8009 51.0583,13.8013 51.0589))");
+
+        // -- same as feature011
+        OWLIndividual feature012 = i("feature012");
+        OWLIndividual geom012 = i("geom012");
+        kbHelper.addSpatialFeature(feature012, geom012,
+                "POLYGON((13.8013 51.0589,13.8022 51.0591," +
+                        "13.8029 51.0588,13.8030 51.0581,13.8017 51.0579," +
+                        "13.8009 51.0583,13.8013 51.0589))");
+
+        // -- overlaps with feature011/12
+        OWLIndividual feature013 = i("feature013");
+        OWLIndividual geom013 = i("geom013");
+        kbHelper.addSpatialFeature(feature013, geom013,
+                "POLYGON((13.8009 51.0578,13.8016 51.0582," +
+                        "13.8026 51.0576,13.8019 51.0573,13.8009 51.0578))");
+
+        // -- off
+        OWLIndividual feature014 = i("feature014");
+        OWLIndividual geom014 = i("geom014");
+        kbHelper.addSpatialFeature(feature014, geom014,
+                "POLYGON((13.7973 51.0591,13.7972 51.0586,13.7983 51.0587,13.7973 51.0591))");
+
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDbName(dbName);
+        reasoner.setDbUser(dbUser);
+        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+//        System.out.println(kbHelper.getGeometryCollection());
+
+        Set<OWLIndividual> result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature001)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f1-f1", result.contains(feature001));
+        assertFalse("f1-f2", result.contains(feature002));
+        assertFalse("f1-f3", result.contains(feature003));
+        assertFalse("f1-f4", result.contains(feature004));
+        assertFalse("f1-f5", result.contains(feature005));
+        assertFalse("f1-f6", result.contains(feature006));
+        assertFalse("f1-f7", result.contains(feature007));
+        assertFalse("f1-f8", result.contains(feature008));
+        assertFalse("f1-f9", result.contains(feature009));
+        assertFalse("f1-f10", result.contains(feature010));
+        assertFalse("f1-f11", result.contains(feature011));
+        assertFalse("f1-f12", result.contains(feature012));
+        assertFalse("f1-f13", result.contains(feature013));
+        assertFalse("f1-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature002)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f2-f1", result.contains(feature001));
+        assertFalse("f2-f2", result.contains(feature002));
+        assertFalse("f2-f3", result.contains(feature003));
+        assertFalse("f2-f4", result.contains(feature004));
+        assertFalse("f2-f5", result.contains(feature005));
+        assertFalse("f2-f6", result.contains(feature006));
+        assertFalse("f2-f7", result.contains(feature007));
+        assertFalse("f2-f8", result.contains(feature008));
+        assertFalse("f2-f9", result.contains(feature009));
+        assertFalse("f2-f10", result.contains(feature010));
+        assertFalse("f2-f11", result.contains(feature011));
+        assertFalse("f2-f12", result.contains(feature012));
+        assertFalse("f2-f13", result.contains(feature013));
+        assertFalse("f2-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature003)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f3-f1", result.contains(feature001));
+        assertFalse("f3-f2", result.contains(feature002));
+        assertFalse("f3-f3", result.contains(feature003));
+        assertFalse("f3-f4", result.contains(feature004));
+        assertFalse("f3-f5", result.contains(feature005));
+        assertFalse("f3-f6", result.contains(feature006));
+        assertFalse("f3-f7", result.contains(feature007));
+        assertFalse("f3-f8", result.contains(feature008));
+        assertFalse("f3-f9", result.contains(feature009));
+        assertFalse("f3-f10", result.contains(feature010));
+        assertFalse("f3-f11", result.contains(feature011));
+        assertFalse("f3-f12", result.contains(feature012));
+        assertFalse("f3-f13", result.contains(feature013));
+        assertFalse("f3-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature004)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f4-f1", result.contains(feature001));
+        assertFalse("f4-f2", result.contains(feature002));
+        assertFalse("f4-f3", result.contains(feature003));
+        assertFalse("f4-f4", result.contains(feature004));
+        assertFalse("f4-f5", result.contains(feature005));
+        assertFalse("f4-f6", result.contains(feature006));
+        assertFalse("f4-f7", result.contains(feature007));
+        assertFalse("f4-f8", result.contains(feature008));
+        assertFalse("f4-f9", result.contains(feature009));
+        assertFalse("f4-f10", result.contains(feature010));
+        assertFalse("f4-f11", result.contains(feature011));
+        assertFalse("f4-f12", result.contains(feature012));
+        assertFalse("f4-f13", result.contains(feature013));
+        assertFalse("f4-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature005)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f5-f1", result.contains(feature001));
+        assertFalse("f5-f2", result.contains(feature002));
+        assertFalse("f5-f3", result.contains(feature003));
+        assertFalse("f5-f4", result.contains(feature004));
+        assertFalse("f5-f5", result.contains(feature005));
+        assertFalse("f5-f6", result.contains(feature006));
+        assertFalse("f5-f7", result.contains(feature007));
+        assertTrue("f5-f8", result.contains(feature008));
+        assertFalse("f5-f9", result.contains(feature009));
+        assertFalse("f5-f10", result.contains(feature010));
+        assertTrue("f5-f11", result.contains(feature011));
+        assertTrue("f5-f12", result.contains(feature012));
+        assertFalse("f5-f13", result.contains(feature013));
+        assertFalse("f5-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature006)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f6-f1", result.contains(feature001));
+        assertFalse("f6-f2", result.contains(feature002));
+        assertFalse("f6-f3", result.contains(feature003));
+        assertFalse("f6-f4", result.contains(feature004));
+        assertFalse("f6-f5", result.contains(feature005));
+        assertFalse("f6-f6", result.contains(feature006));
+        assertFalse("f6-f7", result.contains(feature007));
+        assertTrue("f6-f8", result.contains(feature008));
+        assertFalse("f6-f9", result.contains(feature009));
+        assertFalse("f6-f10", result.contains(feature010));
+        assertTrue("f6-f11", result.contains(feature011));
+        assertTrue("f6-f12", result.contains(feature012));
+        assertFalse("f6-f13", result.contains(feature013));
+        assertFalse("f6-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature007)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f7-f1", result.contains(feature001));
+        assertFalse("f7-f2", result.contains(feature002));
+        assertFalse("f7-f3", result.contains(feature003));
+        assertFalse("f7-f4", result.contains(feature004));
+        assertFalse("f7-f5", result.contains(feature005));
+        assertFalse("f7-f6", result.contains(feature006));
+        assertFalse("f7-f7", result.contains(feature007));
+        assertFalse("f7-f8", result.contains(feature008));
+        assertFalse("f7-f9", result.contains(feature009));
+        assertFalse("f7-f10", result.contains(feature010));
+        assertFalse("f7-f11", result.contains(feature011));
+        assertFalse("f7-f12", result.contains(feature012));
+        assertFalse("f7-f13", result.contains(feature013));
+        assertFalse("f7-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature008)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f8-f1", result.contains(feature001));
+        assertFalse("f8-f2", result.contains(feature002));
+        assertFalse("f8-f3", result.contains(feature003));
+        assertFalse("f8-f4", result.contains(feature004));
+        assertTrue("f8-f5", result.contains(feature005));
+        assertTrue("f8-f6", result.contains(feature006));
+        assertFalse("f8-f7", result.contains(feature007));
+        assertFalse("f8-f8", result.contains(feature008));
+        assertFalse("f8-f9", result.contains(feature009));
+        assertFalse("f8-f10", result.contains(feature010));
+        assertFalse("f8-f11", result.contains(feature011));
+        assertFalse("f8-f12", result.contains(feature012));
+        assertFalse("f8-f13", result.contains(feature013));
+        assertFalse("f8-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature009)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f9-f1", result.contains(feature001));
+        assertFalse("f9-f2", result.contains(feature002));
+        assertFalse("f9-f3", result.contains(feature003));
+        assertFalse("f9-f4", result.contains(feature004));
+        assertFalse("f9-f5", result.contains(feature005));
+        assertFalse("f9-f6", result.contains(feature006));
+        assertFalse("f9-f7", result.contains(feature007));
+        assertFalse("f9-f8", result.contains(feature008));
+        assertFalse("f9-f9", result.contains(feature009));
+        assertFalse("f9-f10", result.contains(feature010));
+        assertFalse("f9-f11", result.contains(feature011));
+        assertFalse("f9-f12", result.contains(feature012));
+        assertFalse("f9-f13", result.contains(feature013));
+        assertFalse("f9-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature010)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f10-f1", result.contains(feature001));
+        assertFalse("f10-f2", result.contains(feature002));
+        assertFalse("f10-f3", result.contains(feature003));
+        assertFalse("f10-f4", result.contains(feature004));
+        assertFalse("f10-f5", result.contains(feature005));
+        assertFalse("f10-f6", result.contains(feature006));
+        assertFalse("f10-f7", result.contains(feature007));
+        assertFalse("f10-f8", result.contains(feature008));
+        assertFalse("f10-f9", result.contains(feature009));
+        assertFalse("f10-f10", result.contains(feature010));
+        assertTrue("f10-f11", result.contains(feature011));
+        assertTrue("f10-f12", result.contains(feature012));
+        assertFalse("f10-f13", result.contains(feature013));
+        assertFalse("f10-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature011)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f11-f1", result.contains(feature001));
+        assertFalse("f11-f2", result.contains(feature002));
+        assertFalse("f11-f3", result.contains(feature003));
+        assertFalse("f11-f4", result.contains(feature004));
+        assertTrue("f11-f5", result.contains(feature005));
+        assertTrue("f11-f6", result.contains(feature006));
+        assertFalse("f11-f7", result.contains(feature007));
+        assertFalse("f11-f8", result.contains(feature008));
+        assertFalse("f11-f9", result.contains(feature009));
+        assertTrue("f11-f10", result.contains(feature010));
+        assertFalse("f11-f11", result.contains(feature011));
+        assertFalse("f11-f12", result.contains(feature012));
+        assertTrue("f11-f13", result.contains(feature013));
+        assertFalse("f11-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature012)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f12-f1", result.contains(feature001));
+        assertFalse("f12-f2", result.contains(feature002));
+        assertFalse("f12-f3", result.contains(feature003));
+        assertFalse("f12-f4", result.contains(feature004));
+        assertTrue("f12-f5", result.contains(feature005));
+        assertTrue("f12-f6", result.contains(feature006));
+        assertFalse("f12-f7", result.contains(feature007));
+        assertFalse("f12-f8", result.contains(feature008));
+        assertFalse("f12-f9", result.contains(feature009));
+        assertTrue("f12-f10", result.contains(feature010));
+        assertFalse("f12-f11", result.contains(feature011));
+        assertFalse("f12-f12", result.contains(feature012));
+        assertTrue("f12-f13", result.contains(feature013));
+        assertFalse("f12-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature013)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f13-f1", result.contains(feature001));
+        assertFalse("f13-f2", result.contains(feature002));
+        assertFalse("f13-f3", result.contains(feature003));
+        assertFalse("f13-f4", result.contains(feature004));
+        assertFalse("f13-f5", result.contains(feature005));
+        assertFalse("f13-f6", result.contains(feature006));
+        assertFalse("f13-f7", result.contains(feature007));
+        assertFalse("f13-f8", result.contains(feature008));
+        assertFalse("f13-f9", result.contains(feature009));
+        assertFalse("f13-f10", result.contains(feature010));
+        assertTrue("f13-f11", result.contains(feature011));
+        assertTrue("f13-f12", result.contains(feature012));
+        assertFalse("f13-f13", result.contains(feature013));
+        assertFalse("f13-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature014)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f14-f1", result.contains(feature001));
+        assertFalse("f14-f2", result.contains(feature002));
+        assertFalse("f14-f3", result.contains(feature003));
+        assertFalse("f14-f4", result.contains(feature004));
+        assertFalse("f14-f5", result.contains(feature005));
+        assertFalse("f14-f6", result.contains(feature006));
+        assertFalse("f14-f7", result.contains(feature007));
+        assertFalse("f14-f8", result.contains(feature008));
+        assertFalse("f14-f9", result.contains(feature009));
+        assertFalse("f14-f10", result.contains(feature010));
+        assertFalse("f14-f11", result.contains(feature011));
+        assertFalse("f14-f12", result.contains(feature012));
+        assertFalse("f14-f13", result.contains(feature013));
+        assertFalse("f14-f14", result.contains(feature014));
+    }
 }
