@@ -1296,7 +1296,120 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isProperPartOf(OWLIndividual part, OWLIndividual whole) {
-        throw new NotImplementedException();
+        String partTable = getTable(part);
+        String wholeTable = getTable(whole);
+
+        if (wholeTable.equals(pointFeatureTableName)) {
+            return false;
+
+        } else if (wholeTable.equals(lineFeatureTableName) &&
+                partTable.equals(areaFeatureTableName)) {
+
+            return false;
+        }
+
+        OWLIndividual partGeomIndividual;
+        OWLIndividual wholeGeomIndividual;
+
+        try {
+            partGeomIndividual = feature2geom.get(part);
+            wholeGeomIndividual = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (wholeTable.equals(lineFeatureTableName)) {
+            if (partTable.equals(pointFeatureTableName)) {
+                queryStr +=
+                "SELECT " +
+                    "ST_Intersects(whole.the_geom, part.the_geom) pp " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=?";
+
+            } else {
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "AND " +
+                        "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                    ") pp " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            }
+        } else if (wholeTable.equals(areaFeatureTableName)) {
+            if (partTable.equals(pointFeatureTableName)) {
+                queryStr +=
+                "SELECT " +
+                    "(" +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") pp " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else if (partTable.equals(lineFeatureTableName)) {
+                queryStr +=
+                "SELECT  " +
+                    "(" +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") pp " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else {
+                // area feature
+                queryStr +=
+                "SELECT " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) pp " +
+                "FROM " +
+                    partTable + " part, " +
+                    wholeTable + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=?";
+            }
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, partGeomIndividual.toStringID());
+            statement.setString(2, wholeGeomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean isProperPartOf = resSet.getBoolean("pp");
+            return isProperPartOf;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
