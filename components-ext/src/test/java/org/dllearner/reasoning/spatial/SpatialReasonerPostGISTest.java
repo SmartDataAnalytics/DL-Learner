@@ -136,6 +136,7 @@ public class SpatialReasonerPostGISTest {
         Set<OWLIndividual> result =
                 reasoner.getIndividualsConnectedWith(feature001).collect(Collectors.toSet());
 
+        assertTrue("f1-f1", result.contains(feature001));
         assertTrue("f1-f2", result.contains(feature002));
         assertFalse("f1-f3", result.contains(feature003));
         assertFalse("f1-f4", result.contains(feature004));
@@ -149,6 +150,7 @@ public class SpatialReasonerPostGISTest {
                 reasoner.getIndividualsConnectedWith(feature002).collect(Collectors.toSet());
 
         assertTrue("f2-f1", result.contains(feature001));
+        assertTrue("f2-f2", result.contains(feature002));
         assertFalse("f2-f3", result.contains(feature003));
         assertFalse("f2-f4", result.contains(feature004));
         assertFalse("f2-f5", result.contains(feature005));
@@ -162,6 +164,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", result.contains(feature001));
         assertFalse("f3-f2", result.contains(feature002));
+        assertTrue("f3-f3", result.contains(feature003));
         assertFalse("f3-f4", result.contains(feature004));
         assertFalse("f3-f5", result.contains(feature005));
         assertFalse("f3-f6", result.contains(feature006));
@@ -175,6 +178,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f1", result.contains(feature001));
         assertFalse("f4-f2", result.contains(feature002));
         assertFalse("f4-f3", result.contains(feature003));
+        assertTrue("f4-f4", result.contains(feature004));
         assertTrue("f4-f5", result.contains(feature005));
         assertFalse("f4-f6", result.contains(feature006));
         assertTrue("f4-f7", result.contains(feature007));
@@ -188,6 +192,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", result.contains(feature002));
         assertFalse("f5-f3", result.contains(feature003));
         assertTrue("f5-f4", result.contains(feature004));
+        assertTrue("f5-f5", result.contains(feature005));
         assertFalse("f5-f6", result.contains(feature006));
         assertTrue("f5-f7", result.contains(feature007));
         assertFalse("f5-f8", result.contains(feature008));
@@ -201,6 +206,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", result.contains(feature003));
         assertFalse("f6-f4", result.contains(feature004));
         assertFalse("f6-f5", result.contains(feature005));
+        assertTrue("f6-f6", result.contains(feature006));
         assertFalse("f6-f7", result.contains(feature007));
         assertFalse("f6-f8", result.contains(feature008));
         assertFalse("f6-f9", result.contains(feature009));
@@ -214,6 +220,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f7-f4", result.contains(feature004));
         assertTrue("f7-f5", result.contains(feature005));
         assertFalse("f7-f6", result.contains(feature006));
+        assertTrue("f7-f7", result.contains(feature007));
         assertTrue("f7-f8", result.contains(feature008));
         assertFalse("f7-f9", result.contains(feature009));
 
@@ -227,6 +234,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", result.contains(feature005));
         assertFalse("f8-f6", result.contains(feature006));
         assertTrue("f8-f7", result.contains(feature007));
+        assertTrue("f8-f8", result.contains(feature008));
         assertFalse("f8-f9", result.contains(feature009));
 
         result =
@@ -316,6 +324,7 @@ public class SpatialReasonerPostGISTest {
         kbHelper.createTables(reasoner.conn);
         kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
 
+        assertTrue("f1-f1", reasoner.isConnectedWith(feature001, feature001));
         assertTrue("f1-f2", reasoner.isConnectedWith(feature001, feature002));
         assertFalse("f1-f3", reasoner.isConnectedWith(feature001, feature003));
         assertFalse("f1-f4", reasoner.isConnectedWith(feature001, feature004));
@@ -326,6 +335,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f9", reasoner.isConnectedWith(feature001, feature009));
 
         assertTrue("f2-f1", reasoner.isConnectedWith(feature002, feature001));
+        assertTrue("f2-f2", reasoner.isConnectedWith(feature002, feature002));
         assertFalse("f2-f3", reasoner.isConnectedWith(feature002, feature003));
         assertFalse("f2-f4", reasoner.isConnectedWith(feature002, feature004));
         assertFalse("f2-f5", reasoner.isConnectedWith(feature002, feature005));
@@ -336,6 +346,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", reasoner.isConnectedWith(feature003, feature001));
         assertFalse("f3-f2", reasoner.isConnectedWith(feature003, feature002));
+        assertTrue("f3-f3", reasoner.isConnectedWith(feature003, feature003));
         assertFalse("f3-f4", reasoner.isConnectedWith(feature003, feature004));
         assertFalse("f3-f5", reasoner.isConnectedWith(feature003, feature005));
         assertFalse("f3-f6", reasoner.isConnectedWith(feature003, feature006));
@@ -346,6 +357,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f1", reasoner.isConnectedWith(feature004, feature001));
         assertFalse("f4-f2", reasoner.isConnectedWith(feature004, feature002));
         assertFalse("f4-f3", reasoner.isConnectedWith(feature004, feature003));
+        assertTrue("f4-f4", reasoner.isConnectedWith(feature004, feature004));
         assertTrue("f4-f5", reasoner.isConnectedWith(feature004, feature005));
         assertFalse("f4-f6", reasoner.isConnectedWith(feature004, feature006));
         assertTrue("f4-f7", reasoner.isConnectedWith(feature004, feature007));
@@ -356,6 +368,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", reasoner.isConnectedWith(feature005, feature002));
         assertFalse("f5-f3", reasoner.isConnectedWith(feature005, feature003));
         assertTrue("f5-f4", reasoner.isConnectedWith(feature005, feature004));
+        assertTrue("f5-f5", reasoner.isConnectedWith(feature005, feature005));
         assertFalse("f5-f6", reasoner.isConnectedWith(feature005, feature006));
         assertTrue("f5-f7", reasoner.isConnectedWith(feature005, feature007));
         assertFalse("f5-f8", reasoner.isConnectedWith(feature005, feature008));
@@ -366,6 +379,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", reasoner.isConnectedWith(feature006, feature003));
         assertFalse("f6-f4", reasoner.isConnectedWith(feature006, feature004));
         assertFalse("f6-f5", reasoner.isConnectedWith(feature006, feature005));
+        assertFalse("f6-f6", reasoner.isConnectedWith(feature006, feature006));
         assertFalse("f6-f7", reasoner.isConnectedWith(feature006, feature007));
         assertFalse("f6-f8", reasoner.isConnectedWith(feature006, feature008));
         assertFalse("f6-f9", reasoner.isConnectedWith(feature006, feature009));
@@ -376,6 +390,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f7-f4", reasoner.isConnectedWith(feature007, feature004));
         assertTrue("f7-f5", reasoner.isConnectedWith(feature007, feature005));
         assertFalse("f7-f6", reasoner.isConnectedWith(feature007, feature006));
+        assertTrue("f7-f7", reasoner.isConnectedWith(feature007, feature007));
         assertTrue("f7-f8", reasoner.isConnectedWith(feature007, feature008));
         assertFalse("f7-f9", reasoner.isConnectedWith(feature007, feature009));
 
@@ -386,6 +401,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", reasoner.isConnectedWith(feature008, feature005));
         assertFalse("f8-f6", reasoner.isConnectedWith(feature008, feature006));
         assertTrue("f8-f7", reasoner.isConnectedWith(feature008, feature007));
+        assertTrue("f8-f8", reasoner.isConnectedWith(feature008, feature008));
         assertFalse("f8-f9", reasoner.isConnectedWith(feature008, feature009));
 
         assertFalse("f9-f1", reasoner.isConnectedWith(feature009, feature001));
@@ -477,6 +493,7 @@ public class SpatialReasonerPostGISTest {
                 reasoner.getIndividualsOverlappingWith(feature001)
                         .collect(Collectors.toSet());
 
+        assertTrue("f1-f1", result.contains(feature001));
         assertTrue("f1-f2", result.contains(feature002));
         assertFalse("f1-f3", result.contains(feature003));
         assertTrue("f1-f4", result.contains(feature004));
@@ -491,6 +508,7 @@ public class SpatialReasonerPostGISTest {
                         .collect(Collectors.toSet());
 
         assertTrue("f2-f1", result.contains(feature001));
+        assertTrue("f2-f2", result.contains(feature002));
         assertFalse("f2-f3", result.contains(feature003));
         assertTrue("f2-f4", result.contains(feature004));
         assertFalse("f2-f5", result.contains(feature005));
@@ -505,6 +523,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", result.contains(feature001));
         assertFalse("f3-f2", result.contains(feature002));
+        assertTrue("f3-f3", result.contains(feature003));
         assertTrue("f3-f4", result.contains(feature004));
         assertFalse("f3-f5", result.contains(feature005));
         assertFalse("f3-f6", result.contains(feature006));
@@ -519,6 +538,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f4-f1", result.contains(feature001));
         assertTrue("f4-f2", result.contains(feature002));
         assertTrue("f4-f3", result.contains(feature003));
+        assertTrue("f4-f4", result.contains(feature004));
         assertTrue("f4-f5", result.contains(feature005));
         assertTrue("f4-f6", result.contains(feature006));
         assertFalse("f4-f7", result.contains(feature007));
@@ -533,6 +553,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", result.contains(feature002));
         assertFalse("f5-f3", result.contains(feature003));
         assertTrue("f5-f4", result.contains(feature004));
+        assertTrue("f5-f5", result.contains(feature005));
         assertTrue("f5-f6", result.contains(feature006));
         assertFalse("f5-f7", result.contains(feature007));
         assertFalse("f5-f8", result.contains(feature008));
@@ -547,6 +568,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", result.contains(feature003));
         assertTrue("f6-f4", result.contains(feature004));
         assertTrue("f6-f5", result.contains(feature005));
+        assertTrue("f6-f6", result.contains(feature006));
         assertTrue("f6-f7", result.contains(feature007));
         assertFalse("f6-f8", result.contains(feature008));
         assertFalse("f6-f9", result.contains(feature009));
@@ -561,6 +583,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", result.contains(feature004));
         assertFalse("f7-f5", result.contains(feature005));
         assertTrue("f7-f6", result.contains(feature006));
+        assertTrue("f7-f7", result.contains(feature007));
         assertFalse("f7-f8", result.contains(feature008));
         assertFalse("f7-f9", result.contains(feature009));
 
@@ -575,7 +598,9 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", result.contains(feature005));
         assertFalse("f8-f6", result.contains(feature006));
         assertFalse("f8-f7", result.contains(feature007));
+        assertTrue("f8-f8", result.contains(feature008));
         assertTrue("f8-f9", result.contains(feature009));
+
 
         result =
                 reasoner.getIndividualsOverlappingWith(feature009)
@@ -589,6 +614,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f6", result.contains(feature006));
         assertFalse("f9-f7", result.contains(feature007));
         assertTrue("f9-f8", result.contains(feature008));
+        assertTrue("f9-f9", result.contains(feature009));
     }
 
     @Test
@@ -665,6 +691,7 @@ public class SpatialReasonerPostGISTest {
         kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
 //        System.out.println(kbHelper.getGeometryCollection());
 
+        assertTrue("f1-f1", reasoner.overlapsWith(feature001, feature001));
         assertTrue("f1-f2", reasoner.overlapsWith(feature001, feature002));
         assertFalse("f1-f3", reasoner.overlapsWith(feature001, feature003));
         assertTrue("f1-f4", reasoner.overlapsWith(feature001, feature004));
@@ -675,6 +702,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f9", reasoner.overlapsWith(feature001, feature009));
 
         assertTrue("f2-f1", reasoner.overlapsWith(feature002, feature001));
+        assertTrue("f2-f2", reasoner.overlapsWith(feature002, feature002));
         assertFalse("f2-f3", reasoner.overlapsWith(feature002, feature003));
         assertTrue("f2-f4", reasoner.overlapsWith(feature002, feature004));
         assertFalse("f2-f5", reasoner.overlapsWith(feature002, feature005));
@@ -685,6 +713,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", reasoner.overlapsWith(feature003, feature001));
         assertFalse("f3-f2", reasoner.overlapsWith(feature003, feature002));
+        assertTrue("f3-f3", reasoner.overlapsWith(feature003, feature003));
         assertTrue("f3-f4", reasoner.overlapsWith(feature003, feature004));
         assertFalse("f3-f5", reasoner.overlapsWith(feature003, feature005));
         assertFalse("f3-f6", reasoner.overlapsWith(feature003, feature006));
@@ -695,6 +724,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f4-f1", reasoner.overlapsWith(feature004, feature001));
         assertTrue("f4-f2", reasoner.overlapsWith(feature004, feature002));
         assertTrue("f4-f3", reasoner.overlapsWith(feature004, feature003));
+        assertTrue("f4-f4", reasoner.overlapsWith(feature004, feature004));
         assertTrue("f4-f5", reasoner.overlapsWith(feature004, feature005));
         assertTrue("f4-f6", reasoner.overlapsWith(feature004, feature006));
         assertFalse("f4-f7", reasoner.overlapsWith(feature004, feature007));
@@ -705,6 +735,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", reasoner.overlapsWith(feature005, feature002));
         assertFalse("f5-f3", reasoner.overlapsWith(feature005, feature003));
         assertTrue("f5-f4", reasoner.overlapsWith(feature005, feature004));
+        assertTrue("f5-f5", reasoner.overlapsWith(feature005, feature005));
         assertTrue("f5-f6", reasoner.overlapsWith(feature005, feature006));
         assertFalse("f5-f7", reasoner.overlapsWith(feature005, feature007));
         assertFalse("f5-f8", reasoner.overlapsWith(feature005, feature008));
@@ -715,6 +746,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", reasoner.overlapsWith(feature006, feature003));
         assertTrue("f6-f4",  reasoner.overlapsWith(feature006, feature004));
         assertTrue("f6-f5",  reasoner.overlapsWith(feature006, feature005));
+        assertTrue("f6-f6",  reasoner.overlapsWith(feature006, feature006));
         assertTrue("f6-f7",  reasoner.overlapsWith(feature006, feature007));
         assertFalse("f6-f8", reasoner.overlapsWith(feature006, feature008));
         assertFalse("f6-f9", reasoner.overlapsWith(feature006, feature009));
@@ -725,6 +757,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", reasoner.overlapsWith(feature007, feature004));
         assertFalse("f7-f5", reasoner.overlapsWith(feature007, feature005));
         assertTrue("f7-f6", reasoner.overlapsWith(feature007, feature006));
+        assertTrue("f7-f7", reasoner.overlapsWith(feature007, feature007));
         assertFalse("f7-f8", reasoner.overlapsWith(feature007, feature008));
         assertFalse("f7-f9", reasoner.overlapsWith(feature007, feature009));
 
@@ -735,6 +768,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", reasoner.overlapsWith(feature008, feature005));
         assertFalse("f8-f6", reasoner.overlapsWith(feature008, feature006));
         assertFalse("f8-f7", reasoner.overlapsWith(feature008, feature007));
+        assertTrue("f8-f8", reasoner.overlapsWith(feature008, feature008));
         assertTrue("f8-f9", reasoner.overlapsWith(feature008, feature009));
 
         assertFalse("f9-f1", reasoner.overlapsWith(feature009, feature001));
@@ -745,6 +779,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f6", reasoner.overlapsWith(feature009, feature006));
         assertFalse("f9-f7", reasoner.overlapsWith(feature009, feature007));
         assertTrue("f9-f8", reasoner.overlapsWith(feature009, feature008));
+        assertTrue("f9-f9", reasoner.overlapsWith(feature009, feature009));
     }
 
     @Test
@@ -835,6 +870,7 @@ public class SpatialReasonerPostGISTest {
                 reasoner.getIndividualsPartOf(feature001)
                         .collect(Collectors.toSet());
 
+        assertTrue("f1-f1", result.contains(feature001));
         assertTrue("f1-f2", result.contains(feature002));
         assertFalse("f1-f3", result.contains(feature003));
         assertFalse("f1-f4", result.contains(feature004));
@@ -851,6 +887,7 @@ public class SpatialReasonerPostGISTest {
                         .collect(Collectors.toSet());
 
         assertTrue("f2-f1", result.contains(feature001));
+        assertTrue("f2-f2", result.contains(feature002));
         assertFalse("f2-f3", result.contains(feature003));
         assertFalse("f2-f4", result.contains(feature004));
         assertFalse("f2-f5", result.contains(feature005));
@@ -867,6 +904,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", result.contains(feature001));
         assertFalse("f3-f2", result.contains(feature002));
+        assertTrue("f3-f3", result.contains(feature003));
         assertFalse("f3-f4", result.contains(feature004));
         assertFalse("f3-f5", result.contains(feature005));
         assertFalse("f3-f6", result.contains(feature006));
@@ -883,6 +921,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f4-f1", result.contains(feature001));
         assertTrue("f4-f2", result.contains(feature002));
         assertFalse("f4-f3", result.contains(feature003));
+        assertTrue("f4-f4", result.contains(feature004));
         assertTrue("f4-f5", result.contains(feature005));
         assertTrue("f4-f6", result.contains(feature006));
         assertFalse("f4-f7", result.contains(feature007));
@@ -899,6 +938,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f5-f2", result.contains(feature002));
         assertFalse("f5-f3", result.contains(feature003));
         assertTrue("f5-f4", result.contains(feature004));
+        assertTrue("f5-f5", result.contains(feature005));
         assertTrue("f5-f6", result.contains(feature006));
         assertFalse("f5-f7", result.contains(feature007));
         assertFalse("f5-f8", result.contains(feature008));
@@ -915,6 +955,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", result.contains(feature003));
         assertFalse("f6-f4", result.contains(feature004));
         assertFalse("f6-f5", result.contains(feature005));
+        assertTrue("f6-f6", result.contains(feature006));
         assertFalse("f6-f7", result.contains(feature007));
         assertFalse("f6-f8", result.contains(feature008));
         assertFalse("f6-f9", result.contains(feature009));
@@ -931,6 +972,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", result.contains(feature004));
         assertFalse("f7-f5", result.contains(feature005));
         assertFalse("f7-f6", result.contains(feature006));
+        assertTrue("f7-f7", result.contains(feature007));
         assertFalse("f7-f8", result.contains(feature008));
         assertFalse("f7-f9", result.contains(feature009));
         assertFalse("f7-f10", result.contains(feature010));
@@ -947,6 +989,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", result.contains(feature005));
         assertTrue("f8-f6", result.contains(feature006));
         assertFalse("f8-f7", result.contains(feature007));
+        assertTrue("f8-f8", result.contains(feature008));
         assertTrue("f8-f9", result.contains(feature009));
         assertFalse("f8-f10", result.contains(feature010));
         assertFalse("f8-f11", result.contains(feature011));
@@ -963,6 +1006,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f9-f6", result.contains(feature006));
         assertFalse("f9-f7", result.contains(feature007));
         assertTrue("f9-f8", result.contains(feature008));
+        assertTrue("f9-f9", result.contains(feature009));
         assertFalse("f9-f10", result.contains(feature010));
         assertFalse("f9-f11", result.contains(feature011));
 
@@ -979,6 +1023,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f7", result.contains(feature007));
         assertFalse("f10-f8", result.contains(feature008));
         assertFalse("f10-f9", result.contains(feature009));
+        assertTrue("f10-f10", result.contains(feature010));
         assertFalse("f10-f11", result.contains(feature011));
 
         result =
@@ -995,6 +1040,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f8", result.contains(feature008));
         assertFalse("f11-f9", result.contains(feature009));
         assertTrue("f11-f10", result.contains(feature010));
+        assertTrue("f11-f11", result.contains(feature011));
     }
 
     @Test
@@ -1081,6 +1127,7 @@ public class SpatialReasonerPostGISTest {
         kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
 //        System.out.println(kbHelper.getGeometryCollection());
 
+        assertTrue("f1-f1", reasoner.isPartOf(feature001, feature001));
         assertTrue("f1-f2", reasoner.isPartOf(feature001, feature002));
         assertFalse("f1-f3", reasoner.isPartOf(feature001, feature003));
         assertTrue("f1-f4", reasoner.isPartOf(feature001, feature004));
@@ -1093,6 +1140,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f11", reasoner.isPartOf(feature001, feature011));
 
         assertTrue("f2-f1", reasoner.isPartOf(feature002, feature001));
+        assertTrue("f2-f2", reasoner.isPartOf(feature002, feature002));
         assertFalse("f2-f3", reasoner.isPartOf(feature002, feature003));
         assertTrue("f2-f4", reasoner.isPartOf(feature002, feature004));
         assertTrue("f2-f5", reasoner.isPartOf(feature002, feature005));
@@ -1105,6 +1153,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1", reasoner.isPartOf(feature003, feature001));
         assertFalse("f3-f2", reasoner.isPartOf(feature003, feature002));
+        assertTrue("f3-f3", reasoner.isPartOf(feature003, feature003));
         assertFalse("f3-f4", reasoner.isPartOf(feature003, feature004));
         assertFalse("f3-f5", reasoner.isPartOf(feature003, feature005));
         assertFalse("f3-f6", reasoner.isPartOf(feature003, feature006));
@@ -1117,6 +1166,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f1", reasoner.isPartOf(feature004, feature001));
         assertFalse("f4-f2", reasoner.isPartOf(feature004, feature002));
         assertFalse("f4-f3", reasoner.isPartOf(feature004, feature003));
+        assertTrue("f4-f4", reasoner.isPartOf(feature004, feature004));
         assertTrue("f4-f5", reasoner.isPartOf(feature004, feature005));
         assertFalse("f4-f6", reasoner.isPartOf(feature004, feature006));
         assertFalse("f4-f7", reasoner.isPartOf(feature004, feature007));
@@ -1129,6 +1179,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", reasoner.isPartOf(feature005, feature002));
         assertFalse("f5-f3", reasoner.isPartOf(feature005, feature003));
         assertTrue("f5-f4", reasoner.isPartOf(feature005, feature004));
+        assertTrue("f5-f5", reasoner.isPartOf(feature005, feature005));
         assertFalse("f5-f6", reasoner.isPartOf(feature005, feature006));
         assertFalse("f5-f7", reasoner.isPartOf(feature005, feature007));
         assertFalse("f5-f8", reasoner.isPartOf(feature005, feature008));
@@ -1141,6 +1192,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", reasoner.isPartOf(feature006, feature003));
         assertTrue("f6-f4", reasoner.isPartOf(feature006, feature004));
         assertTrue("f6-f5", reasoner.isPartOf(feature006, feature005));
+        assertTrue("f6-f6", reasoner.isPartOf(feature006, feature006));
         assertFalse("f6-f7", reasoner.isPartOf(feature006, feature007));
         assertTrue("f6-f8", reasoner.isPartOf(feature006, feature008));
         assertTrue("f6-f9", reasoner.isPartOf(feature006, feature009));
@@ -1153,6 +1205,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", reasoner.isPartOf(feature007, feature004));
         assertFalse("f7-f5", reasoner.isPartOf(feature007, feature005));
         assertFalse("f7-f6", reasoner.isPartOf(feature007, feature006));
+        assertTrue("f7-f7", reasoner.isPartOf(feature007, feature007));
         assertFalse("f7-f8", reasoner.isPartOf(feature007, feature008));
         assertFalse("f7-f9", reasoner.isPartOf(feature007, feature009));
         assertFalse("f7-f10", reasoner.isPartOf(feature007, feature010));
@@ -1165,6 +1218,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", reasoner.isPartOf(feature008, feature005));
         assertFalse("f8-f6", reasoner.isPartOf(feature008, feature006));
         assertFalse("f8-f7", reasoner.isPartOf(feature008, feature007));
+        assertTrue("f8-f8", reasoner.isPartOf(feature008, feature008));
         assertTrue("f8-f9", reasoner.isPartOf(feature008, feature009));
         assertFalse("f8-f10", reasoner.isPartOf(feature008, feature010));
         assertFalse("f8-f11", reasoner.isPartOf(feature008, feature011));
@@ -1177,6 +1231,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f6", reasoner.isPartOf(feature009, feature006));
         assertFalse("f9-f7", reasoner.isPartOf(feature009, feature007));
         assertTrue("f9-f8", reasoner.isPartOf(feature009, feature008));
+        assertTrue("f9-f9", reasoner.isPartOf(feature009, feature009));
         assertFalse("f9-f10", reasoner.isPartOf(feature009, feature010));
         assertFalse("f9-f11", reasoner.isPartOf(feature009, feature011));
 
@@ -1189,6 +1244,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f7", reasoner.isPartOf(feature010, feature007));
         assertFalse("f10-f8", reasoner.isPartOf(feature010, feature008));
         assertFalse("f10-f9", reasoner.isPartOf(feature010, feature009));
+        assertTrue("f10-f10", reasoner.isPartOf(feature010, feature010));
         assertTrue("f10-f11", reasoner.isPartOf(feature010, feature011));
 
         assertFalse("f11-f1", reasoner.isPartOf(feature011, feature001));
@@ -1201,6 +1257,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f8", reasoner.isPartOf(feature011, feature008));
         assertFalse("f11-f9", reasoner.isPartOf(feature011, feature009));
         assertFalse("f11-f10", reasoner.isPartOf(feature011, feature010));
+        assertTrue("f11-f10", reasoner.isPartOf(feature011, feature011));
     }
 
     @Test
@@ -1290,6 +1347,7 @@ public class SpatialReasonerPostGISTest {
         Set<OWLIndividual> result = reasoner.getIndividualsHavingPart(feature001)
                 .collect(Collectors.toSet());
 
+        assertTrue("f1-f1", result.contains(feature001));
         assertTrue("f1-f2", result.contains(feature002));
         assertFalse("f1-f3", result.contains(feature003));
         assertTrue("f1-f4", result.contains(feature004));
@@ -1305,6 +1363,7 @@ public class SpatialReasonerPostGISTest {
                 .collect(Collectors.toSet());
 
         assertTrue("f2-f1", result.contains(feature001));
+        assertTrue("f2-f2", result.contains(feature002));
         assertFalse("f2-f3", result.contains(feature003));
         assertTrue("f2-f4", result.contains(feature004));
         assertTrue("f2-f5", result.contains(feature005));
@@ -1320,6 +1379,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1",  result.contains(feature001));
         assertFalse("f3-f2",  result.contains(feature002));
+        assertTrue("f3-f3",  result.contains(feature003));
         assertFalse("f3-f4",  result.contains(feature004));
         assertFalse("f3-f5",  result.contains(feature005));
         assertFalse("f3-f6",  result.contains(feature006));
@@ -1335,6 +1395,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f1", result.contains(feature001));
         assertFalse("f4-f2", result.contains(feature002));
         assertFalse("f4-f3", result.contains(feature003));
+        assertTrue("f4-f4", result.contains(feature004));
         assertTrue("f4-f5", result.contains(feature005));
         assertFalse("f4-f6", result.contains(feature006));
         assertFalse("f4-f7", result.contains(feature007));
@@ -1350,6 +1411,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f2", result.contains(feature002));
         assertFalse("f5-f3", result.contains(feature003));
         assertTrue("f5-f4", result.contains(feature004));
+        assertTrue("f5-f5", result.contains(feature005));
         assertFalse("f5-f6", result.contains(feature006));
         assertFalse("f5-f7", result.contains(feature007));
         assertFalse("f5-f8", result.contains(feature008));
@@ -1365,6 +1427,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", result.contains(feature003));
         assertTrue("f6-f4", result.contains(feature004));
         assertTrue("f6-f5", result.contains(feature005));
+        assertTrue("f6-f6", result.contains(feature006));
         assertFalse("f6-f7", result.contains(feature007));
         assertTrue("f6-f8", result.contains(feature008));
         assertTrue("f6-f9", result.contains(feature009));
@@ -1380,6 +1443,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", result.contains(feature004));
         assertFalse("f7-f5", result.contains(feature005));
         assertFalse("f7-f6", result.contains(feature006));
+        assertTrue("f7-f7", result.contains(feature007));
         assertFalse("f7-f8", result.contains(feature008));
         assertFalse("f7-f9", result.contains(feature009));
         assertFalse("f7-f10", result.contains(feature010));
@@ -1395,6 +1459,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", result.contains(feature005));
         assertFalse("f8-f6", result.contains(feature006));
         assertFalse("f8-f7", result.contains(feature007));
+        assertTrue("f8-f8", result.contains(feature008));
         assertTrue("f8-f9", result.contains(feature009));
         assertFalse("f8-f10", result.contains(feature010));
         assertFalse("f8-f11", result.contains(feature011));
@@ -1410,6 +1475,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f6", result.contains(feature006));
         assertFalse("f9-f7", result.contains(feature007));
         assertTrue("f9-f8", result.contains(feature008));
+        assertTrue("f9-f9", result.contains(feature009));
         assertFalse("f9-f10", result.contains(feature010));
         assertFalse("f9-f11", result.contains(feature011));
 
@@ -1425,7 +1491,9 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f7", result.contains(feature007));
         assertFalse("f10-f8", result.contains(feature008));
         assertFalse("f10-f9", result.contains(feature009));
+        assertTrue("f10-f10", result.contains(feature010));
         assertTrue("f10-f11", result.contains(feature011));
+
 
         result = reasoner.getIndividualsHavingPart(feature011)
                 .collect(Collectors.toSet());
@@ -1440,6 +1508,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f8", result.contains(feature008));
         assertFalse("f11-f9", result.contains(feature009));
         assertFalse("f11-f10", result.contains(feature010));
+        assertFalse("f11-f11", result.contains(feature011));
     }
 
     @Test
@@ -1526,6 +1595,7 @@ public class SpatialReasonerPostGISTest {
         kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
 //        System.out.println(kbHelper.getGeometryCollection());
 
+        assertTrue("f1-f1", reasoner.hasPart(feature001, feature001));
         assertTrue("f1-f2", reasoner.hasPart(feature001, feature002));
         assertFalse("f1-f3", reasoner.hasPart(feature001, feature003));
         assertFalse("f1-f4", reasoner.hasPart(feature001, feature004));
@@ -1538,6 +1608,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f11", reasoner.hasPart(feature001, feature011));
 
         assertTrue("f2-f1",   reasoner.hasPart(feature002, feature001));
+        assertTrue("f2-f2",   reasoner.hasPart(feature002, feature002));
         assertFalse("f2-f3", reasoner.hasPart(feature002, feature003));
         assertFalse("f2-f4", reasoner.hasPart(feature002, feature004));
         assertFalse("f2-f5", reasoner.hasPart(feature002, feature005));
@@ -1550,6 +1621,7 @@ public class SpatialReasonerPostGISTest {
 
         assertFalse("f3-f1",  reasoner.hasPart(feature003, feature001));
         assertFalse("f3-f2", reasoner.hasPart(feature003, feature002));
+        assertTrue("f3-f3", reasoner.hasPart(feature003, feature003));
         assertFalse("f3-f4", reasoner.hasPart(feature003, feature004));
         assertFalse("f3-f5", reasoner.hasPart(feature003, feature005));
         assertFalse("f3-f6", reasoner.hasPart(feature003, feature006));
@@ -1562,6 +1634,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f4-f1",  reasoner.hasPart(feature004, feature001));
         assertTrue("f4-f2", reasoner.hasPart(feature004, feature002));
         assertFalse("f4-f3", reasoner.hasPart(feature004, feature003));
+        assertTrue("f4-f4", reasoner.hasPart(feature004, feature004));
         assertTrue("f4-f5", reasoner.hasPart(feature004, feature005));
         assertTrue("f4-f6", reasoner.hasPart(feature004, feature006));
         assertFalse("f4-f7", reasoner.hasPart(feature004, feature007));
@@ -1574,6 +1647,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f5-f2", reasoner.hasPart(feature005, feature002));
         assertFalse("f5-f3", reasoner.hasPart(feature005, feature003));
         assertTrue("f5-f4", reasoner.hasPart(feature005, feature004));
+        assertTrue("f5-f5", reasoner.hasPart(feature005, feature005));
         assertTrue("f5-f6", reasoner.hasPart(feature005, feature006));
         assertFalse("f5-f7", reasoner.hasPart(feature005, feature007));
         assertFalse("f5-f8", reasoner.hasPart(feature005, feature008));
@@ -1586,6 +1660,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f3", reasoner.hasPart(feature006, feature003));
         assertFalse("f6-f4", reasoner.hasPart(feature006, feature004));
         assertFalse("f6-f5", reasoner.hasPart(feature006, feature005));
+        assertTrue("f6-f6", reasoner.hasPart(feature006, feature006));
         assertFalse("f6-f7", reasoner.hasPart(feature006, feature007));
         assertFalse("f6-f8", reasoner.hasPart(feature006, feature008));
         assertFalse("f6-f9", reasoner.hasPart(feature006, feature009));
@@ -1598,6 +1673,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f4", reasoner.hasPart(feature007, feature004));
         assertFalse("f7-f5", reasoner.hasPart(feature007, feature005));
         assertFalse("f7-f6", reasoner.hasPart(feature007, feature006));
+        assertTrue("f7-f7", reasoner.hasPart(feature007, feature007));
         assertFalse("f7-f8", reasoner.hasPart(feature007, feature008));
         assertFalse("f7-f9", reasoner.hasPart(feature007, feature009));
         assertFalse("f7-f10", reasoner.hasPart(feature007, feature010));
@@ -1610,6 +1686,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f5", reasoner.hasPart(feature008, feature005));
         assertTrue("f8-f6", reasoner.hasPart(feature008, feature006));
         assertFalse("f8-f7", reasoner.hasPart(feature008, feature007));
+        assertTrue("f8-f8", reasoner.hasPart(feature008, feature008));
         assertTrue("f8-f9", reasoner.hasPart(feature008, feature009));
         assertFalse("f8-f10", reasoner.hasPart(feature008, feature010));
         assertFalse("f8-f11", reasoner.hasPart(feature008, feature011));
@@ -1622,6 +1699,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f9-f6", reasoner.hasPart(feature009, feature006));
         assertFalse("f9-f7", reasoner.hasPart(feature009, feature007));
         assertTrue("f9-f8", reasoner.hasPart(feature009, feature008));
+        assertTrue("f9-f9", reasoner.hasPart(feature009, feature009));
         assertFalse("f9-f10", reasoner.hasPart(feature009, feature010));
         assertFalse("f9-f11", reasoner.hasPart(feature009, feature011));
 
@@ -1634,6 +1712,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f7", reasoner.hasPart(feature010, feature007));
         assertFalse("f10-f8", reasoner.hasPart(feature010, feature008));
         assertFalse("f10-f9", reasoner.hasPart(feature010, feature009));
+        assertTrue("f10-f10", reasoner.hasPart(feature010, feature010));
         assertFalse("f10-f11", reasoner.hasPart(feature010, feature011));
 
         assertFalse("f11-f1", reasoner.hasPart(feature011, feature001));
@@ -1646,6 +1725,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f8", reasoner.hasPart(feature011, feature008));
         assertFalse("f11-f9", reasoner.hasPart(feature011, feature009));
         assertTrue("f11-f10", reasoner.hasPart(feature011, feature010));
+        assertTrue("f11-f11", reasoner.hasPart(feature011, feature011));
     }
 
     @Test
