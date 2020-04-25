@@ -1169,6 +1169,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean isInside(OWLIndividual inner, OWLIndividual container) {
+        return isPartOf(inner, container);
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsInside(OWLIndividual container) {
+        return getIndividualsPartOf(container);
+    }
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;

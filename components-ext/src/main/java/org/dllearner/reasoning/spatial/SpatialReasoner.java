@@ -66,4 +66,7 @@ public interface SpatialReasoner extends ReasonerComponent {
 
     /* Further non-RCC relations */
     // ...
+    boolean isInside(OWLIndividual inner, OWLIndividual container);
+
+    Stream<OWLIndividual> getIndividualsInside(OWLIndividual container);
 }
