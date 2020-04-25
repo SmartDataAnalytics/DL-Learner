@@ -1529,7 +1529,110 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingProperPart(OWLIndividual part) {
-        throw new NotImplementedException();
+        String partTableName = getTable(part);
+
+        OWLIndividual partGeomIndividual;
+
+        try {
+            partGeomIndividual = feature2geom.get(part);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (partTableName.equals(pointFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "whole.iri w " +
+                "FROM " +
+                    partTableName + " part, " +
+                    lineFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Intersects(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "part.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri w " +
+                "FROM " +
+                    partTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Intersects(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") " +
+                "AND " +
+                    "part.iri=? ";
+
+        } else if (partTableName.equals(lineFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "whole.iri w " +
+                "FROM " +
+                    partTableName + " part, " +
+                    lineFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "part.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri w " +
+                "FROM " +
+                    partTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") " +
+                "AND " +
+                    "part.iri=? ";
+        } else {
+            queryStr +=
+                "SELECT " +
+                    "whole.iri w " +
+                "FROM " +
+                    partTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "part.iri=?";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, partGeomIndividual.toStringID());
+
+            if (partTableName.equals(lineFeatureTableName) ||
+                    partTableName.equals(pointFeatureTableName)) {
+
+                statement.setString(2, partGeomIndividual.toStringID());
+            }
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("w");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---
