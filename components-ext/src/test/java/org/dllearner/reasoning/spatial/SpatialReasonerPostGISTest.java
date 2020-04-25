@@ -1947,5 +1947,35 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f9", result.contains(feature009));
         assertTrue("f9-f10", result.contains(feature010));
         assertFalse("f9-f11", result.contains(feature011));
+
+        result = reasoner.getIndividualsProperPartOf(feature010)
+                .collect(Collectors.toSet());
+
+        assertFalse("f10-f1", result.contains(feature001));
+        assertFalse("f10-f2", result.contains(feature002));
+        assertFalse("f10-f3", result.contains(feature003));
+        assertFalse("f10-f4", result.contains(feature004));
+        assertFalse("f10-f5", result.contains(feature005));
+        assertFalse("f10-f6", result.contains(feature006));
+        assertFalse("f10-f7", result.contains(feature007));
+        assertFalse("f10-f8", result.contains(feature008));
+        assertFalse("f10-f9", result.contains(feature009));
+        assertFalse("f10-f10", result.contains(feature010));
+        assertFalse("f10-f11", result.contains(feature011));
+
+        result = reasoner.getIndividualsProperPartOf(feature011)
+                .collect(Collectors.toSet());
+
+        assertFalse("f11-f1", result.contains(feature001));
+        assertFalse("f11-f2", result.contains(feature002));
+        assertFalse("f11-f3", result.contains(feature003));
+        assertFalse("f11-f4", result.contains(feature004));
+        assertFalse("f11-f5", result.contains(feature005));
+        assertFalse("f11-f6", result.contains(feature006));
+        assertFalse("f11-f7", result.contains(feature007));
+        assertFalse("f11-f8", result.contains(feature008));
+        assertFalse("f11-f9", result.contains(feature009));
+        assertFalse("f11-f10", result.contains(feature010));
+        assertFalse("f11-f11", result.contains(feature011));
     }
 }
