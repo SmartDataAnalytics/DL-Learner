@@ -1521,6 +1521,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean hasProperPart(OWLIndividual whole, OWLIndividual part) {
+        return isProperPartOf(part, whole);
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsHavingProperPart(OWLIndividual part) {
+        throw new NotImplementedException();
+    }
+
     // ---
 
     @Override
