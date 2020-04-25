@@ -58,6 +58,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsHavingPart(OWLIndividual part);
 
     // Proper part of
+    boolean isProperPartOf(OWLIndividual part, OWLIndividual whole);
+
+    Stream<OWLIndividual> getIndividualsProperPartOf(OWLIndividual whole);
+
     // Has proper part
     // Partially overlaps
     // Tangential proper part of
