@@ -1294,6 +1294,121 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean isProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsProperPartOf(OWLIndividual whole) {
+        String tableName = getTable(whole);
+
+        if (tableName.equals(pointFeatureTableName)) {
+            // A point cannot have a proper part
+            return Stream.empty();
+        }
+
+        OWLIndividual wholeGeomIndividual;
+
+        try {
+            wholeGeomIndividual = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+        if (tableName.equals(lineFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "part.iri pp " +
+                "FROM " +
+                    tableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Intersects(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri pp " +
+                "FROM " +
+                    tableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +  // as ST_ContainsProperly() has slightly different semantics
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? ";
+        } else {
+            // area feature
+            queryStr +=
+                "SELECT " +
+                    "part.iri pp " +
+                "FROM " +
+                    tableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "(" +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") " +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri pp " +
+                "FROM " +
+                    tableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +
+                    "(" +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "OR " +
+                        "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ")" +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri pp " +
+                "FROM " +
+                    tableName + " whole, " +
+                    areaFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, wholeGeomIndividual.toStringID());
+            statement.setString(2, wholeGeomIndividual.toStringID());
+
+            if (tableName.equals(areaFeatureTableName)) {
+                statement.setString(3, wholeGeomIndividual.toStringID());
+            }
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("pp");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    // ---
 
     @Override
     public boolean isInside(OWLIndividual inner, OWLIndividual container) {
