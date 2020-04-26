@@ -1843,7 +1843,141 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
-        throw new NotImplementedException();
+        String partTableName = getTable(part);
+        String wholeTableName = getTable(whole);
+
+        if (wholeTableName.equals(pointFeatureTableName)) {
+
+            return false;
+        } else if (partTableName.equals(areaFeatureTableName)
+                && wholeTableName.equals(lineFeatureTableName)) {
+
+            return false;
+        }
+
+        OWLIndividual partGeomIndividual;
+        OWLIndividual wholeGeomIndividual;
+
+        try {
+            partGeomIndividual = feature2geom.get(part);
+            wholeGeomIndividual = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (partTableName.equals(pointFeatureTableName)) {
+            if (wholeTableName.equals(lineFeatureTableName)) {
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Intersects(whole.the_geom, part.the_geom) " +
+                    "AND " +
+                        "(" +
+                            "ST_StartPoint(whole.the_geom)=part.the_geom " +
+                        "OR " +
+                            "ST_StartPoint(whole.the_geom)=part.the_geom " +
+                        ")" +
+                    ") tpp " +
+                "FROM " +
+                    partTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else {
+                // point - area
+                queryStr +=
+                "SELECT " +
+                    "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) tpp " +
+                "FROM " +
+                    partTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            }
+        } else if (partTableName.equals(lineFeatureTableName)) {
+            if (wholeTableName.equals(lineFeatureTableName)) {
+                queryStr +=
+                "SELECT " +
+                    "( " +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "AND " +
+                        "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                    "AND " +
+                        "(" +
+                            "ST_StartPoint(whole.the_geom)=ST_StartPoint(part.the_geom) " +
+                        "OR " +
+                            "ST_StartPoint(whole.the_geom)=ST_EndPoint(part.the_geom) " +
+                        "OR " +
+                            "ST_EndPoint(whole.the_geom)=ST_StartPoint(part.the_geom) " +
+                        "OR " +
+                            "ST_EndPoint(whole.the_geom)=ST_EndPoint(part.the_geom) " +
+                        ")" +
+                    ") tpp " +
+                "FROM " +
+                    partTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            } else {
+                // line - area
+                queryStr +=
+                "SELECT " +
+                    "(" +
+                        "ST_Contains(whole.the_geom, part.the_geom) " +
+                    "AND " +
+                        "ST_Intersects(ST_Boundary(whole.the_geom), part.the_geom) " +
+                    ") tpp " +
+                "FROM " +
+                    partTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+            }
+        } else {
+            // area feature
+            queryStr +=
+            "SELECT " +
+                "(" +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "ST_Intersects(ST_Boundary(whole.the_geom), ST_Boundary(part.the_geom)) " +
+                "AND " +
+                    "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                ") tpp " +
+            "FROM " +
+                partTableName + " part, " +
+                wholeTableName + " whole " +
+            "WHERE " +
+                "part.iri=? " +
+            "AND " +
+                "whole.iri=? ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, partGeomIndividual.toStringID());
+            statement.setString(2, wholeGeomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean isTangentialProperPart = resSet.getBoolean("tpp");
+            return isTangentialProperPart;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
