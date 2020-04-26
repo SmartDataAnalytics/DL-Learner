@@ -3496,4 +3496,387 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f14-f13", reasoner.isTangentialProperPartOf(feature014, feature013));
         assertFalse("f14-f14", reasoner.isTangentialProperPartOf(feature014, feature014));
     }
+
+    @Test
+    public void testGetIndividualsTangentialProperPartOf() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        // points
+        OWLIndividual feature001 = i("feature001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(feature001, geom001, "POINT(13.8011 51.0591)");
+
+        // -- same as feature001
+        OWLIndividual feature002 = i("feature002");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(feature002, geom002, "POINT(13.8011 51.0591)");
+
+        // -- TPP of feature010/11, but not of feature006/7
+        OWLIndividual feature003 = i("feature003");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(feature003, geom003, "POINT(13.8016 51.0589)");
+
+        // -- off
+        OWLIndividual feature004 = i("feature004");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(feature004, geom004, "POINT(13.7983 51.0591)");
+
+        // -- inside feature010/11, but not TPP
+        OWLIndividual feature005 = i("feature005");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(feature005, geom005, "POINT(13.8015 51.0583)");
+
+        // line strings
+        OWLIndividual feature006 = i("feature006");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(feature006, geom006,
+                "LINESTRING(13.8011 51.0591,13.8016 51.0589,13.8009 51.0586)");
+
+        // -- same as feature006
+        OWLIndividual feature007 = i("feature007");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(feature007, geom007,
+                "LINESTRING(13.8011 51.0591,13.8016 51.0589,13.8009 51.0586)");
+
+        // -- inside but not TPP
+        OWLIndividual feature008 = i("feature008");
+        OWLIndividual geom008 = i("geom008");
+        kbHelper.addSpatialFeature(feature008, geom008,
+                "LINESTRING(13.8009 51.0588,13.8003 51.0585,13.8009 51.0583)");
+
+        // -- off
+        OWLIndividual feature009 = i("feature009");
+        OWLIndividual geom009 = i("geom009");
+        kbHelper.addSpatialFeature(feature009, geom009,
+                "LINESTRING(13.8025 51.0577,13.8036 51.0579," +
+                        "13.8029 51.0574,13.8040 51.0577," +
+                        "13.8032 51.0572,13.8043 51.0574)");
+
+        // areas
+        OWLIndividual feature010 = i("feature010");
+        OWLIndividual geom010 = i("geom010");
+        kbHelper.addSpatialFeature(feature010, geom010,
+                "POLYGON((13.8011 51.0591,13.8016 51.0589," +
+                        "13.8021 51.0582,13.8007 51.0578,13.7996 51.0583," +
+                        "13.7999 51.0591,13.8011 51.0591))");
+
+        // -- same as feature010
+        OWLIndividual feature011 = i("feature011");
+        OWLIndividual geom011 = i("geom011");
+        kbHelper.addSpatialFeature(feature011, geom011,
+                "POLYGON((13.8011 51.0591,13.8016 51.0589," +
+                        "13.8021 51.0582,13.8007 51.0578,13.7996 51.0583," +
+                        "13.7999 51.0591,13.8011 51.0591))");
+
+        // -- TPP
+        OWLIndividual feature012 = i("feature012");
+        OWLIndividual geom012 = i("geom012");
+        kbHelper.addSpatialFeature(feature012, geom012,
+                "POLYGON((13.8000 51.0585,13.8008 51.0581," +
+                        "13.8007 51.0578,13.7996 51.0583,13.8000 51.0585))");
+
+        // -- NTPP, contains feature005
+        OWLIndividual feature013 = i("feature13");
+        OWLIndividual geom013 = i("geom013");
+        kbHelper.addSpatialFeature(feature013, geom013,
+                "POLYGON((13.8011 51.0585,13.8016 51.0586," +
+                        "13.8018 51.0582,13.8013 51.0581,13.8011 51.0585))");
+
+        // -- off
+        OWLIndividual feature014 = i("feature014");
+        OWLIndividual geom014 = i("geom014");
+        kbHelper.addSpatialFeature(feature014, geom014,
+                "POLYGON((13.7991 51.0602,13.7991 51.0597," +
+                        "13.7999 51.0599,13.7991 51.0602))");
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDbName(dbName);
+        reasoner.setDbUser(dbUser);
+        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+//        System.out.println(kbHelper.getGeometryCollection());
+
+        Set<OWLIndividual> result =
+                reasoner.getIndividualsTangentialProperPartOf(feature001)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f1-f1", result.contains(feature001));
+        assertFalse("f1-f2", result.contains(feature002));
+        assertFalse("f1-f3", result.contains(feature003));
+        assertFalse("f1-f4", result.contains(feature004));
+        assertFalse("f1-f5", result.contains(feature005));
+        assertFalse("f1-f6", result.contains(feature006));
+        assertFalse("f1-f7", result.contains(feature007));
+        assertFalse("f1-f8", result.contains(feature008));
+        assertFalse("f1-f9", result.contains(feature009));
+        assertFalse("f1-f10", result.contains(feature010));
+        assertFalse("f1-f11", result.contains(feature011));
+        assertFalse("f1-f12", result.contains(feature012));
+        assertFalse("f1-f13", result.contains(feature013));
+        assertFalse("f1-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature002)
+                        .collect(Collectors.toSet());
+        assertFalse("f2-f1", result.contains(feature001));
+        assertFalse("f2-f2", result.contains(feature002));
+        assertFalse("f2-f3", result.contains(feature003));
+        assertFalse("f2-f4", result.contains(feature004));
+        assertFalse("f2-f5", result.contains(feature005));
+        assertFalse("f2-f6", result.contains(feature006));
+        assertFalse("f2-f7", result.contains(feature007));
+        assertFalse("f2-f8", result.contains(feature008));
+        assertFalse("f2-f9", result.contains(feature009));
+        assertFalse("f2-f10", result.contains(feature010));
+        assertFalse("f2-f11", result.contains(feature011));
+        assertFalse("f2-f12", result.contains(feature012));
+        assertFalse("f2-f13", result.contains(feature013));
+        assertFalse("f2-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature003)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f3-f1", result.contains(feature001));
+        assertFalse("f3-f2", result.contains(feature002));
+        assertFalse("f3-f3", result.contains(feature003));
+        assertFalse("f3-f4", result.contains(feature004));
+        assertFalse("f3-f5", result.contains(feature005));
+        assertFalse("f3-f6", result.contains(feature006));
+        assertFalse("f3-f7", result.contains(feature007));
+        assertFalse("f3-f8", result.contains(feature008));
+        assertFalse("f3-f9", result.contains(feature009));
+        assertFalse("f3-f10", result.contains(feature010));
+        assertFalse("f3-f11", result.contains(feature011));
+        assertFalse("f3-f12", result.contains(feature012));
+        assertFalse("f3-f13", result.contains(feature013));
+        assertFalse("f3-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature004)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f4-f1", result.contains(feature001));
+        assertFalse("f4-f2", result.contains(feature002));
+        assertFalse("f4-f3", result.contains(feature003));
+        assertFalse("f4-f4", result.contains(feature004));
+        assertFalse("f4-f5", result.contains(feature005));
+        assertFalse("f4-f6", result.contains(feature006));
+        assertFalse("f4-f7", result.contains(feature007));
+        assertFalse("f4-f8", result.contains(feature008));
+        assertFalse("f4-f9", result.contains(feature009));
+        assertFalse("f4-f10", result.contains(feature010));
+        assertFalse("f4-f11", result.contains(feature011));
+        assertFalse("f4-f12", result.contains(feature012));
+        assertFalse("f4-f13", result.contains(feature013));
+        assertFalse("f4-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature005)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f5-f1", result.contains(feature001));
+        assertFalse("f5-f2", result.contains(feature002));
+        assertFalse("f5-f3", result.contains(feature003));
+        assertFalse("f5-f4", result.contains(feature004));
+        assertFalse("f5-f5", result.contains(feature005));
+        assertFalse("f5-f6", result.contains(feature006));
+        assertFalse("f5-f7", result.contains(feature007));
+        assertFalse("f5-f8", result.contains(feature008));
+        assertFalse("f5-f9", result.contains(feature009));
+        assertFalse("f5-f10", result.contains(feature010));
+        assertFalse("f5-f11", result.contains(feature011));
+        assertFalse("f5-f12", result.contains(feature012));
+        assertFalse("f5-f13", result.contains(feature013));
+        assertFalse("f5-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature006)
+                        .collect(Collectors.toSet());
+
+        assertTrue("f6-f1", result.contains(feature001));
+        assertTrue("f6-f2", result.contains(feature002));
+        assertFalse("f6-f3", result.contains(feature003));
+        assertFalse("f6-f4", result.contains(feature004));
+        assertFalse("f6-f5", result.contains(feature005));
+        assertFalse("f6-f6", result.contains(feature006));
+        assertFalse("f6-f7", result.contains(feature007));
+        assertFalse("f6-f8", result.contains(feature008));
+        assertFalse("f6-f9", result.contains(feature009));
+        assertFalse("f6-f10", result.contains(feature010));
+        assertFalse("f6-f11", result.contains(feature011));
+        assertFalse("f6-f12", result.contains(feature012));
+        assertFalse("f6-f13", result.contains(feature013));
+        assertFalse("f6-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature007)
+                        .collect(Collectors.toSet());
+
+        assertTrue("f7-f1", result.contains(feature001));
+        assertTrue("f7-f2", result.contains(feature002));
+        assertFalse("f7-f3", result.contains(feature003));
+        assertFalse("f7-f4", result.contains(feature004));
+        assertFalse("f7-f5", result.contains(feature005));
+        assertFalse("f7-f6", result.contains(feature006));
+        assertFalse("f7-f7", result.contains(feature007));
+        assertFalse("f7-f8", result.contains(feature008));
+        assertFalse("f7-f9", result.contains(feature009));
+        assertFalse("f7-f10", result.contains(feature010));
+        assertFalse("f7-f11", result.contains(feature011));
+        assertFalse("f7-f12", result.contains(feature012));
+        assertFalse("f7-f13", result.contains(feature013));
+        assertFalse("f7-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature008)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f8-f1", result.contains(feature001));
+        assertFalse("f8-f2", result.contains(feature002));
+        assertFalse("f8-f3", result.contains(feature003));
+        assertFalse("f8-f4", result.contains(feature004));
+        assertFalse("f8-f5", result.contains(feature005));
+        assertFalse("f8-f6", result.contains(feature006));
+        assertFalse("f8-f7", result.contains(feature007));
+        assertFalse("f8-f8", result.contains(feature008));
+        assertFalse("f8-f9", result.contains(feature009));
+        assertFalse("f8-f10", result.contains(feature010));
+        assertFalse("f8-f11", result.contains(feature011));
+        assertFalse("f8-f12", result.contains(feature012));
+        assertFalse("f8-f13", result.contains(feature013));
+        assertFalse("f8-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature009)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f9-f1", result.contains(feature001));
+        assertFalse("f9-f2", result.contains(feature002));
+        assertFalse("f9-f3", result.contains(feature003));
+        assertFalse("f9-f4", result.contains(feature004));
+        assertFalse("f9-f5", result.contains(feature005));
+        assertFalse("f9-f6", result.contains(feature006));
+        assertFalse("f9-f7", result.contains(feature007));
+        assertFalse("f9-f8", result.contains(feature008));
+        assertFalse("f9-f9", result.contains(feature009));
+        assertFalse("f9-f10", result.contains(feature010));
+        assertFalse("f9-f11", result.contains(feature011));
+        assertFalse("f9-f12", result.contains(feature012));
+        assertFalse("f9-f13", result.contains(feature013));
+        assertFalse("f9-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature010)
+                        .collect(Collectors.toSet());
+
+        assertTrue("f10-f1", result.contains(feature001));
+        assertTrue("f10-f2", result.contains(feature002));
+        assertTrue("f10-f3", result.contains(feature003));
+        assertFalse("f10-f4", result.contains(feature004));
+        assertFalse("f10-f5", result.contains(feature005));
+        assertTrue("f10-f6", result.contains(feature006));
+        assertTrue("f10-f7", result.contains(feature007));
+        assertFalse("f10-f8", result.contains(feature008));
+        assertFalse("f10-f9", result.contains(feature009));
+        assertFalse("f10-f10", result.contains(feature010));
+        assertFalse("f10-f11", result.contains(feature011));
+        assertTrue("f10-f12", result.contains(feature012));
+        assertFalse("f10-f13", result.contains(feature013));
+        assertFalse("f10-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature011)
+                        .collect(Collectors.toSet());
+
+        assertTrue("f11-f1", result.contains(feature001));
+        assertTrue("f11-f2", result.contains(feature002));
+        assertTrue("f11-f3", result.contains(feature003));
+        assertFalse("f11-f4", result.contains(feature004));
+        assertFalse("f11-f5", result.contains(feature005));
+        assertTrue("f11-f6", result.contains(feature006));
+        assertTrue("f11-f7", result.contains(feature007));
+        assertFalse("f11-f8", result.contains(feature008));
+        assertFalse("f11-f9", result.contains(feature009));
+        assertFalse("f11-f10", result.contains(feature010));
+        assertFalse("f11-f11", result.contains(feature011));
+        assertTrue("f11-f12", result.contains(feature012));
+        assertFalse("f11-f13", result.contains(feature013));
+        assertFalse("f11-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature012)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f12-f1", result.contains(feature001));
+        assertFalse("f12-f2", result.contains(feature002));
+        assertFalse("f12-f3", result.contains(feature003));
+        assertFalse("f12-f4", result.contains(feature004));
+        assertFalse("f12-f5", result.contains(feature005));
+        assertFalse("f12-f6", result.contains(feature006));
+        assertFalse("f12-f7", result.contains(feature007));
+        assertFalse("f12-f8", result.contains(feature008));
+        assertFalse("f12-f9", result.contains(feature009));
+        assertFalse("f12-f10", result.contains(feature010));
+        assertFalse("f12-f11", result.contains(feature011));
+        assertFalse("f12-f12", result.contains(feature012));
+        assertFalse("f12-f13", result.contains(feature013));
+        assertFalse("f12-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature013)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f13-f1", result.contains(feature001));
+        assertFalse("f13-f2", result.contains(feature002));
+        assertFalse("f13-f3", result.contains(feature003));
+        assertFalse("f13-f4", result.contains(feature004));
+        assertFalse("f13-f5", result.contains(feature005));
+        assertFalse("f13-f6", result.contains(feature006));
+        assertFalse("f13-f7", result.contains(feature007));
+        assertFalse("f13-f8", result.contains(feature008));
+        assertFalse("f13-f9", result.contains(feature009));
+        assertFalse("f13-f10", result.contains(feature010));
+        assertFalse("f13-f11", result.contains(feature011));
+        assertFalse("f13-f12", result.contains(feature012));
+        assertFalse("f13-f13", result.contains(feature013));
+        assertFalse("f13-f14", result.contains(feature014));
+
+        result =
+                reasoner.getIndividualsTangentialProperPartOf(feature014)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f14-f1", result.contains(feature001));
+        assertFalse("f14-f2", result.contains(feature002));
+        assertFalse("f14-f3", result.contains(feature003));
+        assertFalse("f14-f4", result.contains(feature004));
+        assertFalse("f14-f5", result.contains(feature005));
+        assertFalse("f14-f6", result.contains(feature006));
+        assertFalse("f14-f7", result.contains(feature007));
+        assertFalse("f14-f8", result.contains(feature008));
+        assertFalse("f14-f9", result.contains(feature009));
+        assertFalse("f14-f10", result.contains(feature010));
+        assertFalse("f14-f11", result.contains(feature011));
+        assertFalse("f14-f12", result.contains(feature012));
+        assertFalse("f14-f13", result.contains(feature013));
+        assertFalse("f14-f14", result.contains(feature014));
+    }
 }
