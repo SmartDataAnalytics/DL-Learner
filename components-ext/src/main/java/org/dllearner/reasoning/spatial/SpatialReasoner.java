@@ -73,6 +73,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsPartiallyOverlappingWith(OWLIndividual spatialFeatureIndividual);
 
     // Tangential proper part of
+    boolean isTangentialProperPartOf(OWLIndividual part, OWLIndividual whole);
+
+    Stream<OWLIndividual> getIndividualsTangentialProperPartOf(OWLIndividual whole);
+
     // Non-tangential proper part of
     // Identical with
     // Has tangential proper part
