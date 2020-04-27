@@ -2349,7 +2349,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean hasTangentialProperPart(OWLIndividual whole, OWLIndividual part) {
-        throw new NotImplementedException();
+        return isTangentialProperPartOf(part, whole);
     }
 
     @Override
