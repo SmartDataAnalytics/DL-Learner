@@ -2876,6 +2876,13 @@ public class SpatialReasonerPostGISTest {
         kbHelper.addSpatialFeature(feature014, geom014,
                 "POLYGON((13.7973 51.0591,13.7972 51.0586,13.7983 51.0587,13.7973 51.0591))");
 
+        // -- added for NTPP case to have a line being NTPP of another line
+        OWLIndividual feature015 = i("feature015");
+        OWLIndividual geom015 = i("geom015");
+        kbHelper.addSpatialFeature(feature015, geom015,
+                "LINESTRING(13.8036 51.0579,13.8029 51.0574," +
+                        "13.8040 51.0577,13.8032 51.0572)");
+
 
         KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
         ks.init();
@@ -2920,6 +2927,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f12", result.contains(feature012));
         assertFalse("f1-f13", result.contains(feature013));
         assertFalse("f1-f14", result.contains(feature014));
+        assertFalse("f1-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature002)
@@ -2939,6 +2947,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f2-f12", result.contains(feature012));
         assertFalse("f2-f13", result.contains(feature013));
         assertFalse("f2-f14", result.contains(feature014));
+        assertFalse("f2-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature003)
@@ -2958,6 +2967,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f3-f12", result.contains(feature012));
         assertFalse("f3-f13", result.contains(feature013));
         assertFalse("f3-f14", result.contains(feature014));
+        assertFalse("f3-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature004)
@@ -2977,6 +2987,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f12", result.contains(feature012));
         assertFalse("f4-f13", result.contains(feature013));
         assertFalse("f4-f14", result.contains(feature014));
+        assertFalse("f4-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature005)
@@ -2996,6 +3007,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f5-f12", result.contains(feature012));
         assertFalse("f5-f13", result.contains(feature013));
         assertFalse("f5-f14", result.contains(feature014));
+        assertFalse("f5-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature006)
@@ -3015,6 +3027,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f6-f12", result.contains(feature012));
         assertFalse("f6-f13", result.contains(feature013));
         assertFalse("f6-f14", result.contains(feature014));
+        assertFalse("f6-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature007)
@@ -3034,6 +3047,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f12", result.contains(feature012));
         assertFalse("f7-f13", result.contains(feature013));
         assertFalse("f7-f14", result.contains(feature014));
+        assertFalse("f7-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature008)
@@ -3053,6 +3067,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f12", result.contains(feature012));
         assertFalse("f8-f13", result.contains(feature013));
         assertFalse("f8-f14", result.contains(feature014));
+        assertFalse("f8-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature009)
@@ -3072,6 +3087,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f12", result.contains(feature012));
         assertFalse("f9-f13", result.contains(feature013));
         assertFalse("f9-f14", result.contains(feature014));
+        assertFalse("f9-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature010)
@@ -3091,6 +3107,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f10-f12", result.contains(feature012));
         assertFalse("f10-f13", result.contains(feature013));
         assertFalse("f10-f14", result.contains(feature014));
+        assertFalse("f10-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature011)
@@ -3110,6 +3127,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f12", result.contains(feature012));
         assertTrue("f11-f13", result.contains(feature013));
         assertFalse("f11-f14", result.contains(feature014));
+        assertFalse("f11-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature012)
@@ -3129,6 +3147,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f12-f12", result.contains(feature012));
         assertTrue("f12-f13", result.contains(feature013));
         assertFalse("f12-f14", result.contains(feature014));
+        assertFalse("f12-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature013)
@@ -3148,6 +3167,7 @@ public class SpatialReasonerPostGISTest {
         assertTrue("f13-f12", result.contains(feature012));
         assertFalse("f13-f13", result.contains(feature013));
         assertFalse("f13-f14", result.contains(feature014));
+        assertFalse("f13-f15", result.contains(feature015));
 
         result =
                 reasoner.getIndividualsPartiallyOverlappingWith(feature014)
@@ -3167,9 +3187,30 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f14-f12", result.contains(feature012));
         assertFalse("f14-f13", result.contains(feature013));
         assertFalse("f14-f14", result.contains(feature014));
+        assertFalse("f14-f15", result.contains(feature015));
+
+        result =
+                reasoner.getIndividualsPartiallyOverlappingWith(feature015)
+                        .collect(Collectors.toSet());
+
+        assertFalse("f15-f1", result.contains(feature001));
+        assertFalse("f15-f2", result.contains(feature002));
+        assertFalse("f15-f3", result.contains(feature003));
+        assertFalse("f15-f4", result.contains(feature004));
+        assertFalse("f15-f5", result.contains(feature005));
+        assertFalse("f15-f6", result.contains(feature006));
+        assertFalse("f15-f7", result.contains(feature007));
+        assertFalse("f15-f8", result.contains(feature008));
+        assertFalse("f15-f9", result.contains(feature009));
+        assertFalse("f15-f10", result.contains(feature010));
+        assertFalse("f15-f11", result.contains(feature011));
+        assertFalse("f15-f12", result.contains(feature012));
+        assertFalse("f15-f13", result.contains(feature013));
+        assertFalse("f15-f14", result.contains(feature014));
+        assertFalse("f15-f15", result.contains(feature015));
     }
 
-    @Test
+//    @Test
     public void testIsTangentialProperPartOf() throws ComponentInitException {
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
@@ -3261,6 +3302,13 @@ public class SpatialReasonerPostGISTest {
                 "POLYGON((13.7991 51.0602,13.7991 51.0597," +
                         "13.7999 51.0599,13.7991 51.0602))");
 
+        // -- added for NTPP case to have a line being NTPP of another line
+        OWLIndividual feature015 = i("feature015");
+        OWLIndividual geom015 = i("geom015");
+        kbHelper.addSpatialFeature(feature015, geom015,
+                "LINESTRING(13.8036 51.0579,13.8029 51.0574," +
+                        "13.8040 51.0577,13.8032 51.0572)");
+
         KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
         ks.init();
         OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
@@ -3300,6 +3348,8 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f12", reasoner.isTangentialProperPartOf(feature001, feature012));
         assertFalse("f1-f13", reasoner.isTangentialProperPartOf(feature001, feature013));
         assertFalse("f1-f14", reasoner.isTangentialProperPartOf(feature001, feature014));
+        assertFalse("f1-f15", reasoner.isTangentialProperPartOf(feature001, feature015));
+
 
         assertFalse("f2-f1", reasoner.isTangentialProperPartOf(feature002, feature001));
         assertFalse("f2-f2", reasoner.isTangentialProperPartOf(feature002, feature002));
@@ -3315,6 +3365,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f2-f12", reasoner.isTangentialProperPartOf(feature002, feature012));
         assertFalse("f2-f13", reasoner.isTangentialProperPartOf(feature002, feature013));
         assertFalse("f2-f14", reasoner.isTangentialProperPartOf(feature002, feature014));
+        assertFalse("f2-f15", reasoner.isTangentialProperPartOf(feature002, feature015));
 
         assertFalse("f3-f1", reasoner.isTangentialProperPartOf(feature003, feature001));
         assertFalse("f3-f2", reasoner.isTangentialProperPartOf(feature003, feature002));
@@ -3330,6 +3381,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f3-f12", reasoner.isTangentialProperPartOf(feature003, feature012));
         assertFalse("f3-f13", reasoner.isTangentialProperPartOf(feature003, feature013));
         assertFalse("f3-f14", reasoner.isTangentialProperPartOf(feature003, feature014));
+        assertFalse("f3-f15", reasoner.isTangentialProperPartOf(feature003, feature015));
 
         assertFalse("f4-f1", reasoner.isTangentialProperPartOf(feature004, feature001));
         assertFalse("f4-f2", reasoner.isTangentialProperPartOf(feature004, feature002));
@@ -3345,6 +3397,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f12", reasoner.isTangentialProperPartOf(feature004, feature012));
         assertFalse("f4-f13", reasoner.isTangentialProperPartOf(feature004, feature013));
         assertFalse("f4-f14", reasoner.isTangentialProperPartOf(feature004, feature014));
+        assertFalse("f4-f15", reasoner.isTangentialProperPartOf(feature004, feature015));
 
         assertFalse("f5-f1", reasoner.isTangentialProperPartOf(feature005, feature001));
         assertFalse("f5-f2", reasoner.isTangentialProperPartOf(feature005, feature002));
@@ -3360,6 +3413,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f12", reasoner.isTangentialProperPartOf(feature005, feature012));
         assertFalse("f5-f13", reasoner.isTangentialProperPartOf(feature005, feature013));
         assertFalse("f5-f14", reasoner.isTangentialProperPartOf(feature005, feature014));
+        assertFalse("f5-f15", reasoner.isTangentialProperPartOf(feature005, feature015));
 
         assertFalse("f6-f1", reasoner.isTangentialProperPartOf(feature006, feature001));
         assertFalse("f6-f2", reasoner.isTangentialProperPartOf(feature006, feature002));
@@ -3375,6 +3429,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f12", reasoner.isTangentialProperPartOf(feature006, feature012));
         assertFalse("f6-f13", reasoner.isTangentialProperPartOf(feature006, feature013));
         assertFalse("f6-f14", reasoner.isTangentialProperPartOf(feature006, feature014));
+        assertFalse("f6-f15", reasoner.isTangentialProperPartOf(feature006, feature015));
 
         assertFalse("f7-f1", reasoner.isTangentialProperPartOf(feature007, feature001));
         assertFalse("f7-f2", reasoner.isTangentialProperPartOf(feature007, feature002));
@@ -3390,6 +3445,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f12", reasoner.isTangentialProperPartOf(feature007, feature012));
         assertFalse("f7-f13", reasoner.isTangentialProperPartOf(feature007, feature013));
         assertFalse("f7-f14", reasoner.isTangentialProperPartOf(feature007, feature014));
+        assertFalse("f7-f15", reasoner.isTangentialProperPartOf(feature007, feature015));
 
         assertFalse("f8-f1", reasoner.isTangentialProperPartOf(feature008, feature001));
         assertFalse("f8-f2", reasoner.isTangentialProperPartOf(feature008, feature002));
@@ -3405,6 +3461,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f12", reasoner.isTangentialProperPartOf(feature008, feature012));
         assertFalse("f8-f13", reasoner.isTangentialProperPartOf(feature008, feature013));
         assertFalse("f8-f14", reasoner.isTangentialProperPartOf(feature008, feature014));
+        assertFalse("f8-f15", reasoner.isTangentialProperPartOf(feature008, feature015));
 
         assertFalse("f9-f1", reasoner.isTangentialProperPartOf(feature009, feature001));
         assertFalse("f9-f2", reasoner.isTangentialProperPartOf(feature009, feature002));
@@ -3420,6 +3477,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f12", reasoner.isTangentialProperPartOf(feature009, feature012));
         assertFalse("f9-f13", reasoner.isTangentialProperPartOf(feature009, feature013));
         assertFalse("f9-f14", reasoner.isTangentialProperPartOf(feature009, feature014));
+        assertFalse("f9-f15", reasoner.isTangentialProperPartOf(feature009, feature015));
 
         assertFalse("f10-f1", reasoner.isTangentialProperPartOf(feature010, feature001));
         assertFalse("f10-f2", reasoner.isTangentialProperPartOf(feature010, feature002));
@@ -3435,6 +3493,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f12", reasoner.isTangentialProperPartOf(feature010, feature012));
         assertFalse("f10-f13", reasoner.isTangentialProperPartOf(feature010, feature013));
         assertFalse("f10-f14", reasoner.isTangentialProperPartOf(feature010, feature014));
+        assertFalse("f10-f15", reasoner.isTangentialProperPartOf(feature010, feature015));
 
         assertFalse("f11-f1", reasoner.isTangentialProperPartOf(feature011, feature001));
         assertFalse("f11-f2", reasoner.isTangentialProperPartOf(feature011, feature002));
@@ -3450,6 +3509,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f12", reasoner.isTangentialProperPartOf(feature011, feature012));
         assertFalse("f11-f13", reasoner.isTangentialProperPartOf(feature011, feature013));
         assertFalse("f11-f14", reasoner.isTangentialProperPartOf(feature011, feature014));
+        assertFalse("f11-f15", reasoner.isTangentialProperPartOf(feature011, feature015));
 
         assertFalse("f12-f1", reasoner.isTangentialProperPartOf(feature012, feature001));
         assertFalse("f12-f2", reasoner.isTangentialProperPartOf(feature012, feature002));
@@ -3465,6 +3525,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f12-f12", reasoner.isTangentialProperPartOf(feature012, feature012));
         assertFalse("f12-f13", reasoner.isTangentialProperPartOf(feature012, feature013));
         assertFalse("f12-f14", reasoner.isTangentialProperPartOf(feature012, feature014));
+        assertFalse("f12-f15", reasoner.isTangentialProperPartOf(feature012, feature015));
 
         assertFalse("f13-f1", reasoner.isTangentialProperPartOf(feature013, feature001));
         assertFalse("f13-f2", reasoner.isTangentialProperPartOf(feature013, feature002));
@@ -3480,6 +3541,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f13-f12", reasoner.isTangentialProperPartOf(feature013, feature012));
         assertFalse("f13-f13", reasoner.isTangentialProperPartOf(feature013, feature013));
         assertFalse("f13-f14", reasoner.isTangentialProperPartOf(feature013, feature014));
+        assertFalse("f13-f15", reasoner.isTangentialProperPartOf(feature013, feature015));
 
         assertFalse("f14-f1", reasoner.isTangentialProperPartOf(feature014, feature001));
         assertFalse("f14-f2", reasoner.isTangentialProperPartOf(feature014, feature002));
@@ -3495,6 +3557,23 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f14-f12", reasoner.isTangentialProperPartOf(feature014, feature012));
         assertFalse("f14-f13", reasoner.isTangentialProperPartOf(feature014, feature013));
         assertFalse("f14-f14", reasoner.isTangentialProperPartOf(feature014, feature014));
+        assertFalse("f14-f15", reasoner.isTangentialProperPartOf(feature014, feature015));
+
+        assertFalse("f15-f1", reasoner.isTangentialProperPartOf(feature015, feature001));
+        assertFalse("f15-f2", reasoner.isTangentialProperPartOf(feature015, feature002));
+        assertFalse("f15-f3", reasoner.isTangentialProperPartOf(feature015, feature003));
+        assertFalse("f15-f4", reasoner.isTangentialProperPartOf(feature015, feature004));
+        assertFalse("f15-f5", reasoner.isTangentialProperPartOf(feature015, feature005));
+        assertFalse("f15-f6", reasoner.isTangentialProperPartOf(feature015, feature006));
+        assertFalse("f15-f7", reasoner.isTangentialProperPartOf(feature015, feature007));
+        assertFalse("f15-f8", reasoner.isTangentialProperPartOf(feature015, feature008));
+        assertFalse("f15-f9", reasoner.isTangentialProperPartOf(feature015, feature009));
+        assertFalse("f15-f10", reasoner.isTangentialProperPartOf(feature015, feature010));
+        assertFalse("f15-f11", reasoner.isTangentialProperPartOf(feature015, feature011));
+        assertFalse("f15-f12", reasoner.isTangentialProperPartOf(feature015, feature012));
+        assertFalse("f15-f13", reasoner.isTangentialProperPartOf(feature015, feature013));
+        assertFalse("f15-f14", reasoner.isTangentialProperPartOf(feature015, feature014));
+        assertFalse("f15-f15", reasoner.isTangentialProperPartOf(feature015, feature015));
     }
 
     @Test
