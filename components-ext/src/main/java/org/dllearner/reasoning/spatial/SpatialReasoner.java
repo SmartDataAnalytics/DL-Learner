@@ -82,6 +82,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole);
 
     // Identical with
+    boolean isSpatiallyIdenticalWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
+
+    Stream<OWLIndividual> getIndividualsSpatiallyIdenticalWith(OWLIndividual spatialFeatureIndividual);
+
     // Has tangential proper part
     // Has non-tangential proper part
     // Externally connected with

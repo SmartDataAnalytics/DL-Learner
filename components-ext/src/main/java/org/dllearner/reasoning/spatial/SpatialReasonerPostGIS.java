@@ -2251,6 +2251,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean isSpatiallyIdenticalWith(
+            OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public  Stream<OWLIndividual> getIndividualsSpatiallyIdenticalWith(
+            OWLIndividual spatialFeatureIndividual) {
+
+        throw new NotImplementedException();
+    }
+
     // ---
 
     @Override
