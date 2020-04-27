@@ -92,6 +92,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsHavingTangentialProperPart(OWLIndividual part);
 
     // Has non-tangential proper part
+    boolean hasNonTangentialProperPart(OWLIndividual whole, OWLIndividual part);
+
+    Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part);
+    
     // Externally connected with
     // Disconnected from
 
