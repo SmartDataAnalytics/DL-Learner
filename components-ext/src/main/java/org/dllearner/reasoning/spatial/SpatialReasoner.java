@@ -97,6 +97,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part);
 
     // Externally connected with
+    boolean isExternallyConnectedWith(OWLIndividual spatialIndividual1, OWLIndividual spatialIndividual2);
+
+    Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual spatialIndividual);
+
     // Disconnected from
 
     /* Further non-RCC relations */

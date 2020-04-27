@@ -2579,6 +2579,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean isExternallyConnectedWith(OWLIndividual spatialIndividual1, OWLIndividual spatialIndividual2) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual spatialIndividual) {
+        throw new NotImplementedException();
+    }
+
     // ---
 
     @Override
