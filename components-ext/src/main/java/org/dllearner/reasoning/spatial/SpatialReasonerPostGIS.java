@@ -2977,7 +2977,69 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual) {
-        throw new NotImplementedException();
+        String tableName = getTable(spatialFeatureIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri dc " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? " +  // #1
+                "UNION " +
+                "SELECT " +
+                    "r.iri dc " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? " +  // #2
+                "UNION " +
+                "SELECT " +
+                    "r.iri dc " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=?";  // #3
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+            statement.setString(2, geomIndividual.toStringID());
+            statement.setString(3, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("dc");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---
