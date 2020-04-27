@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.sun.jmx.mbeanserver.NamedObject;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.reasoning.ReasonerType;
@@ -2929,6 +2930,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public  boolean isDisconnectedFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
     }
 
     // ---

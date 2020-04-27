@@ -102,6 +102,9 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual spatialIndividual);
 
     // Disconnected from
+    boolean isDisconnectedFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
+
+    Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual);
 
     /* Further non-RCC relations */
     // ...
