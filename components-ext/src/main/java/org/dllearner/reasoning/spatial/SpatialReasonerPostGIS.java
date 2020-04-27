@@ -2581,7 +2581,190 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isExternallyConnectedWith(OWLIndividual spatialIndividual1, OWLIndividual spatialIndividual2) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(spatialIndividual1);
+        String tableName2 = getTable(spatialIndividual2);
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+
+        try {
+            geomIndividual1 = feature2geom.get(spatialIndividual1);
+            geomIndividual2 = feature2geom.get(spatialIndividual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr;
+
+        if (tableName1.equals(pointFeatureTableName)) {
+            if (tableName2.equals(pointFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "l.the_geom=r.the_geom ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else if (tableName2.equals(lineFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "(" +
+                        "l.the_geom=ST_StartPoint(r.the_geom) " +
+                    "OR " +
+                        "l.the_geom=ST_EndPoint(r.the_geom) " +
+                    ") ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else {
+                // point - area
+                queryStr =
+                "SELECT " +
+                    "ST_Intersects(l.the_geom, ST_Boundary(r.the_geom)) ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            }
+        } else if (tableName1.equals(lineFeatureTableName)) {
+            if (tableName2.equals(pointFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "(" +
+                        "ST_StartPoint(l.the_geom)=r.the_geom " +
+                    "OR " +
+                        "ST_EndPoint(l.the_geom)=r.the_geom " +
+                    ") ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else if (tableName2.equals(lineFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "(" +
+                        "NOT ST_Equals(l.the_geom, r.the_geom)" +
+                    "AND " +
+                        "( " +
+                            "ST_StartPoint(l.the_geom)=ST_StartPoint(r.the_geom) " +
+                        "OR " +
+                            "ST_StartPoint(l.the_geom)=ST_EndPoint(r.the_geom) " +
+                        "OR " +
+                            "ST_EndPoint(l.the_geom)=ST_StartPoint(r.the_geom) " +
+                        "OR " +
+                            "ST_EndPoint(l.the_geom)=ST_EndPoint(r.the_geom) " +
+                        ")" +
+                    ") ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else {
+                // line - area
+                /* Corner case:
+                 * - line string l from A to B
+                 * - polygon p: A-B-C-A
+                 *
+                 * Here we don't consider l as externally connected since there
+                 * is no point in l 'external' to p.
+                 */
+                queryStr =
+                "SELECT " +
+                    "( " +
+                        "NOT ST_Contains(r.the_geom, l.the_geom) " +
+                    "AND " +
+                        "(" +
+                            "ST_Intersects(ST_StartPoint(l.the_geom), ST_Boundary(r.the_geom)) " +
+                        "OR " +
+                            "ST_Intersects(ST_EndPoint(l.the_geom), ST_Boundary(r.the_geom)) " +
+                        ")" +
+                    ") ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            }
+        } else {
+            // area
+            if (tableName2.equals(pointFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "ST_Intersects(ST_Boundary(l.the_geom), r.the_geom) ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else if (tableName2.equals(lineFeatureTableName)) {
+                queryStr =
+                "SELECT " +
+                    "( " +
+                        "NOT ST_Contains(l.the_geom, r.the_geom) " +
+                    "AND " +
+                        "(" +
+                            "ST_Intersects(ST_Boundary(l.the_geom), ST_StartPoint(r.the_geom)) " +
+                        "OR " +
+                            "ST_Intersects(ST_Boundary(l.the_geom), ST_Endpoint(r.the_geom))" +
+                        ")" +
+                    ") ec " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            } else {
+                // area - area
+                queryStr =
+                "SELECT " +
+                    "ST_Touches(l.the_geom, r.the_geom) ec " +
+                "FROM " +
+                    tableName1 + " l , " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+            }
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual1.toStringID());
+            statement.setString(2, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean areExternallyConnected = resSet.getBoolean("ec");
+            return areExternallyConnected;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
