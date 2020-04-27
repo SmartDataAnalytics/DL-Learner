@@ -1,6 +1,5 @@
 package org.dllearner.reasoning.spatial;
 
-import org.apache.lucene.search.PointInSetQuery;
 import org.dllearner.core.ReasonerComponent;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -78,6 +77,10 @@ public interface SpatialReasoner extends ReasonerComponent {
     Stream<OWLIndividual> getIndividualsTangentialProperPartOf(OWLIndividual whole);
 
     // Non-tangential proper part of
+    boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole);
+
+    Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole);
+
     // Identical with
     // Has tangential proper part
     // Has non-tangential proper part

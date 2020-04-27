@@ -2102,6 +2102,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole) {
+        throw new NotImplementedException();
+    }
+
     // ---
 
     @Override
