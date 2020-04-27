@@ -2154,7 +2154,101 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole) {
-        throw new NotImplementedException();
+        String wholeTableName = getTable(whole);
+
+        if (wholeTableName.equals(pointFeatureTableName)) {
+            return Stream.empty();
+        }
+
+        OWLIndividual wholeGeomIndividual;
+
+        try {
+            wholeGeomIndividual = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr = "";
+
+        if (wholeTableName.equals(lineFeatureTableName)) {
+            queryStr +=
+                "SELECT " +
+                    "part.iri ntpp " +
+                "FROM " +
+                    pointFeatureTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri ntpp " +
+                "FROM " +
+                    lineFeatureTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? ";
+        } else {
+            // area feature
+            queryStr +=
+                "SELECT " +
+                    "part.iri ntpp " +
+                "FROM " +
+                    pointFeatureTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri ntpp " +
+                "FROM " +
+                    lineFeatureTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri ntpp " +
+                "FROM " +
+                    areaFeatureTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "whole.iri=? ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, wholeGeomIndividual.toStringID());
+            statement.setString(2, wholeGeomIndividual.toStringID());
+
+            if (wholeTableName.equals(areaFeatureTableName)) {
+                statement.setString(3, wholeGeomIndividual.toStringID());
+            }
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("ntpp");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---
