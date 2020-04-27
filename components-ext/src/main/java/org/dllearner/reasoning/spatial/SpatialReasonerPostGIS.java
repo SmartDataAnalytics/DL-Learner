@@ -2304,7 +2304,47 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual) {
 
-        throw new NotImplementedException();
+        String tableName = getTable(spatialFeatureIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri eq " +
+                "FROM " +
+                    tableName + " l, " +
+                    tableName + " r " +
+                "WHERE " +
+                    "ST_Equals(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? ";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("eq");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---
