@@ -2934,7 +2934,45 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public  boolean isDisconnectedFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(spatialFeatureIndividual1);
+        String tableName2 = getTable(spatialFeatureIndividual2);
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+
+        try {
+            geomIndividual1 = feature2geom.get(spatialFeatureIndividual1);
+            geomIndividual2 = feature2geom.get(spatialFeatureIndividual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+            "SELECT " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom) dc " +
+            "FROM " +
+                tableName1 + " l, " +
+                tableName2 + " r " +
+            "WHERE " +
+                "l.iri=? " +
+            "AND " +
+                "r.iri=? ";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual1.toStringID());
+            statement.setString(2, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean areDisconnected = resSet.getBoolean("dc");
+            return areDisconnected;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
