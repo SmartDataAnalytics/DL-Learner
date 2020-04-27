@@ -95,7 +95,7 @@ public interface SpatialReasoner extends ReasonerComponent {
     boolean hasNonTangentialProperPart(OWLIndividual whole, OWLIndividual part);
 
     Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part);
-    
+
     // Externally connected with
     // Disconnected from
 
