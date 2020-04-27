@@ -2104,7 +2104,52 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
-        throw new NotImplementedException();
+        String partTableName = getTable(part);
+        String wholeTableName = getTable(whole);
+
+        if (wholeTableName.equals(pointFeatureTableName)) {
+            return false;
+        } else if (partTableName.equals(areaFeatureTableName)
+                && wholeTableName.equals(lineFeatureTableName)) {
+            return false;
+        }
+
+        OWLIndividual partGeomIndividual;
+        OWLIndividual wholeGeomIndividual;
+
+        try {
+            partGeomIndividual = feature2geom.get(part);
+            wholeGeomIndividual = feature2geom.get(whole);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) ntpp " +
+                "FROM " +
+                    partTableName + " part, " +
+                    wholeTableName + " whole " +
+                "WHERE " +
+                    "part.iri=? " +
+                "AND " +
+                    "whole.iri=? ";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, partGeomIndividual.toStringID());
+            statement.setString(2, wholeGeomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean isNonTangentialProperPart = resSet.getBoolean("ntpp");
+            return isNonTangentialProperPart;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
