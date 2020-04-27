@@ -2769,7 +2769,166 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual spatialIndividual) {
-        throw new NotImplementedException();
+        String tableName = getTable(spatialIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr;
+
+        if (tableName.equals(pointFeatureTableName)) {
+            queryStr =
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "l.the_geom=r.the_geom " +
+                "AND " +
+                    "l.iri=? " +  // #1
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "(" +
+                        "l.the_geom=ST_StartPoint(r.the_geom) " +
+                    "OR " +
+                        "l.the_geom=ST_EndPoint(r.the_geom) " +
+                    ") " +
+                "AND " +
+                    "l.iri=? " +  // #2
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, ST_Boundary(r.the_geom)) " +
+                "AND " +
+                    "l.iri=? ";  // #3
+        } else if (tableName.equals(lineFeatureTableName)) {
+            queryStr =
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "(" +
+                        "ST_StartPoint(l.the_geom)=r.the_geom " +
+                    "OR " +
+                        "ST_EndPoint(l.the_geom)=r.the_geom " +
+                    ") " +
+                "AND " +
+                    "l.iri=? " +  // #1
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Equals(l.the_geom, r.the_geom)" +
+                "AND " +
+                    "( " +
+                        "ST_StartPoint(l.the_geom)=ST_StartPoint(r.the_geom) " +
+                    "OR " +
+                        "ST_StartPoint(l.the_geom)=ST_EndPoint(r.the_geom) " +
+                    "OR " +
+                        "ST_EndPoint(l.the_geom)=ST_StartPoint(r.the_geom) " +
+                    "OR " +
+                        "ST_EndPoint(l.the_geom)=ST_EndPoint(r.the_geom) " +
+                    ")" +
+                "AND " +
+                    "l.iri=? " +
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Contains(r.the_geom, l.the_geom) " +
+                "AND " +
+                    "(" +
+                        "ST_Intersects(ST_StartPoint(l.the_geom), ST_Boundary(r.the_geom)) " +
+                    "OR " +
+                        "ST_Intersects(ST_EndPoint(l.the_geom), ST_Boundary(r.the_geom)) " +
+                    ")" +
+                "AND " +
+                    "l.iri=? ";  // #3
+        } else {
+            // area
+            queryStr =
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(ST_Boundary(l.the_geom),r.the_geom) " +
+                "AND " +
+                    "l.iri=? " +  // #1
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "NOT ST_Contains(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "(" +
+                        "ST_Intersects(ST_Boundary(l.the_geom), ST_StartPoint(r.the_geom)) " +
+                    "OR " +
+                        "ST_Intersects(ST_Boundary(l.the_geom), ST_EndPoint(r.the_geom)) " +
+                    ")" +
+                "AND " +
+                    "l.iri=? " +  // #2
+                "UNION " +
+                "SELECT " +
+                    "r.iri ec " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Touches(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=?";  // #3
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual.toStringID());
+            statement.setString(2, geomIndividual.toStringID());
+            statement.setString(3, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("ec");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---
