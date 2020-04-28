@@ -3102,7 +3102,72 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual) {
-        throw new NotImplementedException();
+        String tableName = getTable(spatialFeatureIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri nr " +
+                "FROM " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #1
+                "AND " +
+                    "l.iri=? " +  // #2
+                "UNION " +
+                "SELECT " +
+                    "r.iri nr " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #3
+                "AND " +
+                    "l.iri=? " +  // #4
+                "UNION " +
+                "SELECT " +
+                    "r.iri nr " +
+                "FROM " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #5
+                "AND " +
+                    "l.iri=? ";  // #6
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geomIndividual.toStringID());
+            statement.setDouble(3, nearRadiusInMeters);
+            statement.setString(4, geomIndividual.toStringID());
+            statement.setDouble(5, nearRadiusInMeters);
+            statement.setString(6, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("nr");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // --------- getter/setter ------------------------------------------------
