@@ -115,4 +115,12 @@ public interface SpatialReasoner extends ReasonerComponent {
     boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
 
     Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual);
+
+    boolean startsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual);
+
+    Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual);
+
+    boolean endsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual);
+
+    Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual);
 }
