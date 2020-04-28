@@ -3170,6 +3170,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public  boolean startsNear(
+            OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean endsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;
