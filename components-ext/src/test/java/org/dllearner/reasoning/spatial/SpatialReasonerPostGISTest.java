@@ -8271,4 +8271,156 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f6", reasoner.endsNear(feature007, feature006));
         assertFalse("f7-f7", reasoner.endsNear(feature007, feature007));
     }
+
+    @Test
+    public void testGetIndividualsEndingNear() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        // points
+        OWLIndividual feature001 = i("feature001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(feature001, geom001, "POINT(13.7978 51.0606)");
+
+        OWLIndividual feature002 = i("feature002");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(feature002, geom002, "POINT(13.7875 51.0606)");
+
+        // line strings
+        OWLIndividual feature003 = i("feature003");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(feature003, geom003,
+                "LINESTRING(13.7952 51.0605,13.7961 51.0611," +
+                        "13.7960 51.0603,13.7967 51.0611,13.7967 51.0601," +
+                        "13.7974 51.0608)");
+
+        OWLIndividual feature004 = i("feature004");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(feature004, geom004,
+                "LINESTRING(13.7982 51.0607,13.7998 51.0606," +
+                        "13.7991 51.0597,13.7983 51.0602,13.7983 51.0594," +
+                        "13.7999 51.0594,13.8000 51.0603)");
+
+        OWLIndividual feature005 = i("feature005");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(feature005, geom005,
+                "LINESTRING(13.7974 51.0598,13.7968 51.0595," +
+                        "13.7946 51.0603,13.7958 51.0617,13.7984 51.0611," +
+                        "13.7980 51.0608)");
+
+        // areas
+        OWLIndividual feature006 = i("feature006");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(feature006, geom006,
+                "POLYGON((13.7971 51.0600,13.7977 51.0610," +
+                        "13.7986 51.0609,13.7978 51.0598,13.7971 51.0600))");
+
+        OWLIndividual feature007 = i("feature007");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(feature007, geom007,
+                "POLYGON((13.7893 51.0622,13.7896 51.0612," +
+                        "13.7918 51.0612,13.7916 51.0622,13.7893 51.0622))");
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDbName(dbName);
+        reasoner.setDbUser(dbUser);
+        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+        reasoner.setNearRadiusInMeters(60);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+//        System.out.println(kbHelper.getGeometryCollection());
+
+        Set<OWLIndividual> result = reasoner.getIndividualsEndingNear(feature001)
+                .collect(Collectors.toSet());
+
+        assertFalse("f1-f1", result.contains(feature001));
+        assertFalse("f1-f2", result.contains(feature002));
+        assertTrue("f1-f3", result.contains(feature003));
+        assertFalse("f1-f4", result.contains(feature004));
+        assertTrue("f1-f5", result.contains(feature005));
+        assertFalse("f1-f6", result.contains(feature006));
+        assertFalse("f1-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature002)
+                .collect(Collectors.toSet());
+
+        assertFalse("f2-f1", result.contains(feature001));
+        assertFalse("f2-f2", result.contains(feature002));
+        assertFalse("f2-f3", result.contains(feature003));
+        assertFalse("f2-f4", result.contains(feature004));
+        assertFalse("f2-f5", result.contains(feature005));
+        assertFalse("f2-f6", result.contains(feature006));
+        assertFalse("f2-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature003)
+                .collect(Collectors.toSet());
+
+        assertFalse("f3-f1", result.contains(feature001));
+        assertFalse("f3-f2", result.contains(feature002));
+        assertFalse("f3-f3", result.contains(feature003));
+        assertFalse("f3-f4", result.contains(feature004));
+        assertTrue("f3-f5", result.contains(feature005));
+        assertFalse("f3-f6", result.contains(feature006));
+        assertFalse("f3-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature004)
+                .collect(Collectors.toSet());
+
+        assertFalse("f4-f1", result.contains(feature001));
+        assertFalse("f4-f2", result.contains(feature002));
+        assertTrue("f4-f3", result.contains(feature003));
+        assertFalse("f4-f4", result.contains(feature004));
+        assertTrue("f4-f5", result.contains(feature005));
+        assertFalse("f4-f6", result.contains(feature006));
+        assertFalse("f4-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature005)
+                .collect(Collectors.toSet());
+
+        assertFalse("f5-f1", result.contains(feature001));
+        assertFalse("f5-f2", result.contains(feature002));
+        assertTrue("f5-f3", result.contains(feature003));
+        assertFalse("f5-f4", result.contains(feature004));
+        assertFalse("f5-f5", result.contains(feature005));
+        assertFalse("f5-f6", result.contains(feature006));
+        assertFalse("f5-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature006)
+                .collect(Collectors.toSet());
+
+        assertFalse("f6-f1", result.contains(feature001));
+        assertFalse("f6-f2", result.contains(feature002));
+        assertTrue("f6-f3", result.contains(feature003));
+        assertFalse("f6-f4", result.contains(feature004));
+        assertTrue("f6-f5", result.contains(feature005));
+        assertFalse("f6-f6", result.contains(feature006));
+        assertFalse("f6-f7", result.contains(feature007));
+
+        result = reasoner.getIndividualsEndingNear(feature007)
+                .collect(Collectors.toSet());
+
+        assertFalse("f7-f1", result.contains(feature001));
+        assertFalse("f7-f2", result.contains(feature002));
+        assertFalse("f7-f3", result.contains(feature003));
+        assertFalse("f7-f4", result.contains(feature004));
+        assertFalse("f7-f5", result.contains(feature005));
+        assertFalse("f7-f6", result.contains(feature006));
+        assertFalse("f7-f7", result.contains(feature007));
+    }
 }
