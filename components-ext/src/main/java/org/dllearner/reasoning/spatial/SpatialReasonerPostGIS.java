@@ -3379,7 +3379,82 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean crosses(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(lineStringFeatureIndividual);
+        String tableName2 = getTable(spatialFeatureIndividual);
+
+        if (!tableName1.equals(lineFeatureTableName)) {
+            return false;
+        }
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+
+        try {
+            geomIndividual1 = feature2geom.get(lineStringFeatureIndividual);
+            geomIndividual2 = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr;
+
+        if (tableName2.equals(pointFeatureTableName)) {
+            queryStr =
+                "SELECT " +
+                    "ST_ContainsProperly(l.the_geom, r.the_geom) cr " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +  // #1
+                "AND " +
+                    "r.iri=? ";  // #2
+        } else if (tableName2.equals(lineFeatureTableName)) {
+            queryStr =
+                "SELECT " +
+                    "ST_Crosses(l.the_geom, r.the_geom) cr " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+        } else {
+            queryStr =
+                "SELECT " +
+                    "( " +
+                        "ST_Crosses(l.the_geom, r.the_geom) " +
+                    "AND " +
+                        "NOT ST_Intersects(ST_StartPoint(l.the_geom), r.the_geom) " +
+                    "AND " +
+                        "NOT ST_Intersects(ST_EndPoint(l.the_geom), r.the_geom) " +
+                    ") cr " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setString(1, geomIndividual1.toStringID());
+            statement.setString(2, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean endsNear = resSet.getBoolean("cr");
+            return endsNear;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
