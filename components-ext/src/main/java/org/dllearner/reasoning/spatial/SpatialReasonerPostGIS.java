@@ -41,6 +41,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected AbstractReasonerComponent baseReasoner;
 
+    // spatial relations settings
+    private double nearRadiusInMeters = 30;
+
     // TODO: make this configurable
     // "Specifies the maximum number of entries the cache may contain"
     private int maxFeatureGeometryCacheSize = 1000000;
@@ -3055,7 +3058,46 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(spatialFeatureIndividual1);
+        String tableName2 = getTable(spatialFeatureIndividual2);
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+
+        try {
+            geomIndividual1 = feature2geom.get(spatialFeatureIndividual1);
+            geomIndividual2 = feature2geom.get(spatialFeatureIndividual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) nr " +
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +
+                "AND " +
+                    "r.iri=? ";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geomIndividual1.toStringID());
+            statement.setString(3, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean areNear = resSet.getBoolean("nr");
+            return areNear;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -3086,6 +3128,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     public void setBaseReasoner(AbstractReasonerComponent baseReasoner) {
         this.baseReasoner = baseReasoner;
+    }
+
+    public void setNearRadiusInMeters(double nearRadiusInMeters) {
+        this.nearRadiusInMeters = nearRadiusInMeters;
     }
 
     public void addGeometryPropertyPath(List<OWLProperty> propertyPath) {
