@@ -123,4 +123,14 @@ public interface SpatialReasoner extends ReasonerComponent {
     boolean endsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual);
 
     Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual);
+
+    boolean crosses(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual);
+
+    Stream<OWLIndividual> getIndividualsCrossing(OWLIndividual spatialFeatureIndividual);
+
+    boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2);
+
+    Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual);
+
+    Stream<OWLIndividual> getIndividualsAlongWhichRuns(OWLIndividual lineStringFeatureIndividual);
 }

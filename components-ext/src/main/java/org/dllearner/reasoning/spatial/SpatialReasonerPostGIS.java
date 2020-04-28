@@ -3377,6 +3377,31 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    @Override
+    public boolean crosses(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsCrossing(OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsAlongWhichRuns(OWLIndividual lineStringFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;
