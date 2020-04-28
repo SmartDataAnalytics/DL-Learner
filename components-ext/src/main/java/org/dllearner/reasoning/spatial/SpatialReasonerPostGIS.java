@@ -3225,7 +3225,53 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual) {
-        throw new NotImplementedException();
+        String tableName = getTable(spatialFeatureIndividual);
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri sn " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_DWithin(l.the_geom, ST_StartPoint(r.the_geom), ?, false) " +  // #1
+                "AND " +
+                    "l.iri=? ";  // #2
+        if (tableName.equals(lineFeatureTableName)) {
+            queryStr +=
+                "AND " +
+                    "NOT l.the_geom=r.the_geom ";
+        }
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("sn");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
