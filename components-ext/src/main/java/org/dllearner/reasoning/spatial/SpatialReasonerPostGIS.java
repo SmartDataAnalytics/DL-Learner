@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sun.jmx.mbeanserver.NamedObject;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.reasoning.ReasonerType;
@@ -3053,6 +3052,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public Stream<OWLIndividual> getIndividualsInside(OWLIndividual container) {
         return getIndividualsPartOf(container);
     }
+
+    @Override
+    public boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual) {
+        throw new NotImplementedException();
+    }
+
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;

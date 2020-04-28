@@ -111,4 +111,8 @@ public interface SpatialReasoner extends ReasonerComponent {
     boolean isInside(OWLIndividual inner, OWLIndividual container);
 
     Stream<OWLIndividual> getIndividualsInside(OWLIndividual container);
+
+    boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
+
+    Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual);
 }
