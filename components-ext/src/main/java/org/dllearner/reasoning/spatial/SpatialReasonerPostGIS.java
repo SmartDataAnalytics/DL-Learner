@@ -3173,7 +3173,54 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public  boolean startsNear(
             OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(lineStringFeatureIndividual);
+        String tableName2 = getTable(spatialFeatureIndividual);
+
+        if (!tableName1.equals(lineFeatureTableName)) {
+            return false;
+        }
+
+        OWLIndividual lineStringGeomIndividual;
+        OWLIndividual geomIndividual2;
+
+        try {
+            lineStringGeomIndividual = feature2geom.get(lineStringFeatureIndividual);
+            geomIndividual2 = feature2geom.get(spatialFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "(" +
+                        "ST_DWithin(ST_StartPoint(l.the_geom), r.the_geom, ?, false) " +
+                    "AND " +
+                        "NOT l.the_geom=r.the_geom " +
+                    ") sn " +  // #1
+                "FROM " +
+                    tableName1 + " l, " +
+                    tableName2 + " r " +
+                "WHERE " +
+                    "l.iri=? " +  // #2
+                "AND " +
+                    "r.iri=? ";  // #3
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setString(2, lineStringGeomIndividual.toStringID());
+            statement.setString(3, geomIndividual2.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            resSet.next();
+
+            boolean startsNear = resSet.getBoolean("sn");
+            return startsNear;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
