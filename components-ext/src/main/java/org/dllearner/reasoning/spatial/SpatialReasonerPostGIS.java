@@ -3591,8 +3591,58 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
+        String tableName = getTable(lineStringFeatureIndividual);
 
-        throw new NotImplementedException();
+        if (!tableName.equals(lineFeatureTableName)) {
+            return Stream.empty();
+        }
+
+        OWLIndividual geomIndividual;
+
+        try {
+            geomIndividual = feature2geom.get(lineStringFeatureIndividual);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "r.iri ra " +
+                "FROM " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Length( " +
+                        "ST_Intersection( " +
+                            "ST_Buffer(l.the_geom::geography, ?, 'endcap=flat'), " +  // #1
+                            "r.the_geom)) > ? " +  // #2
+                "AND " +
+                    "NOT ST_Equals(l.the_geom, r.the_geom) " +
+                "AND " +
+                    "l.iri=? ";  // #3
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, runsAlongToleranceInMeters);
+            statement.setDouble(2, 2.5 * runsAlongToleranceInMeters);
+            statement.setString(3, geomIndividual.toStringID());
+
+            ResultSet resSet = statement.executeQuery();
+
+            Set<OWLIndividual> resultFeatureIndividuals = new HashSet<>();
+            while (resSet.next()) {
+                String resIRIStr = resSet.getString("ra");
+
+                resultFeatureIndividuals.add(
+                        geom2feature.get(
+                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+            }
+
+            return resultFeatureIndividuals.stream();
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // --------- getter/setter ------------------------------------------------
