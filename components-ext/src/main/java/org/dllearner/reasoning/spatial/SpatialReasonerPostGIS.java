@@ -43,6 +43,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     // spatial relations settings
     private double nearRadiusInMeters = 30;
+    private double runsAlongToleranceInMeters = 20;
 
     // TODO: make this configurable
     // "Specifies the maximum number of entries the cache may contain"
@@ -3534,7 +3535,58 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2) {
-        throw new NotImplementedException();
+        String tableName1 = getTable(lineStringFeatureIndividual1);
+        String tableName2 = getTable(lineStringFeatureIndividual2);
+
+        if (!(tableName1.equals(lineFeatureTableName) && tableName2.equals(lineFeatureTableName))) {
+            return false;
+        }
+
+        OWLIndividual geomIndividual1;
+        OWLIndividual geomIndividual2;
+        try {
+            geomIndividual1 = feature2geom.get(lineStringFeatureIndividual1);
+            geomIndividual2 = feature2geom.get(lineStringFeatureIndividual2);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        String queryStr =
+                "SELECT " +
+                    "(" +
+                        "ST_Length( " +
+                            "ST_Intersection( " +
+                                "ST_Buffer(l.the_geom::geography, ?, 'endcap=flat'), " +  // #1
+                                "r.the_geom)) > ? " +  // #2
+                    "AND " +
+                        "NOT ST_Equals(l.the_geom, r.the_geom)" +
+                    ") ra " +
+                "FROM " +
+                    lineFeatureTableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "l.iri=? " + // #3
+                "AND " +
+                    "r.iri=?"; // 4
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, runsAlongToleranceInMeters);
+            // min expected length
+            statement.setDouble(2, 2.5 * runsAlongToleranceInMeters);
+            statement.setString(3, geomIndividual1.toStringID());
+            statement.setString(4, geomIndividual2.toStringID());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            resultSet.next();
+
+            boolean runsAlong = resultSet.getBoolean("ra");
+
+            return runsAlong;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -3574,6 +3626,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     public void setNearRadiusInMeters(double nearRadiusInMeters) {
         this.nearRadiusInMeters = nearRadiusInMeters;
+    }
+
+    public void setRunsAlongToleranceInMeters(double runsAlongToleranceInMeters) {
+        this.runsAlongToleranceInMeters = runsAlongToleranceInMeters;
     }
 
     public void addGeometryPropertyPath(List<OWLProperty> propertyPath) {
