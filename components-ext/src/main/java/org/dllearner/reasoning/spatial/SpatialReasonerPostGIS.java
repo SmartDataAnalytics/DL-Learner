@@ -3591,11 +3591,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
-        throw new NotImplementedException();
-    }
 
-    @Override
-    public Stream<OWLIndividual> getIndividualsAlongWhichRuns(OWLIndividual lineStringFeatureIndividual) {
         throw new NotImplementedException();
     }
 

@@ -131,6 +131,4 @@ public interface SpatialReasoner extends ReasonerComponent {
     boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2);
 
     Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual);
-
-    Stream<OWLIndividual> getIndividualsAlongWhichRuns(OWLIndividual lineStringFeatureIndividual);
 }
