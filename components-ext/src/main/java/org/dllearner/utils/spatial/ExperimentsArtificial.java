@@ -13,7 +13,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,9 +68,9 @@ public class ExperimentsArtificial {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dataFolder + "_" + datasetSize);
-        reasoner.setDbUser("postgres");
-        reasoner.setDbUserPW("postgres");
+        reasoner.setDBName(dataFolder + "_" + datasetSize);
+        reasoner.setDBUser("postgres");
+        reasoner.setDBUserPW("postgres");
         reasoner.setHostname("localhost");
         reasoner.setPort(5432);
         reasoner.setBaseReasoner(cwr);
