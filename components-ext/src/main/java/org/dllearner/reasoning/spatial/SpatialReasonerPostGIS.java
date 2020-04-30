@@ -283,6 +283,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
+    protected Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(
+            OWLDataProperty datatypeProperty) {
+        return baseReasoner.getDatatypeMembers(datatypeProperty);
+    }
+
+    @Override
     public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
         Map<OWLObjectProperty, OWLClassExpression> domainsMap = baseReasoner.getObjectPropertyDomains();
 
