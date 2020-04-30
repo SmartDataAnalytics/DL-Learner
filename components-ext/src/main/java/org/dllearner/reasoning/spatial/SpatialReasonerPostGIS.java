@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utils.spatial.SpatialKBPostGISHelper;
 import org.dllearner.vocabulary.spatial.SpatialVocabulary;
@@ -14,6 +15,7 @@ import org.postgresql.util.PGobject;
 import org.semanticweb.owlapi.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 
 import javax.annotation.Nonnull;
 import java.sql.*;
@@ -3891,6 +3893,58 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     // --------- private/protected methods -------------------------------------
+    private boolean containsSpatialExpressions(OWLClassExpression ce) {
+        if (ce instanceof OWLClass) {
+            return false;
+
+        } else if (ce instanceof OWLObjectIntersectionOf) {
+            return ((OWLObjectIntersectionOf) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
+        } else if (ce instanceof OWLObjectSomeValuesFrom) {
+            OWLObjectPropertyExpression prop = ((OWLObjectSomeValuesFrom) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
+
+            return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
+                    || containsSpatialExpressions(filler);
+
+        } else if (ce instanceof OWLObjectMinCardinality) {
+            OWLObjectPropertyExpression prop = ((OWLObjectMinCardinality) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectMinCardinality) ce).getFiller();
+
+            return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
+                    || containsSpatialExpressions(filler);
+
+        } else if (ce instanceof OWLObjectUnionOfImpl) {
+            return ((OWLObjectUnionOf) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
+        } else if (ce instanceof OWLObjectUnionOfImplExt) {
+            return ((OWLObjectUnionOfImplExt) ce).getOperands().stream()
+                    .anyMatch(this::containsSpatialExpressions);
+
+        } else if (ce instanceof OWLObjectAllValuesFrom) {
+            OWLObjectPropertyExpression prop = ((OWLObjectAllValuesFrom) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectAllValuesFrom) ce).getFiller();
+
+            return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
+                    || containsSpatialExpressions(filler);
+
+        } else if (ce instanceof OWLObjectMaxCardinality) {
+            OWLObjectPropertyExpression prop =
+                    ((OWLObjectMaxCardinality) ce).getProperty();
+            OWLClassExpression filler = ((OWLObjectMaxCardinality) ce).getFiller();
+
+            return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
+                    || containsSpatialExpressions(filler);
+
+        } else {
+            throw new RuntimeException(
+                    "Support for class expression of type " + ce.getClass() +
+                            " not implemented, yet");
+        }
+    }
+
     protected void updateWithSuperPropertyMembers(
             Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
 
