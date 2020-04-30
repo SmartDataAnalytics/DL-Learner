@@ -276,6 +276,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
+        // TODO: Add spatial aspect-specific stuff
         return baseReasoner.isSuperClassOf(superClass, subClass);
     }
 
@@ -285,6 +286,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         // TODO: Add spatial aspect-specific stuff here
         domainsMap.put(SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature);
+
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
 
         return domainsMap;
     }
@@ -296,6 +316,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         // TODO: Add spatial aspect-specific stuff here
         rangesMap.put(SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature);
 
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
         return rangesMap;
     }
 
@@ -341,6 +379,39 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         // TODO: add spatial aspect-specific stuff here
 
+        if (objectProperty.equals(SpatialVocabulary.isConnectedWith)) {
+            // TODO: overlapsWith
+            // TODO: isPartOf
+            // TODO: hasPart
+            // TODO: isProperPartOf
+            // TODO: hasProperPart
+            // TODO: partiallyOverlaps
+            // TODO: isTangentialProperPartOf
+            // TODO: isNonTangentialProperPartOf
+            // TODO: isSpatiallyIdenticalWith
+            // TODO: hasTangentialProperPart
+            // TODO: isExternallyConnectedWith
+
+        }
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
+
         return subProperties;
     }
 
@@ -358,6 +429,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         SortedSet<OWLObjectProperty> superProperties = baseReasoner.getSuperProperties(objectProperty);
 
         // TODO: add spatial aspect-specific stuff here
+
+        // TODO: isConnectedWith
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
 
         return superProperties;
     }
@@ -383,7 +474,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (objectProperty.equals(SpatialVocabulary.isConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
+
         // TODO: Add further spatial object properties here
+
         } else {
             return baseReasoner.getRange(objectProperty);
         }
@@ -394,6 +505,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (objectProperty.equals(SpatialVocabulary.isConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
+        // TODO: overlapsWith
+        // TODO: isPartOf
+        // TODO: hasPart
+        // TODO: isProperPartOf
+        // TODO: hasProperPart
+        // TODO: partiallyOverlaps
+        // TODO: isTangentialProperPartOf
+        // TODO: isNonTangentialProperPartOf
+        // TODO: isSpatiallyIdenticalWith
+        // TODO: hasTangentialProperPart
+        // TODO: hasNonTangentialProperPart
+        // TODO: isExternallyConnectedWith
+        // TODO: isDisconnectedFrom
+        // TODO: isNear
+        // TODO: startsNear
+        // TODO: endsNear
+        // TODO: crosses
+        // TODO: runsAlong
 
         // TODO: Add further spatial object properties here
         } else {
@@ -430,6 +559,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 // isConnectedWith
                 return getIsConnectedWithMembers();
 
+            // TODO: overlapsWith
+            // TODO: isPartOf
+            // TODO: hasPart
+            // TODO: isProperPartOf
+            // TODO: hasProperPart
+            // TODO: partiallyOverlaps
+            // TODO: isTangentialProperPartOf
+            // TODO: isNonTangentialProperPartOf
+            // TODO: isSpatiallyIdenticalWith
+            // TODO: hasTangentialProperPart
+            // TODO: hasNonTangentialProperPart
+            // TODO: isExternallyConnectedWith
+            // TODO: isDisconnectedFrom
+            // TODO: isNear
+            // TODO: startsNear
+            // TODO: endsNear
+            // TODO: crosses
+            // TODO: runsAlong
 
             // TODO: Add further spatial object properties here
             } else {
@@ -486,7 +633,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public OWLDatatype getDatatype(OWLDataProperty dp) {
-        throw new NotImplementedException();
+        // TODO: Add spatial data property handling here
+
+        return baseReasoner.getDatatype(dp);
     }
 
     @Override
