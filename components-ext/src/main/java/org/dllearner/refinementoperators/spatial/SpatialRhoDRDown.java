@@ -82,7 +82,20 @@ public class SpatialRhoDRDown extends RhoDRDown {
     private Set<OWLClassExpression> spatiallyRefineOWLClass(OWLClass cls) {
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, cls)) {
-            // TODO: isConnectedWith
+            // isConnectedWith
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.isConnectedWith,
+                                    SpatialVocabulary.SpatialFeature))));
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.isConnectedWith,
+                                    SpatialVocabulary.SpatialFeature))));
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
@@ -111,7 +124,16 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, intersection)) {
-            // TODO: isConnectedWith
+            // isConnectedWith
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
@@ -235,7 +257,17 @@ public class SpatialRhoDRDown extends RhoDRDown {
         if (reasoner.isSuperClassOf(
                 SpatialVocabulary.SpatialFeature, new OWLObjectUnionOfImpl(unionOperands))) {
 
-            // TODO: isConnectedWith
+            // isConnectedWith
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+            
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
