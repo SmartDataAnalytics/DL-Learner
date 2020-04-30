@@ -39,17 +39,15 @@ public class ExperimentsArtificial {
                     IRI.create("http://www.opengis.net/ont/geosparql#hasGeometry")));
 
     public static void main(String[] args) throws ComponentInitException, IOException {
-        FileWriter outFileWriter = new FileWriter(new File("results.csv"));
-
         for (String dataFolder : dataFolders) {
             for (int dasetSize : datasetSizes) {
-                runExperiment(dataFolder, dasetSize, outFileWriter);
+                runExperiment(dataFolder, dasetSize);
             }
         }
     }
 
-    private static void runExperiment(
-            String dataFolder, int datasetSize, FileWriter resultsFileWriter) throws ComponentInitException, IOException {
+    private static void runExperiment(String dataFolder, int datasetSize)
+            throws ComponentInitException, IOException {
 
         List<OWLProperty> geometryPropertyPath = new ArrayList<>();
         geometryPropertyPath.addAll(propertyPathToGeom);
@@ -101,6 +99,10 @@ public class ExperimentsArtificial {
                         .map(Object::toString)
                         .reduce("", (l, r) -> l + "," + r) +
                 System.lineSeparator();
+
+        FileWriter resultsFileWriter = new FileWriter("results.csv", true);
+
         resultsFileWriter.write(resultLine);
+        resultsFileWriter.close();
     }
 }
