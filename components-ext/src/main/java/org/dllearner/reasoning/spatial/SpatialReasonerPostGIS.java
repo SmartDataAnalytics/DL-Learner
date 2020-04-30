@@ -659,9 +659,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (concept instanceof OWLObjectSomeValuesFrom) {
                 return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
 
-//           } else if (concept instanceof OWLObjectMinCardinality) {
-//               return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
-//
+            } else if (concept instanceof OWLObjectMinCardinality) {
+                return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
+
 //           } else if (concept instanceof OWLObjectAllValuesFrom) {
 //               return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
 //
@@ -4079,6 +4079,85 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is {@link OWLObjectMinCardinality}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectMinCardinality(OWLObjectMinCardinality concept) {
+        OWLObjectPropertyExpression prop = concept.getProperty();
+        OWLClassExpression filler = concept.getFiller();
+        int minCardinality = concept.getCardinality();
+
+        if ((prop instanceof OWLObjectProperty)
+                && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+
+            SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+            if (false) {
+            // TODO: isConnectedWith
+            // TODO: overlapsWith
+            // TODO: isPartOf
+            // TODO: hasPart
+            // TODO: isProperPartOf
+            // TODO: hasProperPart
+            // TODO: partiallyOverlaps
+            // TODO: isTangentialProperPartOf
+            // TODO: isNonTangentialProperPartOf
+            // TODO: isSpatiallyIdenticalWith
+            // TODO: hasTangentialProperPart
+            // TODO: hasNonTangentialProperPart
+            // TODO: isExternallyConnectedWith
+            // TODO: isDisconnectedFrom
+            // TODO: isNear
+            // TODO: startsNear
+            // TODO: endsNear
+            // TODO: crosses
+            // TODO: runsAlong
+                throw new NotImplementedException();
+            } else {
+                throw new RuntimeException(
+                        "spatial object property " + prop + " not supported, yet");
+            }
+
+        } else {
+            if (prop instanceof OWLObjectInverseOf) {
+                throw new RuntimeException(
+                        "Handling of object property expressions not implemented, yet");
+
+            } else {
+                SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+                Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
+                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+
+                updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
+
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+                assert propIndividuals != null;
+                for (Map.Entry e : propIndividuals.entrySet()) {
+                    OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
+                    SortedSet<OWLIndividual> values = (SortedSet<OWLIndividual>) e.getValue();
+
+                    // set intersection with filler individuals
+                    values.retainAll(fillerIndivs);
+
+                    // now `values` only contains those OWL individuals, that
+                    // - are instances of the filler class expressions
+                    // - are assigned to another OWL individual through
+                    //   the property `prop`
+
+                    if (values.size() >= minCardinality) {
+                        resultIndividuals.add(keyIndiv);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
             }
         }
     }
