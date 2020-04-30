@@ -650,13 +650,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) {
-        // FIXME
-//        if (!containsSpatialExpressions(concept)) {
+        if (!containsSpatialExpressions(concept)) {
             return baseReasoner.getIndividuals(concept);
-//        } else {
-//            if (concept instanceof OWLObjectIntersectionOf) {
-//                return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
-//
+        } else {
+            if (concept instanceof OWLObjectIntersectionOf) {
+                return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
+
 //            } else if (concept instanceof OWLObjectSomeValuesFrom) {
 //                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
 //
@@ -671,13 +670,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 //
 //            } else if (concept instanceof OWLObjectUnionOfImplExt) {
 //                return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
-//
-//            } else {
-//                throw new RuntimeException(
-//                        "Support for class expression of type " + concept.getClass() +
-//                                " not implemented, yet");
-//            }
-//        }
+
+            } else {
+                throw new RuntimeException(
+                        "Support for class expression of type " + concept.getClass() +
+                                " not implemented, yet");
+            }
+        }
     }
 
     @Override
@@ -3940,6 +3939,28 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected boolean hasTypeSpatial(OWLClassExpression ce, OWLIndividual individual) {
         throw new RuntimeException("Not implemented, yet");
+    }
+
+    /**
+     * Called in the getIndividualsImpl method in case the class expression to
+     * get the instances for is an {@link OWLObjectIntersectionOf}. The
+     * unraveling is needed to recusively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectIntersectionOf(OWLObjectIntersectionOf intersection) {
+        Set<OWLIndividual> individuals = null;
+
+        for (OWLClassExpression ce : intersection.getOperands()) {
+            SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
+
+            if (individuals == null) {
+                individuals = opIndividuals;
+            } else {
+                individuals = Sets.intersection(individuals, opIndividuals);
+            }
+        }
+
+        return new TreeSet<>(individuals);
     }
 
     protected void updateWithSuperPropertyMembers(
