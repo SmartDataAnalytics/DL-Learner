@@ -419,6 +419,173 @@ public class SpatialReasonerPostGISTest {
     }
 
     @Test
+    public void testGetIsConnectedWithMembers() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        // points
+        OWLIndividual feature001 = i("feature001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(feature001, geom001, "POINT(13.7999 51.0610)");
+
+        OWLIndividual feature002 = i("feature002");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(feature002, geom002, "POINT(13.7999 51.0610)");
+
+        OWLIndividual feature003 = i("feature003");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(feature003, geom003, "POINT(13.7888 51.0606)");
+
+        // line strings
+        OWLIndividual feature004 = i("feature004");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(feature004, geom004,
+                "LINESTRING(13.7888 51.0610,13.7900 51.0600,13.7940 51.0610,13.7954 51.0602)");
+
+        OWLIndividual feature005 = i("feature005");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(feature005, geom005,
+                "LINESTRING(13.8019 51.0579,13.7923 51.0555,13.7934 51.0590,13.7954 51.0602)");
+
+        OWLIndividual feature006 = i("feature006");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(feature006, geom006,
+                "LINESTRING(13.8041 51.0642,13.8030 51.0632,13.8041 51.0627,13.8052 51.0636)");
+
+        // polygons
+        OWLIndividual feature007 = i("feature007");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(feature007, geom007,
+                "POLYGON((13.7888 51.0606,13.7958 51.0622,13.8013 51.0611,13.7976 51.0594,13.7888 51.0606))");
+
+        OWLIndividual feature008 = i("feature008");
+        OWLIndividual geom008 = i("geom008");
+        kbHelper.addSpatialFeature(feature008, geom008,
+                "POLYGON((13.7962 51.0589,13.7971 51.0600,13.7995 51.0586,13.7962 51.0589))");
+
+        OWLIndividual feature009 = i("feature009");
+        OWLIndividual geom009 = i("geom009");
+        kbHelper.addSpatialFeature(feature009, geom009,
+                "POLYGON((13.7774 51.0660,13.7774 51.0646,13.7812 51.0648,13.7808 51.0663,13.7774 51.0660))");
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> result =
+                reasoner.getIsConnectedWithMembers();
+
+        assertTrue("f1-f1", result.get(feature001).contains(feature001));
+        assertTrue("f1-f2", result.get(feature001).contains(feature002));
+        assertFalse("f1-f3", result.get(feature001).contains(feature003));
+        assertFalse("f1-f4", result.get(feature001).contains(feature004));
+        assertFalse("f1-f5", result.get(feature001).contains(feature005));
+        assertFalse("f1-f6", result.get(feature001).contains(feature006));
+        assertTrue("f1-f7", result.get(feature001).contains(feature007));
+        assertFalse("f1-f8", result.get(feature001).contains(feature008));
+        assertFalse("f1-f9", result.get(feature001).contains(feature009));
+
+        assertTrue("f2-f1", result.get(feature002).contains(feature001));
+        assertTrue("f2-f2", result.get(feature002).contains(feature002));
+        assertFalse("f2-f3", result.get(feature002).contains(feature003));
+        assertFalse("f2-f4", result.get(feature002).contains(feature004));
+        assertFalse("f2-f5", result.get(feature002).contains(feature005));
+        assertFalse("f2-f6", result.get(feature002).contains(feature006));
+        assertTrue("f2-f7", result.get(feature002).contains(feature007));
+        assertFalse("f2-f8", result.get(feature002).contains(feature008));
+        assertFalse("f2-f9", result.get(feature002).contains(feature009));
+
+        assertFalse("f3-f1", result.get(feature003).contains(feature001));
+        assertFalse("f3-f2", result.get(feature003).contains(feature002));
+        assertTrue("f3-f3", result.get(feature003).contains(feature003));
+        assertFalse("f3-f4", result.get(feature003).contains(feature004));
+        assertFalse("f3-f5", result.get(feature003).contains(feature005));
+        assertFalse("f3-f6", result.get(feature003).contains(feature006));
+        assertTrue("f3-f7", result.get(feature003).contains(feature007));
+        assertFalse("f3-f8", result.get(feature003).contains(feature008));
+        assertFalse("f3-f9", result.get(feature003).contains(feature009));
+
+        assertFalse("f4-f1", result.get(feature004).contains(feature001));
+        assertFalse("f4-f2", result.get(feature004).contains(feature002));
+        assertFalse("f4-f3", result.get(feature004).contains(feature003));
+        assertTrue("f4-f4", result.get(feature004).contains(feature004));
+        assertTrue("f4-f5", result.get(feature004).contains(feature005));
+        assertFalse("f4-f6", result.get(feature004).contains(feature006));
+        assertTrue("f4-f7", result.get(feature004).contains(feature007));
+        assertFalse("f4-f8", result.get(feature004).contains(feature008));
+        assertFalse("f4-f9", result.get(feature004).contains(feature009));
+
+        assertFalse("f5-f1", result.get(feature005).contains(feature001));
+        assertFalse("f5-f2", result.get(feature005).contains(feature002));
+        assertFalse("f5-f3", result.get(feature005).contains(feature003));
+        assertTrue("f5-f4", result.get(feature005).contains(feature004));
+        assertTrue("f5-f5", result.get(feature005).contains(feature005));
+        assertFalse("f5-f6", result.get(feature005).contains(feature006));
+        assertTrue("f5-f7", result.get(feature005).contains(feature007));
+        assertFalse("f5-f8", result.get(feature005).contains(feature008));
+        assertFalse("f5-f9", result.get(feature005).contains(feature009));
+
+        assertFalse("f6-f1", result.get(feature006).contains(feature001));
+        assertFalse("f6-f2", result.get(feature006).contains(feature002));
+        assertFalse("f6-f3", result.get(feature006).contains(feature003));
+        assertFalse("f6-f4", result.get(feature006).contains(feature004));
+        assertFalse("f6-f5", result.get(feature006).contains(feature005));
+        assertTrue("f6-f6", result.get(feature006).contains(feature006));
+        assertFalse("f6-f7", result.get(feature006).contains(feature007));
+        assertFalse("f6-f8", result.get(feature006).contains(feature008));
+        assertFalse("f6-f9", result.get(feature006).contains(feature009));
+
+        assertTrue("f7-f1", result.get(feature007).contains(feature001));
+        assertTrue("f7-f2", result.get(feature007).contains(feature002));
+        assertTrue("f7-f3", result.get(feature007).contains(feature003));
+        assertTrue("f7-f4", result.get(feature007).contains(feature004));
+        assertTrue("f7-f5", result.get(feature007).contains(feature005));
+        assertFalse("f7-f6", result.get(feature007).contains(feature006));
+        assertTrue("f7-f7", result.get(feature007).contains(feature007));
+        assertTrue("f7-f8", result.get(feature007).contains(feature008));
+        assertFalse("f7-f9", result.get(feature007).contains(feature009));
+
+        assertFalse("f8-f1", result.get(feature008).contains(feature001));
+        assertFalse("f8-f2", result.get(feature008).contains(feature002));
+        assertFalse("f8-f3", result.get(feature008).contains(feature003));
+        assertFalse("f8-f4", result.get(feature008).contains(feature004));
+        assertFalse("f8-f5", result.get(feature008).contains(feature005));
+        assertFalse("f8-f6", result.get(feature008).contains(feature006));
+        assertTrue("f8-f7", result.get(feature008).contains(feature007));
+        assertTrue("f8-f8", result.get(feature008).contains(feature008));
+        assertFalse("f8-f9", result.get(feature008).contains(feature009));
+
+        assertFalse("f9-f1", result.get(feature009).contains(feature001));
+        assertFalse("f9-f2", result.get(feature009).contains(feature002));
+        assertFalse("f9-f3", result.get(feature009).contains(feature003));
+        assertFalse("f9-f4", result.get(feature009).contains(feature004));
+        assertFalse("f9-f5", result.get(feature009).contains(feature005));
+        assertFalse("f9-f6", result.get(feature009).contains(feature006));
+        assertFalse("f9-f7", result.get(feature009).contains(feature007));
+        assertFalse("f9-f8", result.get(feature009).contains(feature007));
+        assertTrue("f9-f9", result.get(feature009).contains(feature009));
+    }
+
+    @Test
     public void testGetIndividualsOverlappingWith() throws ComponentInitException {
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
