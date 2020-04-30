@@ -665,9 +665,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (concept instanceof OWLObjectAllValuesFrom) {
                 return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
 
-//           } else if (concept instanceof OWLObjectMaxCardinality) {
-//               return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
-//
+            } else if (concept instanceof OWLObjectMaxCardinality) {
+                return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
+
 //           } else if (concept instanceof OWLObjectUnionOfImplExt) {
 //               return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
 
@@ -4257,6 +4257,100 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     if (os.isEmpty()) {
                         resultIndividuals.add(s);
                     }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+            }
+        }
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is {@link OWLObjectMaxCardinality}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectMaxCardinality(
+            OWLObjectMaxCardinality concept) {
+
+        OWLObjectPropertyExpression prop = concept.getProperty();
+        OWLClassExpression filler = concept.getFiller();
+        int maxCardinality = concept.getCardinality();
+
+        // There are three cases to consider:
+        // 1) `prop` is a known spatial property that requires special treatment
+        // 2) `prop` is a non-atomic property --> still TODO
+        // 3) `prop` ia a non-spatial atomic property and the filler contains
+        //    spatial components
+
+        // 1) `prop` is a known spatial property
+        if ((prop instanceof OWLObjectProperty)
+                && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+
+            SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+            // isInside
+            if (false) {
+                throw new NotImplementedException();
+
+            // TODO: overlapsWith
+            // TODO: isPartOf
+            // TODO: hasPart
+            // TODO: isProperPartOf
+            // TODO: hasProperPart
+            // TODO: partiallyOverlaps
+            // TODO: isTangentialProperPartOf
+            // TODO: isNonTangentialProperPartOf
+            // TODO: isSpatiallyIdenticalWith
+            // TODO: hasTangentialProperPart
+            // TODO: hasNonTangentialProperPart
+            // TODO: isExternallyConnectedWith
+            // TODO: isDisconnectedFrom
+            // TODO: isNear
+            // TODO: startsNear
+            // TODO: endsNear
+            // TODO: crosses
+            // TODO: runsAlong
+            } else {
+                throw new RuntimeException(
+                        "spatial object property " + prop + " not supported, yet");
+            }
+
+        } else {
+            // 2) `prop` is a non-atomic property
+            if (prop instanceof OWLObjectIntersectionOf) {
+                throw new RuntimeException(
+                        "Handling of object property expressions not implemented, yet");
+
+                // 3) `prop` ia a non-spatial atomic property and the filler contains
+                //    spatial components
+            } else {
+                SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+                Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
+                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+
+                updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
+
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                assert propIndividuals != null;
+                for (Map.Entry e : propIndividuals.entrySet()) {
+                    OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
+                    SortedSet<OWLIndividual> values = (SortedSet<OWLIndividual>) e.getValue();
+
+                    // set intersection with filler individuals
+                    values.retainAll(fillerIndivs);
+
+                    // now `values` only contains those OWL individuals, that
+                    // - are instances of the filler class expression
+                    // - are assigned to another OWL individual through the
+                    //   property `prop`
+
+                    if (values.size() <= maxCardinality) {
+                        resultIndividuals.add(keyIndiv);
+                    }
+
                 }
 
                 return new TreeSet<>(resultIndividuals);
