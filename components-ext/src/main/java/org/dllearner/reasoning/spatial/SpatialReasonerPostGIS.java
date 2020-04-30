@@ -668,8 +668,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (concept instanceof OWLObjectMaxCardinality) {
                 return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
 
-//           } else if (concept instanceof OWLObjectUnionOfImplExt) {
-//               return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
+            } else if (concept instanceof OWLObjectUnionOfImplExt) {
+                return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
 
             } else {
                 throw new RuntimeException(
@@ -4356,6 +4356,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 return new TreeSet<>(resultIndividuals);
             }
         }
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is {@link OWLObjectUnionOfImplExt}. The
+     * unraveling is needed to recursively cal getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectUnionOfImplExt(
+            OWLObjectUnionOfImplExt concept) {
+
+        Set<OWLClassExpression> unionParts = concept.getOperands();
+
+        Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+        for (OWLClassExpression unionPart : unionParts) {
+            resultIndividuals.addAll(getIndividualsImpl(unionPart));
+        }
+
+        return new TreeSet<>(resultIndividuals);
     }
 
     // --------- getter/setter ------------------------------------------------
