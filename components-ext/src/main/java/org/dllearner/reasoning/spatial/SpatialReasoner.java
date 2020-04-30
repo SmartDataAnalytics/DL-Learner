@@ -1,6 +1,7 @@
 package org.dllearner.reasoning.spatial;
 
 import org.dllearner.core.ReasonerComponent;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.util.stream.Stream;
@@ -30,6 +31,8 @@ import java.util.stream.Stream;
  */
 public interface SpatialReasoner extends ReasonerComponent {
     /* Relations of the region connection calculus (RCC) */
+
+    boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);
 
     // Connected with
     boolean isConnectedWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
