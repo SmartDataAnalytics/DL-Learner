@@ -611,12 +611,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return hasTypeSpatial(ce, individual);
         } else {
             return baseReasoner.hasType(ce, individual);
-    }
-
-    // -------------------------------------------------------------------------
-    // get-members methods
-    private Map<OWLIndividual, SortedSet<OWLIndividual>> getIsConnectedWithMembers() {
-        throw new NotImplementedException();
+        }
     }
 
     // -------------------------------------------------------------------------
