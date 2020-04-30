@@ -438,7 +438,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         // TODO: add spatial aspect-specific stuff here
 
-        // TODO: isConnectedWith
         // TODO: overlapsWith
         // TODO: isPartOf
         // TODO: hasPart
@@ -479,6 +478,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
+        // isConnectedWith
         if (objectProperty.equals(SpatialVocabulary.isConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
@@ -510,6 +510,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+        // isConnectedWith
         if (objectProperty.equals(SpatialVocabulary.isConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
@@ -4065,8 +4066,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
-            if (false) {
             // TODO: isConnectedWith
+            if (prop.equals(SpatialVocabulary.isConnectedWith)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> indivsInsideFillerIndiv =
+                            getIndividualsConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsInsideFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
@@ -4085,7 +4098,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
-                throw new NotImplementedException();
 
             } else {
                 throw new RuntimeException(
@@ -4150,8 +4162,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
-            if (false) {
-            // TODO: isConnectedWith
+            // isConnectedWith
+            if (prop.equals(SpatialVocabulary.isConnectedWith)) {
+
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> indivsInsideFillerIndiv =
+                            getIndividualsConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsInsideFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
@@ -4170,7 +4199,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
-                throw new NotImplementedException();
+
             } else {
                 throw new RuntimeException(
                         "spatial object property " + prop + " not supported, yet");
@@ -4237,8 +4266,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             SortedSet<OWLIndividual> fillerIndividuals = getIndividualsImpl(filler);
 
-            if (false) {
-               throw new NotImplementedException();
+            if (prop.equals(SpatialVocabulary.isConnectedWith)) {
+                // All individuals are instances of \forall :isNear <filler>
+                // as long as they aren't connected with something not being of
+                // type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsConnectedWithMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart
@@ -4257,7 +4301,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
-
 
             } else {
                 throw new RuntimeException("No implementation for " + prop + ", yet");
@@ -4340,9 +4383,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
-            // isInside
-            if (false) {
-                throw new NotImplementedException();
+            // isConnectedWith
+            if (prop.equals(SpatialVocabulary.isConnectedWith)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    Set<OWLIndividual> indivsNearFillerIndiv =
+                            getIndividualsConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsNearFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
 
             // TODO: overlapsWith
             // TODO: isPartOf
