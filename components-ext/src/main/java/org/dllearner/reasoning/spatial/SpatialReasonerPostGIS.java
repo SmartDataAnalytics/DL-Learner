@@ -4008,6 +4008,36 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    private boolean areAllValuesFromFiller(
+            SortedSet<OWLIndividual> propertyValues,
+            SortedSet<OWLIndividual> fillerIndividuals) {
+
+        // Check if there is any individual i2 with
+        // <property>(<individual>, i2) and not <filler>(i2), i.e.
+        // i2 not in `propertyValues` .
+
+        if (propertyValues.isEmpty()) {
+            // Trivial case where individual has no values assigned via
+            // <property> and thus there are no values not being an instance of
+            // <filler> --> all values are an instance of <filler>
+            return true;
+        }
+
+        // Create copy, since remove is called on it, later
+        TreeSet<OWLIndividual> propertyValuesCopy = new TreeSet<>(propertyValues);
+
+        propertyValuesCopy.removeAll(fillerIndividuals);
+        // Now, `propertyValuesCopy` only contains individuals that are not of
+        // filler-type. If `propertyValuesCopy` is empty all property members
+        // were of filler-type and <individual> is an instance of the overall
+        // OWLObjectAllValuesFrom class expression
+        if (propertyValuesCopy.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Called from the getIndividualsImpl method in case the class expression
      * to get the instances for is {@link OWLObjectSomeValuesFrom}. The
