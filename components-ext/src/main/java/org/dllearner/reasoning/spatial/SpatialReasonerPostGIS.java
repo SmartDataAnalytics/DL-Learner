@@ -656,20 +656,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             if (concept instanceof OWLObjectIntersectionOf) {
                 return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
 
-//            } else if (concept instanceof OWLObjectSomeValuesFrom) {
-//                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
+            } else if (concept instanceof OWLObjectSomeValuesFrom) {
+                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
+
+//           } else if (concept instanceof OWLObjectMinCardinality) {
+//               return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
 //
-//            } else if (concept instanceof OWLObjectMinCardinality) {
-//                return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
+//           } else if (concept instanceof OWLObjectAllValuesFrom) {
+//               return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
 //
-//            } else if (concept instanceof OWLObjectAllValuesFrom) {
-//                return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
+//           } else if (concept instanceof OWLObjectMaxCardinality) {
+//               return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
 //
-//            } else if (concept instanceof OWLObjectMaxCardinality) {
-//                return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
-//
-//            } else if (concept instanceof OWLObjectUnionOfImplExt) {
-//                return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
+//           } else if (concept instanceof OWLObjectUnionOfImplExt) {
+//               return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
 
             } else {
                 throw new RuntimeException(
@@ -3961,6 +3961,102 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         return new TreeSet<>(individuals);
+    }
+
+    /**
+     * Called from the getIndividualsImpl method in case the class expression
+     * to get the instances for is {@link OWLObjectSomeValuesFrom}. The
+     * unraveling is needed to recursively call getIndividualsImpl on all parts
+     * such that we can handle inner spatial expressions.
+     */
+    protected SortedSet<OWLIndividual> getIndividualsOWLObjectSomeValuesFrom(
+            OWLObjectSomeValuesFrom concept) {
+
+        OWLObjectPropertyExpression prop = concept.getProperty();
+        OWLClassExpression filler = concept.getFiller();
+
+        // There are four cases to consider
+        // 1) The property expression is atomic and a spatial property
+        //    --> query property members through PostGIS and recurse to get
+        //        filler instances
+        // 2) The property expression is not atomic but contains a spatial
+        //    property
+        //    --> not implemented, yet
+        // 3) The property expression is non-spatial
+        //    --> recurse
+
+        // 1) The property expression is atomic and a spatial property
+        if ((prop instanceof OWLObjectProperty)
+                && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+            SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+            if (false) {
+            // TODO: isConnectedWith
+            // TODO: overlapsWith
+            // TODO: isPartOf
+            // TODO: hasPart
+            // TODO: isProperPartOf
+            // TODO: hasProperPart
+            // TODO: partiallyOverlaps
+            // TODO: isTangentialProperPartOf
+            // TODO: isNonTangentialProperPartOf
+            // TODO: isSpatiallyIdenticalWith
+            // TODO: hasTangentialProperPart
+            // TODO: hasNonTangentialProperPart
+            // TODO: isExternallyConnectedWith
+            // TODO: isDisconnectedFrom
+            // TODO: isNear
+            // TODO: startsNear
+            // TODO: endsNear
+            // TODO: crosses
+            // TODO: runsAlong
+                throw new NotImplementedException();
+
+            } else {
+                throw new RuntimeException(
+                        "spatial object property " + prop + " not supported, yet");
+            }
+        } else {
+            if (prop instanceof OWLObjectInverseOf) {
+                throw new RuntimeException(
+                        "Handling of object property expressions not implemented, yet");
+
+            } else {
+                SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
+
+                Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
+                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+
+                updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
+
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+                assert propIndividuals != null;
+
+                for (Map.Entry e : propIndividuals.entrySet()) {
+                    // e: an entry of the shape
+                    //    OWLIndividual -> SortedSet<OWLIndividual>
+
+                    OWLIndividual keyIndiv = (OWLIndividual) e.getKey();
+                    SortedSet<OWLIndividual> values =
+                            (SortedSet<OWLIndividual>) e.getValue();
+
+                    // set intersection with filler individuals
+                    values.retainAll(fillerIndivs);
+
+                    // now values only contains those OWL individuals,
+                    // that
+                    // - are instances of the filler class expressions
+                    // - are assigned to another OWL individual through
+                    //   the property `prop`
+
+                    if (!values.isEmpty()) {
+                        resultIndividuals.add(keyIndiv);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+            }
+        }
     }
 
     protected void updateWithSuperPropertyMembers(
