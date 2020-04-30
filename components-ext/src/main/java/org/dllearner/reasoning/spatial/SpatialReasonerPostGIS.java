@@ -607,12 +607,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean hasTypeImpl(OWLClassExpression ce, OWLIndividual individual) {
-        // FIXME
-//        if (containsSpatialExpressions(ce)) {
-//            return hasTypeSpatial(ce, individual);
-//        } else {
+        if (containsSpatialExpressions(ce)) {
+            return hasTypeSpatial(ce, individual);
+        } else {
             return baseReasoner.hasType(ce, individual);
-//        }
     }
 
     // -------------------------------------------------------------------------
@@ -3943,6 +3941,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                     "Support for class expression of type " + ce.getClass() +
                             " not implemented, yet");
         }
+    }
+
+    protected boolean hasTypeSpatial(OWLClassExpression ce, OWLIndividual individual) {
+        throw new RuntimeException("Not implemented, yet");
     }
 
     protected void updateWithSuperPropertyMembers(
