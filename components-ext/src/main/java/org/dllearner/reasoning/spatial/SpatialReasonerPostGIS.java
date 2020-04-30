@@ -3969,6 +3969,45 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         return new TreeSet<>(individuals);
     }
 
+    private void updateCounterMap(
+            Map<OWLIndividual, Integer> counterMap, Set<OWLIndividual> individuals) {
+
+        for (OWLIndividual indivInsideFillerIndiv : individuals) {
+            if (!counterMap.containsKey(indivInsideFillerIndiv)) {
+                counterMap.put(indivInsideFillerIndiv, 1);
+
+            } else {
+                int tmpCnt = counterMap.get(indivInsideFillerIndiv);
+                tmpCnt++;
+                counterMap.put(indivInsideFillerIndiv, tmpCnt);
+            }
+        }
+    }
+
+    protected void updateWithSuperPropertyMembers(
+            Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
+
+        for(OWLObjectProperty subProp : baseReasoner.getSuperProperties((OWLObjectProperty) prop)) {
+            Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
+                    baseReasoner.getPropertyMembers(subProp);
+
+            for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
+                Set<OWLIndividual> valIndividuals =
+                        tmpPropIndividuals.get(keyIndividual);
+
+                if (propIndividuals.containsKey(keyIndividual)) {
+                    for (OWLIndividual valIndividual: valIndividuals) {
+                        if (!propIndividuals.get(keyIndividual).contains(valIndividual)) {
+                            propIndividuals
+                                    .get(keyIndividual)
+                                    .add(valIndividual);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Called from the getIndividualsImpl method in case the class expression
      * to get the instances for is {@link OWLObjectSomeValuesFrom}. The
@@ -4061,30 +4100,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 }
 
                 return new TreeSet<>(resultIndividuals);
-            }
-        }
-    }
-
-    protected void updateWithSuperPropertyMembers(
-            Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
-
-        for(OWLObjectProperty subProp : baseReasoner.getSuperProperties((OWLObjectProperty) prop)) {
-            Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
-                    baseReasoner.getPropertyMembers(subProp);
-
-            for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
-                Set<OWLIndividual> valIndividuals =
-                        tmpPropIndividuals.get(keyIndividual);
-
-                if (propIndividuals.containsKey(keyIndividual)) {
-                    for (OWLIndividual valIndividual: valIndividuals) {
-                        if (!propIndividuals.get(keyIndividual).contains(valIndividual)) {
-                            propIndividuals
-                                    .get(keyIndividual)
-                                    .add(valIndividual);
-                        }
-                    }
-                }
             }
         }
     }
