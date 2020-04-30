@@ -3,7 +3,9 @@ package org.dllearner.reasoning.spatial;
 import org.dllearner.core.ReasonerComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
+import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
@@ -33,6 +35,8 @@ public interface SpatialReasoner extends ReasonerComponent {
     /* Relations of the region connection calculus (RCC) */
 
     boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);
+
+    SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty property);
 
     // Connected with
     boolean isConnectedWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
