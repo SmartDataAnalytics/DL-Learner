@@ -3645,12 +3645,37 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    // --------- private/protected methods -------------------------------------
+    protected void updateWithSuperPropertyMembers(
+            Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
+
+        for(OWLObjectProperty subProp : baseReasoner.getSuperProperties((OWLObjectProperty) prop)) {
+            Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
+                    baseReasoner.getPropertyMembers(subProp);
+
+            for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
+                Set<OWLIndividual> valIndividuals =
+                        tmpPropIndividuals.get(keyIndividual);
+
+                if (propIndividuals.containsKey(keyIndividual)) {
+                    for (OWLIndividual valIndividual: valIndividuals) {
+                        if (!propIndividuals.get(keyIndividual).contains(valIndividual)) {
+                            propIndividuals
+                                    .get(keyIndividual)
+                                    .add(valIndividual);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // --------- getter/setter ------------------------------------------------
     public void setHostname(String hostname) {
         this.hostname = hostname;
     }
 
-    public void setDbName(String dbName) {
+    public void setDBName(String dbName) {
         this.dbName = dbName;
     }
 
@@ -3658,11 +3683,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         this.port = port;
     }
 
-    public void setDbUser(String dbUser) {
+    public void setDBUser(String dbUser) {
         this.dbUser = dbUser;
     }
 
-    public void setDbUserPW(String dbUserPW) {
+    public void setDBUserPW(String dbUserPW) {
         this.dbUserPW = dbUserPW;
     }
 

@@ -1,6 +1,7 @@
 package org.dllearner.reasoning.spatial;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.compress.utils.Sets;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
@@ -15,10 +16,12 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyAssertionAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLSubObjectPropertyOfAxiomImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -119,9 +122,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -310,9 +313,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -474,9 +477,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -676,9 +679,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -851,9 +854,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -1112,9 +1115,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -1329,9 +1332,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -1580,9 +1583,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -1798,9 +1801,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -2049,9 +2052,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -2267,9 +2270,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -2560,9 +2563,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -2894,9 +2897,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -3319,9 +3322,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -3678,9 +3681,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -4068,9 +4071,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -4426,9 +4429,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -4798,9 +4801,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -5061,9 +5064,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -5383,9 +5386,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -5767,9 +5770,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -6148,9 +6151,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -6473,9 +6476,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -6854,9 +6857,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -7179,9 +7182,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -7535,9 +7538,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -7716,9 +7719,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -7916,9 +7919,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -8047,9 +8050,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -8199,9 +8202,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -8330,9 +8333,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -8514,9 +8517,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -8752,9 +8755,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -9001,9 +9004,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -9131,9 +9134,9 @@ public class SpatialReasonerPostGISTest {
 
         SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
 
-        reasoner.setDbName(dbName);
-        reasoner.setDbUser(dbUser);
-        reasoner.setDbUserPW(dbUserPW);
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
         reasoner.setBaseReasoner(cwr);
@@ -9230,5 +9233,59 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f5", result.contains(feature005));
         assertFalse("f7-f6", result.contains(feature006));
         assertFalse("f7-f7", result.contains(feature007));
+    }
+
+    @Test
+    public void testUpdateWithSubPropertyMembers() throws ComponentInitException, OWLOntologyCreationException {
+        OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+        OWLOntology ont = man.createOntology();
+        Set<OWLAnnotation> anns = Sets.newHashSet();
+
+        OWLNamedIndividual indiv1 = new OWLNamedIndividualImpl(IRI.create("http://ex.com/i1"));
+        OWLNamedIndividual indiv2 = new OWLNamedIndividualImpl(IRI.create("http://ex.com/i2"));
+        OWLNamedIndividual indiv3 = new OWLNamedIndividualImpl(IRI.create("http://ex.com/i3"));
+        OWLNamedIndividual indiv4 = new OWLNamedIndividualImpl(IRI.create("http://ex.com/i4"));
+
+        OWLObjectProperty prop1 = new OWLObjectPropertyImpl(IRI.create("http://ex.com/p1"));
+        OWLObjectProperty prop2 = new OWLObjectPropertyImpl(IRI.create("http://ex.com/p2"));
+        man.addAxiom(ont, new OWLSubObjectPropertyOfAxiomImpl(prop2, prop1, anns));
+        man.addAxiom(ont, new OWLObjectPropertyAssertionAxiomImpl(indiv1, prop2, indiv2, anns));
+        man.addAxiom(ont, new OWLObjectPropertyAssertionAxiomImpl(indiv3, prop1, indiv4, anns));
+
+
+        KnowledgeSource ks = new OWLAPIOntology(ont);
+        ks.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(ks);
+        cwr.init();
+
+        SpatialReasonerPostGIS spatialReasoner = new SpatialReasonerPostGIS();
+        spatialReasoner.setBaseReasoner(cwr);
+        // No need to call init here as the method
+        // updateWithSuperPropertyMembers only makes use of the base reasoner
+        // (cwr in this case)
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals = cwr.getPropertyMembers(prop2);
+
+        assertTrue(propIndividuals.containsKey(indiv1));
+        assertTrue(propIndividuals.containsKey(indiv2));
+        assertTrue(propIndividuals.containsKey(indiv3));
+        assertTrue(propIndividuals.containsKey(indiv4));
+
+        assertTrue(propIndividuals.get(indiv1).contains(indiv2));
+        assertTrue(propIndividuals.get(indiv2).isEmpty());
+        assertTrue(propIndividuals.get(indiv3).isEmpty());
+        assertTrue(propIndividuals.get(indiv4).isEmpty());
+
+        spatialReasoner.updateWithSuperPropertyMembers(propIndividuals, prop2);
+
+        assertTrue(propIndividuals.containsKey(indiv1));
+        assertTrue(propIndividuals.containsKey(indiv2));
+        assertTrue(propIndividuals.containsKey(indiv3));
+        assertTrue(propIndividuals.containsKey(indiv4));
+
+        assertTrue(propIndividuals.get(indiv1).contains(indiv2));
+        assertTrue(propIndividuals.get(indiv2).isEmpty());
+        assertTrue(propIndividuals.get(indiv3).contains(indiv4));
+        assertTrue(propIndividuals.get(indiv4).isEmpty());
     }
 }
