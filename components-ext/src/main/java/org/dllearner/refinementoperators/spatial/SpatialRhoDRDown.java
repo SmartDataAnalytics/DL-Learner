@@ -273,7 +273,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectUnionOfImplExt(unionOperands),
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
-            
+
             // TODO: overlapsWith
             // TODO: isPartOf
             // TODO: hasPart

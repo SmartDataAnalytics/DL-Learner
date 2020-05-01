@@ -622,6 +622,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     // -------------------------------------------------------------------------
+    // -- implemented methods from interface/(abstract) base class
+
+    @Override
+    protected Set<OWLClass> getInconsistentClassesImpl() {
+        return baseReasoner.getInconsistentClasses();
+    }
 
     @Override
     public ReasonerType getReasonerType() {
@@ -688,12 +694,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public String getBaseURI() {
-        throw new NotImplementedException();
+        return baseReasoner.getBaseURI();
     }
 
     @Override
     public Map<String, String> getPrefixes() {
-        throw new NotImplementedException();
+        return baseReasoner.getPrefixes();
     }
 
     @Override
