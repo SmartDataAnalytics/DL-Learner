@@ -3943,6 +3943,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return ((prop instanceof OWLObjectProperty) && SpatialVocabulary.spatialObjectProperties.contains(prop))
                     || containsSpatialExpressions(filler);
 
+        } else if (ce instanceof OWLDataSomeValuesFrom) {
+            /* Possible cases that were observed:
+             * http://www.opengis.net/ont/geosparql#isEmpty some {false}
+             * http://www.opengis.net/ont/geosparql#isEmpty some {false}
+             * http://www.opengis.net/ont/geosparql#isSimple some {false}
+             *
+             * --> TODO: Could be handled
+             */
+            return false;
+
+        } else if (ce instanceof OWLDataHasValue) {
+            /* Possible cases that were observed:
+             * http://www.opengis.net/ont/geosparql#isEmpty value false
+             * http://www.opengis.net/ont/geosparql#isEmpty value true
+             *
+             * --> TODO: Could be handled
+             */
+            return false;
+
         } else {
             throw new RuntimeException(
                     "Support for class expression of type " + ce.getClass() +
