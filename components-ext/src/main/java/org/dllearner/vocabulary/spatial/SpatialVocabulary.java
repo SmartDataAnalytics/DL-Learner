@@ -21,10 +21,13 @@ public class SpatialVocabulary {
             df.getOWLObjectProperty(IRI.create(prefix + "isConnectedWith"));
     public static final OWLObjectProperty overlapsWith =
             df.getOWLObjectProperty(IRI.create(prefix + "overlapsWith"));
+    public static final OWLObjectProperty isPartOf =
+            df.getOWLObjectProperty(IRI.create(prefix + "isPartOf"));
 
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
-            overlapsWith);
+            overlapsWith,
+            isPartOf);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
