@@ -3951,7 +3951,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected boolean hasTypeSpatial(OWLClassExpression ce, OWLIndividual individual) {
-        throw new RuntimeException("Not implemented, yet");
+        // TODO: Think about this again
+        return getIndividuals(ce).contains(individual);
     }
 
     /**
