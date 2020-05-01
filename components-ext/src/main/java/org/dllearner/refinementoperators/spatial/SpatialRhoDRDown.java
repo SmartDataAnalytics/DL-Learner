@@ -66,12 +66,18 @@ public class SpatialRhoDRDown extends RhoDRDown {
             refinements.addAll(
                     spatiallyRefineOWLObjectUnionOf(
                             ((OWLObjectUnionOfImplExt) ce).getOperands(), maxLength));
+
         else if (ce instanceof OWLObjectAllValuesFrom)
             refinements.addAll(
                     spatiallyRefineOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) ce, maxLength));
+
         else if (ce instanceof OWLObjectMaxCardinality)
             refinements.addAll(
                     spatiallyRefineOWLObjectMaxCardinality((OWLObjectMaxCardinality) ce, maxLength));
+
+        else if (ce instanceof OWLDataSomeValuesFrom) { /* nothing to do */ }
+
+
         else
             throw new RuntimeException(
                     "Class expression type " + ce.getClass() + " not covered");
