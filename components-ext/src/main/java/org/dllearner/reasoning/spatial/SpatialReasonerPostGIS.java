@@ -1169,6 +1169,119 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getOverlapsWithMembers() {
+        String queryStr =
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri r_iri " +
+                "FROM " +
+                    pointFeatureTableName + " l, " +
+                    pointFeatureTableName + " r " +
+                "WHERE " +
+                    "l.the_geom=r.the_geom " +
+                "UNION " +
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri r_iri " +
+                "FROM " +
+                    pointFeatureTableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri r_iri " +
+                "FROM " +
+                    pointFeatureTableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri r_iri " +
+                "FROM " +
+                    lineFeatureTableName + " l, " +
+                    lineFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom) " +
+                    ") " +
+                "UNION " +
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri l_iri " +
+                "FROM " +
+                    lineFeatureTableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Overlaps(l.the_geom, ST_Boundary(r.the_geom)) " +
+                    ") " +
+                "UNION " +
+                "SELECT " +
+                    "l.iri l_iri, " +
+                    "r.iri r_iri " +
+                "FROM " +
+                    areaFeatureTableName + " l, " +
+                    areaFeatureTableName + " r " +
+                "WHERE " +
+                    "( " +
+                        "ST_Overlaps(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(l.the_geom, r.the_geom) " +
+                    "OR " +
+                        "ST_Contains(r.the_geom, l.the_geom) " +
+                    ")";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+
+            while (resultSet.next()) {
+                String geom1IRIStr = resultSet.getString("l_iri");
+                String geom2IRIStr = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geom1IRIStr));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geom2IRIStr));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+
+                if (!members.containsKey(featureIndividual2)) {
+                    members.put(featureIndividual2, new TreeSet<>());
+                }
+                members.get(featureIndividual2).add(featureIndividual1);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
+
     @Override
     public boolean isPartOf(OWLIndividual part, OWLIndividual whole) {
         String partTable = getTable(part);
