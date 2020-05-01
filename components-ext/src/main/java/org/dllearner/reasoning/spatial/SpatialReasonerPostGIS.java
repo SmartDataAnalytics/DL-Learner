@@ -4090,13 +4090,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         // 1) The property expression is atomic and a spatial property
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
+            /* fillerIndivs might contain all kinds of individuals,
+             * INCL. geometries!!! These need to be filtered out before calling
+             * the getIndividuals<spatial relation>( ) methods below!
+             */
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
-            // TODO: isConnectedWith
+            // isConnectedWith
             if (prop.equals(SpatialVocabulary.isConnectedWith)) {
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
                     Set<OWLIndividual> indivsInsideFillerIndiv =
                             getIndividualsConnectedWith(fillerIndiv)
                                     .collect(Collectors.toSet());
@@ -4186,6 +4193,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
 
+            /* fillerIndivs might contain all kinds of individuals,
+             * INCL. geometries!!! These need to be filtered out before calling
+             * the getIndividuals<spatial relation>( ) methods below!
+             */
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
             // isConnectedWith
@@ -4194,6 +4205,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
                     Set<OWLIndividual> indivsInsideFillerIndiv =
                             getIndividualsConnectedWith(fillerIndiv)
                                     .collect(Collectors.toSet());
@@ -4290,10 +4304,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
 
+            /* fillerIndivs might contain all kinds of individuals,
+             * INCL. geometries!!!
+             */
             SortedSet<OWLIndividual> fillerIndividuals = getIndividualsImpl(filler);
 
+            // isConnectedWith
             if (prop.equals(SpatialVocabulary.isConnectedWith)) {
-                // All individuals are instances of \forall :isNear <filler>
+                // All individuals are instances of
+                // \forall :isConnectedWith <filler>
                 // as long as they aren't connected with something not being of
                 // type <filler>
                 Set<OWLIndividual> resultIndividuals = new HashSet<>();
@@ -4407,6 +4426,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if ((prop instanceof OWLObjectProperty)
                 && SpatialVocabulary.spatialObjectProperties.contains(prop)) {
 
+            /* fillerIndivs might contain all kinds of individuals,
+             * INCL. geometries!!! These need to be filtered out before calling
+             * the getIndividuals<spatial relation>( ) methods below!
+             */
             SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
             // isConnectedWith
@@ -4414,6 +4437,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
                     Set<OWLIndividual> indivsNearFillerIndiv =
                             getIndividualsConnectedWith(fillerIndiv)
                                     .collect(Collectors.toSet());
