@@ -611,7 +611,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // isPartOf
             } else if (objectProperty.equals(SpatialVocabulary.isPartOf)) {
                 return getIsPartOfMembers();
-            // TODO: hasPart
+
+            // hasPart
+            } else if (objectProperty.equals(SpatialVocabulary.hasPart)) {
+                return getHasPartMembers();
             // TODO: isProperPartOf
             // TODO: hasProperPart
             // TODO: partiallyOverlaps
@@ -1796,6 +1799,98 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<OWLIndividual, SortedSet<OWLIndividual>> getHasPartMembers() {
+        String queryStr =
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    pointFeatureTableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "whole.iri=part.iri " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri " +
+                "FROM " +
+                    lineFeatureTableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Intersects(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    lineFeatureTableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Equals(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    areaFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) ";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+
+            while (resultSet.next()) {
+                String partGeomIRI = resultSet.getString("whole");
+                String wholeGeomIRI = resultSet.getString("part");
+
+                OWLIndividual partGeomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(partGeomIRI));
+                OWLIndividual wholeGeomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(wholeGeomIRI));
+
+                // convert geometries to features
+                OWLIndividual partFeatureIndividual1 =
+                        geom2feature.get(partGeomIndividual1);
+                OWLIndividual wholeFeatureIndividual2 =
+                        geom2feature.get(wholeGeomIndividual2);
+
+                if (!members.containsKey(partFeatureIndividual1)) {
+                    members.put(partFeatureIndividual1, new TreeSet<>());
+                }
+                members.get(partFeatureIndividual1).add(wholeFeatureIndividual2);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
     }
 
     @Override
