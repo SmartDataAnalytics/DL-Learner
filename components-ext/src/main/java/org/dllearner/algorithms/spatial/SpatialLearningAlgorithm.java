@@ -93,6 +93,10 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
         this.operator = operator;
     }
 
+    public void setStartClass(OWLClassExpression startClass) {
+        this.startClass = startClass;
+    }
+
     // -------------------------------------------------------------------------
     // -- misc private/protected methods
     private void reset() {
@@ -214,6 +218,8 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
             if(!isDescriptionAllowed(niceDescription, node)) {
                 return false;
             }
+
+            bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
         }
 
         return true;
@@ -262,7 +268,7 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
         // this should practically never be called, since for any reasonable learning
         // task, we will always have at least one node with less than 100% accuracy
-        throw new RuntimeException("CELOE could not find any node with lesser accuracy.");
+        throw new RuntimeException("SpatialLearningAlgorithm could not find any node with lesser accuracy.");
     }
 
     private TreeSet<OWLClassExpression> refineNode(OENode node) {
