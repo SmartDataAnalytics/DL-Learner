@@ -1559,6 +1559,102 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsPartOfMembers() {
+        String queryStr =
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    pointFeatureTableName + " part, " +
+                    pointFeatureTableName + " whole " +
+                "WHERE " +
+                    "part.the_geom=whole.the_geom " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    pointFeatureTableName + " part, " +
+                    lineFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Intersects(part.the_geom, whole.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    pointFeatureTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Intersects(ST_Boundary(whole.the_geom), part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    lineFeatureTableName + " part, " +
+                    lineFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Equals(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    lineFeatureTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "part.iri part, " +
+                    "whole.iri whole " +
+                "FROM " +
+                    areaFeatureTableName + " part, " +
+                    areaFeatureTableName + " whole " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom)";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+
+            while (resultSet.next()) {
+                String partGeomIRI = resultSet.getString("part");
+                String wholeGeomIRI = resultSet.getString("whole");
+
+                OWLIndividual partGeomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(partGeomIRI));
+                OWLIndividual wholeGeomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(wholeGeomIRI));
+
+                // convert geometries to features
+                OWLIndividual partFeatureIndividual1 =
+                        geom2feature.get(partGeomIndividual1);
+                OWLIndividual wholeFeatureIndividual2 =
+                        geom2feature.get(wholeGeomIndividual2);
+
+                if (!members.containsKey(partFeatureIndividual1)) {
+                    members.put(partFeatureIndividual1, new TreeSet<>());
+                }
+                members.get(partFeatureIndividual1).add(wholeFeatureIndividual2);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
+
     @Override
     public boolean hasPart(OWLIndividual whole, OWLIndividual part) {
         return isPartOf(part, whole);
