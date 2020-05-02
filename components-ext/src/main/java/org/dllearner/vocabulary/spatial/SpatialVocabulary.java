@@ -25,12 +25,15 @@ public class SpatialVocabulary {
             df.getOWLObjectProperty(IRI.create(prefix + "isPartOf"));
     public static final OWLObjectProperty hasPart =
             df.getOWLObjectProperty(IRI.create(prefix + "hasPart"));
+    public static final OWLObjectProperty isProperPartOf =
+            df.getOWLObjectProperty(IRI.create(prefix + "isProperPartOf"));
 
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
             overlapsWith,
             isPartOf,
-            hasPart);
+            hasPart,
+            isProperPartOf);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
