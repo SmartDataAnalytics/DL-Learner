@@ -254,7 +254,17 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: hasProperPart
+            // hasProperPart --------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
+
             // TODO: partiallyOverlaps
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
@@ -428,7 +438,17 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: hasProperPart
+            // hasProperPart --------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
+
             // TODO: partiallyOverlaps
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
