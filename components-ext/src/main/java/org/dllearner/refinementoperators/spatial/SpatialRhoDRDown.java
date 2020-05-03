@@ -229,7 +229,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     intersection,
-                    new OWLObjectSomeValuesFromImpl(
+                    new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.isPartOf, SpatialVocabulary.SpatialFeature))));
 
             // hasPart --------------------------------------------------------
@@ -446,7 +446,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
+                    new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
 
             // TODO: partiallyOverlapsWith
