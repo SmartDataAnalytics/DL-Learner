@@ -300,8 +300,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature);
+        domainsMap.put(SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -329,8 +329,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -394,7 +394,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.isProperPartOf);
             subProperties.add(SpatialVocabulary.hasProperPart);
             subProperties.add(SpatialVocabulary.partiallyOverlapsWith);
-            // TODO: isTangentialProperPartOf
+            subProperties.add(SpatialVocabulary.isTangentialProperPartOf);
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -406,7 +406,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.isProperPartOf);
             subProperties.add(SpatialVocabulary.hasProperPart);
             subProperties.add(SpatialVocabulary.partiallyOverlapsWith);
-            // TODO: isTangentialProperPartOf
+            subProperties.add(SpatialVocabulary.isTangentialProperPartOf);
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -414,7 +414,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         } else if (objectProperty.equals(SpatialVocabulary.isPartOf)) {
             subProperties.add(SpatialVocabulary.isProperPartOf);
-            // TODO: isTangentialProperPartOf
+            subProperties.add(SpatialVocabulary.isTangentialProperPartOf);
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
 
@@ -425,7 +425,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: hasNonTangentialProperPart
 
         } else if (objectProperty.equals(SpatialVocabulary.isProperPartOf)) {
-            // TODO: isTangentialProperPartOf
+            subProperties.add(SpatialVocabulary.isTangentialProperPartOf);
             // TODO: isNonTangentialProperPartOf
 
         } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
@@ -433,7 +433,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: hasNonTangentialProperPart
         }
 
-        // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -488,9 +487,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.partiallyOverlapsWith)) {
             superProperties.add(SpatialVocabulary.isConnectedWith);
             superProperties.add(SpatialVocabulary.overlapsWith);
+
+        } else if (objectProperty.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+            superProperties.add(SpatialVocabulary.isConnectedWith);
+            superProperties.add(SpatialVocabulary.overlapsWith);
+            superProperties.add(SpatialVocabulary.isPartOf);
+            superProperties.add(SpatialVocabulary.isProperPartOf);
         }
 
-        // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -552,7 +556,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.partiallyOverlapsWith)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isTangentialProperPartOf
+        // isTangentialProperPartOf
+        } else if (objectProperty.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -602,7 +609,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.partiallyOverlapsWith)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isTangentialProperPartOf
+        // isTangentialProperPartOf
+        } else if (objectProperty.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
@@ -4983,7 +4993,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf
+            } else if (prop.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
+                            getIndividualsTangentialProperPartOf(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsBeingTangentialProperPartOfFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -5210,7 +5236,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf
+            } else if (prop.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
+                            getIndividualsTangentialProperPartOf(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsBeingTangentialProperPartOfFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -5425,7 +5471,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf
+            } else if (prop.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+                // All individuals are instances of
+                // \forall :TangentialProperPartOf <filler>
+                // as long as they aren't a tangential proper part of something
+                // not being of type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsTangentialProperPartOfMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -5670,7 +5734,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf
+            } else if (prop.equals(SpatialVocabulary.isTangentialProperPartOf)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
+                            getIndividualsTangentialProperPartOf(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsBeingTangentialProperPartOfFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
