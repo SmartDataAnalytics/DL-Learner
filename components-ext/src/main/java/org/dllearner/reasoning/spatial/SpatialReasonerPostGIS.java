@@ -300,7 +300,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature);
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -329,7 +329,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature);
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -393,7 +393,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.hasPart);
             subProperties.add(SpatialVocabulary.isProperPartOf);
             subProperties.add(SpatialVocabulary.hasProperPart);
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -405,7 +405,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.hasPart);
             subProperties.add(SpatialVocabulary.isProperPartOf);
             subProperties.add(SpatialVocabulary.hasProperPart);
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -433,7 +433,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // TODO: hasNonTangentialProperPart
         }
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -487,7 +487,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             superProperties.add(SpatialVocabulary.hasPart);
         }
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -546,7 +546,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -593,7 +593,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: partiallyOverlaps
+        // TODO: partiallyOverlapsWith
         // TODO: isTangentialProperPartOf
         // TODO: isNonTangentialProperPartOf
         // TODO: isSpatiallyIdenticalWith
@@ -662,7 +662,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
                 return getHasProperPartMembers();
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -2454,7 +2454,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public boolean partiallyOverlaps(
+    public boolean partiallyOverlapsWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
 
         String tableName1 = getTable(spatialFeatureIndividual1);
@@ -4774,7 +4774,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -4981,7 +4981,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -5178,7 +5178,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -5403,7 +5403,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith

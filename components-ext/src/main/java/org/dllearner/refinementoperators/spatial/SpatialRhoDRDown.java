@@ -177,7 +177,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.hasProperPart,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -265,7 +265,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
@@ -449,7 +449,7 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectSomeValuesFromImpl(
                             SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: partiallyOverlaps
+            // TODO: partiallyOverlapsWith
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith

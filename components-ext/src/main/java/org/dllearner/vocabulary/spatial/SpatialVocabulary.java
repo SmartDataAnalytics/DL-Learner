@@ -29,6 +29,8 @@ public class SpatialVocabulary {
             df.getOWLObjectProperty(IRI.create(prefix + "isProperPartOf"));
     public static final OWLObjectProperty hasProperPart =
             df.getOWLObjectProperty(IRI.create(prefix + "hasProperPart"));
+    public static final OWLObjectProperty partiallyOverlapsWith =
+            df.getOWLObjectProperty(IRI.create(prefix + "partiallyOverlapsWith"));
 
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
@@ -36,7 +38,8 @@ public class SpatialVocabulary {
             isPartOf,
             hasPart,
             isProperPartOf,
-            hasProperPart);
+            hasProperPart,
+            partiallyOverlapsWith);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
