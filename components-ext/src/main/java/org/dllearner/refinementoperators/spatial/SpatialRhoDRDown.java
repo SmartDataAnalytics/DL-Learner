@@ -192,7 +192,21 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.partiallyOverlapsWith,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf ---------------------------------------
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.isTangentialProperPartOf,
+                                    SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.isTangentialProperPartOf,
+                                    SpatialVocabulary.SpatialFeature))));
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -290,7 +304,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf ---------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isTangentialProperPartOf,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.isTangentialProperPartOf,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
@@ -484,7 +510,17 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: isTangentialProperPartOf
+            // isTangentialProperPartOf ---------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature))));
+
             // TODO: isNonTangentialProperPartOf
             // TODO: isSpatiallyIdenticalWith
             // TODO: hasTangentialProperPart
