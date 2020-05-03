@@ -646,7 +646,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.isProperPartOf)) {
                 return getIsProperPartOfMembers();
 
-            // TODO: hasProperPart
+            // hasProperPart
+            } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
+                return getHasProperPartMembers();
+
             // TODO: partiallyOverlaps
             // TODO: isTangentialProperPartOf
             // TODO: isNonTangentialProperPartOf
@@ -1831,7 +1834,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
-    public Map<OWLIndividual, SortedSet<OWLIndividual>> getHasPartMembers() {
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasPartMembers() {
         String queryStr =
                 "SELECT " +
                     "whole.iri whole, " +
@@ -2151,7 +2154,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
-    public Map<OWLIndividual, SortedSet<OWLIndividual>> getIsProperPartOfMembers() {
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsProperPartOfMembers() {
         String queryStr =
                 "SELECT " +
                     "part.iri part, " +
@@ -2349,6 +2352,93 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasProperPartMembers() {
+        String queryStr =
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    lineFeatureTableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Intersects(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    lineFeatureTableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "AND " +
+                    "NOT ST_Equals(whole.the_geom, part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    pointFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Intersects(ST_Boundary(whole.the_geom), part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    lineFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_Contains(whole.the_geom, part.the_geom) " +
+                "OR " +
+                    "ST_Contains(ST_Boundary(whole.the_geom), part.the_geom) " +
+                "UNION " +
+                "SELECT " +
+                    "whole.iri whole, " +
+                    "part.iri part " +
+                "FROM " +
+                    areaFeatureTableName + " whole, " +
+                    areaFeatureTableName + " part " +
+                "WHERE " +
+                    "ST_ContainsProperly(whole.the_geom, part.the_geom) ";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+
+            while (resultSet.next()) {
+                String wholeGeomIRI = resultSet.getString("whole");
+                String partGeomIRI = resultSet.getString("part");
+
+                OWLIndividual wholeGeomIndividual =
+                        new OWLNamedIndividualImpl(IRI.create(wholeGeomIRI));
+                OWLIndividual partGeomIndividual =
+                        new OWLNamedIndividualImpl(IRI.create(partGeomIRI));
+
+                // convert geometries to features
+                OWLIndividual wholeFeatureIndividual =
+                        geom2feature.get(wholeGeomIndividual);
+                OWLIndividual partFeatureIndividual =
+                        geom2feature.get(partGeomIndividual);
+
+                if (!members.containsKey(wholeFeatureIndividual)) {
+                    members.put(wholeFeatureIndividual, new TreeSet<>());
+                }
+                members.get(wholeFeatureIndividual).add(partFeatureIndividual);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
     }
 
     @Override
