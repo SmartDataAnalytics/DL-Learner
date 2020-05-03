@@ -566,7 +566,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         // isNonTangentialProperPartOf
         } else if (objectProperty.equals(SpatialVocabulary.isNonTangentialProperPartOf)) {
-            return SpatialVocabulary.SpatialFeature
+            return SpatialVocabulary.SpatialFeature;
 
         // TODO: isSpatiallyIdenticalWith
         // TODO: hasTangentialProperPart
