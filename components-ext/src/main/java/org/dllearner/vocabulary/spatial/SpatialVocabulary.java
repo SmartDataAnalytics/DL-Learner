@@ -39,6 +39,8 @@ public class SpatialVocabulary {
             df.getOWLObjectProperty(IRI.create(prefix + "isSpatiallyIdenticalWith"));
     public static final OWLObjectProperty hasTangentialProperPart =
             df.getOWLObjectProperty(IRI.create(prefix + "hasTangentialProperPart"));
+    public static final OWLObjectProperty hasNonTangentialProperPart =
+            df.getOWLObjectProperty(IRI.create(prefix + "hasNonTangentialProperPart"));
 
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
@@ -51,7 +53,8 @@ public class SpatialVocabulary {
             isTangentialProperPartOf,
             isNonTangentialProperPartOf,
             isSpatiallyIdenticalWith,
-            hasTangentialProperPart);
+            hasTangentialProperPart,
+            hasNonTangentialProperPart);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
