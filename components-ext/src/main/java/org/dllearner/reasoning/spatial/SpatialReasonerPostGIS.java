@@ -4182,7 +4182,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public Stream<OWLIndividual> getExternallyConnectedIndividuals(OWLIndividual spatialIndividual) {
+    public Stream<OWLIndividual> getIndividualsExternallyConnectedWith(OWLIndividual spatialIndividual) {
         String tableName = getTable(spatialIndividual);
 
         OWLIndividual geomIndividual;

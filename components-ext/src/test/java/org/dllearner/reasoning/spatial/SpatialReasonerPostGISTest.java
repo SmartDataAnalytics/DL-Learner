@@ -9641,7 +9641,7 @@ public class SpatialReasonerPostGISTest {
     }
 
     @Test
-    public void testGetExternallyConnectedIndividuals() throws ComponentInitException {
+    public void testGetIndividualsExternallyConnectedWith() throws ComponentInitException {
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
         // points
@@ -9755,7 +9755,7 @@ public class SpatialReasonerPostGISTest {
 //        System.out.println(kbHelper.getGeometryCollection());
 
         Set<OWLIndividual> result =
-                reasoner.getExternallyConnectedIndividuals(feature001)
+                reasoner.getIndividualsExternallyConnectedWith(feature001)
                         .collect(Collectors.toSet());
 
         assertTrue("f1-f1", result.contains(feature001));
@@ -9774,7 +9774,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f1-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature002)
+                reasoner.getIndividualsExternallyConnectedWith(feature002)
                         .collect(Collectors.toSet());
 
         assertTrue("f2-f1", result.contains(feature001));
@@ -9793,7 +9793,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f2-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature003)
+                reasoner.getIndividualsExternallyConnectedWith(feature003)
                         .collect(Collectors.toSet());
 
         assertFalse("f3-f1", result.contains(feature001));
@@ -9812,7 +9812,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f3-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature004)
+                reasoner.getIndividualsExternallyConnectedWith(feature004)
                         .collect(Collectors.toSet());
 
         assertFalse("f4-f1", result.contains(feature001));
@@ -9831,7 +9831,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f4-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature005)
+                reasoner.getIndividualsExternallyConnectedWith(feature005)
                         .collect(Collectors.toSet());
 
         assertFalse("f5-f1", result.contains(feature001));
@@ -9850,7 +9850,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f5-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature006)
+                reasoner.getIndividualsExternallyConnectedWith(feature006)
                         .collect(Collectors.toSet());
 
         assertFalse("f6-f1", result.contains(feature001));
@@ -9869,7 +9869,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f6-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature007)
+                reasoner.getIndividualsExternallyConnectedWith(feature007)
                         .collect(Collectors.toSet());
 
         assertFalse("f7-f1", result.contains(feature001));
@@ -9888,7 +9888,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f7-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature008)
+                reasoner.getIndividualsExternallyConnectedWith(feature008)
                         .collect(Collectors.toSet());
 
         assertFalse("f8-f1", result.contains(feature001));
@@ -9907,7 +9907,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f8-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature009)
+                reasoner.getIndividualsExternallyConnectedWith(feature009)
                         .collect(Collectors.toSet());
 
         assertTrue("f9-f1", result.contains(feature001));
@@ -9926,7 +9926,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f9-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature010)
+                reasoner.getIndividualsExternallyConnectedWith(feature010)
                         .collect(Collectors.toSet());
 
         assertTrue("f10-f1", result.contains(feature001));
@@ -9945,7 +9945,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f10-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature011)
+                reasoner.getIndividualsExternallyConnectedWith(feature011)
                         .collect(Collectors.toSet());
 
         assertFalse("f11-f1", result.contains(feature001));
@@ -9964,7 +9964,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f11-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature012)
+                reasoner.getIndividualsExternallyConnectedWith(feature012)
                         .collect(Collectors.toSet());
 
         assertFalse("f12-f1", result.contains(feature001));
@@ -9983,7 +9983,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f12-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature013)
+                reasoner.getIndividualsExternallyConnectedWith(feature013)
                         .collect(Collectors.toSet());
 
         assertFalse("f13-f1", result.contains(feature001));
@@ -10002,7 +10002,7 @@ public class SpatialReasonerPostGISTest {
         assertFalse("f13-f14", result.contains(feature014));
 
         result =
-                reasoner.getExternallyConnectedIndividuals(feature014)
+                reasoner.getIndividualsExternallyConnectedWith(feature014)
                         .collect(Collectors.toSet());
 
         assertFalse("f14-f1", result.contains(feature001));
