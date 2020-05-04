@@ -252,7 +252,21 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.hasTangentialProperPart,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: hasNonTangentialProperPart
+            // hasNonTangentialProperPart -------------------------------------
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.hasNonTangentialProperPart,
+                                    SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.hasNonTangentialProperPart,
+                                    SpatialVocabulary.SpatialFeature))));
+
             // TODO: isExternallyConnectedWith
             // TODO: isDisconnectedFrom
             // TODO: isNear
@@ -398,7 +412,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.hasTangentialProperPart,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: hasNonTangentialProperPart
+            // hasNonTangentialProperPart -------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.hasNonTangentialProperPart,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.hasNonTangentialProperPart,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: isExternallyConnectedWith
             // TODO: isDisconnectedFrom
             // TODO: isNear
@@ -638,7 +664,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.hasTangentialProperPart,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: hasNonTangentialProperPart
+            // hasNonTangentialProperPart -------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.hasNonTangentialProperPart,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.hasNonTangentialProperPart,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: isExternallyConnectedWith
             // TODO: isDisconnectedFrom
             // TODO: isNear
