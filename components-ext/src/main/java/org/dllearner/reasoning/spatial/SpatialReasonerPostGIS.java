@@ -305,8 +305,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.isSpatiallyIdenticalWith, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.hasTangentialProperPart, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
+        domainsMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isExternallyConnectedWith
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -334,8 +334,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.isSpatiallyIdenticalWith, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.hasTangentialProperPart, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isExternallyConnectedWith
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -399,7 +399,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.isSpatiallyIdenticalWith);
             subProperties.add(SpatialVocabulary.hasTangentialProperPart);
             subProperties.add(SpatialVocabulary.hasNonTangentialProperPart);
-            // TODO: isExternallyConnectedWith
+            subProperties.add(SpatialVocabulary.isExternallyConnectedWith);
 
         } else if (objectProperty.equals(SpatialVocabulary.overlapsWith)) {
             subProperties.add(SpatialVocabulary.isPartOf);
@@ -412,7 +412,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.isSpatiallyIdenticalWith);
             subProperties.add(SpatialVocabulary.hasTangentialProperPart);
             subProperties.add(SpatialVocabulary.hasNonTangentialProperPart);
-            // TODO: isExternallyConnectedWith
+            subProperties.add(SpatialVocabulary.isExternallyConnectedWith);
 
         } else if (objectProperty.equals(SpatialVocabulary.isPartOf)) {
             subProperties.add(SpatialVocabulary.isProperPartOf);
@@ -435,7 +435,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.hasNonTangentialProperPart);
         }
 
-        // TODO: isExternallyConnectedWith
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -515,9 +514,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             superProperties.add(SpatialVocabulary.overlapsWith);
             superProperties.add(SpatialVocabulary.hasPart);
             superProperties.add(SpatialVocabulary.hasProperPart);
+
+        } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+            superProperties.add(SpatialVocabulary.isConnectedWith);
         }
 
-        // TODO: isExternallyConnectedWith
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -594,7 +595,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.hasNonTangentialProperPart)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isExternallyConnectedWith
+        // isExternallyConnectedWith
+        } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -659,7 +663,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.hasNonTangentialProperPart)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isExternallyConnectedWith
+        // isExternallyConnectedWith
+        } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
@@ -5583,7 +5590,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: isExternallyConnectedWith
+            // isExternallyConnectedWith
+            } else if (prop.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
+                            getIndividualsExternallyConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsExternallyConnectedWFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
             // TODO: isDisconnectedFrom
             // TODO: isNear
             // TODO: startsNear
@@ -5910,7 +5933,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isExternallyConnectedWith
+            // isExternallyConnectedWith
+            } else if (prop.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
+                            getIndividualsExternallyConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsExternallyConnectedWFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isDisconnectedFrom
             // TODO: isNear
             // TODO: startsNear
@@ -6199,8 +6242,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // hasNonTangentialProperPart
             } else if (prop.equals(SpatialVocabulary.hasNonTangentialProperPart)) {
                 // All individuals are instances of
-                // \forall :hasTangentialProperPart <filler>
-                // as long as they don't have any tangential proper part not
+                // \forall :hasNonTangentialProperPart <filler>
+                // as long as they don't have any non-tangential proper part not
                 // being of type <filler>
                 Set<OWLIndividual> resultIndividuals = new HashSet<>();
 
@@ -6215,7 +6258,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: isExternallyConnectedWith
+            // isExternallyConnectedWith
+            } else if (prop.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+                // All individuals are instances of
+                // \forall :isExternallyConnectedWith <filler>
+                // as long as they aren't externally connected to an individual
+                // not being of type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsExternallyConnectedWithMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
             // TODO: isDisconnectedFrom
             // TODO: isNear
             // TODO: startsNear
@@ -6562,7 +6623,29 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isExternallyConnectedWith
+            // isExternallyConnectedWith
+            } else if (prop.equals(SpatialVocabulary.isExternallyConnectedWith)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
+                            getIndividualsExternallyConnectedWith(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(
+                            individualsWCounts,
+                            indivsExternallyConnectedWFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isDisconnectedFrom
             // TODO: isNear
             // TODO: startsNear
