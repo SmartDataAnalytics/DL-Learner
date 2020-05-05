@@ -757,7 +757,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
                 return getIsExternallyConnectedWithMembers();
 
-            // TODO: isDisconnectedFrom
+            // isDisconnectedFrom
+            } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
+                return getIsDisconnectedFromMembers();
             // TODO: isNear
             // TODO: startsNear
             // TODO: endsNear
@@ -3416,6 +3418,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         return members;
     }
+
     @Override
     public boolean isSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
@@ -4575,6 +4578,100 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsDisconnectedFromMembers() {
+        String queryStr =
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                pointFeatureTableName + " r " +
+            "WHERE " +
+                "NOT l.the_geom=r.the_geom " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                areaFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "NOT ST_Intersects(l.the_geom, r.the_geom)";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+
+            while (resultSet.next()) {
+                String geomIRI1 = resultSet.getString("l_iri");
+                String geomIRI2 = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+
+                if (!members.containsKey(featureIndividual2)) {
+                    members.put(featureIndividual2, new TreeSet<>());
+                }
+                members.get(featureIndividual2).add(featureIndividual1);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
     // ---
 
     @Override
