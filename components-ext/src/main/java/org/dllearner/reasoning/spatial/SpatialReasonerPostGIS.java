@@ -306,8 +306,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.hasTangentialProperPart, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
+        domainsMap.put(SpatialVocabulary.isDisconnectedFrom, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -335,8 +335,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.hasTangentialProperPart, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.isDisconnectedFrom, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -435,7 +435,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.hasNonTangentialProperPart);
         }
 
-        // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -519,7 +518,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             superProperties.add(SpatialVocabulary.isConnectedWith);
         }
 
-        // TODO: isDisconnectedFrom
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -599,7 +597,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isDisconnectedFrom
+        // isDisconnectedFrom
+        } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -667,7 +668,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.isExternallyConnectedWith)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isDisconnectedFrom
+        // isDisconnectedFrom
+        } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
@@ -5704,7 +5708,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: isDisconnectedFrom
+            // isDisconnectedFrom
+            } else if (prop.equals(SpatialVocabulary.isDisconnectedFrom)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
+                            getIndividualsDisconnectedFrom(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsDisconnectedFromFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
             // TODO: isNear
             // TODO: startsNear
             // TODO: endsNear
@@ -6051,7 +6071,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isDisconnectedFrom
+            // isDisconnectedFrom
+            } else if (prop.equals(SpatialVocabulary.isDisconnectedFrom)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
+                            getIndividualsDisconnectedFrom(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsDisconnectedFromFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isNear
             // TODO: startsNear
             // TODO: endsNear
@@ -6374,7 +6414,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: isDisconnectedFrom
+            // isDisconnectedFrom
+            } else if (prop.equals(SpatialVocabulary.isDisconnectedFrom)) {
+                // All individuals are instances of
+                // \forall :isDisconnectedFrom <filler>
+                // as long as they aren't disconnected from an individual
+                // not being of type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsDisconnectedFromMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
             // TODO: isNear
             // TODO: startsNear
             // TODO: endsNear
@@ -6743,7 +6801,29 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isDisconnectedFrom
+            // isDisconnectedFrom
+            } else if (prop.equals(SpatialVocabulary.isDisconnectedFrom)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
+                            getIndividualsDisconnectedFrom(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(
+                            individualsWCounts,
+                            indivsDisconnectedFromFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: isNear
             // TODO: startsNear
             // TODO: endsNear
