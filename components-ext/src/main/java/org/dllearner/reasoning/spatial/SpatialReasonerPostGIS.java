@@ -307,8 +307,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.isDisconnectedFrom, SpatialVocabulary.SpatialFeature);
+        domainsMap.put(SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
         // TODO: crosses
@@ -336,8 +336,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.hasNonTangentialProperPart, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.isExternallyConnectedWith, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.isDisconnectedFrom, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature);
 
-        // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
         // TODO: crosses
@@ -433,6 +433,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.hasProperPart)) {
             subProperties.add(SpatialVocabulary.hasTangentialProperPart);
             subProperties.add(SpatialVocabulary.hasNonTangentialProperPart);
+
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+            // TODO: startsNear
+            // TODO: endsNear
         }
 
         // TODO: isNear
@@ -518,7 +522,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             superProperties.add(SpatialVocabulary.isConnectedWith);
         }
 
-        // TODO: isNear
         // TODO: startsNear
         // TODO: endsNear
         // TODO: crosses
@@ -601,7 +604,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isNear
+        // isNear
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: startsNear
         // TODO: endsNear
         // TODO: crosses
@@ -672,7 +678,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: isNear
+        // isNear
+        } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+            return SpatialVocabulary.SpatialFeature;
+
         // TODO: startsNear
         // TODO: endsNear
         // TODO: crosses
@@ -5831,7 +5840,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: isNear
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsNearFillerIndiv =
+                            getIndividualsNear(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsNearFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
+
             // TODO: startsNear
             // TODO: endsNear
             // TODO: crosses
@@ -6198,7 +6223,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isNear
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsNearFillerIndiv =
+                            getIndividualsNear(fillerIndiv).collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsNearFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: startsNear
             // TODO: endsNear
             // TODO: crosses
@@ -6539,7 +6583,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: isNear
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                // All individuals are instances of
+                // \forall :isNear <filler>
+                // as long as they aren't near an individual not being of
+                // type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getIsNearMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
+
             // TODO: startsNear
             // TODO: endsNear
             // TODO: crosses
@@ -6930,7 +6992,28 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: isNear
+            // isNear
+            } else if (prop.equals(SpatialVocabulary.isNear)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsNearFillerIndiv =
+                            getIndividualsNear(fillerIndiv).collect(Collectors.toSet());
+
+                    updateCounterMap(
+                            individualsWCounts,
+                            indivsNearFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             // TODO: startsNear
             // TODO: endsNear
             // TODO: crosses
