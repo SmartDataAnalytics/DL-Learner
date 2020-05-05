@@ -809,7 +809,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.startsNear)) {
                 return getStartsNearMembers();
 
-            // TODO: endsNear
+            // endsNear
+            } else if (objectProperty.equals(SpatialVocabulary.endsNear)) {
+                return getEndsNearMembers();
+
             // TODO: crosses
             // TODO: runsAlong
 
@@ -5221,6 +5224,75 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getEndsNearMembers() {
+        String queryStr =
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                pointFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(ST_EndPoint(l.the_geom), r.the_geom, ?, false) " +  // #1
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(ST_EndPoint(l.the_geom), r.the_geom, ?, false) " +  // #2
+            "AND " +
+                "NOT l.the_geom=r.the_geom " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(ST_EndPoint(l.the_geom), r.the_geom, ?, false) ";  // #3
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setDouble(2, nearRadiusInMeters);
+            statement.setDouble(3, nearRadiusInMeters);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String geomIRI1 = resultSet.getString("l_iri");
+                String geomIRI2 = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
     }
 
     @Override
