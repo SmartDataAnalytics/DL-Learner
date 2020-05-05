@@ -332,8 +332,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         domainsMap.put(SpatialVocabulary.startsNear, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.endsNear, SpatialVocabulary.SpatialFeature);
         domainsMap.put(SpatialVocabulary.crosses, SpatialVocabulary.SpatialFeature);
-
-        // TODO: runsAlong
+        domainsMap.put(SpatialVocabulary.runsAlong, SpatialVocabulary.SpatialFeature);
 
         return domainsMap;
     }
@@ -360,9 +359,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         rangesMap.put(SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.startsNear, SpatialVocabulary.SpatialFeature);
         rangesMap.put(SpatialVocabulary.endsNear, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.crosses, SpatialVocabulary.SpatialFeature);
+        rangesMap.put(SpatialVocabulary.runsAlong, SpatialVocabulary.SpatialFeature);
 
-        // TODO: crosses
-        // TODO: runsAlong
         return rangesMap;
     }
 
@@ -460,8 +459,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             subProperties.add(SpatialVocabulary.endsNear);
         }
 
-        // TODO: runsAlong
-
         return subProperties;
     }
 
@@ -547,8 +544,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.crosses)) {
             superProperties.add(SpatialVocabulary.isConnectedWith);
         }
-
-        // TODO: runsAlong
 
         return superProperties;
     }
@@ -643,7 +638,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.crosses)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: runsAlong
+        // runsAlong
+        } else if (objectProperty.equals(SpatialVocabulary.runsAlong)) {
+            return SpatialVocabulary.SpatialFeature;
 
         // TODO: Add further spatial object properties here
 
@@ -726,7 +723,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } else if (objectProperty.equals(SpatialVocabulary.crosses)) {
             return SpatialVocabulary.SpatialFeature;
 
-        // TODO: runsAlong
+        // runsAlong
+        } else if (objectProperty.equals(SpatialVocabulary.runsAlong)) {
+            return SpatialVocabulary.SpatialFeature;
 
         // TODO: Add further spatial object properties here
         } else {
@@ -6217,7 +6216,22 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(individuals);
 
-            // TODO: runsAlong
+            // runsAlong
+            } else if (prop.equals(SpatialVocabulary.runsAlong)) {
+                Set<OWLIndividual> individuals = new HashSet<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsRunningAlongFillerIndiv =
+                            getIndividualsRunningAlong(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    individuals.addAll(indivsRunningAlongFillerIndiv);
+                }
+
+                return new TreeSet<>(individuals);
 
             } else {
                 throw new RuntimeException(
@@ -6663,7 +6677,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: runsAlong
+            // runsAlong
+            } else if (prop.equals(SpatialVocabulary.runsAlong)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivsRunningAlongFillerIndiv =
+                            getIndividualsRunningAlong(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(individualsWCounts, indivsRunningAlongFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() >= minCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
 
             } else {
                 throw new RuntimeException(
@@ -7076,7 +7109,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 return new TreeSet<>(resultIndividuals);
 
-            // TODO: runsAlong
+            // runsAlong
+            } else if (prop.equals(SpatialVocabulary.runsAlong)) {
+                // All individuals are instances of
+                // \forall :runsAlong <filler>
+                // as long as they don't run along an individual not being of
+                // type <filler>
+                Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+                for (Map.Entry<OWLIndividual, SortedSet<OWLIndividual>> entry :
+                        getRunsAlongMembers().entrySet()) {
+
+                    if (areAllValuesFromFiller(entry.getValue(), fillerIndividuals)) {
+                        OWLIndividual resultIndividual = entry.getKey();
+                        resultIndividuals.add(resultIndividual);
+                    }
+                }
+
+                return new TreeSet<>(resultIndividuals);
 
             } else {
                 throw new RuntimeException("No implementation for " + prop + ", yet");
@@ -7551,7 +7601,29 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toCollection(TreeSet::new));
 
-            // TODO: runsAlong
+            // runsAlong
+            } else if (prop.equals(SpatialVocabulary.runsAlong)) {
+                Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
+
+                for (OWLIndividual fillerIndiv : fillerIndivs) {
+                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                        continue;
+
+                    Set<OWLIndividual> indivRunningAlongFillerIndiv =
+                            getIndividualsRunningAlong(fillerIndiv)
+                                    .collect(Collectors.toSet());
+
+                    updateCounterMap(
+                            individualsWCounts,
+                            indivRunningAlongFillerIndiv);
+                }
+
+                return individualsWCounts.entrySet()
+                        .stream()
+                        .filter((Map.Entry<OWLIndividual, Integer> e) -> e.getValue() <= maxCardinality)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toCollection(TreeSet::new));
+
             } else {
                 throw new RuntimeException(
                         "spatial object property " + prop + " not supported, yet");
