@@ -820,7 +820,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.endsNear)) {
                 return getEndsNearMembers();
 
-            // TODO: crosses
+            // crosses
+            } else if (objectProperty.equals(SpatialVocabulary.crosses)) {
+                return getCrossesMembers();
+
             // TODO: runsAlong
 
             // TODO: Add further spatial object properties here
@@ -5457,6 +5460,73 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getCrossesMembers() {
+        String queryStr =
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                pointFeatureTableName + " r " +
+            "WHERE " +
+                "ST_ContainsProperly(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "ST_Crosses(l.the_geom, r.the_geom) " +
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "ST_Crosses(l.the_geom, r.the_geom) " +
+            "AND " +
+                "NOT ST_Intersects(ST_StartPoint(l.the_geom), r.the_geom) " +
+            "AND " +
+                "NOT ST_Intersects(ST_EndPoint(l.the_geom), r.the_geom) ";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String geomIRI1 = resultSet.getString("l_iri");
+                String geomIRI2 = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
     @Override
     public boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2) {
         String tableName1 = getTable(lineStringFeatureIndividual1);

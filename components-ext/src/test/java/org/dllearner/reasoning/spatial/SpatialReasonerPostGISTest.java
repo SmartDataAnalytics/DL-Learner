@@ -13328,6 +13328,255 @@ public class SpatialReasonerPostGISTest {
     }
 
     @Test
+    public void testGetCrossesMembers() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        // points
+        OWLIndividual feature001 = i("feature001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(feature001, geom001, "POINT(13.7979 51.0603)");
+
+        OWLIndividual feature002 = i("feature002");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(feature002, geom002, "POINT(13.7967 51.0596)");
+
+        // -- off
+        OWLIndividual feature003 = i("feature003");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(feature003, geom003, "POINT(13.7842 51.0611)");
+
+        // line strings
+        OWLIndividual feature004 = i("feature004");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(feature004, geom004,
+                "LINESTRING(13.7952 51.0603,13.7965 51.0606," +
+                        "13.7979 51.0603,13.7993 51.0593,13.7987 51.0586," +
+                        "13.7968 51.0589,13.7967 51.0596)");
+
+        // -- same as feature004
+        OWLIndividual feature005 = i("feature005");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(feature005, geom005,
+                "LINESTRING(13.7952 51.0603,13.7965 51.0606," +
+                        "13.7979 51.0603,13.7993 51.0593,13.7987 51.0586," +
+                        "13.7968 51.0589,13.7967 51.0596)");
+
+        // -- crosses feature004/5
+        OWLIndividual feature006 = i("feature006");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(feature006, geom006,
+                "LINESTRING(13.7973 51.0598,13.7994 51.0602," +
+                        "13.8014 51.0598,13.8022 51.0590,13.8014 51.0582," +
+                        "13.8022 51.0580)");
+
+        // -- touches feature004/5, but does not cross
+        OWLIndividual feature007 = i("feature007");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(feature007, geom007,
+                "LINESTRING(13.8022 51.0590,13.8033 51.0585," +
+                        "13.8040 51.0588,13.8048 51.0587,13.8051 51.0581," +
+                        "13.8045 51.0579)");
+
+        // -- off
+        OWLIndividual feature008 = i("feature008");
+        OWLIndividual geom008 = i("geom008");
+        kbHelper.addSpatialFeature(feature008, geom008,
+                "LINESTRING(13.7839 51.0621,13.7852 51.0620," +
+                        "13.7862 51.0618,13.7870 51.0618)");
+
+        // areas
+        // -- entered by feature004/5 but not crossed
+        OWLIndividual feature009 = i("feature009");
+        OWLIndividual geom009 = i("geom009");
+        kbHelper.addSpatialFeature(feature009, geom009,
+                "POLYGON((13.7953 51.0595,13.7967 51.0601," +
+                        "13.7983 51.0596,13.7982 51.0590,13.7972 51.0583," +
+                        "13.7955 51.0589,13.7953 51.0595))");
+
+        // -- crossed by feature006
+        OWLIndividual feature010 = i("feature010");
+        OWLIndividual geom010 = i("geom010");
+        kbHelper.addSpatialFeature(feature010, geom010,
+                "POLYGON((13.8000 51.0606,13.8019 51.0603," +
+                        "13.8010 51.0590,13.7996 51.0595,13.8000 51.0606))");
+
+        // -- off
+        OWLIndividual feature011 = i("feature011");
+        OWLIndividual geom011 = i("geom011");
+        kbHelper.addSpatialFeature(feature011, geom011,
+                "POLYGON((13.7894 51.0614,13.7886 51.0609," +
+                        "13.7902 51.0607,13.7894 51.0614))");
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+//        System.out.println(kbHelper.getGeometryCollection());
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                reasoner.getCrossesMembers();
+
+        assertNull("f1-fX", members.get(feature001));
+//        assertFalse("f1-f1", members.get(feature001).contains(feature001));
+//        assertFalse("f1-f2", members.get(feature001).contains(feature002));
+//        assertFalse("f1-f3", members.get(feature001).contains(feature003));
+//        assertFalse("f1-f4", members.get(feature001).contains(feature004));
+//        assertFalse("f1-f5", members.get(feature001).contains(feature005));
+//        assertFalse("f1-f6", members.get(feature001).contains(feature006));
+//        assertFalse("f1-f7", members.get(feature001).contains(feature007));
+//        assertFalse("f1-f8", members.get(feature001).contains(feature008));
+//        assertFalse("f1-f9", members.get(feature001).contains(feature009));
+//        assertFalse("f1-f10", members.get(feature001).contains(feature010));
+//        assertFalse("f1-f11", members.get(feature001).contains(feature011));
+
+        assertNull("f2-fX", members.get(feature002));
+//        assertFalse("f2-f1", members.get(feature002).contains(feature001));
+//        assertFalse("f2-f2", members.get(feature002).contains(feature002));
+//        assertFalse("f2-f3", members.get(feature002).contains(feature003));
+//        assertFalse("f2-f4", members.get(feature002).contains(feature004));
+//        assertFalse("f2-f5", members.get(feature002).contains(feature005));
+//        assertFalse("f2-f6", members.get(feature002).contains(feature006));
+//        assertFalse("f2-f7", members.get(feature002).contains(feature007));
+//        assertFalse("f2-f8", members.get(feature002).contains(feature008));
+//        assertFalse("f2-f9", members.get(feature002).contains(feature009));
+//        assertFalse("f2-f10", members.get(feature002).contains(feature010));
+//        assertFalse("f2-f11", members.get(feature002).contains(feature011));
+
+        assertNull("f3-fX", members.get(feature003));
+//        assertFalse("f3-f1", members.get(feature003).contains(feature001));
+//        assertFalse("f3-f2", members.get(feature003).contains(feature002));
+//        assertFalse("f3-f3", members.get(feature003).contains(feature003));
+//        assertFalse("f3-f4", members.get(feature003).contains(feature004));
+//        assertFalse("f3-f5", members.get(feature003).contains(feature005));
+//        assertFalse("f3-f6", members.get(feature003).contains(feature006));
+//        assertFalse("f3-f7", members.get(feature003).contains(feature007));
+//        assertFalse("f3-f8", members.get(feature003).contains(feature008));
+//        assertFalse("f3-f9", members.get(feature003).contains(feature009));
+//        assertFalse("f3-f10", members.get(feature003).contains(feature010));
+//        assertFalse("f3-f11", members.get(feature003).contains(feature011));
+
+        assertTrue("f4-f1", members.get(feature004).contains(feature001));
+        assertFalse("f4-f2", members.get(feature004).contains(feature002));
+        assertFalse("f4-f3", members.get(feature004).contains(feature003));
+        assertFalse("f4-f4", members.get(feature004).contains(feature004));
+        assertFalse("f4-f5", members.get(feature004).contains(feature005));
+        assertTrue("f4-f6", members.get(feature004).contains(feature006));
+        assertFalse("f4-f7", members.get(feature004).contains(feature007));
+        assertFalse("f4-f8", members.get(feature004).contains(feature008));
+        assertFalse("f4-f9", members.get(feature004).contains(feature009));
+        assertFalse("f4-f10", members.get(feature004).contains(feature010));
+        assertFalse("f4-f11", members.get(feature004).contains(feature011));
+
+        assertTrue("f5-f1", members.get(feature005).contains(feature001));
+        assertFalse("f5-f2", members.get(feature005).contains(feature002));
+        assertFalse("f5-f3", members.get(feature005).contains(feature003));
+        assertFalse("f5-f4", members.get(feature005).contains(feature004));
+        assertFalse("f5-f5", members.get(feature005).contains(feature005));
+        assertTrue("f5-f6", members.get(feature005).contains(feature006));
+        assertFalse("f5-f7", members.get(feature005).contains(feature007));
+        assertFalse("f5-f8", members.get(feature005).contains(feature008));
+        assertFalse("f5-f9", members.get(feature005).contains(feature009));
+        assertFalse("f5-f10", members.get(feature005).contains(feature010));
+        assertFalse("f5-f11", members.get(feature005).contains(feature011));
+
+        assertFalse("f6-f1", members.get(feature006).contains(feature001));
+        assertFalse("f6-f2", members.get(feature006).contains(feature002));
+        assertFalse("f6-f3", members.get(feature006).contains(feature003));
+        assertTrue("f6-f4", members.get(feature006).contains(feature004));
+        assertTrue("f6-f5", members.get(feature006).contains(feature005));
+        assertFalse("f6-f6", members.get(feature006).contains(feature006));
+        assertFalse("f6-f7", members.get(feature006).contains(feature007));
+        assertFalse("f6-f8", members.get(feature006).contains(feature008));
+        assertFalse("f6-f9", members.get(feature006).contains(feature009));
+        assertTrue("f6-f10", members.get(feature006).contains(feature010));
+        assertFalse("f6-f11", members.get(feature006).contains(feature011));
+
+        assertNull("f7-fX", members.get(feature007));
+//        assertFalse("f7-f1", members.get(feature007).contains(feature001));
+//        assertFalse("f7-f2", members.get(feature007).contains(feature002));
+//        assertFalse("f7-f3", members.get(feature007).contains(feature003));
+//        assertFalse("f7-f4", members.get(feature007).contains(feature004));
+//        assertFalse("f7-f5", members.get(feature007).contains(feature005));
+//        assertFalse("f7-f6", members.get(feature007).contains(feature006));
+//        assertFalse("f7-f7", members.get(feature007).contains(feature007));
+//        assertFalse("f7-f8", members.get(feature007).contains(feature008));
+//        assertFalse("f7-f9", members.get(feature007).contains(feature009));
+//        assertFalse("f7-f10", members.get(feature007).contains(feature010));
+//        assertFalse("f7-f11", members.get(feature007).contains(feature011));
+
+        assertNull("f8-fX", members.get(feature008));
+//        assertFalse("f8-f1", members.get(feature008).contains(feature001));
+//        assertFalse("f8-f2", members.get(feature008).contains(feature002));
+//        assertFalse("f8-f3", members.get(feature008).contains(feature003));
+//        assertFalse("f8-f4", members.get(feature008).contains(feature004));
+//        assertFalse("f8-f5", members.get(feature008).contains(feature005));
+//        assertFalse("f8-f6", members.get(feature008).contains(feature006));
+//        assertFalse("f8-f7", members.get(feature008).contains(feature007));
+//        assertFalse("f8-f8", members.get(feature008).contains(feature008));
+//        assertFalse("f8-f9", members.get(feature008).contains(feature009));
+//        assertFalse("f8-f10", members.get(feature008).contains(feature010));
+//        assertFalse("f8-f11", members.get(feature008).contains(feature011));
+
+        assertNull("f9-fX", members.get(feature009));
+//        assertFalse("f9-f1", members.get(feature009).contains(feature001));
+//        assertFalse("f9-f2", members.get(feature009).contains(feature002));
+//        assertFalse("f9-f3", members.get(feature009).contains(feature003));
+//        assertFalse("f9-f4", members.get(feature009).contains(feature004));
+//        assertFalse("f9-f5", members.get(feature009).contains(feature005));
+//        assertFalse("f9-f6", members.get(feature009).contains(feature006));
+//        assertFalse("f9-f7", members.get(feature009).contains(feature007));
+//        assertFalse("f9-f8", members.get(feature009).contains(feature008));
+//        assertFalse("f9-f9", members.get(feature009).contains(feature009));
+//        assertFalse("f9-f10", members.get(feature009).contains(feature010));
+//        assertFalse("f9-f11", members.get(feature009).contains(feature011));
+
+        assertNull("f10-fX", members.get(feature010));
+//        assertFalse("f10-f1", members.get(feature010).contains(feature001));
+//        assertFalse("f10-f2", members.get(feature010).contains(feature002));
+//        assertFalse("f10-f3", members.get(feature010).contains(feature003));
+//        assertFalse("f10-f4", members.get(feature010).contains(feature004));
+//        assertFalse("f10-f5", members.get(feature010).contains(feature005));
+//        assertFalse("f10-f6", members.get(feature010).contains(feature006));
+//        assertFalse("f10-f7", members.get(feature010).contains(feature007));
+//        assertFalse("f10-f8", members.get(feature010).contains(feature008));
+//        assertFalse("f10-f9", members.get(feature010).contains(feature009));
+//        assertFalse("f10-f10", members.get(feature010).contains(feature010));
+//        assertFalse("f10-f11", members.get(feature010).contains(feature011));
+
+        assertNull("f11-fX", members.get(feature011));
+//        assertFalse("f11-f1", members.get(feature011).contains(feature001));
+//        assertFalse("f11-f2", members.get(feature011).contains(feature002));
+//        assertFalse("f11-f3", members.get(feature011).contains(feature003));
+//        assertFalse("f11-f4", members.get(feature011).contains(feature004));
+//        assertFalse("f11-f5", members.get(feature011).contains(feature005));
+//        assertFalse("f11-f6", members.get(feature011).contains(feature006));
+//        assertFalse("f11-f7", members.get(feature011).contains(feature007));
+//        assertFalse("f11-f8", members.get(feature011).contains(feature008));
+//        assertFalse("f11-f9", members.get(feature011).contains(feature009));
+//        assertFalse("f11-f10", members.get(feature011).contains(feature010));
+//        assertFalse("f11-f11", members.get(feature011).contains(feature011));
+    }
+
+    @Test
     public void testRunsAlong() throws ComponentInitException {
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
