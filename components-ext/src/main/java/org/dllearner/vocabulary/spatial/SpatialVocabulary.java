@@ -53,6 +53,9 @@ public class SpatialVocabulary {
     public static final OWLObjectProperty endsNear =
             df.getOWLObjectProperty(IRI.create(prefix + "endsNear"));
 
+    public static final OWLObjectProperty crosses =
+            df.getOWLObjectProperty(IRI.create(prefix + "crosses"));
+
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
             overlapsWith,
@@ -70,7 +73,8 @@ public class SpatialVocabulary {
             isDisconnectedFrom,
             isNear,
             startsNear,
-            endsNear);
+            endsNear,
+            crosses);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
