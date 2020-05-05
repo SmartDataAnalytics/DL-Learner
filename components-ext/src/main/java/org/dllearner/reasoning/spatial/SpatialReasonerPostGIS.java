@@ -764,7 +764,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             // isDisconnectedFrom
             } else if (objectProperty.equals(SpatialVocabulary.isDisconnectedFrom)) {
                 return getIsDisconnectedFromMembers();
-            // TODO: isNear
+
+            // isNear
+            } else if (objectProperty.equals(SpatialVocabulary.isNear)) {
+                return getIsNearMembers();
+
             // TODO: startsNear
             // TODO: endsNear
             // TODO: crosses
@@ -4800,6 +4804,108 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNearMembers() {
+        String queryStr =
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                pointFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #1
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #2
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                pointFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #3
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #4
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) " +  // #5
+            "UNION " +
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                areaFeatureTableName + " l, " +
+                areaFeatureTableName + " r " +
+            "WHERE " +
+                "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) ";  // #6
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, nearRadiusInMeters);
+            statement.setDouble(2, nearRadiusInMeters);
+            statement.setDouble(3, nearRadiusInMeters);
+            statement.setDouble(4, nearRadiusInMeters);
+            statement.setDouble(5, nearRadiusInMeters);
+            statement.setDouble(6, nearRadiusInMeters);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String geomIRI1 = resultSet.getString("l_iri");
+                String geomIRI2 = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+
+                if (!members.containsKey(featureIndividual2)) {
+                    members.put(featureIndividual2, new TreeSet<>());
+                }
+                members.get(featureIndividual2).add(featureIndividual1);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
     }
 
     @Override
