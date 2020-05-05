@@ -357,7 +357,20 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.crosses,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: runsAlong
+            // runsAlong ------------------------------------------------------
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.runsAlong,
+                                    SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.runsAlong,
+                                    SpatialVocabulary.SpatialFeature))));
         }
 
         return refinements;
@@ -587,7 +600,18 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.crosses,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: runsAlong
+            // runsAlong ------------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.runsAlong,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.runsAlong,
+                            SpatialVocabulary.SpatialFeature))));
         }
 
         List<OWLClassExpression> operandsList = intersection.getOperandsAsList();
@@ -909,7 +933,18 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.crosses,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: runsAlong
+            // runsAlong ------------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.runsAlong,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.runsAlong,
+                            SpatialVocabulary.SpatialFeature))));
         }
 
         List<OWLClassExpression> unionOperandsList = new ArrayList<>(unionOperands);
