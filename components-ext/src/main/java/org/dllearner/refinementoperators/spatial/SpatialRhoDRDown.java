@@ -312,7 +312,21 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.isNear,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: startsNear
+            // startsNear -----------------------------------------------------
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.startsNear,
+                                    SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.startsNear,
+                                    SpatialVocabulary.SpatialFeature))));
+
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
@@ -506,7 +520,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.isNear,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: startsNear
+            // startsNear -----------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.startsNear,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.startsNear,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
@@ -792,7 +818,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                     new OWLObjectAllValuesFromImpl(
                             SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
 
-            // TODO: startsNear
+            // startsNear -----------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.startsNear,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.startsNear,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: endsNear
             // TODO: crosses
             // TODO: runsAlong
