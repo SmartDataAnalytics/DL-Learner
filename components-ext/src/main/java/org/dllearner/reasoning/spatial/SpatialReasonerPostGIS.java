@@ -831,7 +831,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             } else if (objectProperty.equals(SpatialVocabulary.crosses)) {
                 return getCrossesMembers();
 
-            // TODO: runsAlong
+            // runsAlong
+            } else if (objectProperty.equals(SpatialVocabulary.runsAlong)) {
+                return getRunsAlongMembers();
 
             // TODO: Add further spatial object properties here
             } else {
@@ -5646,6 +5648,58 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected Map<OWLIndividual, SortedSet<OWLIndividual>> getRunsAlongMembers() {
+        String queryStr =
+            "SELECT " +
+                "l.iri l_iri, " +
+                "r.iri r_iri " +
+            "FROM " +
+                lineFeatureTableName + " l, " +
+                lineFeatureTableName + " r " +
+            "WHERE " +
+                "ST_Length( " +
+                    "ST_Intersection( " +
+                        "ST_Buffer(l.the_geom::geography, ?, 'endcap=flat'), " +  // #1
+                        "r.the_geom)) > ? " +  // #2
+            "AND " +
+                "NOT ST_Equals(l.the_geom, r.the_geom)";
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(queryStr);
+            statement.setDouble(1, runsAlongToleranceInMeters);
+            statement.setDouble(2, 2.5 * runsAlongToleranceInMeters);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String geomIRI1 = resultSet.getString("l_iri");
+                String geomIRI2 = resultSet.getString("r_iri");
+
+                OWLIndividual geomIndividual1 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+                OWLIndividual geomIndividual2 =
+                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+
+                // convert geometries to features
+                OWLIndividual featureIndividual1 =
+                        geom2feature.get(geomIndividual1);
+                OWLIndividual featureIndividual2 =
+                        geom2feature.get(geomIndividual2);
+
+                if (!members.containsKey(featureIndividual1)) {
+                    members.put(featureIndividual1, new TreeSet<>());
+                }
+                members.get(featureIndividual1).add(featureIndividual2);
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return members;
+    }
     // --------- private/protected methods -------------------------------------
     private boolean containsSpatialExpressions(OWLClassExpression ce) {
         if (ce instanceof OWLClass) {
