@@ -342,7 +342,21 @@ public class SpatialRhoDRDown extends RhoDRDown {
                                     SpatialVocabulary.endsNear,
                                     SpatialVocabulary.SpatialFeature))));
 
-            // TODO: crosses
+            // crosses --------------------------------------------------------
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectSomeValuesFromImpl(
+                                    SpatialVocabulary.crosses,
+                                    SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            cls,
+                            new OWLObjectAllValuesFromImpl(
+                                    SpatialVocabulary.crosses,
+                                    SpatialVocabulary.SpatialFeature))));
+
             // TODO: runsAlong
         }
 
@@ -560,7 +574,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.endsNear,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: crosses
+            // crosses --------------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.crosses,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    intersection,
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.crosses,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: runsAlong
         }
 
@@ -870,7 +896,19 @@ public class SpatialRhoDRDown extends RhoDRDown {
                             SpatialVocabulary.endsNear,
                             SpatialVocabulary.SpatialFeature))));
 
-            // TODO: crosses
+            // crosses --------------------------------------------------------
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectSomeValuesFromImpl(
+                            SpatialVocabulary.crosses,
+                            SpatialVocabulary.SpatialFeature))));
+
+            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                    new OWLObjectUnionOfImplExt(unionOperands),
+                    new OWLObjectAllValuesFromImpl(
+                            SpatialVocabulary.crosses,
+                            SpatialVocabulary.SpatialFeature))));
+
             // TODO: runsAlong
         }
 
