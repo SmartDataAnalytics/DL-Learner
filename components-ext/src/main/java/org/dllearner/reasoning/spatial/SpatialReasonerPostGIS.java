@@ -269,6 +269,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    protected boolean isSpatialSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
+        // FIXME: Finish this!
+        if (superClass instanceof OWLClass && (
+                isSuperClassOf(superClass, pointFeatureClass) ||
+                        isSuperClassOf(superClass, lineFeatureClass) ||
+                        isSuperClassOf(superClass, areaFeatureClass)) ) {
+            if (containsSpatialExpressions(subClass)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+    }
+
     public SpatialReasonerPostGIS() {
         super();
     }
@@ -279,7 +296,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
         // TODO: Add spatial aspect-specific stuff
-        return baseReasoner.isSuperClassOf(superClass, subClass);
+        if (containsSpatialExpressions(superClass) || containsSpatialExpressions(subClass)) {
+            return isSpatialSuperClassOf(superClass, subClass);
+        } else {
+            return baseReasoner.isSuperClassOf(superClass, subClass);
+        }
     }
 
     @Override
