@@ -2757,7 +2757,6 @@ public class SpatialReasonerPostGISTest {
 
     @Test
     public void testIsProperPartOf() throws ComponentInitException {
-        //
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
         // points
@@ -3198,7 +3197,7 @@ public class SpatialReasonerPostGISTest {
 //        assertFalse("f11-f11", members.get(feature011).contains(feature011));
     }
 
-//    @Test
+    @Test
     public void testGetIndividualsHavingProperPart() throws ComponentInitException {
         SpatialKBPostGISHelper kbHelper = getKBHelper();
 
@@ -14054,5 +14053,165 @@ public class SpatialReasonerPostGISTest {
         assertTrue(propIndividuals.get(indiv2).isEmpty());
         assertTrue(propIndividuals.get(indiv3).contains(indiv4));
         assertTrue(propIndividuals.get(indiv4).isEmpty());
+    }
+
+    @Test
+    public void testHotelExample() throws ComponentInitException {
+        SpatialKBPostGISHelper kbHelper = getKBHelper();
+
+        OWLIndividual hotel001 = i("hotel001");
+        OWLIndividual geom001 = i("geom001");
+        kbHelper.addSpatialFeature(hotel001, geom001,
+                "POLYGON((13.823 51.01157,13.8237 51.01157," +
+                        "13.8237 51.01087,13.823 51.01087,13.823 51.01157))");
+
+        OWLIndividual parkinglot001 = i("parkinglot001");
+        OWLIndividual geom002 = i("geom002");
+        kbHelper.addSpatialFeature(parkinglot001, geom002,
+                "POLYGON((13.82317 51.01087,13.82352 51.01087," +
+                        "13.82352 51.01052,13.82317 51.01052," +
+                        "13.82317 51.01087))");
+
+        OWLIndividual reception001 = i("reception001");
+        OWLIndividual geom003 = i("geom003");
+        kbHelper.addSpatialFeature(reception001, geom003,
+                "POLYGON((13.823 51.01127,13.8231 51.01127," +
+                        "13.8231 51.01117,13.823 51.01117,13.823 51.01127))");
+
+        OWLIndividual room001 = i("room001");
+        OWLIndividual geom004 = i("geom004");
+        kbHelper.addSpatialFeature(room001, geom004,
+                "POLYGON((13.8236 51.01157,13.8237 51.01157," +
+                        "13.8237 51.01147,13.8236 51.01147,13.8236 51.01157))");
+
+        OWLIndividual room002 = i("room002");
+        OWLIndividual geom005 = i("geom005");
+        kbHelper.addSpatialFeature(room002, geom005,
+                "POLYGON((13.8236 51.01097,13.8237 51.01097," +
+                        "13.8237 51.01087,13.8236 51.01087,13.8236 51.01097))");
+
+        OWLIndividual room003 = i("room003");
+        OWLIndividual geom006 = i("geom006");
+        kbHelper.addSpatialFeature(room003, geom006,
+                "POLYGON((13.8236 51.01127,13.8237 51.01127," +
+                        "13.8237 51.01117,13.8236 51.01117,13.8236 51.01127))");
+
+        OWLIndividual room004 = i("room004");
+        OWLIndividual geom007 = i("geom007");
+        kbHelper.addSpatialFeature(room004, geom007,
+                "POLYGON((13.8236 51.01107,13.8237 51.01107," +
+                        "13.8237 51.01097,13.8236 51.01097,13.8236 51.01107))");
+
+        OWLIndividual room005 = i("room005");
+        OWLIndividual geom008 = i("geom008");
+        kbHelper.addSpatialFeature(room005, geom008,
+                "POLYGON((13.8236 51.01117,13.8237 51.01117," +
+                        "13.8237 51.01107,13.8236 51.01107,13.8236 51.01117))");
+
+        OWLIndividual room006 = i("room006");
+        OWLIndividual geom009 = i("geom009");
+        kbHelper.addSpatialFeature(room006, geom009,
+                "POLYGON((13.8236 51.01147,13.8237 51.01147," +
+                        "13.8237 51.01137,13.8236 51.01137,13.8236 51.01147))");
+
+        OWLIndividual room007 = i("room007");
+        OWLIndividual geom010 = i("geom010");
+        kbHelper.addSpatialFeature(room007, geom010,
+                "POLYGON((13.8236 51.01137,13.8237 51.01137," +
+                        "13.8237 51.01127,13.8236 51.01127,13.8236 51.01137))");
+
+        KnowledgeSource ks = new OWLAPIOntology(kbHelper.getOntology());
+        ks.init();
+        OWLAPIReasoner cwrBaseReasoner = new OWLAPIReasoner(ks);
+        cwrBaseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+        cwrBaseReasoner.init();
+        ClosedWorldReasoner cwr = new ClosedWorldReasoner(cwrBaseReasoner);
+        cwr.init();
+
+        SpatialReasonerPostGIS reasoner = new SpatialReasonerPostGIS();
+
+        reasoner.setDBName(dbName);
+        reasoner.setDBUser(dbUser);
+        reasoner.setDBUserPW(dbUserPW);
+        reasoner.setHostname(db.getContainerIpAddress());
+        reasoner.setPort(db.getFirstMappedPort());
+        reasoner.setBaseReasoner(cwr);
+        reasoner.setRunsAlongToleranceInMeters(10);
+
+        reasoner.addGeometryPropertyPath(geometryPropertyPath);
+
+        reasoner.init();
+
+        kbHelper.createTables(reasoner.conn);
+        kbHelper.writeSpatialInfoToPostGIS(reasoner.conn);
+//        System.out.println(kbHelper.getGeometryCollection());
+
+        assertTrue(
+                "reception TPP of hotel",
+                reasoner.isTangentialProperPartOf(reception001, hotel001));
+        assertTrue(
+                "reception TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(reception001));
+
+        assertTrue(
+                "room001 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room001, hotel001));
+        assertTrue(
+                "room001 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room001));
+
+        assertTrue(
+                "room002 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room002, hotel001));
+        assertTrue(
+                "room002 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room002));
+
+        assertTrue(
+                "room003 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room003, hotel001));
+        assertTrue(
+                "room003 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room003));
+
+        assertTrue(
+                "room004 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room004, hotel001));
+        assertTrue(
+                "room004 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room004));
+
+        assertTrue(
+                "room005 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room005, hotel001));
+        assertTrue(
+                "room005 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room005));
+
+        assertTrue(
+                "room006 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room006, hotel001));
+        assertTrue(
+                "room006 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room006));
+
+        assertTrue(
+                "room007 TPP of hotel",
+                reasoner.isTangentialProperPartOf(room007, hotel001));
+        assertTrue(
+                "room007 TPP of hotel",
+                reasoner.getIndividualsTangentialProperPartOf(hotel001)
+                        .collect(Collectors.toSet()).contains(room007));
+
+        assertTrue(
+                "parking lot EC with hotel",
+                reasoner.isExternallyConnectedWith(hotel001, parkinglot001));
     }
 }
