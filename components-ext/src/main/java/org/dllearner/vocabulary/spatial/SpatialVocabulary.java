@@ -48,6 +48,8 @@ public class SpatialVocabulary {
 
     public static final OWLObjectProperty isNear =
             df.getOWLObjectProperty(IRI.create(prefix + "isNear"));
+    public static final OWLObjectProperty startsNear =
+            df.getOWLObjectProperty(IRI.create(prefix + "startsNear"));
 
     public static final Set<OWLObjectProperty> spatialObjectProperties = Sets.newHashSet(
             isConnectedWith,
@@ -64,7 +66,8 @@ public class SpatialVocabulary {
             hasNonTangentialProperPart,
             isExternallyConnectedWith,
             isDisconnectedFrom,
-            isNear);
+            isNear,
+            startsNear);
 
     // ---- data properties ----
     public static Set<OWLDataProperty> spatialDataProperties = Sets.newHashSet();
