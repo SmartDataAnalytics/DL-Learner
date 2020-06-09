@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class SpatialLearningAlgorithm extends AbstractCELA {
     private static final Logger logger = LoggerFactory.getLogger(SpatialLearningAlgorithm.class);
@@ -59,7 +60,6 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
             "definition/super class of the given class in the knowledge base.")
     private boolean reuseExistingDescription = false;
 
-    private OWLClass classToDescribe;
     private double currentHighestAccuracy;
 
     // all descriptions in the search tree plus those which were too weak (for
@@ -159,16 +159,16 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
     private boolean addNode(OWLClassExpression description, OENode parentNode) {
         MonitorFactory.getTimeMonitor("addNode").start();
 
-        // redundancy check (return if redundant)
-        boolean nonRedundant = descriptions.add(description);
-        if(!nonRedundant) {
-            return false;
-        }
-
-        // check whether the class expression is allowed
-        if(!isDescriptionAllowed(description, parentNode)) {
-            return false;
-        }
+//        // redundancy check (return if redundant)
+//        boolean nonRedundant = descriptions.add(description);
+//        if(!nonRedundant) {
+//            return false;
+//        }
+//
+//        // check whether the class expression is allowed
+//        if(!isDescriptionAllowed(description, parentNode)) {
+//            return false;
+//        }
 
         // quality of class expression (return if too weak)
         Monitor mon = MonitorFactory.start("lp");
@@ -211,13 +211,9 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
         if (isCandidate) {
             OWLClassExpression niceDescription = rewrite(node.getExpression());
 
-            if(niceDescription.equals(classToDescribe)) {
-                return false;
-            }
-
-            if(!isDescriptionAllowed(niceDescription, node)) {
-                return false;
-            }
+//            if(!isDescriptionAllowed(niceDescription, node)) {
+//                return false;
+//            }
 
             bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
         }
@@ -337,6 +333,32 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
     }
 
     // -------------------------------------------------------------------------
+    // -- misc public methods
+
+    public SortedMap<Long, Double> getRuntimeVsBestScore(long ticksIntervalTimeValue, TimeUnit ticksIntervalTimeUnit) {
+        SortedMap<Long, Double> map = new TreeMap<>(runtimeVsBestScore);
+
+        // add entries for fixed time points if enabled
+        if(ticksIntervalTimeValue > 0) {
+            long ticksIntervalInMs = TimeUnit.MILLISECONDS.convert(ticksIntervalTimeValue, ticksIntervalTimeUnit);
+
+            // add  t = 0 -> 0
+            map.put(0L, 0d);
+
+            for(long t = ticksIntervalInMs; t <= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds); t += ticksIntervalInMs) {
+                // add value of last entry before this time point
+                map.put(t, map.get(runtimeVsBestScore.headMap(t).lastKey()));
+            }
+
+            // add  entry for t = totalRuntime
+            long totalRuntimeMs = Math.min(TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds), TimeUnit.NANOSECONDS.toMillis(totalRuntimeNs));
+            map.put(totalRuntimeMs, map.get(map.lastKey()));
+        }
+
+        return map;
+    }
+
+    // -------------------------------------------------------------------------
     // -- implemented methods
 
 
@@ -397,7 +419,8 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
         // if no one injected a heuristic, we use a default one
         if(heuristic == null) {
-            heuristic = new OEHeuristicRuntime();
+            heuristic = new SpatialOEHeuristicRuntime();
+//            ((OEHeuristicRuntime) heuristic).setExpansionPenaltyFactor(0.2);
             heuristic.init();
         }
 
