@@ -18,6 +18,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 
 import javax.annotation.Nonnull;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +50,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     // spatial relations settings
     private double nearRadiusInMeters = 30;
     private double runsAlongToleranceInMeters = 20;
+
+    // members cache objects
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isConnectedWithMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> overlapsWithMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isPartOfMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> hasPartMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isProperPartOfMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> hasProperPartMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> partiallyOverlapsWithMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isTangentialProperPartOfMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isNonTangentialProperPartOfMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isSpatiallyIdenticalWithMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> hasTangentialProperPartMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> hasNonTangentialProperPartMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isExternallyConnectedWithMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isDisconnectedFromMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> isNearMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> startsNearMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> endsNearMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> crossesMembers = null;
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> runsAlongMembers = null;
 
     // TODO: make this configurable
     // "Specifies the maximum number of entries the cache may contain"
@@ -868,6 +892,94 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
     }
 
+    private String getFileName(String relation) {
+        String fileName  = "." + relation + "_";
+        String pointsCount;
+        String lineStringCount;
+        String polygonCount;
+
+        Statement statement;
+        String queryStr =
+                "SELECT COUNT(*) c FROM " + pointFeatureTableName;
+
+        try {
+            statement = conn.createStatement();
+
+            ResultSet resSet = statement.executeQuery(queryStr);
+            resSet.next();
+
+            pointsCount = resSet.getString("c");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        queryStr = "SELECT COUNT(*) c FROM " + lineFeatureTableName;
+
+        try {
+            statement = conn.createStatement();
+
+            ResultSet resSet = statement.executeQuery(queryStr);
+            resSet.next();
+
+            lineStringCount = resSet.getString("c");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        queryStr = "SELECT COUNT(*) c FROM " + areaFeatureTableName;
+
+        try {
+            statement = conn.createStatement();
+
+            ResultSet resSet = statement.executeQuery(queryStr);
+            resSet.next();
+
+            polygonCount = resSet.getString("c");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        String tmpStr = hostname + "_" + port + "_" + dbUser + "_" +
+                pointsCount + "_" + lineStringCount + "_" + polygonCount + "_" +
+                nearRadiusInMeters + "_" + runsAlongToleranceInMeters;
+
+        fileName += "_" + tmpStr.hashCode();
+
+        return fileName;
+    }
+
+    private Map<OWLIndividual, SortedSet<OWLIndividual>> readCacheFile(String relation) {
+        String fileName  = getFileName(relation);
+
+        if (Files.exists(Paths.get(fileName))) {
+            try {
+                FileInputStream fs = new FileInputStream(new File(fileName));
+                ObjectInputStream oIn = new ObjectInputStream(fs);
+
+                return (Map<OWLIndividual, SortedSet<OWLIndividual>>) oIn.readObject();
+
+            } catch (IOException | ClassNotFoundException e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    private void writeCacheFile(String relation, Map<OWLIndividual, SortedSet<OWLIndividual>> members) {
+        String fileName  = getFileName(relation);
+
+        try {
+            FileOutputStream fs = new FileOutputStream(new File(fileName));
+            ObjectOutputStream oOut = new ObjectOutputStream(fs);
+
+            oOut.writeObject(members);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // -------------------------------------------------------------------------
     // -- implemented methods from interface/(abstract) base class
 
@@ -980,6 +1092,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isConnectedWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (isConnectedWithMembers != null) {
+            return isConnectedWithMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
+
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
 
@@ -1025,6 +1143,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsConnectedWith(OWLIndividual spatialFeatureIndividual) {
+        if (isConnectedWithMembers != null) {
+            return isConnectedWithMembers.get(spatialFeatureIndividual).stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -1094,6 +1216,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsConnectedWithMembers() {
+        if (isConnectedWithMembers != null) {
+            return isConnectedWithMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("isConnectedWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isConnectedWithMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "l.iri l_iri, " +
@@ -1149,7 +1289,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Intersects(l.the_geom, r.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -1185,11 +1325,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isConnectedWith", members);
+        isConnectedWithMembers = members;
+
         return members;
     }
 
     @Override
     public boolean overlapsWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (overlapsWithMembers != null) {
+            return overlapsWithMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
+
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
 
@@ -1279,6 +1434,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual) {
+        if (overlapsWithMembers != null) {
+            return overlapsWithMembers.get(spatialFeatureIndividual).stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -1417,6 +1576,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getOverlapsWithMembers() {
+        if (overlapsWithMembers != null) {
+            return overlapsWithMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("overlapsWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            overlapsWithMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "l.iri l_iri, " +
@@ -1490,7 +1667,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                         "ST_Contains(r.the_geom, l.the_geom) " +
                     ")";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -1526,11 +1703,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("overlapsWith", members);
+        overlapsWithMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (isPartOfMembers != null) {
+            return isPartOfMembers.get(part).contains(whole);
+        }
+
         String partTable = getTable(part);
         String wholeTable = getTable(whole);
 
@@ -1664,6 +1854,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsPartOf(OWLIndividual whole) {
+        if (hasPartMembers != null) {
+            return hasPartMembers.get(whole).stream();
+        }
+
         String tableName = getTable(whole);
 
         OWLIndividual wholeGeom;
@@ -1784,6 +1978,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsPartOfMembers() {
+        if (isPartOfMembers != null) {
+            return isPartOfMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("isPartOf");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isPartOfMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "part.iri part, " +
@@ -1845,7 +2057,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Contains(whole.the_geom, part.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -1876,6 +2088,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isPartOf", members);
+        isPartOfMembers = members;
+
         return members;
     }
 
@@ -1886,6 +2107,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingPart(OWLIndividual part) {
+        if (isPartOfMembers != null) {
+            return isPartOfMembers.get(part).stream();
+        }
+
         String tableName = getTable(part);
 
         OWLIndividual partGeomIndividual;
@@ -2005,6 +2230,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasPartMembers() {
+        if (hasPartMembers != null) {
+            return hasPartMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("hasPart");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            hasPartMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "whole.iri whole, " +
@@ -2062,7 +2305,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Contains(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -2093,11 +2336,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("hasPart", members);
+        hasPartMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (isProperPartOfMembers != null) {
+            return isProperPartOfMembers.get(part).contains(whole);
+        }
+
         String partTable = getTable(part);
         String wholeTable = getTable(whole);
 
@@ -2216,6 +2472,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsProperPartOf(OWLIndividual whole) {
+        if (hasProperPartMembers != null) {
+            return hasProperPartMembers.get(whole).stream();
+        }
+
         String tableName = getTable(whole);
 
         if (tableName.equals(pointFeatureTableName)) {
@@ -2325,6 +2585,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsProperPartOfMembers() {
+        if (isProperPartOfMembers != null) {
+            return isProperPartOfMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("isProperPartOf");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isProperPartOfMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "part.iri part, " +
@@ -2377,7 +2655,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_ContainsProperly(whole.the_geom, part.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -2408,6 +2686,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isProperPartOf", members);
+        isProperPartOfMembers = members;
+
         return members;
     }
 
@@ -2418,6 +2705,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingProperPart(OWLIndividual part) {
+        if (isProperPartOfMembers != null) {
+            if (isProperPartOfMembers.get(part) == null) {
+                int foo = 23;
+            }
+            return isProperPartOfMembers.get(part).stream();
+        }
+
         String partTableName = getTable(part);
 
         OWLIndividual partGeomIndividual;
@@ -2525,6 +2819,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasProperPartMembers() {
+        if (hasProperPartMembers != null) {
+            return hasProperPartMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("hasProperPart");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            hasProperPartMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "whole.iri whole, " +
@@ -2577,7 +2889,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_ContainsProperly(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -2608,12 +2920,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("hasProperPart", members);
+        hasProperPartMembers = members;
+
         return members;
     }
 
     @Override
     public boolean partiallyOverlapsWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+
+        if (partiallyOverlapsWithMembers != null) {
+            return partiallyOverlapsWithMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
 
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
@@ -2722,6 +3049,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsPartiallyOverlappingWith(
             OWLIndividual spatialFeatureIndividual) {
 
+        if (partiallyOverlapsWithMembers != null) {
+            return partiallyOverlapsWithMembers.get(spatialFeatureIndividual).stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         if (tableName.equals(pointFeatureTableName)) {
@@ -2818,6 +3149,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getPartiallyOverlapsWithMembers() {
+        if (partiallyOverlapsWithMembers != null) {
+            return partiallyOverlapsWithMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("partiallyOverlapsWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            partiallyOverlapsWithMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "l.iri l_iri, " +
@@ -2852,7 +3201,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Overlaps(l.the_geom, r.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -2888,11 +3237,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("partiallyOverlapsWith", members);
+        partiallyOverlapsWithMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (isTangentialProperPartOfMembers != null) {
+            return isTangentialProperPartOfMembers.get(part).contains(whole);
+        }
+
         String partTableName = getTable(part);
         String wholeTableName = getTable(whole);
 
@@ -3032,6 +3394,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsTangentialProperPartOf(OWLIndividual whole) {
+        if (hasTangentialProperPartMembers != null) {
+            return hasTangentialProperPartMembers.get(whole).stream();
+        }
+
         String wholeTableName = getTable(whole);
 
         if (wholeTableName.equals(pointFeatureTableName)) {
@@ -3153,6 +3519,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsTangentialProperPartOfMembers() {
+        if (isTangentialProperPartOfMembers != null) {
+            return isTangentialProperPartOfMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                readCacheFile("isTangentialProperPartOf");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isTangentialProperPartOfMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "part.iri part, " +
@@ -3223,7 +3608,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "AND " +
                     "NOT ST_Equals(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -3254,11 +3639,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isTangentialProperPartOf", members);
+        isTangentialProperPartOfMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (isNonTangentialProperPartOfMembers != null) {
+            return isNonTangentialProperPartOfMembers.get(part).contains(whole);
+        }
+
         String partTableName = getTable(part);
         String wholeTableName = getTable(whole);
 
@@ -3309,6 +3707,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole) {
+        if (hasNonTangentialProperPartMembers != null) {
+            return hasNonTangentialProperPartMembers.get(whole).stream();
+        }
+
         String wholeTableName = getTable(whole);
 
         if (wholeTableName.equals(pointFeatureTableName)) {
@@ -3407,6 +3809,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNonTangentialProperPartOfMembers() {
+        if (isNonTangentialProperPartOfMembers != null) {
+            return isNonTangentialProperPartOfMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("overlapsWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isNonTangentialProperPartOfMembers = members;
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "part.iri part, " +
@@ -3453,7 +3872,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_ContainsProperly(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -3484,12 +3903,27 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isNonTangentialProperPartOf", members);
+        isNonTangentialProperPartOfMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+
+        if (isSpatiallyIdenticalWithMembers != null) {
+            return isSpatiallyIdenticalWithMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
 
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
@@ -3540,6 +3974,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual) {
 
+        if (isSpatiallyIdenticalWithMembers != null) {
+            return isSpatiallyIdenticalWithMembers
+                    .get(spatialFeatureIndividual)
+                    .stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -3584,6 +4024,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsSpatiallyIdenticalWithMembers() {
+        if (isSpatiallyIdenticalWithMembers != null) {
+            return isSpatiallyIdenticalWithMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                readCacheFile("isSpatiallyIdenticalWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isSpatiallyIdenticalWithMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "l.iri l_iri, " +
@@ -3612,7 +4071,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Equals(l.the_geom, r.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -3648,6 +4107,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isSpatiallyIdenticalWith", members);
+        isSpatiallyIdenticalWithMembers = members;
+
         return members;
     }
 
@@ -3658,6 +4126,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingTangentialProperPart(OWLIndividual part) {
+        if (isTangentialProperPartOfMembers != null) {
+            return isTangentialProperPartOfMembers.get(part).stream();
+        }
+
         String partTableName = getTable(part);
 
         OWLIndividual partGeomIndividual;
@@ -3781,6 +4253,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasTangentialProperPartMembers() {
+        if (hasTangentialProperPartMembers != null) {
+            return hasTangentialProperPartMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                readCacheFile("hasTangentialProperPart");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            hasTangentialProperPartMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "whole.iri whole, " +
@@ -3851,7 +4342,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "AND " +
                     "NOT ST_Equals(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -3882,6 +4373,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("hasTangentialProperPart", members);
+        hasTangentialProperPartMembers = members;
+
         return members;
     }
 
@@ -3892,6 +4392,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part) {
+        if (isNonTangentialProperPartOfMembers != null) {
+            return isNonTangentialProperPartOfMembers.get(part).stream();
+        }
+
         String partTableName = getTable(part);
 
         OWLIndividual partGeomIndividual;
@@ -3991,6 +4495,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasNonTangentialProperPartMembers() {
+        if (hasNonTangentialProperPartMembers != null) {
+            return hasNonTangentialProperPartMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                readCacheFile("hasNonTangentialProperPart");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            hasNonTangentialProperPartMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "whole.iri whole, " +
@@ -4037,7 +4560,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_ContainsProperly(whole.the_geom, part.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -4068,11 +4591,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("hasNonTangentialProperPart", members);
+        hasNonTangentialProperPartMembers = members;
+
         return members;
     }
 
     @Override
     public boolean isExternallyConnectedWith(OWLIndividual spatialIndividual1, OWLIndividual spatialIndividual2) {
+        if (isExternallyConnectedWithMembers != null) {
+            return isExternallyConnectedWithMembers
+                    .get(spatialIndividual1)
+                    .contains(spatialIndividual2);
+        }
+
         String tableName1 = getTable(spatialIndividual1);
         String tableName2 = getTable(spatialIndividual2);
 
@@ -4261,6 +4799,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsExternallyConnectedWith(OWLIndividual spatialIndividual) {
+        if (isExternallyConnectedWithMembers != null) {
+            return isExternallyConnectedWithMembers.get(spatialIndividual).stream();
+        }
+
         String tableName = getTable(spatialIndividual);
 
         OWLIndividual geomIndividual;
@@ -4424,6 +4966,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsExternallyConnectedWithMembers() {
+        if (isExternallyConnectedWithMembers != null) {
+            return isExternallyConnectedWithMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members =
+                readCacheFile("isExternallyConnectedWith");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isExternallyConnectedWithMembers = members;
+
+            return members;
+        }
+
         String queryStr =
                 "SELECT " +
                     "l.iri l_iri, " +
@@ -4497,7 +5058,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "WHERE " +
                     "ST_Touches(l.the_geom, r.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -4533,11 +5094,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isExternallyConnectedWith", members);
+        isExternallyConnectedWithMembers = members;
+
         return members;
     }
 
     @Override
     public  boolean isDisconnectedFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (isDisconnectedFromMembers != null) {
+            return isDisconnectedFromMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
+
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
 
@@ -4581,6 +5157,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual) {
+        if (isDisconnectedFromMembers != null) {
+            return isDisconnectedFromMembers
+                    .get(spatialFeatureIndividual)
+                    .stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -4647,6 +5229,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsDisconnectedFromMembers() {
+        if (isDisconnectedFromMembers != null) {
+            return isDisconnectedFromMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("isDisconnectedFrom");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isDisconnectedFromMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri, " +
@@ -4702,7 +5302,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "WHERE " +
                 "NOT ST_Intersects(l.the_geom, r.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             Statement statement = conn.createStatement();
@@ -4738,6 +5338,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isDisconnectedFrom", members);
+        isDisconnectedFromMembers = members;
+
         return members;
     }
     // ---
@@ -4754,6 +5363,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (isNearMembers != null) {
+            return isNearMembers
+                    .get(spatialFeatureIndividual1)
+                    .contains(spatialFeatureIndividual2);
+        }
+
         String tableName1 = getTable(spatialFeatureIndividual1);
         String tableName2 = getTable(spatialFeatureIndividual2);
 
@@ -4798,6 +5413,10 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual) {
+        if (isNearMembers != null) {
+            return isNearMembers.get(spatialFeatureIndividual).stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -4867,6 +5486,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNearMembers() {
+        if (isNearMembers != null) {
+            return isNearMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("isNear");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            isNearMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri, " +
@@ -4922,7 +5559,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "WHERE " +
                 "ST_DWithin(l.the_geom::geography, r.the_geom, ?, false) ";  // #6
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -4965,12 +5602,28 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("isNear", members);
+        isNearMembers = members;
+
         return members;
     }
 
     @Override
     public  boolean startsNear(
             OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+
+        if (startsNearMembers != null) {
+            return startsNearMembers
+                    .get(lineStringFeatureIndividual)
+                    .contains(spatialFeatureIndividual);
+        }
+
         String tableName1 = getTable(lineStringFeatureIndividual);
         String tableName2 = getTable(spatialFeatureIndividual);
 
@@ -5023,6 +5676,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual) {
+        if (startsNearMembers != null) {
+            Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+            for (OWLIndividual lineFeature : startsNearMembers.keySet()) {
+                if (startsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
+                    resultIndividuals.add(lineFeature);
+                }
+            }
+
+            return resultIndividuals.stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -5073,6 +5738,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getStartsNearMembers() {
+        if (startsNearMembers != null) {
+            return startsNearMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("startsNear");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            startsNearMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri," +
@@ -5103,7 +5786,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "WHERE " +
                 "ST_DWithin(ST_StartPoint(l.the_geom), r.the_geom, ?, false) ";  // 3
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -5138,11 +5821,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("startsNear", members);
+        startsNearMembers = members;
+
         return members;
     }
 
     @Override
     public boolean endsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        if (endsNearMembers != null) {
+            return endsNearMembers
+                    .get(lineStringFeatureIndividual)
+                    .contains(spatialFeatureIndividual);
+        }
+
         String tableName1 = getTable(lineStringFeatureIndividual);
         String tableName2 = getTable(spatialFeatureIndividual);
 
@@ -5195,6 +5893,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual) {
+        if (endsNearMembers != null) {
+            Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+            for (OWLIndividual lineFeature : endsNearMembers.keySet()) {
+                if (endsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
+                    resultIndividuals.add(lineFeature);
+                }
+            }
+
+            return resultIndividuals.stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -5245,6 +5955,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getEndsNearMembers() {
+        if (endsNearMembers != null) {
+            return endsNearMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("endsNear");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            endsNearMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri, " +
@@ -5275,7 +6003,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "WHERE " +
                 "ST_DWithin(ST_EndPoint(l.the_geom), r.the_geom, ?, false) ";  // #3
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -5310,11 +6038,26 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("endsNear", members);
+        endsNearMembers = members;
+
         return members;
     }
 
     @Override
     public boolean crosses(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        if (crossesMembers != null) {
+            return crossesMembers
+                    .get(lineStringFeatureIndividual)
+                    .contains(spatialFeatureIndividual);
+        }
+
         String tableName1 = getTable(lineStringFeatureIndividual);
         String tableName2 = getTable(spatialFeatureIndividual);
 
@@ -5395,6 +6138,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsCrossing(OWLIndividual spatialFeatureIndividual) {
+        if (crossesMembers != null) {
+            Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+            for (OWLIndividual lineFeatureIndividual : crossesMembers.keySet()) {
+                if (crossesMembers.get(lineFeatureIndividual).contains(spatialFeatureIndividual)) {
+                    resultIndividuals.add(lineFeatureIndividual);
+                }
+            }
+
+            return resultIndividuals.stream();
+        }
+
         String tableName = getTable(spatialFeatureIndividual);
 
         OWLIndividual geomIndividual;
@@ -5469,6 +6224,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getCrossesMembers() {
+        if (crossesMembers != null) {
+            return crossesMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("crosses");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            crossesMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri, " +
@@ -5501,7 +6274,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "AND " +
                 "NOT ST_Intersects(ST_EndPoint(l.the_geom), r.the_geom) ";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -5533,10 +6306,25 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             throw new RuntimeException(e);
         }
 
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("crosses", members);
+        crossesMembers = members;
+
         return members;
     }
     @Override
     public boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2) {
+        if (runsAlongMembers != null) {
+            return runsAlongMembers
+                    .get(lineStringFeatureIndividual1)
+                    .contains(lineStringFeatureIndividual2);
+        }
+
         String tableName1 = getTable(lineStringFeatureIndividual1);
         String tableName2 = getTable(lineStringFeatureIndividual2);
 
@@ -5593,6 +6381,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
+        if (runsAlongMembers != null) {
+            Set<OWLIndividual> resultIndividuals = new HashSet<>();
+
+            for (OWLIndividual lineFeatureIndividual1 : runsAlongMembers.keySet()) {
+                if (runsAlongMembers.get(lineFeatureIndividual1).contains(lineStringFeatureIndividual)) {
+                    resultIndividuals.add(lineFeatureIndividual1);
+                }
+            }
+
+            return resultIndividuals.stream();
+        }
+
         String tableName = getTable(lineStringFeatureIndividual);
 
         if (!tableName.equals(lineFeatureTableName)) {
@@ -5648,6 +6448,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getRunsAlongMembers() {
+        if (runsAlongMembers != null) {
+            return runsAlongMembers;
+        }
+
+        Map<OWLIndividual, SortedSet<OWLIndividual>> members = readCacheFile("runsAlong");
+
+        if (members != null) {
+            for (OWLIndividual indiv : reasoner.getIndividuals()) {
+                if (!members.containsKey(indiv)) {
+                    members.put(indiv, new TreeSet<>());
+                }
+            }
+
+            runsAlongMembers = members;
+
+            return members;
+        }
+
         String queryStr =
             "SELECT " +
                 "l.iri l_iri, " +
@@ -5663,7 +6481,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             "AND " +
                 "NOT ST_Equals(l.the_geom, r.the_geom)";
 
-        Map<OWLIndividual, SortedSet<OWLIndividual>> members = new HashMap<>();
+        members = new HashMap<>();
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -5696,6 +6514,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         } catch (SQLException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        for (OWLIndividual indiv : reasoner.getIndividuals()) {
+            if (!members.containsKey(indiv)) {
+                members.put(indiv, new TreeSet<>());
+            }
+        }
+
+        writeCacheFile("runsAlong", members);
+        runsAlongMembers = members;
 
         return members;
     }
