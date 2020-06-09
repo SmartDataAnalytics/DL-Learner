@@ -126,7 +126,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -317,7 +317,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -481,7 +481,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -648,7 +648,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -850,7 +850,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -1015,7 +1015,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -1193,7 +1193,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -1454,7 +1454,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -1671,7 +1671,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -1891,7 +1891,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -2142,7 +2142,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -2359,7 +2359,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -2579,7 +2579,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -2829,7 +2829,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -3046,7 +3046,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -3271,7 +3271,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -3532,7 +3532,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -3790,7 +3790,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -4124,7 +4124,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -4541,7 +4541,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -4886,7 +4886,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -5245,7 +5245,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -5635,7 +5635,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -6012,7 +6012,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -6370,7 +6370,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -6760,7 +6760,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -7120,7 +7120,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -7383,7 +7383,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -7694,7 +7694,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -7972,7 +7972,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -8356,7 +8356,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -8697,7 +8697,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -9081,7 +9081,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -9418,7 +9418,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -9743,7 +9743,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -10124,7 +10124,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -10454,7 +10454,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -10779,7 +10779,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -11160,7 +11160,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -11463,7 +11463,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(70);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -11644,7 +11644,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(70);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -11860,7 +11860,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(70);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12027,7 +12027,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12158,7 +12158,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12310,7 +12310,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12447,7 +12447,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12578,7 +12578,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12730,7 +12730,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setNearRadiusInMeters(60);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -12901,7 +12901,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -13139,7 +13139,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -13421,7 +13421,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
@@ -13637,7 +13637,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setRunsAlongToleranceInMeters(10);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -13767,7 +13767,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setRunsAlongToleranceInMeters(10);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -13925,7 +13925,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setRunsAlongToleranceInMeters(10);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
@@ -14025,7 +14025,7 @@ public class SpatialReasonerPostGISTest {
         cwr.init();
 
         SpatialReasonerPostGIS spatialReasoner = new SpatialReasonerPostGIS();
-        spatialReasoner.setBaseReasoner(cwr);
+        spatialReasoner.setReasoner(cwr);
         // No need to call init here as the method
         // updateWithSuperPropertyMembers only makes use of the base reasoner
         // (cwr in this case)
@@ -14135,7 +14135,7 @@ public class SpatialReasonerPostGISTest {
         reasoner.setDBUserPW(dbUserPW);
         reasoner.setHostname(db.getContainerIpAddress());
         reasoner.setPort(db.getFirstMappedPort());
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.setRunsAlongToleranceInMeters(10);
 
         reasoner.addGeometryPropertyPath(geometryPropertyPath);

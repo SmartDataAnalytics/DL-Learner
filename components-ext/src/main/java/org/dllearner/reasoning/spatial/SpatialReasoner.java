@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
- * Spatial baseReasoner interface specifying a baseReasoner which is capable of
+ * Spatial reasoner interface specifying a reasoner which is capable of
  * reasoning over implicit spatial relations like 'near', 'inside', 'along' etc.
  *
  * For now only geo:asWKT literals will be supported. So, geographic geometries

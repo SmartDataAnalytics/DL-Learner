@@ -71,7 +71,7 @@ public class ExperimentsArtificial {
         reasoner.setDBUserPW("postgres");
         reasoner.setHostname("localhost");
         reasoner.setPort(5432);
-        reasoner.setBaseReasoner(cwr);
+        reasoner.setReasoner(cwr);
         reasoner.addGeometryPropertyPath(geometryPropertyPath);
 
         reasoner.init();

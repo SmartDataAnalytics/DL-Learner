@@ -42,7 +42,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private OWLClass pointFeatureClass = SpatialKBPostGISHelper.pointFeatureClass;
     private String pointFeatureTableName = SpatialKBPostGISHelper.pointGeomTableName;
 
-    protected AbstractReasonerComponent baseReasoner;
+    protected AbstractReasonerComponent reasoner;
 
     // spatial relations settings
     private double nearRadiusInMeters = 30;
@@ -96,7 +96,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                                 for (OWLObjectProperty objProp : objProps) {
                                     for (OWLIndividual i : tmpS) {
                                         tmpO.addAll(
-                                                baseReasoner.getRelatedIndividuals(i, objProp));
+                                                reasoner.getRelatedIndividuals(i, objProp));
                                     }
 
                                     tmpS = tmpO;
@@ -189,7 +189,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                                      * have a non-empty set as values
                                      */
                                     Map<OWLIndividual, SortedSet<OWLIndividual>> members =
-                                            baseReasoner.getPropertyMembers(objProp);
+                                            reasoner.getPropertyMembers(objProp);
 
                                     /**
                                      * `members` keys which have a non-empty
@@ -256,11 +256,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
      *                          table for, not the geometry OWL individual
      */
     private String getTable(OWLIndividual featureIndividual) {
-        if (baseReasoner.hasType(areaFeatureClass, featureIndividual)) {
+        if (reasoner.hasType(areaFeatureClass, featureIndividual)) {
             return areaFeatureTableName;
-        } else if (baseReasoner.hasType(lineFeatureClass, featureIndividual)) {
+        } else if (reasoner.hasType(lineFeatureClass, featureIndividual)) {
             return lineFeatureTableName;
-        } else if (baseReasoner.hasType(pointFeatureClass, featureIndividual)) {
+        } else if (reasoner.hasType(pointFeatureClass, featureIndividual)) {
             return pointFeatureTableName;
         } else {
             throw new RuntimeException(
@@ -299,19 +299,19 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (containsSpatialExpressions(superClass) || containsSpatialExpressions(subClass)) {
             return isSpatialSuperClassOf(superClass, subClass);
         } else {
-            return baseReasoner.isSuperClassOf(superClass, subClass);
+            return reasoner.isSuperClassOf(superClass, subClass);
         }
     }
 
     @Override
     protected Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(
             OWLDataProperty datatypeProperty) {
-        return baseReasoner.getDatatypeMembers(datatypeProperty);
+        return reasoner.getDatatypeMembers(datatypeProperty);
     }
 
     @Override
     public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
-        Map<OWLObjectProperty, OWLClassExpression> domainsMap = baseReasoner.getObjectPropertyDomains();
+        Map<OWLObjectProperty, OWLClassExpression> domainsMap = reasoner.getObjectPropertyDomains();
 
         // TODO: Add spatial aspect-specific stuff here
         domainsMap.put(SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature);
@@ -339,7 +339,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyRanges() {
-        Map<OWLObjectProperty, OWLClassExpression> rangesMap = baseReasoner.getObjectPropertyRanges();
+        Map<OWLObjectProperty, OWLClassExpression> rangesMap = reasoner.getObjectPropertyRanges();
 
         // TODO: Add spatial aspect-specific stuff here
         rangesMap.put(SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature);
@@ -367,7 +367,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
-        Map<OWLDataProperty, OWLClassExpression> domainsMap = baseReasoner.getDataPropertyDomains();
+        Map<OWLDataProperty, OWLClassExpression> domainsMap = reasoner.getDataPropertyDomains();
 
         // TODO: Add spatial aspect-specific stuff here
 
@@ -376,7 +376,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression ce) {
-        SortedSet<OWLClassExpression> subClasses = baseReasoner.getSubClasses(ce);
+        SortedSet<OWLClassExpression> subClasses = reasoner.getSubClasses(ce);
 
         // TODO: Add spatial aspect-specific stuff here
 
@@ -385,7 +385,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression ce) {
-        SortedSet<OWLClassExpression> superClasses = baseReasoner.getSubClasses(ce);
+        SortedSet<OWLClassExpression> superClasses = reasoner.getSubClasses(ce);
 
         // TODO: Add spatial aspect-specific stuff here
 
@@ -394,7 +394,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected Set<OWLDataProperty> getDatatypePropertiesImpl() {
-        Set<OWLDataProperty> dataProperties = baseReasoner.getDatatypeProperties();
+        Set<OWLDataProperty> dataProperties = reasoner.getDatatypeProperties();
 
         dataProperties.addAll(SpatialVocabulary.spatialDataProperties);
 
@@ -403,7 +403,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty objectProperty) {
-        SortedSet<OWLObjectProperty> subProperties = baseReasoner.getSubProperties(objectProperty);
+        SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(objectProperty);
 
         // TODO: add spatial aspect-specific stuff here
 
@@ -464,7 +464,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty dataProperty) {
-        SortedSet<OWLDataProperty> subProperties = baseReasoner.getSubProperties(dataProperty);
+        SortedSet<OWLDataProperty> subProperties = reasoner.getSubProperties(dataProperty);
 
         // TODO: add spatial aspect-specific stuff here
 
@@ -473,7 +473,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty objectProperty) {
-        SortedSet<OWLObjectProperty> superProperties = baseReasoner.getSuperProperties(objectProperty);
+        SortedSet<OWLObjectProperty> superProperties = reasoner.getSuperProperties(objectProperty);
 
         // TODO: add spatial aspect-specific stuff here
 
@@ -550,7 +550,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty dataProperty) {
-        SortedSet<OWLDataProperty> superProperties = baseReasoner.getSuperProperties(dataProperty);
+        SortedSet<OWLDataProperty> superProperties = reasoner.getSuperProperties(dataProperty);
 
         // TODO: add spatial aspect-specific stuff here
 
@@ -560,7 +560,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     protected Set<OWLObjectProperty> getObjectPropertiesImpl() {
         return Sets.union(
-                baseReasoner.getObjectProperties(),
+                reasoner.getObjectProperties(),
                 SpatialVocabulary.spatialObjectProperties);
     }
 
@@ -645,7 +645,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         // TODO: Add further spatial object properties here
 
         } else {
-            return baseReasoner.getRange(objectProperty);
+            return reasoner.getRange(objectProperty);
         }
     }
 
@@ -729,7 +729,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         // TODO: Add further spatial object properties here
         } else {
-            return baseReasoner.getDomain(objectProperty);
+            return reasoner.getDomain(objectProperty);
         }
     }
 
@@ -737,21 +737,21 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     protected OWLClassExpression getDomainImpl(OWLDataProperty dataProperty) {
         // TODO: Add spatial data property handling here
 
-        return baseReasoner.getDomain(dataProperty);
+        return reasoner.getDomain(dataProperty);
     }
 
     @Override
     protected Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
         // TODO: Add spatial int data properties here
 
-        return baseReasoner.getIntDatatypeProperties();
+        return reasoner.getIntDatatypeProperties();
     }
 
     @Override
     protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
         // TODO: Add spatial double data properties here
 
-        return baseReasoner.getDoubleDatatypeProperties();
+        return reasoner.getDoubleDatatypeProperties();
     }
 
     @Override
@@ -841,7 +841,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                                 "handled in getPropertyMembersImpl( )");
             }
         } else {
-            return baseReasoner.getPropertyMembers(objectProperty);
+            return reasoner.getPropertyMembers(objectProperty);
         }
     }
 
@@ -849,14 +849,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
         // TODO: Add spatial boolean data properties here
 
-        return baseReasoner.getBooleanDatatypeProperties();
+        return reasoner.getBooleanDatatypeProperties();
     }
 
     @Override
     protected Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
         // TODO: Add spatial string data properties here
 
-        return baseReasoner.getDatatypeProperties();
+        return reasoner.getDatatypeProperties();
     }
 
     @Override
@@ -864,7 +864,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (containsSpatialExpressions(ce)) {
             return hasTypeSpatial(ce, individual);
         } else {
-            return baseReasoner.hasType(ce, individual);
+            return reasoner.hasType(ce, individual);
         }
     }
 
@@ -873,7 +873,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     protected Set<OWLClass> getInconsistentClassesImpl() {
-        return baseReasoner.getInconsistentClasses();
+        return reasoner.getInconsistentClasses();
     }
 
     @Override
@@ -890,7 +890,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public OWLDatatype getDatatype(OWLDataProperty dp) {
         // TODO: Add spatial data property handling here
 
-        return baseReasoner.getDatatype(dp);
+        return reasoner.getDatatype(dp);
     }
 
     @Override
@@ -900,18 +900,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Set<OWLClass> getClasses() {
-        return Sets.union(baseReasoner.getClasses(), SpatialVocabulary.spatialClasses);
+        return Sets.union(reasoner.getClasses(), SpatialVocabulary.spatialClasses);
     }
 
     @Override
     public SortedSet<OWLIndividual> getIndividuals() {
-        return baseReasoner.getIndividuals();
+        return reasoner.getIndividuals();
     }
 
     @Override
     protected SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) {
         if (!containsSpatialExpressions(concept)) {
-            return baseReasoner.getIndividuals(concept);
+            return reasoner.getIndividuals(concept);
         } else {
             if (concept instanceof OWLObjectIntersectionOf) {
                 return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
@@ -941,17 +941,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public String getBaseURI() {
-        return baseReasoner.getBaseURI();
+        return reasoner.getBaseURI();
     }
 
     @Override
     public Map<String, String> getPrefixes() {
-        return baseReasoner.getPrefixes();
+        return reasoner.getPrefixes();
     }
 
     @Override
     public void init() throws ComponentInitException {
-        baseReasoner.init();
+        reasoner.init();
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -5816,9 +5816,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     protected void updateWithSuperPropertyMembers(
             Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
 
-        for(OWLObjectProperty subProp : baseReasoner.getSuperProperties((OWLObjectProperty) prop)) {
+        for(OWLObjectProperty subProp : reasoner.getSuperProperties((OWLObjectProperty) prop)) {
             Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
-                    baseReasoner.getPropertyMembers(subProp);
+                    reasoner.getPropertyMembers(subProp);
 
             for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
                 Set<OWLIndividual> valIndividuals =
@@ -5903,7 +5903,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsConnectedWFillerIndiv =
@@ -5920,7 +5920,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsOverlappingWFillerIndiv =
@@ -5940,7 +5940,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartOfFillerIndiv =
@@ -5960,7 +5960,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingPartFillerIndiv =
@@ -5980,7 +5980,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsProperPartOfFillerIndiv =
@@ -6000,7 +6000,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingProperPartFillerIndiv =
@@ -6017,7 +6017,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartiallyOverlappingWFillerIndiv =
@@ -6034,7 +6034,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
@@ -6051,7 +6051,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingNonTangentialProperPartOfFillerIndiv =
@@ -6068,7 +6068,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsSpatiallyIdenticalWFillerIndiv =
@@ -6085,7 +6085,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsTangentialProperPart =
@@ -6102,7 +6102,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsNonTangentialProperPart =
@@ -6119,7 +6119,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
@@ -6136,7 +6136,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
@@ -6153,7 +6153,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsNearFillerIndiv =
@@ -6170,7 +6170,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsStartingNearFillerIndiv =
@@ -6187,7 +6187,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsEndingNearFillerIndiv =
@@ -6204,7 +6204,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsCrossingFillerIndiv =
@@ -6221,7 +6221,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Set<OWLIndividual> individuals = new HashSet<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsRunningAlongFillerIndiv =
@@ -6246,7 +6246,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
 
@@ -6305,7 +6305,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsConnectedWFillerIndiv =
@@ -6326,7 +6326,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsOverlappingWFillerIndiv =
@@ -6347,7 +6347,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartOfFillerIndiv =
@@ -6368,7 +6368,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingPartFillerIndiv =
@@ -6389,7 +6389,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsProperPartOfFillerIndiv =
@@ -6410,7 +6410,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingProperPartFillerIndiv =
@@ -6431,7 +6431,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartiallyOverlappingWFillerIndiv =
@@ -6452,7 +6452,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
@@ -6473,7 +6473,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingNonTangentialProperPartOfFillerIndiv =
@@ -6494,7 +6494,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsSpatiallyIdenticalWFillerIndiv =
@@ -6515,7 +6515,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsTangentialProperPart =
@@ -6536,7 +6536,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsNonTangentialProperPart =
@@ -6557,7 +6557,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
@@ -6578,7 +6578,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
@@ -6599,7 +6599,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsNearFillerIndiv =
@@ -6619,7 +6619,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsStartingNearFillerIndiv =
@@ -6640,7 +6640,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsEndingNearFillerIndiv =
@@ -6661,7 +6661,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsCrossingFillerIndiv =
@@ -6682,7 +6682,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsRunningAlongFillerIndiv =
@@ -6712,7 +6712,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
 
@@ -7148,7 +7148,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
                 Set<OWLIndividual> fillerIndividuals = getIndividualsImpl(filler);
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers =
-                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 updateWithSuperPropertyMembers(propertyMembers, prop.asOWLObjectProperty());
 
@@ -7218,7 +7218,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsConnectedWFillerIndiv =
@@ -7239,7 +7239,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsOverlappingWFillerIndiv =
@@ -7260,7 +7260,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartOfFillerIndiv =
@@ -7281,7 +7281,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingPartFillerIndiv =
@@ -7302,7 +7302,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsProperPartOfFillerIndiv =
@@ -7323,7 +7323,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingProperPartFillerIndiv =
@@ -7344,7 +7344,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsPartiallyOverlappingWFillerIndiv =
@@ -7365,7 +7365,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingTangentialProperPartOfFillerIndiv =
@@ -7386,7 +7386,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsBeingNonTangentialProperPartOfFillerIndiv =
@@ -7407,7 +7407,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsSpatiallyIdenticalWFillerIndiv =
@@ -7428,7 +7428,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsTangentialProperPart =
@@ -7449,7 +7449,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsHavingFillerIndivAsNonTangentialProperPart =
@@ -7472,7 +7472,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsExternallyConnectedWFillerIndiv =
@@ -7495,7 +7495,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsDisconnectedFromFillerIndiv =
@@ -7518,7 +7518,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsNearFillerIndiv =
@@ -7540,7 +7540,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsStartingNearFillerIndiv =
@@ -7562,7 +7562,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsEndingNearFillerIndiv =
@@ -7584,7 +7584,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivsCrossingFillerIndiv =
@@ -7606,7 +7606,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 Map<OWLIndividual, Integer> individualsWCounts = new HashMap<>();
 
                 for (OWLIndividual fillerIndiv : fillerIndivs) {
-                    if (!baseReasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
+                    if (!reasoner.hasType(SpatialVocabulary.SpatialFeature, fillerIndiv))
                         continue;
 
                     Set<OWLIndividual> indivRunningAlongFillerIndiv =
@@ -7641,7 +7641,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 SortedSet<OWLIndividual> fillerIndivs = getIndividualsImpl(filler);
 
                 Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals =
-                        baseReasoner.getPropertyMembers(prop.asOWLObjectProperty());
+                        reasoner.getPropertyMembers(prop.asOWLObjectProperty());
 
                 updateWithSuperPropertyMembers(propIndividuals, prop.asOWLObjectProperty());
 
@@ -7712,8 +7712,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         this.dbUserPW = dbUserPW;
     }
 
-    public void setBaseReasoner(AbstractReasonerComponent baseReasoner) {
-        this.baseReasoner = baseReasoner;
+    public void setReasoner(AbstractReasonerComponent reasoner) {
+        this.reasoner = reasoner;
     }
 
     public void setNearRadiusInMeters(double nearRadiusInMeters) {
