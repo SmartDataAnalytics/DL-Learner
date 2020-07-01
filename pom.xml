@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.7.28</slf4j.version>
-        <log4j.version>2.12.1</log4j.version>
+        <log4j.version>2.13.3</log4j.version>
         <solr.version>8.2.0</solr.version>
         <owlapi.version>4.5.13</owlapi.version>
         <spring.version>4.3.25.RELEASE</spring.version>
