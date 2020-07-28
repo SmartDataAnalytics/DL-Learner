@@ -19,6 +19,10 @@ public class SpatialRhoDRDown extends RhoDRDown {
     private OWLClassExpressionLengthMetric lengthMetric =
             OWLClassExpressionLengthMetric.getDefaultMetric();
 
+    private int maxRefinementDepth = 2;
+
+    private Set<OWLClassExpression> spatialSubClasses;
+
     // <getter/setter>
     public void setReasoner(SpatialReasoner reasoner) {
         // The spatial reasoner needs to be set here, since RhoDRDown won't be
@@ -28,13 +32,28 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
         this.reasoner = reasoner;
     }
+
+    public void setMaxRefinementDepth(int maxRefinementDepth) {
+        this.maxRefinementDepth = maxRefinementDepth;
+    }
     // </getter/setter>
 
     // <interface methods>
     @Override
     public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
+        return refine(description, maxLength, 0);
+    }
+
+    private Set<OWLClassExpression> refine(
+            OWLClassExpression description, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
+
         Set<OWLClassExpression> refinements = super.refine(description, maxLength);
-        refinements.addAll(spatiallyRefine(description, maxLength));
+
+        refinements.addAll(spatiallyRefine(description, maxLength, refinementDepth));
 
         return refinements;
     }
@@ -42,38 +61,53 @@ public class SpatialRhoDRDown extends RhoDRDown {
     @Override
     public void init() throws ComponentInitException {
         super.init();
+
+        spatialSubClasses = reasoner.getSpatialSubClasses();
     }
     // </interface methods>
 
-    private Set<OWLClassExpression> spatiallyRefine(OWLClassExpression ce, int maxLength) {
+    private Set<OWLClassExpression> spatiallyRefine(
+            OWLClassExpression ce, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
+
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (ce instanceof OWLClass)
-            refinements.addAll(spatiallyRefineOWLClass((OWLClass) ce));
+            refinements.addAll(
+                    spatiallyRefineOWLClass((
+                            OWLClass) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectIntersectionOf)
             refinements.addAll(
-                    spatiallyRefineOWLObjectIntersectionOf((OWLObjectIntersectionOf) ce, maxLength));
+                    spatiallyRefineOWLObjectIntersectionOf(
+                            (OWLObjectIntersectionOf) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectSomeValuesFrom)
             refinements.addAll(
-                    spatiallyRefineOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) ce, maxLength));
+                    spatiallyRefineOWLObjectSomeValuesFrom(
+                            (OWLObjectSomeValuesFrom) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectMinCardinality)
             refinements.addAll(
-                    spatiallyRefineOWLObjectMinCardinality((OWLObjectMinCardinality) ce, maxLength));
+                    spatiallyRefineOWLObjectMinCardinality(
+                            (OWLObjectMinCardinality) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectUnionOfImplExt)
             refinements.addAll(
                     spatiallyRefineOWLObjectUnionOf(
-                            ((OWLObjectUnionOfImplExt) ce).getOperands(), maxLength));
+                            ((OWLObjectUnionOfImplExt) ce).getOperands(), maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectAllValuesFrom)
             refinements.addAll(
-                    spatiallyRefineOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) ce, maxLength));
+                    spatiallyRefineOWLObjectAllValuesFrom(
+                            (OWLObjectAllValuesFrom) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLObjectMaxCardinality)
             refinements.addAll(
-                    spatiallyRefineOWLObjectMaxCardinality((OWLObjectMaxCardinality) ce, maxLength));
+                    spatiallyRefineOWLObjectMaxCardinality(
+                            (OWLObjectMaxCardinality) ce, maxLength, refinementDepth));
 
         else if (ce instanceof OWLDataSomeValuesFrom) { /* nothing to do */ }
 
@@ -85,533 +119,143 @@ public class SpatialRhoDRDown extends RhoDRDown {
         return refinements;
     }
 
-    private Set<OWLClassExpression> spatiallyRefineOWLClass(OWLClass cls) {
+    private Set<OWLClassExpression> getSomeValuesFromIntersectionRefinements(
+            OWLClassExpression ceToRefine,
+            OWLObjectProperty spatialProperty,
+            OWLClassExpression filler,
+            int maxLength,
+            int refinementDepth) {
+
+        Set<OWLClassExpression> refinements = new TreeSet<>();
+
+        refinements.add(
+                new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                        ceToRefine,
+                        new OWLObjectSomeValuesFromImpl(
+                                spatialProperty,
+                                filler))));
+
+        for (OWLClassExpression fillerSubCls : spatiallyRefine(
+                filler, maxLength+4, refinementDepth+1)) {
+
+            refinements.add(
+                new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                        ceToRefine,
+                        new OWLObjectSomeValuesFromImpl(
+                                spatialProperty,
+                                fillerSubCls))));
+        }
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> getAllValuesFromIntersectionRefinements(
+            OWLClassExpression ceToRefine,
+            OWLObjectProperty spatialProperty,
+            OWLClassExpression filler,
+            int maxLength,
+            int refinementDepth) {
+
+        Set<OWLClassExpression> refinements = new TreeSet<>();
+
+        refinements.add(
+                new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                        ceToRefine,
+                        new OWLObjectAllValuesFromImpl(
+                                spatialProperty,
+                                filler))));
+
+        for (OWLClassExpression fillerSubCls : spatiallyRefine(
+                filler, maxLength+4, refinementDepth+1)) {
+
+            refinements.add(
+                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
+                            ceToRefine,
+                            new OWLObjectAllValuesFromImpl(
+                                    spatialProperty,
+                                    fillerSubCls))));
+        }
+
+        return refinements;
+    }
+
+    private Set<OWLClassExpression> spatiallyRefineOWLClass(
+            OWLClass cls, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
+
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, cls)) {
-            // isConnectedWith ------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isConnectedWith,
-                                    SpatialVocabulary.SpatialFeature))));
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isConnectedWith,
-                                    SpatialVocabulary.SpatialFeature))));
+            for (OWLClassExpression featureSubClass : spatialSubClasses) {
 
-            // overlapsWith ---------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.overlapsWith,
-                                    SpatialVocabulary.SpatialFeature))));
+                // TODO: disconnectedFrom is ignored for now since this is property usually has a lot of members causing problems e.g. when querying the PostgreSQL DB
+                Set<OWLObjectProperty> ignoreList =
+                        Sets.newHashSet(SpatialVocabulary.isDisconnectedFrom);
 
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.overlapsWith,
-                                    SpatialVocabulary.SpatialFeature))));
+                for (OWLObjectProperty spatialProperty : SpatialVocabulary.spatialObjectProperties) {
+                    if (ignoreList.contains(spatialProperty))
+                        continue;
 
-            // isPartOf -------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getSomeValuesFromIntersectionRefinements(
+                                    cls,
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
 
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // hasPart --------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.hasPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.hasPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isProperPartOf -------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // hasProperPart --------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.hasProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.hasProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // partiallyOverlapsWith ------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.partiallyOverlapsWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.partiallyOverlapsWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isTangentialProperPartOf ---------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isTangentialProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isTangentialProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isNonTangentialProperPartOf ------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isNonTangentialProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isNonTangentialProperPartOf,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isSpatiallyIdenticalWith ---------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isSpatiallyIdenticalWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isSpatiallyIdenticalWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // hasTangentialProperPart ----------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.hasTangentialProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.hasTangentialProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // hasNonTangentialProperPart -------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.hasNonTangentialProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.hasNonTangentialProperPart,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isExternallyConnectedWith --------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isExternallyConnectedWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isExternallyConnectedWith,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isDisconnectedFrom ---------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isDisconnectedFrom,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isDisconnectedFrom,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // isNear ---------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.isNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.isNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // startsNear -----------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.startsNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.startsNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // endsNear -------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.endsNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.endsNear,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // crosses --------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.crosses,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.crosses,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            // runsAlong ------------------------------------------------------
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectSomeValuesFromImpl(
-                                    SpatialVocabulary.runsAlong,
-                                    SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(
-                    new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                            cls,
-                            new OWLObjectAllValuesFromImpl(
-                                    SpatialVocabulary.runsAlong,
-                                    SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getAllValuesFromIntersectionRefinements(
+                                    cls,
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
+                }
+            }
         }
 
         return refinements;
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectIntersectionOf(
-            OWLObjectIntersectionOf intersection, int maxLength) {
+            OWLObjectIntersectionOf intersection, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
 
         Set<OWLClassExpression> refinements = new HashSet<>();
         if (reasoner.isSuperClassOf(SpatialVocabulary.SpatialFeature, intersection)) {
-            // isConnectedWith ------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+            for (OWLClassExpression featureSubClass : spatialSubClasses) {
 
-            // overlapsWith ---------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.overlapsWith, SpatialVocabulary.SpatialFeature))));
+                // TODO: disconnectedFrom is ignored for now since this is property usually has a lot of members causing problems e.g. when querying the PostgreSQL DB
+                Set<OWLObjectProperty> ignoreList =
+                        Sets.newHashSet(SpatialVocabulary.isDisconnectedFrom);
 
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.overlapsWith, SpatialVocabulary.SpatialFeature))));
+                for (OWLObjectProperty spatialProperty : SpatialVocabulary.spatialObjectProperties) {
+                    if (ignoreList.contains(spatialProperty))
+                        continue;
 
-            // isPartOf -------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isPartOf, SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getSomeValuesFromIntersectionRefinements(
+                                    intersection,
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
 
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isPartOf, SpatialVocabulary.SpatialFeature))));
-
-            // hasPart --------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasPart, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasPart, SpatialVocabulary.SpatialFeature))));
-
-            // isProperPartOf -------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            // hasProperPart --------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
-
-            // partiallyOverlapsWith ------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature))));
-
-            // isTangentialProperPartOf ---------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isNonTangentialProperPartOf ------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isNonTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isNonTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isSpatiallyIdenticalWith ---------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isSpatiallyIdenticalWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isSpatiallyIdenticalWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // hasTangentialProperPart ----------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // hasNonTangentialProperPart -------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasNonTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasNonTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isExternallyConnectedWith --------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isExternallyConnectedWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isExternallyConnectedWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isDisconnectedFrom ---------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isDisconnectedFrom,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isDisconnectedFrom,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isNear ---------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // startsNear -----------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.startsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.startsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // endsNear -------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.endsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.endsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // crosses --------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.crosses,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.crosses,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // runsAlong ------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.runsAlong,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    intersection,
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.runsAlong,
-                            SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getAllValuesFromIntersectionRefinements(
+                                    intersection,
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
+                }
+            }
         }
 
         List<OWLClassExpression> operandsList = intersection.getOperandsAsList();
@@ -621,13 +265,13 @@ public class SpatialRhoDRDown extends RhoDRDown {
         OWLClassExpression secondOperand = operandsList.get(1);
 
         int tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(secondOperand);
-        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength)) {
+        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength, refinementDepth+1)) {
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     refinement1, secondOperand)));
         }
 
         tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(firstOperand);
-        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength)) {
+        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength, refinementDepth+1)) {
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     firstOperand, refinement2)));
         }
@@ -636,7 +280,11 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectSomeValuesFrom(
-            OWLObjectSomeValuesFrom ce, int maxLength) {
+            OWLObjectSomeValuesFrom ce, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
 
         OWLObjectPropertyExpression property = ce.getProperty();
         // FIXME: extend this to also support general object property expressions
@@ -652,9 +300,11 @@ public class SpatialRhoDRDown extends RhoDRDown {
         Set<OWLClassExpression> refinements = new HashSet<>();
 
         // FIXME: replace lengthMetric.objectProperyLength with actual prop length
+        // FIXME: consider refinement depth
         Set<OWLClassExpression> fillerRefinements = refine(
                 filler,
-                maxLength-lengthMetric.objectProperyLength);
+                maxLength-lengthMetric.objectProperyLength,
+                refinementDepth+1);
 
         for (OWLObjectProperty p : properties) {
             for (OWLClassExpression fillerRefinement : fillerRefinements) {
@@ -666,7 +316,11 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectMinCardinality(
-            OWLObjectMinCardinality ce, int maxLength) {
+            OWLObjectMinCardinality ce, int maxLength, int refinementDepth) {
+
+        if (refinementDepth > maxRefinementDepth) {
+            return new HashSet<>();
+        }
 
         OWLObjectPropertyExpression property = ce.getProperty();
 
@@ -683,7 +337,8 @@ public class SpatialRhoDRDown extends RhoDRDown {
         // FIXME: replace lengthMetric.objectProperyLength with actual prop length
         Set<OWLClassExpression> fillerRefinements =
                 refine(filler,
-                        maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength);
+                        maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength,
+                        refinementDepth+1);
         int refinedCardinality = minCardinality + 1;
 
         Set<OWLClassExpression> refinements = new HashSet<>();
@@ -710,241 +365,44 @@ public class SpatialRhoDRDown extends RhoDRDown {
      * and {@link OWLObjectUnionOf}.
      */
     private Set<OWLClassExpression> spatiallyRefineOWLObjectUnionOf(
-            Set<OWLClassExpression> unionOperands, int maxLength) {
+            Set<OWLClassExpression> unionOperands, int maxLength, int refinementDepth) {
 
         Set<OWLClassExpression> refinements = new HashSet<>();
+
+        if (refinementDepth > maxRefinementDepth) {
+            return refinements;
+        }
 
         if (reasoner.isSuperClassOf(
                 SpatialVocabulary.SpatialFeature, new OWLObjectUnionOfImpl(unionOperands))) {
 
-            // isConnectedWith ------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+            for (OWLClassExpression featureSubClass : spatialSubClasses) {
 
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isConnectedWith, SpatialVocabulary.SpatialFeature))));
+                // TODO: disconnectedFrom is ignored for now since this is property usually has a lot of members causing problems e.g. when querying the PostgreSQL DB
+                Set<OWLObjectProperty> ignoreList = Sets.newHashSet(
+                        SpatialVocabulary.isDisconnectedFrom);
 
-            // overlapsWith ---------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.overlapsWith, SpatialVocabulary.SpatialFeature))));
+                for (OWLObjectProperty spatialProperty : SpatialVocabulary.spatialObjectProperties) {
+                    if (ignoreList.contains(spatialProperty))
+                        continue;
 
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.overlapsWith, SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getSomeValuesFromIntersectionRefinements(
+                                    new OWLObjectUnionOfImplExt(unionOperands),
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
 
-            // isPartOf -------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isPartOf, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isPartOf, SpatialVocabulary.SpatialFeature))));
-
-            // hasPart --------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasPart, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasPart, SpatialVocabulary.SpatialFeature))));
-
-            // isProperPartOf -------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            // hasProperPart --------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
-
-            // partiallyOverlapsWith ------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasProperPart, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.partiallyOverlapsWith, SpatialVocabulary.SpatialFeature))));
-
-            // isTangentialProperPartOf ---------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isTangentialProperPartOf, SpatialVocabulary.SpatialFeature))));
-
-            // isNonTangentialProperPartOf ------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isNonTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isNonTangentialProperPartOf,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isSpatiallyIdenticalWith ---------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isSpatiallyIdenticalWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isSpatiallyIdenticalWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // hasTangentialProperPart ----------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // hasNonTangentialProperPart -------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.hasNonTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.hasNonTangentialProperPart,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isExternallyConnectedWith --------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isExternallyConnectedWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isExternallyConnectedWith,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isDisconnectedFrom ---------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isDisconnectedFrom,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isDisconnectedFrom,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // isNear ---------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.isNear, SpatialVocabulary.SpatialFeature))));
-
-            // startsNear -----------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.startsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.startsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // endsNear -------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.endsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.endsNear,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // crosses --------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.crosses,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.crosses,
-                            SpatialVocabulary.SpatialFeature))));
-
-            // runsAlong ------------------------------------------------------
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectSomeValuesFromImpl(
-                            SpatialVocabulary.runsAlong,
-                            SpatialVocabulary.SpatialFeature))));
-
-            refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
-                    new OWLObjectUnionOfImplExt(unionOperands),
-                    new OWLObjectAllValuesFromImpl(
-                            SpatialVocabulary.runsAlong,
-                            SpatialVocabulary.SpatialFeature))));
+                    refinements.addAll(
+                            getAllValuesFromIntersectionRefinements(
+                                    new OWLObjectUnionOfImplExt(unionOperands),
+                                    spatialProperty,
+                                    featureSubClass,
+                                    maxLength,
+                                    refinementDepth));
+                }
+            }
         }
 
         List<OWLClassExpression> unionOperandsList = new ArrayList<>(unionOperands);
@@ -954,13 +412,13 @@ public class SpatialRhoDRDown extends RhoDRDown {
         OWLClassExpression secondOperand = unionOperandsList.get(1);
 
         int tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(secondOperand);
-        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength)) {
+        for (OWLClassExpression refinement1 : refine(firstOperand, tmpMaxLength, refinementDepth+1)) {
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     refinement1, secondOperand)));
         }
 
         tmpMaxLength = maxLength - OWLClassExpressionUtils.getLength(firstOperand);
-        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength)) {
+        for (OWLClassExpression refinement2 : refine(secondOperand, tmpMaxLength, refinementDepth+1)) {
             refinements.add(new OWLObjectIntersectionOfImpl(Sets.newHashSet(
                     firstOperand, refinement2)));
         }
@@ -969,7 +427,13 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectAllValuesFrom(
-            OWLObjectAllValuesFrom ce, int maxLength) {
+            OWLObjectAllValuesFrom ce, int maxLength, int refinementDepth) {
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+
+        if (refinementDepth > maxRefinementDepth) {
+            return refinements;
+        }
 
         OWLObjectPropertyExpression property = ce.getProperty();
         // FIXME: extend this to also support general object property expressions
@@ -981,12 +445,11 @@ public class SpatialRhoDRDown extends RhoDRDown {
 
         OWLClassExpression filler = ce.getFiller();
 
-        Set<OWLClassExpression> refinements = new HashSet<>();
-
         // FIXME: replace lengthMetric.objectProperyLength with actual prop length
         Set<OWLClassExpression> fillerRefinements = refine(
                 filler,
-                maxLength-lengthMetric.objectProperyLength);
+                maxLength-lengthMetric.objectProperyLength,
+                refinementDepth+1);
 
         for (OWLObjectProperty p : properties) {
             for (OWLClassExpression fillerRefinement : fillerRefinements) {
@@ -998,7 +461,13 @@ public class SpatialRhoDRDown extends RhoDRDown {
     }
 
     private Set<OWLClassExpression> spatiallyRefineOWLObjectMaxCardinality(
-            OWLObjectMaxCardinality ce, int maxLength) {
+            OWLObjectMaxCardinality ce, int maxLength, int refinementDepth) {
+
+        Set<OWLClassExpression> refinements = new HashSet<>();
+
+        if (refinementDepth > maxRefinementDepth) {
+            return refinements;
+        }
 
         OWLObjectPropertyExpression property = ce.getProperty();
         // FIXME: extend this to also support general object property expressions
@@ -1012,14 +481,14 @@ public class SpatialRhoDRDown extends RhoDRDown {
         int maxCardinality = ce.getCardinality();
         int refinedMaxCardinality = Math.max(0, maxCardinality - 1);
 
-        Set<OWLClassExpression> refinements = new HashSet<>();
         refinements.add(
                 new OWLObjectMaxCardinalityImpl(property, refinedMaxCardinality, filler));
 
         // FIXME: replace lengthMetric.objectProperyLength with actual prop length
         Set<OWLClassExpression> fillerRefinements = refine(
                 filler,
-                maxLength-lengthMetric.objectProperyLength);
+                maxLength-lengthMetric.objectProperyLength,
+                refinementDepth+1);
 
         for (OWLObjectProperty p : properties) {
             for (OWLClassExpression fillerRefinement : fillerRefinements) {
