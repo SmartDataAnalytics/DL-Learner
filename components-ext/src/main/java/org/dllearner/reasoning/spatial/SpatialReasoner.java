@@ -5,6 +5,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
@@ -32,12 +33,16 @@ import java.util.stream.Stream;
  *                 ((long5 lat5, long6 lat6, long7 lat7, long8 lat8, long9 lat9)))
  */
 public interface SpatialReasoner extends ReasonerComponent {
-    /* Relations of the region connection calculus (RCC) */
-
-    boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);
 
     SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty property);
 
+    boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);
+
+    SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept);
+
+    Set<OWLClassExpression> getSpatialSubClasses();
+
+    /* Relations of the region connection calculus (RCC) */
     // Connected with
     boolean isConnectedWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2);
 
