@@ -984,6 +984,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     // -- implemented methods from interface/(abstract) base class
 
     @Override
+    public Set<OWLClassExpression> getSpatialSubClasses() {
+        SortedSet<OWLClassExpression> spatialSubClasses =
+                reasoner.getClassHierarchy().getSubClasses(pointFeatureClass);
+
+        spatialSubClasses.addAll(
+                reasoner.getClassHierarchy().getSubClasses(lineFeatureClass));
+
+        spatialSubClasses.addAll(
+                reasoner.getClassHierarchy().getSubClasses(areaFeatureClass));
+
+        return spatialSubClasses;
+    }
+
+    @Override
     protected Set<OWLClass> getInconsistentClassesImpl() {
         return reasoner.getInconsistentClasses();
     }
