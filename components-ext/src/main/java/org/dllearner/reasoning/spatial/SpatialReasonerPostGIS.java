@@ -986,13 +986,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Set<OWLClassExpression> getSpatialSubClasses() {
         SortedSet<OWLClassExpression> spatialSubClasses =
-                reasoner.getClassHierarchy().getSubClasses(pointFeatureClass);
+                reasoner.getClassHierarchy().getSubClasses(pointFeatureClass, true);
 
         spatialSubClasses.addAll(
-                reasoner.getClassHierarchy().getSubClasses(lineFeatureClass));
+                reasoner.getClassHierarchy().getSubClasses(lineFeatureClass, true));
 
         spatialSubClasses.addAll(
-                reasoner.getClassHierarchy().getSubClasses(areaFeatureClass));
+                reasoner.getClassHierarchy().getSubClasses(areaFeatureClass, true));
 
         return spatialSubClasses;
     }
@@ -6605,6 +6605,9 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
              */
             return false;
 
+        } else if (ce instanceof OWLObjectComplementOf) {
+            return containsSpatialExpressions(((OWLObjectComplementOf) ce).getOperand());
+ 
         } else {
             throw new RuntimeException(
                     "Support for class expression of type " + ce.getClass() +
