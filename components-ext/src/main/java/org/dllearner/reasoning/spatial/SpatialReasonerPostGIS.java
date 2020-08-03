@@ -5,6 +5,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
@@ -1158,7 +1160,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsConnectedWith(OWLIndividual spatialFeatureIndividual) {
         if (isConnectedWithMembers != null) {
-            return isConnectedWithMembers.get(spatialFeatureIndividual).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isConnectedWithMembers.get(spatialFeatureIndividual);
+            mon.stop();
+            logger.info("Reading from isConnectedWithMembers map with " +
+                    isConnectedWithMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -1449,7 +1458,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual) {
         if (overlapsWithMembers != null) {
-            return overlapsWithMembers.get(spatialFeatureIndividual).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = overlapsWithMembers.get(spatialFeatureIndividual);
+            mon.stop();
+            logger.info("Reading from overlapsWithMembers map with " +
+                    overlapsWithMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -1869,7 +1885,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsPartOf(OWLIndividual whole) {
         if (hasPartMembers != null) {
-            return hasPartMembers.get(whole).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = hasPartMembers.get(whole);
+            mon.stop();
+            logger.info("Reading from hasPartMembers map with " +
+                    hasPartMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(whole);
@@ -2122,7 +2145,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsHavingPart(OWLIndividual part) {
         if (isPartOfMembers != null) {
-            return isPartOfMembers.get(part).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isPartOfMembers.get(part);
+            mon.stop();
+            logger.info("Reading from isPartOfMembers map with " +
+                    isPartOfMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(part);
@@ -2487,7 +2517,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsProperPartOf(OWLIndividual whole) {
         if (hasProperPartMembers != null) {
-            return hasProperPartMembers.get(whole).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = hasProperPartMembers.get(whole);
+            mon.stop();
+            logger.info("Reading from hasProperPartMembers map with " +
+                    hasProperPartMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(whole);
@@ -2720,10 +2757,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsHavingProperPart(OWLIndividual part) {
         if (isProperPartOfMembers != null) {
-            if (isProperPartOfMembers.get(part) == null) {
-                int foo = 23;
-            }
-            return isProperPartOfMembers.get(part).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isProperPartOfMembers.get(part);
+            mon.stop();
+            logger.info("Reading from isProperPartOfMembers map with " +
+                    isProperPartOfMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String partTableName = getTable(part);
@@ -3064,7 +3105,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             OWLIndividual spatialFeatureIndividual) {
 
         if (partiallyOverlapsWithMembers != null) {
-            return partiallyOverlapsWithMembers.get(spatialFeatureIndividual).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result =
+                    partiallyOverlapsWithMembers.get(spatialFeatureIndividual);
+            mon.stop();
+            logger.info("Reading from partiallyOverlapsWithMembers map with " +
+                    partiallyOverlapsWithMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -3409,7 +3458,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsTangentialProperPartOf(OWLIndividual whole) {
         if (hasTangentialProperPartMembers != null) {
-            return hasTangentialProperPartMembers.get(whole).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = hasTangentialProperPartMembers.get(whole);
+            mon.stop();
+            logger.info("Reading from hasTangentialProperPartMembers map with " +
+                    hasTangentialProperPartMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String wholeTableName = getTable(whole);
@@ -3722,7 +3778,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole) {
         if (hasNonTangentialProperPartMembers != null) {
-            return hasNonTangentialProperPartMembers.get(whole).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = hasNonTangentialProperPartMembers.get(whole);
+            mon.stop();
+            logger.info("Reading from hasNonTangentialProperPartMembers map with " +
+                    hasNonTangentialProperPartMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String wholeTableName = getTable(whole);
@@ -3989,9 +4052,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             OWLIndividual spatialFeatureIndividual) {
 
         if (isSpatiallyIdenticalWithMembers != null) {
-            return isSpatiallyIdenticalWithMembers
-                    .get(spatialFeatureIndividual)
-                    .stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isSpatiallyIdenticalWithMembers.get(
+                    spatialFeatureIndividual);
+
+            mon.stop();
+            logger.info("Reading from isSpatiallyIdenticalWithMembers map with " +
+                    isSpatiallyIdenticalWithMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -4141,7 +4211,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsHavingTangentialProperPart(OWLIndividual part) {
         if (isTangentialProperPartOfMembers != null) {
-            return isTangentialProperPartOfMembers.get(part).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isTangentialProperPartOfMembers.get(part);
+            mon.stop();
+            logger.info("Reading from isTangentialProperPartOfMembers map with " +
+                    isTangentialProperPartOfMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String partTableName = getTable(part);
@@ -4407,7 +4484,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part) {
         if (isNonTangentialProperPartOfMembers != null) {
-            return isNonTangentialProperPartOfMembers.get(part).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isNonTangentialProperPartOfMembers.get(part);
+            mon.stop();
+            logger.info("Reading from isNonTangentialProperPartOfMembers map with " +
+                    isNonTangentialProperPartOfMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String partTableName = getTable(part);
@@ -4814,7 +4898,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsExternallyConnectedWith(OWLIndividual spatialIndividual) {
         if (isExternallyConnectedWithMembers != null) {
-            return isExternallyConnectedWithMembers.get(spatialIndividual).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isExternallyConnectedWithMembers.get(spatialIndividual);
+            mon.stop();
+            logger.info("Reading from isExternallyConnectedWithMembers map with " +
+                    isExternallyConnectedWithMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialIndividual);
@@ -5172,9 +5263,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual) {
         if (isDisconnectedFromMembers != null) {
-            return isDisconnectedFromMembers
-                    .get(spatialFeatureIndividual)
-                    .stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isDisconnectedFromMembers.get(
+                    spatialFeatureIndividual);
+            mon.stop();
+            logger.info("Reading from isDisconnectedFromMembers map with " +
+                    isDisconnectedFromMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -5428,7 +5525,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     @Override
     public Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual) {
         if (isNearMembers != null) {
-            return isNearMembers.get(spatialFeatureIndividual).stream();
+            Monitor mon = MonitorFactory.start("searchMap");
+            Set<OWLIndividual> result = isNearMembers.get(spatialFeatureIndividual);
+            mon.stop();
+            logger.info("Reading from isNearMembers map with " +
+                    isNearMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
+
+            return result.stream();
         }
 
         String tableName = getTable(spatialFeatureIndividual);
@@ -5692,12 +5796,18 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual) {
         if (startsNearMembers != null) {
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
+            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeature : startsNearMembers.keySet()) {
                 if (startsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeature);
                 }
             }
+            mon.stop();
+
+            logger.info("Reading from startsNearMembers map with " +
+                    startsNearMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -5909,12 +6019,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual) {
         if (endsNearMembers != null) {
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
+            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeature : endsNearMembers.keySet()) {
                 if (endsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeature);
                 }
             }
+            mon.stop();
+            logger.info("Reading from endsNearMembers map with " +
+                    endsNearMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -6154,12 +6269,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public Stream<OWLIndividual> getIndividualsCrossing(OWLIndividual spatialFeatureIndividual) {
         if (crossesMembers != null) {
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
+            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeatureIndividual : crossesMembers.keySet()) {
                 if (crossesMembers.get(lineFeatureIndividual).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeatureIndividual);
                 }
             }
+            mon.stop();
+            logger.info("Reading from crossesMembers map with " +
+                    crossesMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -6397,12 +6517,17 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
         if (runsAlongMembers != null) {
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
+            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeatureIndividual1 : runsAlongMembers.keySet()) {
                 if (runsAlongMembers.get(lineFeatureIndividual1).contains(lineStringFeatureIndividual)) {
                     resultIndividuals.add(lineFeatureIndividual1);
                 }
             }
+            mon.stop();
+            logger.info("Reading from runsAlongMembers map with " +
+                    runsAlongMembers.size() + " entries took " +
+                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
