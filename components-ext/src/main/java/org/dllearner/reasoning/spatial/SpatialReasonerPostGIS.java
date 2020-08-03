@@ -74,6 +74,39 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private Map<OWLIndividual, SortedSet<OWLIndividual>> crossesMembers = null;
     private Map<OWLIndividual, SortedSet<OWLIndividual>> runsAlongMembers = null;
 
+    private int maxCEInstancesCacheSize = 10000;
+    private LoadingCache<OWLClassExpression, SortedSet<OWLIndividual>> ce2Individual =
+            CacheBuilder.newBuilder().maximumSize(maxCEInstancesCacheSize).build(
+                    new CacheLoader<OWLClassExpression, SortedSet<OWLIndividual>>() {
+                        @Override
+                        public SortedSet<OWLIndividual> load(@Nonnull OWLClassExpression concept) throws Exception {
+                            if (concept instanceof OWLObjectIntersectionOf) {
+                                return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
+
+                            } else if (concept instanceof OWLObjectSomeValuesFrom) {
+                                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
+
+                            } else if (concept instanceof OWLObjectMinCardinality) {
+                                return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
+
+                            } else if (concept instanceof OWLObjectAllValuesFrom) {
+                                return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
+
+                            } else if (concept instanceof OWLObjectMaxCardinality) {
+                                return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
+
+                            } else if (concept instanceof OWLObjectUnionOfImplExt) {
+                                return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
+
+                            } else {
+                                throw new RuntimeException(
+                                        "Support for class expression of type " + concept.getClass() +
+                                                " not implemented, yet");
+                            }
+                        }
+                    }
+            );
+
     // TODO: make this configurable
     // "Specifies the maximum number of entries the cache may contain"
     private int maxFeatureGeometryCacheSize = 1000000;
@@ -1041,28 +1074,11 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         if (!containsSpatialExpressions(concept)) {
             return reasoner.getIndividuals(concept);
         } else {
-            if (concept instanceof OWLObjectIntersectionOf) {
-                return getIndividualsOWLObjectIntersectionOf((OWLObjectIntersectionOf) concept);
+            try {
+                return ce2Individual.get(concept);
 
-            } else if (concept instanceof OWLObjectSomeValuesFrom) {
-                return getIndividualsOWLObjectSomeValuesFrom((OWLObjectSomeValuesFrom) concept);
-
-            } else if (concept instanceof OWLObjectMinCardinality) {
-                return getIndividualsOWLObjectMinCardinality((OWLObjectMinCardinality) concept);
-
-            } else if (concept instanceof OWLObjectAllValuesFrom) {
-                return getIndividualsOWLObjectAllValuesFrom((OWLObjectAllValuesFrom) concept);
-
-            } else if (concept instanceof OWLObjectMaxCardinality) {
-                return getIndividualsOWLObjectMaxCardinality((OWLObjectMaxCardinality) concept);
-
-            } else if (concept instanceof OWLObjectUnionOfImplExt) {
-                return getIndividualsOWLObjectUnionOfImplExt((OWLObjectUnionOfImplExt) concept);
-
-            } else {
-                throw new RuntimeException(
-                        "Support for class expression of type " + concept.getClass() +
-                                " not implemented, yet");
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
         }
     }
