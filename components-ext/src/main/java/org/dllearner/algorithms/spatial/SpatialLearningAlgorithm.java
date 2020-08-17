@@ -11,6 +11,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPForDownwardRefinementOperator;
 import org.dllearner.refinementoperators.*;
 import org.dllearner.refinementoperators.spatial.SpatialRhoDRDown;
 import org.dllearner.utilities.Helper;
@@ -172,7 +173,19 @@ public class SpatialLearningAlgorithm extends AbstractCELA {
 
         // quality of class expression (return if too weak)
         Monitor mon = MonitorFactory.start("lp");
-        double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+        double accuracy;
+
+        if (learningProblem instanceof PosNegLPForDownwardRefinementOperator &&
+                bestEvaluatedDescriptions.isFull()) {
+
+            double lowerAccThreshold = bestEvaluatedDescriptions.getWorst().getAccuracy();
+
+            accuracy = ((PosNegLPForDownwardRefinementOperator) learningProblem)
+                    .getAccuracyOrTooWeak(description, noise, lowerAccThreshold);
+
+        } else {
+            accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+        }
         mon.stop();
 
         // issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
