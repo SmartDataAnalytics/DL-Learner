@@ -34,6 +34,8 @@ import java.util.stream.Stream;
  */
 public interface SpatialReasoner extends ReasonerComponent {
 
+    void spatiallyRestrictToVicinityOf(Set<OWLIndividual> featureIndividuals);
+
     SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty property);
 
     boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);

@@ -5,8 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
@@ -73,6 +71,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     private Map<OWLIndividual, SortedSet<OWLIndividual>> endsNearMembers = null;
     private Map<OWLIndividual, SortedSet<OWLIndividual>> crossesMembers = null;
     private Map<OWLIndividual, SortedSet<OWLIndividual>> runsAlongMembers = null;
+
+    /**
+     * A set of ignored features. For efficiency reasons it might be necessary
+     * to restrict the set of individuals having a geometry (i.e. spatial
+     * features) to those near a feature of a given set, e.g. to restrict the
+     * search space for concept learning to those features that are within a
+     * meaningful distance to any of the example features.
+     */
+    private Set<OWLIndividual> ignoredIndividuals = new HashSet<>();
 
     private int maxCEInstancesCacheSize = 10000;
     private LoadingCache<OWLClassExpression, SortedSet<OWLIndividual>> ce2Individual =
@@ -1019,6 +1026,80 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     // -- implemented methods from interface/(abstract) base class
 
     @Override
+    public void spatiallyRestrictToVicinityOf(Set<OWLIndividual> featureIndividuals) {
+        Set<String> featureBufferAreas = new HashSet<>();
+
+        for (OWLIndividual featureIndividual : featureIndividuals) {
+            OWLIndividual geomIndividual;
+
+            try {
+                geomIndividual = feature2geom.get(featureIndividual);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+
+            String tableName = getTable(featureIndividual);
+
+            String queryStr =
+                    "SELECT " +
+                        "ST_AsText(ST_Buffer(geom::geography, ?)) buff " +
+                    "FROM " +
+                        tableName + " " +
+                    "WHERE " +
+                        "iri=?";
+
+            try {
+                PreparedStatement statement = conn.prepareStatement(queryStr);
+                statement.setDouble(1, 2 * nearRadiusInMeters);
+                statement.setString(2, geomIndividual.toStringID());
+
+                ResultSet resSet = statement.executeQuery();
+
+                resSet.next();
+
+                String buffer = resSet.getString("buff");
+                featureBufferAreas.add(buffer);
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        String whereCondition = featureBufferAreas
+                .stream()
+                .map(b -> "NOT ST_Contains(ST_GeomFromText(" + b + "), geom)")
+                .reduce("", (l, r) -> l + " AND " + r);
+
+        for (String tableName : Sets.newHashSet(
+                pointFeatureTableName, lineFeatureTableName, areaFeatureTableName)) {
+
+            String query = "SELECT iri FROM " + tableName + " WHERE " + whereCondition;
+
+            try {
+                Statement statement = conn.createStatement();
+
+                ResultSet resSet = statement.executeQuery(query);
+
+                resSet.next();
+
+                String iriStr = resSet.getString("iri");
+
+                try {
+                    OWLIndividual featureIndividual = geom2feature.get(
+                            new OWLNamedIndividualImpl(IRI.create(iriStr)));
+                    ignoredIndividuals.add(featureIndividual);
+
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
     public Set<OWLClassExpression> getSpatialSubClasses() {
         SortedSet<OWLClassExpression> spatialSubClasses =
                 reasoner.getClassHierarchy().getSubClasses(pointFeatureClass, true);
@@ -1066,13 +1147,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public SortedSet<OWLIndividual> getIndividuals() {
+        SortedSet<OWLIndividual> individuals = reasoner.getIndividuals();
+
+        individuals.removeAll(ignoredIndividuals);
+
         return reasoner.getIndividuals();
     }
 
     @Override
     protected SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) {
         if (!containsSpatialExpressions(concept)) {
-            return reasoner.getIndividuals(concept);
+            SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(concept);
+
+            if (individuals != null)
+                individuals.removeAll(ignoredIndividuals);
+
+            return individuals;
+
         } else {
             try {
                 return ce2Individual.get(concept);
@@ -1124,7 +1215,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isConnectedWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+            return false;
+        }
+
         if (isConnectedWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isConnectedWithMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -1164,8 +1262,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             ResultSet resSet = statement.executeQuery();
 
             resSet.next();
-
             boolean areConnected = resSet.getBoolean("c");
+
             return areConnected;
 
         } catch (SQLException e) {
@@ -1175,13 +1273,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsConnectedWith(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (isConnectedWithMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> result = isConnectedWithMembers.get(spatialFeatureIndividual);
-            mon.stop();
-            logger.info("Reading from isConnectedWithMembers map with " +
-                    isConnectedWithMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -1201,34 +1300,34 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
          */
         String queryStr =
                 "SELECT " +
-                        "r.iri c " +
+                    "r.iri c " +
                 "FROM " +
-                        tableName + " l, " +
-                        pointFeatureTableName + " r " +
+                    tableName + " l, " +
+                    pointFeatureTableName + " r " +
                 "WHERE " +
-                        "ST_Intersects(l.the_geom, r.the_geom) " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
                 "AND " +
-                        "l.iri=? " + // #1
+                    "l.iri=? " + // #1
                 "UNION " +
                 "SELECT " +
-                        "r.iri c " +
+                    "r.iri c " +
                 "FROM " +
-                        tableName + " l, " +
-                        lineFeatureTableName + " r " +
+                    tableName + " l, " +
+                    lineFeatureTableName + " r " +
                 "WHERE " +
-                        "ST_Intersects(l.the_geom, r.the_geom) " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
                 "AND " +
-                        "l.iri=? " + // #2
+                    "l.iri=? " + // #2
                 "UNION " +
                 "SELECT " +
-                        "r.iri c " +
+                    "r.iri c " +
                 "FROM " +
-                        tableName + " l, " +
-                        areaFeatureTableName + " r " +
+                    tableName + " l, " +
+                    areaFeatureTableName + " r " +
                 "WHERE " +
-                        "ST_Intersects(l.the_geom, r.the_geom) " +
+                    "ST_Intersects(l.the_geom, r.the_geom) " +
                 "AND " +
-                        "l.iri=?"; // #3
+                    "l.iri=?"; // #3
 
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
@@ -1247,6 +1346,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                                 df.getOWLNamedIndividual(IRI.create(resIRIStr))));
             }
 
+            resultFeatureIndividuals.removeAll(ignoredIndividuals);
+
             return resultFeatureIndividuals.stream();
 
         } catch (SQLException | ExecutionException e) {
@@ -1256,6 +1357,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsConnectedWithMembers() {
         if (isConnectedWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isConnectedWithMembers;
         }
 
@@ -1263,9 +1366,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isConnectedWithMembers = members;
@@ -1371,6 +1478,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isConnectedWith", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
         isConnectedWithMembers = members;
 
         return members;
@@ -1378,7 +1492,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean overlapsWith(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+            return false;
+        }
+
         if (overlapsWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return overlapsWithMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -1473,13 +1594,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsOverlappingWith(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (overlapsWithMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> result = overlapsWithMembers.get(spatialFeatureIndividual);
-            mon.stop();
-            logger.info("Reading from overlapsWithMembers map with " +
-                    overlapsWithMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -1609,9 +1731,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("o");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -1623,6 +1748,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getOverlapsWithMembers() {
         if (overlapsWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return overlapsWithMembers;
         }
 
@@ -1630,9 +1757,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             overlapsWithMembers = members;
@@ -1756,6 +1887,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("overlapsWith", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
         overlapsWithMembers = members;
 
         return members;
@@ -1763,7 +1901,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (ignoredIndividuals.contains(part) ||
+                ignoredIndividuals.contains(whole)) {
+            return false;
+        }
+
         if (isPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isPartOfMembers.get(part).contains(whole);
         }
 
@@ -1900,13 +2045,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsPartOf(OWLIndividual whole) {
+        if (ignoredIndividuals.contains(whole)) {
+            return Stream.empty();
+        }
+
         if (hasPartMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = hasPartMembers.get(whole);
-            mon.stop();
-            logger.info("Reading from hasPartMembers map with " +
-                    hasPartMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -2018,9 +2165,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("p");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -2032,6 +2182,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsPartOfMembers() {
         if (isPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isPartOfMembers;
         }
 
@@ -2039,9 +2191,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isPartOfMembers = members;
@@ -2148,6 +2304,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isPartOf", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isPartOfMembers = members;
 
         return members;
@@ -2160,13 +2324,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingPart(OWLIndividual part) {
+        if (ignoredIndividuals.contains(part)) {
+            return Stream.empty();
+        }
         if (isPartOfMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isPartOfMembers.get(part);
-            mon.stop();
-            logger.info("Reading from isPartOfMembers map with " +
-                    isPartOfMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -2259,7 +2424,7 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
                 "AND " +
                     "part.iri=?";
         }
-//
+
         try {
             PreparedStatement statement = conn.prepareStatement(queryStr);
             statement.setString(1, partGeomIndividual.toStringID());
@@ -2277,9 +2442,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("w");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -2291,6 +2459,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasPartMembers() {
         if (hasPartMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return hasPartMembers;
         }
 
@@ -2298,9 +2468,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             hasPartMembers = members;
@@ -2403,6 +2577,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("hasPart", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         hasPartMembers = members;
 
         return members;
@@ -2410,7 +2592,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (ignoredIndividuals.contains(part) ||
+                ignoredIndividuals.contains(whole)) {
+
+            return false;
+        }
+
         if (isProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isProperPartOfMembers.get(part).contains(whole);
         }
 
@@ -2532,13 +2722,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsProperPartOf(OWLIndividual whole) {
+        if (ignoredIndividuals.contains(whole)) {
+            return Stream.empty();
+        }
+
         if (hasProperPartMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = hasProperPartMembers.get(whole);
-            mon.stop();
-            logger.info("Reading from hasProperPartMembers map with " +
-                    hasProperPartMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -2639,9 +2831,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("pp");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultIndividual)) {
+                    resultFeatureIndividuals.add(resultIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -2653,6 +2848,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsProperPartOfMembers() {
         if (isProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isProperPartOfMembers;
         }
 
@@ -2660,9 +2857,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isProperPartOfMembers = members;
@@ -2760,6 +2961,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isProperPartOf", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isProperPartOfMembers = members;
 
         return members;
@@ -2772,13 +2981,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingProperPart(OWLIndividual part) {
+        if (ignoredIndividuals.contains(part)) {
+            return Stream.empty();
+        }
+
         if (isProperPartOfMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isProperPartOfMembers.get(part);
-            mon.stop();
-            logger.info("Reading from isProperPartOfMembers map with " +
-                    isProperPartOfMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -2877,9 +3088,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("w");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -2891,6 +3105,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasProperPartMembers() {
         if (hasProperPartMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return hasProperPartMembers;
         }
 
@@ -2898,9 +3114,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             hasProperPartMembers = members;
@@ -2998,6 +3218,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("hasProperPart", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         hasProperPartMembers = members;
 
         return members;
@@ -3007,7 +3235,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public boolean partiallyOverlapsWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
 
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+
+            return false;
+        }
+
         if (partiallyOverlapsWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return partiallyOverlapsWithMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -3120,14 +3356,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsPartiallyOverlappingWith(
             OWLIndividual spatialFeatureIndividual) {
 
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (partiallyOverlapsWithMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result =
                     partiallyOverlapsWithMembers.get(spatialFeatureIndividual);
-            mon.stop();
-            logger.info("Reading from partiallyOverlapsWithMembers map with " +
-                    partiallyOverlapsWithMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -3215,9 +3453,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("po");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -3229,6 +3470,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getPartiallyOverlapsWithMembers() {
         if (partiallyOverlapsWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return partiallyOverlapsWithMembers;
         }
 
@@ -3236,9 +3479,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             partiallyOverlapsWithMembers = members;
@@ -3323,6 +3570,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("partiallyOverlapsWith", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         partiallyOverlapsWithMembers = members;
 
         return members;
@@ -3330,7 +3585,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (ignoredIndividuals.contains(part) ||
+                ignoredIndividuals.contains(whole)) {
+            return false;
+        }
+
         if (isTangentialProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isTangentialProperPartOfMembers.get(part).contains(whole);
         }
 
@@ -3473,13 +3735,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsTangentialProperPartOf(OWLIndividual whole) {
+        if (ignoredIndividuals.contains(whole)) {
+            return Stream.empty();
+        }
+
         if (hasTangentialProperPartMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> result = hasTangentialProperPartMembers.get(whole);
-            mon.stop();
-            logger.info("Reading from hasTangentialProperPartMembers map with " +
-                    hasTangentialProperPartMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -3592,9 +3855,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("tpp");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -3606,6 +3872,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsTangentialProperPartOfMembers() {
         if (isTangentialProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isTangentialProperPartOfMembers;
         }
 
@@ -3614,9 +3882,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isTangentialProperPartOfMembers = members;
@@ -3732,6 +4004,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isTangentialProperPartOf", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isTangentialProperPartOfMembers = members;
 
         return members;
@@ -3739,7 +4019,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNonTangentialProperPartOf(OWLIndividual part, OWLIndividual whole) {
+        if (ignoredIndividuals.contains(part) ||
+                ignoredIndividuals.contains(whole)) {
+
+            return false;
+        }
+
         if (isNonTangentialProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isNonTangentialProperPartOfMembers.get(part).contains(whole);
         }
 
@@ -3793,13 +4081,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNonTangentialProperPartOf(OWLIndividual whole) {
+        if (ignoredIndividuals.contains(whole)) {
+            return Stream.empty();
+        }
+
         if (hasNonTangentialProperPartMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = hasNonTangentialProperPartMembers.get(whole);
-            mon.stop();
-            logger.info("Reading from hasNonTangentialProperPartMembers map with " +
-                    hasNonTangentialProperPartMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -3889,9 +4179,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("ntpp");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -3903,6 +4196,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNonTangentialProperPartOfMembers() {
         if (isNonTangentialProperPartOfMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isNonTangentialProperPartOfMembers;
         }
 
@@ -3910,9 +4205,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isNonTangentialProperPartOfMembers = members;
@@ -4003,6 +4302,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isNonTangentialProperPartOf", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isNonTangentialProperPartOfMembers = members;
 
         return members;
@@ -4012,7 +4319,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public boolean isSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
 
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+
+            return false;
+        }
+
         if (isSpatiallyIdenticalWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             return isSpatiallyIdenticalWithMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -4067,15 +4383,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  Stream<OWLIndividual> getIndividualsSpatiallyIdenticalWith(
             OWLIndividual spatialFeatureIndividual) {
 
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (isSpatiallyIdenticalWithMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isSpatiallyIdenticalWithMembers.get(
                     spatialFeatureIndividual);
-
-            mon.stop();
-            logger.info("Reading from isSpatiallyIdenticalWithMembers map with " +
-                    isSpatiallyIdenticalWithMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -4111,9 +4428,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("eq");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -4125,6 +4445,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsSpatiallyIdenticalWithMembers() {
         if (isSpatiallyIdenticalWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isSpatiallyIdenticalWithMembers;
         }
 
@@ -4133,9 +4455,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isSpatiallyIdenticalWithMembers = members;
@@ -4214,6 +4540,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isSpatiallyIdenticalWith", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isSpatiallyIdenticalWithMembers = members;
 
         return members;
@@ -4226,13 +4560,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingTangentialProperPart(OWLIndividual part) {
+        if (ignoredIndividuals.contains(part)) {
+            return Stream.empty();
+        }
+
         if (isTangentialProperPartOfMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isTangentialProperPartOfMembers.get(part);
-            mon.stop();
-            logger.info("Reading from isTangentialProperPartOfMembers map with " +
-                    isTangentialProperPartOfMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -4347,9 +4683,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("tppi");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -4361,6 +4700,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasTangentialProperPartMembers() {
         if (hasTangentialProperPartMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return hasTangentialProperPartMembers;
         }
 
@@ -4369,9 +4710,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             hasTangentialProperPartMembers = members;
@@ -4487,6 +4832,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("hasTangentialProperPart", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         hasTangentialProperPartMembers = members;
 
         return members;
@@ -4499,13 +4852,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsHavingNonTangentialProperPart(OWLIndividual part) {
+        if (ignoredIndividuals.contains(part)) {
+            return Stream.empty();
+        }
+
         if (isNonTangentialProperPartOfMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isNonTangentialProperPartOfMembers.get(part);
-            mon.stop();
-            logger.info("Reading from isNonTangentialProperPartOfMembers map with " +
-                    isNonTangentialProperPartOfMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -4596,9 +4951,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("ntppi");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -4610,6 +4968,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getHasNonTangentialProperPartMembers() {
         if (hasNonTangentialProperPartMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return hasNonTangentialProperPartMembers;
         }
 
@@ -4618,9 +4978,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             hasNonTangentialProperPartMembers = members;
@@ -4712,6 +5076,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("hasNonTangentialProperPart", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         hasNonTangentialProperPartMembers = members;
 
         return members;
@@ -4719,7 +5091,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isExternallyConnectedWith(OWLIndividual spatialIndividual1, OWLIndividual spatialIndividual2) {
+        if (ignoredIndividuals.contains(spatialIndividual1) ||
+                ignoredIndividuals.contains(spatialIndividual2)) {
+
+            return false;
+        }
+
         if (isExternallyConnectedWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isExternallyConnectedWithMembers
                     .get(spatialIndividual1)
                     .contains(spatialIndividual2);
@@ -4913,13 +5293,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsExternallyConnectedWith(OWLIndividual spatialIndividual) {
+        if (ignoredIndividuals.contains(spatialIndividual)) {
+            return Stream.empty();
+        }
+
         if (isExternallyConnectedWithMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isExternallyConnectedWithMembers.get(spatialIndividual);
-            mon.stop();
-            logger.info("Reading from isExternallyConnectedWithMembers map with " +
-                    isExternallyConnectedWithMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -5074,9 +5456,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("ec");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -5088,6 +5473,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsExternallyConnectedWithMembers() {
         if (isExternallyConnectedWithMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isExternallyConnectedWithMembers;
         }
 
@@ -5096,9 +5483,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isExternallyConnectedWithMembers = members;
@@ -5222,14 +5613,33 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isExternallyConnectedWith", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isExternallyConnectedWithMembers = members;
 
         return members;
     }
 
     @Override
-    public  boolean isDisconnectedFrom(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+    public  boolean isDisconnectedFrom(
+            OWLIndividual spatialFeatureIndividual1,
+            OWLIndividual spatialFeatureIndividual2) {
+
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+
+            return false;
+        }
+
         if (isDisconnectedFromMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isDisconnectedFromMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -5278,14 +5688,16 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsDisconnectedFrom(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (isDisconnectedFromMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> result = isDisconnectedFromMembers.get(
                     spatialFeatureIndividual);
-            mon.stop();
-            logger.info("Reading from isDisconnectedFromMembers map with " +
-                    isDisconnectedFromMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -5343,9 +5755,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("dc");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -5357,6 +5772,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsDisconnectedFromMembers() {
         if (isDisconnectedFromMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isDisconnectedFromMembers;
         }
 
@@ -5364,9 +5781,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isDisconnectedFromMembers = members;
@@ -5374,95 +5795,121 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             return members;
         }
 
-        String queryStr =
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                pointFeatureTableName + " l, " +
-                pointFeatureTableName + " r " +
-            "WHERE " +
-                "NOT l.the_geom=r.the_geom " +
-            "UNION " +
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                pointFeatureTableName + " l, " +
-                lineFeatureTableName + " r " +
-            "WHERE " +
-                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
-            "UNION " +
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                pointFeatureTableName + " l, " +
-                areaFeatureTableName + " r " +
-            "WHERE " +
-                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
-            "UNION " +
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                lineFeatureTableName + " l, " +
-                lineFeatureTableName + " r " +
-            "WHERE " +
-                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
-            "UNION " +
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                lineFeatureTableName + " l, " +
-                areaFeatureTableName + " r " +
-            "WHERE " +
-                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
-            "UNION " +
-            "SELECT " +
-                "l.iri l_iri, " +
-                "r.iri r_iri " +
-            "FROM " +
-                areaFeatureTableName + " l, " +
-                areaFeatureTableName + " r " +
-            "WHERE " +
-                "NOT ST_Intersects(l.the_geom, r.the_geom)";
+//        String queryStr =
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                pointFeatureTableName + " l, " +
+//                pointFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT l.the_geom=r.the_geom " +
+//            "UNION " +
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                pointFeatureTableName + " l, " +
+//                lineFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+//            "UNION " +
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                pointFeatureTableName + " l, " +
+//                areaFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+//            "UNION " +
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                lineFeatureTableName + " l, " +
+//                lineFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+//            "UNION " +
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                lineFeatureTableName + " l, " +
+//                areaFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT ST_Intersects(l.the_geom, r.the_geom) " +
+//            "UNION " +
+//            "SELECT " +
+//                "l.iri l_iri, " +
+//                "r.iri r_iri " +
+//            "FROM " +
+//                areaFeatureTableName + " l, " +
+//                areaFeatureTableName + " r " +
+//            "WHERE " +
+//                "NOT ST_Intersects(l.the_geom, r.the_geom)";
+//
+//        members = new HashMap<>();
+//
+//        try {
+//            Statement statement = conn.createStatement();
+//            ResultSet resultSet = statement.executeQuery(queryStr);
+//
+//            while (resultSet.next()) {
+//                String geomIRI1 = resultSet.getString("l_iri");
+//                String geomIRI2 = resultSet.getString("r_iri");
+//
+//                OWLIndividual geomIndividual1 =
+//                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
+//                OWLIndividual geomIndividual2 =
+//                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+//
+//                // convert geometries to features
+//                OWLIndividual featureIndividual1 =
+//                        geom2feature.get(geomIndividual1);
+//                OWLIndividual featureIndividual2 =
+//                        geom2feature.get(geomIndividual2);
+//
+//                if (!members.containsKey(featureIndividual1)) {
+//                    members.put(featureIndividual1, new TreeSet<>());
+//                }
+//                members.get(featureIndividual1).add(featureIndividual2);
+//
+//                if (!members.containsKey(featureIndividual2)) {
+//                    members.put(featureIndividual2, new TreeSet<>());
+//                }
+//                members.get(featureIndividual2).add(featureIndividual1);
+//            }
+//
+//        } catch (SQLException | ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
 
         members = new HashMap<>();
+        Map<OWLIndividual, SortedSet<OWLIndividual>> spatiallyConnectedIndividuals =
+                getIsConnectedWithMembers();
 
-        try {
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery(queryStr);
+        SortedSet<OWLIndividual> spatialIndividuals =
+                reasoner.getIndividuals(SpatialVocabulary.SpatialFeature);
 
-            while (resultSet.next()) {
-                String geomIRI1 = resultSet.getString("l_iri");
-                String geomIRI2 = resultSet.getString("r_iri");
+        if (spatialIndividuals == null) {
+            return members;
+        }
 
-                OWLIndividual geomIndividual1 =
-                        new OWLNamedIndividualImpl(IRI.create(geomIRI1));
-                OWLIndividual geomIndividual2 =
-                        new OWLNamedIndividualImpl(IRI.create(geomIRI2));
+        for (OWLIndividual spatialIndividual1 : spatialIndividuals) {
+            members.put(spatialIndividual1, new TreeSet<>());
 
-                // convert geometries to features
-                OWLIndividual featureIndividual1 =
-                        geom2feature.get(geomIndividual1);
-                OWLIndividual featureIndividual2 =
-                        geom2feature.get(geomIndividual2);
-
-                if (!members.containsKey(featureIndividual1)) {
-                    members.put(featureIndividual1, new TreeSet<>());
+            for (OWLIndividual spatialIndividual2 : spatialIndividuals) {
+                if (spatiallyConnectedIndividuals.containsKey(spatialIndividual1)) {
+                    if (!spatiallyConnectedIndividuals.get(spatialIndividual1)
+                            .contains(spatialIndividual2)) {
+                        members.get(spatialIndividual1).add(spatialIndividual2);
+                    }
+                } else {
+                    members.get(spatialIndividual1).add(spatialIndividual2);
                 }
-                members.get(featureIndividual1).add(featureIndividual2);
-
-                if (!members.containsKey(featureIndividual2)) {
-                    members.put(featureIndividual2, new TreeSet<>());
-                }
-                members.get(featureIndividual2).add(featureIndividual1);
             }
-
-        } catch (SQLException | ExecutionException e) {
-            throw new RuntimeException(e);
         }
 
         for (OWLIndividual indiv : reasoner.getIndividuals()) {
@@ -5472,6 +5919,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isDisconnectedFrom", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isDisconnectedFromMembers = members;
 
         return members;
@@ -5490,7 +5945,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean isNear(OWLIndividual spatialFeatureIndividual1, OWLIndividual spatialFeatureIndividual2) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual1) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual2)) {
+
+            return false;
+        }
+
         if (isNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isNearMembers
                     .get(spatialFeatureIndividual1)
                     .contains(spatialFeatureIndividual2);
@@ -5540,13 +6003,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsNear(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (isNearMembers != null) {
-            Monitor mon = MonitorFactory.start("searchMap");
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> result = isNearMembers.get(spatialFeatureIndividual);
-            mon.stop();
-            logger.info("Reading from isNearMembers map with " +
-                    isNearMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return result.stream();
         }
@@ -5607,9 +6071,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("nr");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -5621,6 +6088,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getIsNearMembers() {
         if (isNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return isNearMembers;
         }
 
@@ -5628,9 +6097,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             isNearMembers = members;
@@ -5743,6 +6216,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("isNear", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         isNearMembers = members;
 
         return members;
@@ -5752,7 +6233,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     public  boolean startsNear(
             OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
 
+        if (ignoredIndividuals.contains(lineStringFeatureIndividual) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual)) {
+
+            return false;
+        }
+
         if (startsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return startsNearMembers
                     .get(lineStringFeatureIndividual)
                     .contains(spatialFeatureIndividual);
@@ -5810,20 +6299,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsStartingNear(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (startsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
-            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeature : startsNearMembers.keySet()) {
                 if (startsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeature);
                 }
             }
-            mon.stop();
-
-            logger.info("Reading from startsNearMembers map with " +
-                    startsNearMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -5865,9 +6354,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("sn");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -5879,6 +6371,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getStartsNearMembers() {
         if (startsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return startsNearMembers;
         }
 
@@ -5886,9 +6380,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             startsNearMembers = members;
@@ -5968,6 +6466,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("startsNear", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         startsNearMembers = members;
 
         return members;
@@ -5975,7 +6481,15 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public boolean endsNear(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(lineStringFeatureIndividual) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual)) {
+
+            return false;
+        }
+
         if (endsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return endsNearMembers
                     .get(lineStringFeatureIndividual)
                     .contains(spatialFeatureIndividual);
@@ -6033,19 +6547,21 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsEndingNear(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (endsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
+
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
-            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeature : endsNearMembers.keySet()) {
                 if (endsNearMembers.get(lineFeature).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeature);
                 }
             }
-            mon.stop();
-            logger.info("Reading from endsNearMembers map with " +
-                    endsNearMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -6087,9 +6603,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("sn");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -6101,6 +6620,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getEndsNearMembers() {
         if (endsNearMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return endsNearMembers;
         }
 
@@ -6108,9 +6629,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             endsNearMembers = members;
@@ -6190,14 +6715,33 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("endsNear", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         endsNearMembers = members;
 
         return members;
     }
 
     @Override
-    public boolean crosses(OWLIndividual lineStringFeatureIndividual, OWLIndividual spatialFeatureIndividual) {
+    public boolean crosses(
+            OWLIndividual lineStringFeatureIndividual,
+            OWLIndividual spatialFeatureIndividual) {
+
+        if (ignoredIndividuals.contains(lineStringFeatureIndividual) ||
+                ignoredIndividuals.contains(spatialFeatureIndividual)) {
+
+            return false;
+        }
+
         if (crossesMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return crossesMembers
                     .get(lineStringFeatureIndividual)
                     .contains(spatialFeatureIndividual);
@@ -6272,8 +6816,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
             resSet.next();
 
-            boolean endsNear = resSet.getBoolean("cr");
-            return endsNear;
+            boolean crosses = resSet.getBoolean("cr");
+            return crosses;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -6283,19 +6827,20 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     @Override
     public Stream<OWLIndividual> getIndividualsCrossing(OWLIndividual spatialFeatureIndividual) {
+        if (ignoredIndividuals.contains(spatialFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (crossesMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
-            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeatureIndividual : crossesMembers.keySet()) {
                 if (crossesMembers.get(lineFeatureIndividual).contains(spatialFeatureIndividual)) {
                     resultIndividuals.add(lineFeatureIndividual);
                 }
             }
-            mon.stop();
-            logger.info("Reading from crossesMembers map with " +
-                    crossesMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -6361,9 +6906,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("cr");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -6375,6 +6923,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getCrossesMembers() {
         if (crossesMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return crossesMembers;
         }
 
@@ -6382,9 +6932,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             crossesMembers = members;
@@ -6463,13 +7017,32 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("crosses", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         crossesMembers = members;
 
         return members;
     }
+
     @Override
-    public boolean runsAlong(OWLIndividual lineStringFeatureIndividual1, OWLIndividual lineStringFeatureIndividual2) {
+    public boolean runsAlong(
+            OWLIndividual lineStringFeatureIndividual1,
+            OWLIndividual lineStringFeatureIndividual2) {
+
+        if (ignoredIndividuals.contains(lineStringFeatureIndividual1) ||
+                ignoredIndividuals.contains(lineStringFeatureIndividual2)) {
+            return false;
+        }
+
         if (runsAlongMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return runsAlongMembers
                     .get(lineStringFeatureIndividual1)
                     .contains(lineStringFeatureIndividual2);
@@ -6530,20 +7103,23 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     }
 
     @Override
-    public Stream<OWLIndividual> getIndividualsRunningAlong(OWLIndividual lineStringFeatureIndividual) {
+    public Stream<OWLIndividual> getIndividualsRunningAlong(
+            OWLIndividual lineStringFeatureIndividual) {
+
+        if (ignoredIndividuals.contains(lineStringFeatureIndividual)) {
+            return Stream.empty();
+        }
+
         if (runsAlongMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             Set<OWLIndividual> resultIndividuals = new HashSet<>();
-            Monitor mon = MonitorFactory.start("searchMap");
 
             for (OWLIndividual lineFeatureIndividual1 : runsAlongMembers.keySet()) {
                 if (runsAlongMembers.get(lineFeatureIndividual1).contains(lineStringFeatureIndividual)) {
                     resultIndividuals.add(lineFeatureIndividual1);
                 }
             }
-            mon.stop();
-            logger.info("Reading from runsAlongMembers map with " +
-                    runsAlongMembers.size() + " entries took " +
-                    mon.getLastValue() + " ms");
 
             return resultIndividuals.stream();
         }
@@ -6590,9 +7166,12 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
             while (resSet.next()) {
                 String resIRIStr = resSet.getString("ra");
 
-                resultFeatureIndividuals.add(
-                        geom2feature.get(
-                                df.getOWLNamedIndividual(IRI.create(resIRIStr))));
+                OWLIndividual resultFeatureIndividual = geom2feature.get(
+                        df.getOWLNamedIndividual(IRI.create(resIRIStr)));
+
+                if (!ignoredIndividuals.contains(resultFeatureIndividual)) {
+                    resultFeatureIndividuals.add(resultFeatureIndividual);
+                }
             }
 
             return resultFeatureIndividuals.stream();
@@ -6604,6 +7183,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected Map<OWLIndividual, SortedSet<OWLIndividual>> getRunsAlongMembers() {
         if (runsAlongMembers != null) {
+            // Assumption that all ignored features (i.e. ignoredIndividuals)
+            // were already removed from the members cache map.
             return runsAlongMembers;
         }
 
@@ -6611,9 +7192,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         if (members != null) {
             for (OWLIndividual indiv : reasoner.getIndividuals()) {
-                if (!members.containsKey(indiv)) {
+                if (!members.containsKey(indiv) || ignoredIndividuals.contains(indiv)) {
+                    // initialize missing individual and, if it shall be
+                    // ignored, remove all the loaded members
                     members.put(indiv, new TreeSet<>());
                 }
+
+                members.get(indiv).removeAll(ignoredIndividuals);
             }
 
             runsAlongMembers = members;
@@ -6677,6 +7262,14 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
         }
 
         writeCacheFile("runsAlong", members);
+
+        for (OWLIndividual individual : members.keySet()) {
+            if (ignoredIndividuals.contains(individual)) {
+                members.put(individual, new TreeSet<>());
+            }
+            members.get(individual).removeAll(ignoredIndividuals);
+        }
+
         runsAlongMembers = members;
 
         return members;
@@ -6748,7 +7341,6 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         } else if (ce instanceof OWLObjectComplementOf) {
             return containsSpatialExpressions(((OWLObjectComplementOf) ce).getOperand());
- 
         } else {
             throw new RuntimeException(
                     "Support for class expression of type " + ce.getClass() +
@@ -6758,7 +7350,13 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
     protected boolean hasTypeSpatial(OWLClassExpression ce, OWLIndividual individual) {
         // TODO: Think about this again
-        return getIndividuals(ce).contains(individual);
+        SortedSet<OWLIndividual> ceIndividuals = getIndividuals(ce);
+
+        if (ceIndividuals == null) {
+            return false;
+        } else {
+            return ceIndividuals.contains(individual);
+        }
     }
 
     /**
@@ -6772,6 +7370,8 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
 
         for (OWLClassExpression ce : intersection.getOperands()) {
             SortedSet<OWLIndividual> opIndividuals = getIndividualsImpl(ce);
+
+            opIndividuals.removeAll(ignoredIndividuals);
 
             if (individuals == null) {
                 individuals = opIndividuals;
@@ -6801,20 +7401,24 @@ public class SpatialReasonerPostGIS extends AbstractReasonerComponent implements
     protected void updateWithSuperPropertyMembers(
             Map<OWLIndividual, SortedSet<OWLIndividual>> propIndividuals, OWLObjectProperty prop) {
 
-        for(OWLObjectProperty subProp : reasoner.getSuperProperties((OWLObjectProperty) prop)) {
-            Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
-                    reasoner.getPropertyMembers(subProp);
+        Set<OWLObjectProperty> superProperties = reasoner.getSuperProperties(prop);
 
-            for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
-                Set<OWLIndividual> valIndividuals =
-                        tmpPropIndividuals.get(keyIndividual);
+        if (superProperties != null) {
+            for (OWLObjectProperty subProp : superProperties) {
+                Map<OWLIndividual, SortedSet<OWLIndividual>> tmpPropIndividuals =
+                        reasoner.getPropertyMembers(subProp);
 
-                if (propIndividuals.containsKey(keyIndividual)) {
-                    for (OWLIndividual valIndividual: valIndividuals) {
-                        if (!propIndividuals.get(keyIndividual).contains(valIndividual)) {
-                            propIndividuals
-                                    .get(keyIndividual)
-                                    .add(valIndividual);
+                for (OWLIndividual keyIndividual : tmpPropIndividuals.keySet()) {
+                    Set<OWLIndividual> valIndividuals =
+                            tmpPropIndividuals.get(keyIndividual);
+
+                    if (propIndividuals.containsKey(keyIndividual)) {
+                        for (OWLIndividual valIndividual : valIndividuals) {
+                            if (!propIndividuals.get(keyIndividual).contains(valIndividual)) {
+                                propIndividuals
+                                        .get(keyIndividual)
+                                        .add(valIndividual);
+                            }
                         }
                     }
                 }
