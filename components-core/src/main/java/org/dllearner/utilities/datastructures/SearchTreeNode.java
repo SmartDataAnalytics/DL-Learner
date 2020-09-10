@@ -41,4 +41,6 @@ public interface SearchTreeNode {
 	 * @return The children of this node.
 	 */
 	Collection<? extends SearchTreeNode> getChildren();
+
+	public double getAccuracy();
 }
