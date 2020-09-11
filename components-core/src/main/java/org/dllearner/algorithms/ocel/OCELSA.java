@@ -22,7 +22,10 @@ import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import org.apache.log4j.Level;
 import org.dllearner.accuracymethods.AccMethodNoWeakness;
-import org.dllearner.core.*;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -270,8 +273,8 @@ public class OCELSA extends OCEL {
 
 	private int noImprovementCounter = 0;
 
-	@ConfigOption(defaultValue = "20", description = "TODO")
-	private int reHeatThreshold = 20;
+	@ConfigOption(defaultValue = "20.0", description = "TODO")
+	private double reHeatThreshold = 20.0;
 
 	private SimulatedAnnealingHeuristic<ExampleBasedNode> saHeuristic;
 
@@ -1506,7 +1509,7 @@ public class OCELSA extends OCEL {
 		this.adaptiveAnnealing = adaptiveAnnealing;
 	}
 
-	public void setReHeatThreshold(int reHeatThreshold) {
+	public void setReHeatThreshold(double reHeatThreshold) {
 		this.reHeatThreshold = reHeatThreshold;
 	}
 }
