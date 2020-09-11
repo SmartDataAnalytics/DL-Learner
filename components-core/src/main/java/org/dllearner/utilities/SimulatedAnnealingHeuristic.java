@@ -121,19 +121,49 @@ public class SimulatedAnnealingHeuristic<N extends AbstractSearchTreeNode> {
          * - currBestAccuracy is low --> currThreshold shrinks only very slowly
          *   --> randomness decreases slowly
          */
-        double currThreshold = Math.exp(-currBestAccuracy/currentTemperature);
+        double currThreshold = Math.exp(-currBestAccuracy / currentTemperature);
 
         double rnd = rng.nextDouble();
 
-        N pickedNode;
         if (rnd < currThreshold) {
             // pick random
             int numNodes = searchTree.size();
 
             return (N) searchTree.getNodeSet().toArray()[rng.nextInt(numNodes)];
-        } else {
 
+        } else {
             return (N) searchTree.best();
+        }
+    }
+
+    public N pickNode(N candidate, SearchTree searchTree) {
+        double candidateAccuracy = candidate.getAccuracy();
+
+        /*
+         * 1 +-------.
+         *   |       \\
+         *   |        \|
+         * 0 +---------+--->
+         *   start     0
+         *   temp.
+         *
+         * - candidateAccuracy is high --> currThreshold shrinks faster w.r.t.
+         *   currentTemperature --> randomness decreases fast
+         * - candidateAccuracy is low --> currThreshold shrinks only very slowly
+         *   --> randomness decreases slowly
+         */
+        double currThreshold = Math.exp(-candidateAccuracy / currentTemperature);
+
+        double rnd = rng.nextDouble();
+
+        if (rnd < currThreshold) {
+            // pick random
+            int numNodes = searchTree.size();
+
+            return (N) searchTree.getNodeSet().toArray()[rng.nextInt(numNodes)];
+
+        } else {
+            return candidate;
         }
     }
 
