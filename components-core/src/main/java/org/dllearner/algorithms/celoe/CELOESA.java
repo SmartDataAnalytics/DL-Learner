@@ -492,9 +492,11 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 			OENode node = saHeuristic.pickNode(it.next(), searchTree);
 			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+					saHeuristic.cool();
 					return node;
 			} else {
 				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+					saHeuristic.cool();
 					return node;
 				}
 			}
