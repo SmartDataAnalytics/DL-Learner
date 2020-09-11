@@ -191,6 +191,14 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 	@ConfigOption(defaultValue = "50.0", description = "TODO")
 	private double startTemperature = 50.0;
 
+	@ConfigOption(defaultValue = "false", description = "TODO")
+	private boolean adaptiveAnnealing = false;
+
+	private int noImprovementCounter = 0;
+
+	@ConfigOption(defaultValue = "20.0", description = "TODO")
+	private double reHeatThreshold = 20.0;
+
 	private SimulatedAnnealingHeuristic<OENode> saHeuristic;
 
 	// option to keep track of best score during algorithm run
@@ -348,7 +356,7 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 		addNode(startClass, null);
 		
 		while (!terminationCriteriaSatisfied()) {
-			showIfBetterSolutionsFound();
+			checkIfBetterSolutionsFound();
 
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
@@ -372,7 +380,7 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 				}
 			}
 			
-			showIfBetterSolutionsFound();
+			checkIfBetterSolutionsFound();
 			
 			// update the global min and max horizontal expansion values
 			updateMinMaxHorizExp(nextNode);
@@ -492,11 +500,9 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 			OENode node = saHeuristic.pickNode(it.next(), searchTree);
 			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-					saHeuristic.cool();
 					return node;
 			} else {
 				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-					saHeuristic.cool();
 					return node;
 				}
 			}
@@ -792,7 +798,7 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 		}
 	}
 	
-	private void showIfBetterSolutionsFound() {
+	private void checkIfBetterSolutionsFound() {
 		if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
 			currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 			expressionTestCountLastImprovement = expressionTests;
@@ -805,6 +811,18 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
 			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+
+			saHeuristic.cool();
+			noImprovementCounter = 0;
+
+		} else if (adaptiveAnnealing){
+			// No improvement and adaptive annealing switched on
+			noImprovementCounter++;
+
+			if (noImprovementCounter == reHeatThreshold) {
+				saHeuristic.heat();
+				noImprovementCounter = 0;
+			}
 		}
 	}
 	
@@ -1223,5 +1241,13 @@ public class CELOESA extends AbstractCELA implements Cloneable{
 
 	public void setStartTemperature(double startTemperature) {
 		this.startTemperature = startTemperature;
+	}
+
+	public void setAdaptiveAnnealing(boolean adaptiveAnnealing) {
+		this.adaptiveAnnealing = adaptiveAnnealing;
+	}
+
+	public void setReHeatThreshold(double reHeatThreshold) {
+		this.reHeatThreshold = reHeatThreshold;
 	}
 }

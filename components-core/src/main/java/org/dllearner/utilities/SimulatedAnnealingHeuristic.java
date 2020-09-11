@@ -4,7 +4,6 @@ package org.dllearner.utilities;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.utilities.datastructures.SearchTree;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Random;
 
