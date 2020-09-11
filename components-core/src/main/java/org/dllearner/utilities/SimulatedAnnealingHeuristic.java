@@ -100,7 +100,32 @@ public class SimulatedAnnealingHeuristic<N extends AbstractSearchTreeNode> {
                 currentLinearTemperature--;
                 currentTemperature = sublinear(currentLinearTemperature);
             } else {
-                throw new RuntimeException("Cooling strategy not supported, yet");
+                throw new RuntimeException("Cooling characteristic not supported, yet");
+            }
+        }
+    }
+
+    /**
+     * Heats up the simulated annealing heuristic by one 'degree' or step
+     */
+    public void heat() {
+        if (currentTemperature > startTemperature) {
+            currentTemperature = startTemperature;
+            currentLinearTemperature = startTemperature;
+
+        } else if (currentTemperature < startTemperature){
+
+            if (cooling.equals(Cooling.LINEAR)) {
+                currentLinearTemperature++;
+                currentTemperature++;
+            } else if (cooling.equals(Cooling.SUPERLINEAR)) {
+                currentLinearTemperature++;
+                currentTemperature = superlinear(currentLinearTemperature);
+            } else if (cooling.equals(Cooling.SUBLINEAR)) {
+                currentLinearTemperature++;
+                currentTemperature = sublinear(currentLinearTemperature);
+            } else {
+                throw new RuntimeException("Cooling characteristic not supported, yet");
             }
         }
     }
