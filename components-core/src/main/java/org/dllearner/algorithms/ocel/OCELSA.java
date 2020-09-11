@@ -265,6 +265,14 @@ public class OCELSA extends OCEL {
 	@ConfigOption(defaultValue = "50.0", description = "TODO")
 	private double startTemperature = 50.0;
 
+	@ConfigOption(defaultValue = "false", description = "TODO")
+	private boolean adaptiveAnnealing = false;
+
+	private int noImprovementCounter = 0;
+
+	@ConfigOption(defaultValue = "20", description = "TODO")
+	private int reHeatThreshold = 20;
+
 	private SimulatedAnnealingHeuristic<ExampleBasedNode> saHeuristic;
 
 	public OCELSA() {
@@ -499,13 +507,27 @@ public class OCELSA extends OCEL {
 
 			// chose best node according to heuristics
 			bestNode = saHeuristic.pickNode(searchTree);
-			saHeuristic.cool();
 
 			// best node is removed temporarily, because extending it can
 			// change its evaluation
 			searchTree.updatePrepare(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
 			searchTree.updateDone(bestNode);
+
+			if (adaptiveAnnealing && searchTree.best().getAccuracy() <= previousBestNode.getAccuracy()) {
+				// No improvement
+				noImprovementCounter++;
+
+				if (noImprovementCounter == reHeatThreshold) {
+					saHeuristic.heat();
+					noImprovementCounter = 0;
+				}
+
+			} else {
+				// Improvement, or adaptive simulated annealing switched off
+				noImprovementCounter = 0;
+				saHeuristic.cool();
+			}
 			previousBestNode = bestNode;
 
 			if (writeSearchTree) {
@@ -950,19 +972,21 @@ public class OCELSA extends OCEL {
 		Set<OWLIndividual> currentCoveredPos = startNode.getCoveredPositives();
 		Set<OWLIndividual> currentCoveredNeg = startNode.getCoveredNegatives();
 		double currentAccuracy = startNode.getAccuracy();
+
 		int currentMisclassifications = nrOfPositiveExamples - currentCoveredPos.size()
 				+ currentCoveredNeg.size();
-		logger.debug("tree traversal start node "
-				+ startNode
-				.getShortDescription());
+
+		logger.debug("tree traversal start node " + startNode.getShortDescription());
 		logger.debug("tree traversal start accuracy: " + currentAccuracy);
 		int i = 0;
+
 		// start from the most promising nodes
 		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode currNode : reverseView) {
 			// compute covered positives and negatives
 			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<>(currentCoveredPos);
 			newCoveredPositives.retainAll(currNode.getCoveredPositives());
+
 			SortedSet<OWLIndividual> newCoveredNegatives = new TreeSet<>(currentCoveredNeg);
 			newCoveredNegatives.retainAll(currNode.getCoveredNegatives());
 
@@ -1022,6 +1046,7 @@ public class OCELSA extends OCEL {
 		// 2 points for each covered pos + 1 point for each uncovered neg
 		int currScore = 0;
 		int i = 0;
+
 		ExampleBasedNode currNode = null;
 		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode node : reverseView) {
@@ -1475,5 +1500,13 @@ public class OCELSA extends OCEL {
 
 	public void setStartTemperature(double startTemperature) {
 		this.startTemperature = startTemperature;
+	}
+
+	public void setAdaptiveAnnealing(boolean adaptiveAnnealing) {
+		this.adaptiveAnnealing = adaptiveAnnealing;
+	}
+
+	public void setReHeatThreshold(int reHeatThreshold) {
+		this.reHeatThreshold = reHeatThreshold;
 	}
 }
