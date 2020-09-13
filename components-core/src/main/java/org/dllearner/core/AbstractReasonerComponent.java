@@ -142,7 +142,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	@ConfigOption(description = "the underlying knowledge sources", required = true)
 	protected Set<KnowledgeSource> sources;
 
-    public AbstractReasonerComponent(){
+	public AbstractReasonerComponent(){
 
     }
 	/**
