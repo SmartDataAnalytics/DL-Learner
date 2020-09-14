@@ -8,6 +8,7 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -59,13 +60,13 @@ public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDeco
             stepRequestCount = 0;
             lastStep = stepUri;
         }
-        Resource logQuery = model.createResource(stepUri + "-query-" + stepRequestCount, model.createResource("logQuery"));
-        logQuery.addLiteral(model.createProperty("query"), queryString);
-        logQuery.addLiteral(model.createProperty("queryCount"), stepRequestCount);
+        Resource logQuery = model.createResource(stepUri + "-query-" + stepRequestCount, model.createResource(SPARQLReasoner.REQUEST_LOG_NS + "logQuery"));
+        logQuery.addLiteral(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "query"), queryString);
+        logQuery.addLiteral(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "queryCount"), stepRequestCount);
         DateTime dt = new DateTime();
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-        logQuery.addProperty(model.createProperty("time"), fmt.print(dt), XSDDatatype.XSDdateTimeStamp);
-        logQuery.addProperty(model.createProperty("step"), model.createResource(stepUri));
+        logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "time"), fmt.print(dt), XSDDatatype.XSDdateTimeStamp);
+        logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "step"), model.createResource(stepUri));
         RDFDataMgr.write(logStream,model, RDFFormat.NTRIPLES_UTF8);
         model.close();
         stepRequestCount++;

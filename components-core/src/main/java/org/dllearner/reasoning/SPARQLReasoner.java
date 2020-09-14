@@ -55,9 +55,9 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.sparql.LogStepProvider;
 import org.dllearner.utilities.sparql.QueryExecutionFactoryQueryLogging;
-import org.openrdf.model.vocabulary.XMLSchema;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+import org.semanticweb.owlapi.vocab.Namespaces;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
@@ -67,7 +67,6 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import javax.annotation.PreDestroy;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -96,7 +95,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
-	private static final String REQUEST_LOG_BASE = "http://dl-learner.org/spr-log/";
+	public static final String REQUEST_LOG_NS = "http://dl-learner.org/spr-log/";
 
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY
@@ -129,6 +128,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@ConfigOption(description = "Log file for reasoner request logging", required = false)
 	private String requestLogFile;
 
+	private String sprRunUID;
 	private long stepCount;
 	private Model requestLog;
 	private Model requestLogMeta;
@@ -209,6 +209,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if (requestLogging) {
 			stepCount = 0L;
 			requestLogMeta = ModelFactory.createDefaultModel();
+			sprRunUID = REQUEST_LOG_NS + "run/" + UUID.randomUUID().toString() + "/";
 			if(requestLogFile!=null) {
 				try {
 					requestLogStream = new FileOutputStream(requestLogFile);
@@ -260,21 +261,27 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private void setCurrentStep(String stepType) {
 		dumpRequestLog();
+		currentStep = requestLog.createResource("step-"+stepCount, requestLog.createResource(REQUEST_LOG_NS + stepType));
+		currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "stepCount"), stepCount);
+		currentStep.addProperty(RDF.type, requestLog.createResource(REQUEST_LOG_NS + "sprStep"));
+		requestLogMeta.add(requestLogMeta.createResource(REQUEST_LOG_NS + stepType), RDFS.subClassOf, requestLogMeta.createResource(REQUEST_LOG_NS + "sprStep"));
 		stepCount++;
-		currentStep = requestLog.createResource("step-"+stepCount, requestLog.createResource(stepType));
-		currentStep.addLiteral(requestLog.createProperty("stepCount"), stepCount);
-		currentStep.addProperty(RDF.type, requestLog.createResource("sprStep"));
-		requestLogMeta.add(requestLogMeta.createResource(stepType), RDFS.subClassOf, requestLogMeta.createResource("sprStep"));
+	}
+
+	private void writeRequestLogPreamble() {
+		(new PrintStream(requestLogStream, true)).println("@base <" + sprRunUID + "> .");
+		Model preamble = ModelFactory.createDefaultModel();
+		preamble.setNsPrefix("", sprRunUID);
+		preamble.setNsPrefix("s", REQUEST_LOG_NS);
+		preamble.setNsPrefix(Namespaces.XSD.getPrefixName(), Namespaces.XSD.getPrefixIRI());
+		preamble.setNsPrefix(Namespaces.RDFS.getPrefixName(), Namespaces.RDFS.getPrefixIRI());
+		RDFDataMgr.write(requestLogStream,preamble,RDFFormat.TURTLE);
+		preamble.close();
 	}
 
 	private void dumpRequestLog() {
 		if (requestLog==null) {
-			Model preamble = ModelFactory.createDefaultModel();
-			preamble.setNsPrefix("", REQUEST_LOG_BASE);
-			preamble.setNsPrefix(XMLSchema.PREFIX, XMLSchema.NAMESPACE);
-			(new PrintStream(requestLogStream, true)).println("@base <" + REQUEST_LOG_BASE + "> .");
-			RDFDataMgr.write(requestLogStream,preamble,RDFFormat.TURTLE);
-			preamble.close();
+			writeRequestLogPreamble();
 		} else {
 			RDFDataMgr.write(requestLogStream,requestLog,RDFFormat.NTRIPLES_UTF8);
 			requestLog.close();
@@ -531,7 +538,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public <T extends OWLEntity> int getPopularity(T entity){
 		if (requestLogging) {
 			setCurrentStep("getPopularity");
-			currentStep.addProperty(requestLog.createProperty("entity"), entity.getIRI().toString());
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "entity"), entity.getIRI().toString());
 		}
 		// check if we have the value cached
 		Integer popularity = entityPopularityMap.get(entity);
@@ -565,7 +572,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public int getPopularityOf(OWLClassExpression description){
 		if(requestLogging) {
 			setCurrentStep("getPopularitOf");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
 		}
 		if(classPopularityMap != null && classPopularityMap.containsKey(description)){
 			return classPopularityMap.get(description);
@@ -632,7 +639,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public boolean isFunctional(OWLDataProperty property){
 		if(requestLogging){
 			setCurrentStep("isFunctional");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(property));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(property));
 		}
 		String query = "ASK {<" + property.toStringID() + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
 		return executeAskQuery(query);
@@ -972,7 +979,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLClass> getTypesImpl(OWLIndividual individual) {
 		if(requestLogging){
 			setCurrentStep("getTypes");
-			currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(individual));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(individual));
 		}
 		String query = String.format(SPARQLQueryUtils.SELECT_INSTANCE_TYPES_QUERY, individual.toStringID());
 		ResultSet rs = executeSelectQuery(query);
@@ -1014,7 +1021,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public EntityType<? extends OWLEntity> getOWLEntityType(String iri) {
 		if(requestLogging){
 			setCurrentStep("getOWLEntityType");
-			currentStep.addProperty(requestLog.createProperty("entity"), iri);
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "entity"), iri);
 		}
 		ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT ?type WHERE {?s a ?type .}");
 		query.setIri("s", iri);
@@ -1170,7 +1177,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLDataProperty> getDataPropertiesByRange(IRI iri) {
 		if(requestLogging){
 			setCurrentStep("getDataPropertiesByRange");
-			currentStep.addProperty(requestLog.createProperty("datatype"), requestLog.createResource(iri.toString()));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "datatype"), requestLog.createResource(iri.toString()));
 		}
 		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, iri.toString());
 		logger.debug(sparql_debug, "get properties by range query: " + query);
@@ -1272,7 +1279,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLClass> getSiblingClasses(OWLClass cls) {
 		if(requestLogging){
 			setCurrentStep("getSiblingClasses");
-			currentStep.addProperty(requestLog.createProperty("class"), toDLSyntax(cls));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "class"), toDLSyntax(cls));
 		}
 		String query = SPARQLQueryUtils.SELECT_SIBLING_CLASSES_QUERY.replace("%s", cls.toStringID());
 		ResultSet rs = executeSelectQuery(query);
@@ -1284,8 +1291,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public boolean hasTypeImpl(OWLClassExpression description, OWLIndividual individual) {
 		if(requestLogging){
 			setCurrentStep("hasType");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
-			currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(individual));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(individual));
 		}
 		if(description.isOWLThing()) { // owl:Thing -> TRUE
 			return true;
@@ -1344,13 +1351,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
 		if(requestLogging){
 			setCurrentStep("getIndividuals");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
 			if(limit!=0) {
-				currentStep.addLiteral(requestLog.createProperty("limit"), limit);
+				currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "limit"), limit);
 			}
 			if (indValues != null) {
 				for (OWLIndividual i:indValues) {
-					currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(i));
+					currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(i));
 				}
 			}
 		}
@@ -1394,13 +1401,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public int getIndividualsCount(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
 		if(requestLogging){
 			setCurrentStep("getIndividualsCount");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
 			if(limit!=0) {
-				currentStep.addLiteral(requestLog.createProperty("limit"), limit);
+				currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "limit"), limit);
 			}
 			if (indValues != null) {
 				for(OWLIndividual i:indValues) {
-					currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(i));
+					currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(i));
 				}
 			}
 		}
@@ -1449,11 +1456,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLIndividual> getIndividualsExcluding(OWLClassExpression wantedClass, OWLClassExpression excludeClass, int limit) {
 		if(requestLogging){
 			setCurrentStep("getIndividualsExcluding");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(wantedClass));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(wantedClass));
 			if(limit!=0) {
-				currentStep.addLiteral(requestLog.createProperty("limit"), limit);
+				currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "limit"), limit);
 			}
-			currentStep.addProperty(requestLog.createProperty("exclude"), toDLSyntax(excludeClass));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "exclude"), toDLSyntax(excludeClass));
 		}
 		if(wantedClass.isAnonymous()){
 			throw new UnsupportedOperationException("Only named classes are supported.");
@@ -1582,8 +1589,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getRelatedIndividuals");
-			currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(individual));
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(individual));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		Set<OWLIndividual> individuals = new HashSet<>();
 		String query = String.format("SELECT ?ind WHERE {<%s> <%s> ?ind, FILTER(isIRI(?ind))}", individual.toStringID(), objectProperty.toStringID());
@@ -1606,7 +1613,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLObjectProperty, Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
 		if(requestLogging){
 			setCurrentStep("getObjectPropertyRelationships");
-			currentStep.addProperty(requestLog.createProperty("individual"), toDLSyntax(individual));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "individual"), toDLSyntax(individual));
 		}
 		Map<OWLObjectProperty, Set<OWLIndividual>> prop2individuals = new HashMap<>();
 		String query = String.format("SELECT ?prop ?ind WHERE {" +
@@ -1628,7 +1635,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getPropertyMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		//if (logger.isTraceEnabled()) logger.trace(ExceptionUtils.getStackTrace(new Throwable()));
 		Map<OWLIndividual, SortedSet<OWLIndividual>> subject2objects = new HashMap<>();
@@ -1666,10 +1673,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLObjectProperty> getApplicableProperties(OWLClassExpression domain, Set<OWLObjectProperty> objectProperties) {
 		if(requestLogging){
 			setCurrentStep("getApplicableProperties");
-			currentStep.addProperty(requestLog.createProperty("domain"), toDLSyntax(domain));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "domain"), toDLSyntax(domain));
 			if (objectProperties!=null) {
 				for(OWLObjectProperty i:objectProperties){
-					currentStep.addProperty(requestLog.createProperty("property"),toDLSyntax(i));
+					currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"),toDLSyntax(i));
 				}
 			}
 		}
@@ -1695,7 +1702,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty dataProperty) {
 		if(requestLogging){
 			setCurrentStep("getDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(dataProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(dataProperty));
 		}
 		Map<OWLIndividual, SortedSet<OWLLiteral>> subject2objects = new HashMap<>();
 		
@@ -1723,7 +1730,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getDoubleDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		Map<OWLIndividual, SortedSet<Double>> subject2objects = new HashMap<>();
 		String query = "SELECT ?s ?o WHERE {" +
@@ -1746,7 +1753,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getIntDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		Map<OWLIndividual, SortedSet<Integer>> subject2objects = new HashMap<>();
 		String query = "SELECT ?s ?o WHERE {" +
@@ -1767,7 +1774,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getBooleanDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		Map<OWLIndividual, SortedSet<Boolean>> subject2objects = new HashMap<>();
 		String query = "SELECT ?s ?o WHERE {" +
@@ -1788,7 +1795,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLIndividual> getTrueDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getTrueDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		SortedSet<OWLIndividual> members = new TreeSet<>();
 		String query = String.format("SELECT ?ind WHERE {" +
@@ -1809,7 +1816,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLIndividual> getFalseDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getFalseDatatypeMembers");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		SortedSet<OWLIndividual> members = new TreeSet<>();
 		String query = String.format("SELECT ?ind WHERE {" +
@@ -1867,7 +1874,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public OWLClassExpression getDomainImpl(OWLObjectProperty property) {
 		if(requestLogging){
 			setCurrentStep("getDomain");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(property));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(property));
 		}
 		return propertyDomains.computeIfAbsent(property, k -> computeDomain(property));
 	}
@@ -1903,7 +1910,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClass> getDomains(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getDomains");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		String query = String.format("SELECT ?domain WHERE {" +
 				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
@@ -1925,7 +1932,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public OWLClassExpression getDomainImpl(OWLDataProperty property) {
 		if(requestLogging){
 			setCurrentStep("getDomain");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(property));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(property));
 		}
 		return propertyDomains.computeIfAbsent(property, k -> computeDomain(property));
 	}
@@ -1934,7 +1941,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public OWLClassExpression getRangeImpl(OWLObjectProperty property) {
 		if(requestLogging){
 			setCurrentStep("getRange");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(property));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(property));
 		}
 		return objectPropertyRanges.computeIfAbsent(property, k -> {
 			String query = String.format("SELECT ?range WHERE {" +
@@ -1966,7 +1973,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClass> getRanges(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getRanges");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		String query = String.format("SELECT ?range WHERE {" +
 				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
@@ -2036,7 +2043,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLObjectProperty> getInverseObjectProperties(OWLObjectProperty property){
 		if(requestLogging){
 			setCurrentStep("getInverseObjectProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(property));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(property));
 		}
 		SortedSet<OWLObjectProperty> inverseObjectProperties = new TreeSet<>();
 		String query = "SELECT ?p WHERE {" +
@@ -2055,7 +2062,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
 		if(requestLogging){
 			setCurrentStep("getRange");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(datatypeProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(datatypeProperty));
 		}
 		String query = String.format("SELECT ?range WHERE {" +
 				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
@@ -2077,8 +2084,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public boolean isSuperClassOfImpl(OWLClassExpression superClass, OWLClassExpression subClass) {
 		if(requestLogging){
 			setCurrentStep("isSuperClassOf");
-			currentStep.addProperty(requestLog.createProperty("superClass"), toDLSyntax(superClass));
-			currentStep.addProperty(requestLog.createProperty("subClass"), toDLSyntax(subClass));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "superClass"), toDLSyntax(superClass));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "subClass"), toDLSyntax(subClass));
 		}
 		if(subClass.isAnonymous() || superClass.isAnonymous()){
 //			throw new IllegalArgumentException("Only named classes are supported.");
@@ -2096,8 +2103,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public boolean isEquivalentClassImpl(OWLClassExpression class1, OWLClassExpression class2) {
 		if(requestLogging){
 			setCurrentStep("isEquivalentClass");
-			currentStep.addProperty(requestLog.createProperty("class"), toDLSyntax(class1));
-			currentStep.addProperty(requestLog.createProperty("class"), toDLSyntax(class2));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "class"), toDLSyntax(class1));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "class"), toDLSyntax(class2));
 		}
 		if(class1.isAnonymous() || class2.isAnonymous()){
 //			throw new IllegalArgumentException("Only named classes are supported.");
@@ -2158,7 +2165,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression description) {
 		if(requestLogging){
 			setCurrentStep("getSuperClasses");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
 		}
 		String query;
 		if(description.isAnonymous()){
@@ -2185,8 +2192,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression description, boolean direct){
 		if(requestLogging){
 			setCurrentStep("getSuperClasses");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
-			currentStep.addLiteral(requestLog.createProperty("direct"), direct);
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
+			currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "direct"), direct);
 		}
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
@@ -2219,8 +2226,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression description, boolean direct) {
 		if(requestLogging){
 			setCurrentStep("getSubClasses");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(description));
-			currentStep.addLiteral(requestLog.createProperty("direct"), direct);
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(description));
+			currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "direct"), direct);
 		}
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
@@ -2260,7 +2267,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getSuperProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		SortedSet<OWLObjectProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2282,7 +2289,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getSubProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		SortedSet<OWLObjectProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2303,7 +2310,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLObjectProperty> getEquivalentProperties(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getEquivalentProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		SortedSet<OWLObjectProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2321,7 +2328,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLObjectProperty> getDisjointProperties(OWLObjectProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getDisjointProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		SortedSet<OWLObjectProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2340,7 +2347,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLDataProperty> getEquivalentProperties(OWLDataProperty objectProperty) {
 		if(requestLogging){
 			setCurrentStep("getEquivalentProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(objectProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(objectProperty));
 		}
 		SortedSet<OWLDataProperty> superProperties = new TreeSet<>();
 		String query = String.format(
@@ -2360,7 +2367,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty dataProperty) {
 		if(requestLogging){
 			setCurrentStep("getSuperProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(dataProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(dataProperty));
 		}
 		SortedSet<OWLDataProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2382,7 +2389,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty dataProperty) {
 		if(requestLogging){
 			setCurrentStep("getSubProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(dataProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(dataProperty));
 		}
 		SortedSet<OWLDataProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2403,7 +2410,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLDataProperty> getDisjointProperties(OWLDataProperty dataProperty) {
 		if(requestLogging){
 			setCurrentStep("getDiosjointProperties");
-			currentStep.addProperty(requestLog.createProperty("property"), toDLSyntax(dataProperty));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "property"), toDLSyntax(dataProperty));
 		}
 		SortedSet<OWLDataProperty> properties = new TreeSet<>();
 		String query = String.format(
@@ -2518,10 +2525,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLClassExpression> getMeaningfulClasses(OWLClassExpression index, SortedSet<OWLClassExpression> targetClasses) {
 		if(requestLogging){
 			setCurrentStep("getMeaningfulClasses");
-			currentStep.addProperty(requestLog.createProperty("ce"), toDLSyntax(index));
+			currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "ce"), toDLSyntax(index));
 			if(targetClasses!=null) {
 				for(OWLClassExpression i:targetClasses) {
-					currentStep.addProperty(requestLog.createProperty("target"), toDLSyntax(i));
+					currentStep.addProperty(requestLog.createProperty(REQUEST_LOG_NS + "target"), toDLSyntax(i));
 				}
 			}
 		}
