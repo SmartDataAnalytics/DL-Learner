@@ -55,6 +55,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.sparql.LogStepProvider;
 import org.dllearner.utilities.sparql.QueryExecutionFactoryQueryLogging;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
@@ -63,12 +64,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import javax.annotation.PreDestroy;
+import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -92,10 +92,11 @@ import static org.dllearner.utilities.owl.OWLAPIRenderers.toDLSyntax;
  *
  */
 @ComponentAnn(name = "SPARQL Reasoner", shortName = "spr", version = 0.1)
-public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner, LogStepProvider {
+public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner, LogStepProvider, DisposableBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
+	private static final String REQUEST_LOG_BASE = "http://dl-learner.org/spr-log/";
 
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY
@@ -130,6 +131,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private long stepCount;
 	private Model requestLog;
+	private Model requestLogMeta;
 	private Resource currentStep;
 	private OutputStream requestLogStream;
 
@@ -176,7 +178,28 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this();
 		this.qef = qef;
 	}
-	
+
+	//@PreDestroy
+	public void destroy() {
+		if(requestLogStream !=null) {
+			dumpRequestLog();
+			RDFDataMgr.write(requestLogStream,requestLogMeta,RDFFormat.NTRIPLES_UTF8);
+			requestLogMeta.close();
+			try {
+				requestLogStream.flush();
+			} catch (IOException e) {
+				//ignore
+			}
+			if(requestLogStream!=System.out) {
+				try {
+					requestLogStream.close();
+				} catch (IOException e) {
+					//ignore
+				}
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
@@ -185,6 +208,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		classPopularityMap = new HashMap<>();
 		if (requestLogging) {
 			stepCount = 0L;
+			requestLogMeta = ModelFactory.createDefaultModel();
 			if(requestLogFile!=null) {
 				try {
 					requestLogStream = new FileOutputStream(requestLogFile);
@@ -237,28 +261,25 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private void setCurrentStep(String stepType) {
 		dumpRequestLog();
 		stepCount++;
-		currentStep = requestLog.createResource("step-"+stepCount
-				/*getStepUri()*/, requestLog.createResource(stepType));
+		currentStep = requestLog.createResource("step-"+stepCount, requestLog.createResource(stepType));
+		currentStep.addLiteral(requestLog.createProperty("stepCount"), stepCount);
+		currentStep.addProperty(RDF.type, requestLog.createResource("sprStep"));
+		requestLogMeta.add(requestLogMeta.createResource(stepType), RDFS.subClassOf, requestLogMeta.createResource("sprStep"));
 	}
 
 	private void dumpRequestLog() {
-		if (requestLog!=null){
+		if (requestLog==null) {
+			Model preamble = ModelFactory.createDefaultModel();
+			preamble.setNsPrefix("", REQUEST_LOG_BASE);
+			preamble.setNsPrefix(XMLSchema.PREFIX, XMLSchema.NAMESPACE);
+			(new PrintStream(requestLogStream, true)).println("@base <" + REQUEST_LOG_BASE + "> .");
+			RDFDataMgr.write(requestLogStream,preamble,RDFFormat.TURTLE);
+			preamble.close();
+		} else {
 			RDFDataMgr.write(requestLogStream,requestLog,RDFFormat.NTRIPLES_UTF8);
 			requestLog.close();
 		}
 		requestLog = ModelFactory.createDefaultModel();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		if(requestLogStream !=null) {
-			dumpRequestLog();
-			requestLogStream.flush();
-			if(requestLogStream!=System.out) {
-				requestLogStream.close();
-			}
-		}
-		super.finalize();
 	}
 
 	public QueryExecutionFactory getQueryExecutionFactory() {

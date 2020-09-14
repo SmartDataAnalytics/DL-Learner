@@ -61,6 +61,7 @@ public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDeco
         }
         Resource logQuery = model.createResource(stepUri + "-query-" + stepRequestCount, model.createResource("logQuery"));
         logQuery.addLiteral(model.createProperty("query"), queryString);
+        logQuery.addLiteral(model.createProperty("queryCount"), stepRequestCount);
         DateTime dt = new DateTime();
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         logQuery.addProperty(model.createProperty("time"), fmt.print(dt), XSDDatatype.XSDdateTimeStamp);
