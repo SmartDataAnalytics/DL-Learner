@@ -162,6 +162,7 @@ public class CLIDistributedLEAP extends CLI {
             logger.debug("conf file set");
             logger.debug("Start Running");
             cli.run();
+            cli.close();
         } catch (Exception e) {
             e.printStackTrace();
             String stacktraceFileName = "log/error.log";

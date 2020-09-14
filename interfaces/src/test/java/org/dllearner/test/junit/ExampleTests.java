@@ -178,6 +178,7 @@ public class ExampleTests {
 						} else {
 							System.out.println("Test skipped, because of GP or SPARQL settings.");
 						}
+						start.close();
 					} catch (Exception e) {
 						e.printStackTrace();
 						// unit test not succesful (exceptions are caught explicitly to find
