@@ -30,8 +30,11 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.system.StreamOps;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFWriter;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.OWL2;
@@ -134,6 +137,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private Model requestLogMeta;
 	private Resource currentStep;
 	private OutputStream requestLogStream;
+	private StreamRDF requestLogStreamRDF;
 
 	private QueryExecutionFactory qef;
 
@@ -183,7 +187,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public void destroy() {
 		if(requestLogStream !=null) {
 			dumpRequestLog();
-			RDFDataMgr.write(requestLogStream,requestLogMeta,RDFFormat.NTRIPLES_UTF8);
 			requestLogMeta.close();
 			try {
 				requestLogStream.flush();
@@ -205,6 +208,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+
 		classPopularityMap = new HashMap<>();
 		if (requestLogging) {
 			stepCount = 0L;
@@ -261,29 +265,44 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private void setCurrentStep(String stepType) {
 		dumpRequestLog();
-		currentStep = requestLog.createResource("step-"+stepCount, requestLog.createResource(REQUEST_LOG_NS + stepType));
+		currentStep = requestLog.createResource(getRequestLogBaseUri() + "step-"+stepCount, requestLog.createResource(REQUEST_LOG_NS + stepType));
 		currentStep.addLiteral(requestLog.createProperty(REQUEST_LOG_NS + "stepCount"), stepCount);
-		currentStep.addProperty(RDF.type, requestLog.createResource(REQUEST_LOG_NS + "sprStep"));
-		requestLogMeta.add(requestLogMeta.createResource(REQUEST_LOG_NS + stepType), RDFS.subClassOf, requestLogMeta.createResource(REQUEST_LOG_NS + "sprStep"));
+		Resource metaType = requestLogMeta.createResource(REQUEST_LOG_NS + stepType);
+		Resource metaBase = requestLogMeta.createResource(REQUEST_LOG_NS + "sprStep");
+		if (!metaType.hasProperty(RDFS.subClassOf, metaBase)) {
+			currentStep.addProperty(RDF.type, requestLog.createResource(REQUEST_LOG_NS + "sprStep"));
+			requestLog.add(metaType, RDFS.subClassOf, metaBase);
+			requestLogMeta.add(metaType, RDFS.subClassOf, metaBase);
+		}
 		stepCount++;
 	}
 
 	private void writeRequestLogPreamble() {
-		(new PrintStream(requestLogStream, true)).println("@base <" + sprRunUID + "> .");
-		Model preamble = ModelFactory.createDefaultModel();
-		preamble.setNsPrefix("", sprRunUID);
-		preamble.setNsPrefix("s", REQUEST_LOG_NS);
-		preamble.setNsPrefix(Namespaces.XSD.getPrefixName(), Namespaces.XSD.getPrefixIRI());
-		preamble.setNsPrefix(Namespaces.RDFS.getPrefixName(), Namespaces.RDFS.getPrefixIRI());
-		RDFDataMgr.write(requestLogStream,preamble,RDFFormat.TURTLE);
-		preamble.close();
+//		(new PrintStream(requestLogStream, true)).println("@base <" + sprRunUID + "> .");
+		requestLogStreamRDF = StreamRDFWriter.getWriterStream(requestLogStream, Lang.TURTLE);
+		requestLogStreamRDF.base(getRequestLogBaseUri());
+		requestLogStreamRDF.prefix("", getRequestLogBaseUri());
+		requestLogStreamRDF.prefix("s", REQUEST_LOG_NS);
+		requestLogStreamRDF.prefix(Namespaces.XSD.getPrefixName(), Namespaces.XSD.getPrefixIRI());
+		requestLogStreamRDF.prefix(Namespaces.RDFS.getPrefixName(), Namespaces.RDFS.getPrefixIRI());
+		requestLogStreamRDF.prefix(Namespaces.RDF.getPrefixName(), Namespaces.RDF.getPrefixIRI());
+
+//		(new PrintStream(requestLogStream, true)).println("@base <" + sprRunUID + "> .");
+//		Model preamble = ModelFactory.createDefaultModel();
+//		preamble.setNsPrefix("", sprRunUID);
+//		preamble.setNsPrefix("s", REQUEST_LOG_NS);
+//		preamble.setNsPrefix(Namespaces.XSD.getPrefixName(), Namespaces.XSD.getPrefixIRI());
+//		preamble.setNsPrefix(Namespaces.RDFS.getPrefixName(), Namespaces.RDFS.getPrefixIRI());
+//		RDFDataMgr.write(requestLogStream,preamble,RDFFormat.TURTLE);
+//		preamble.close();
 	}
 
 	private void dumpRequestLog() {
 		if (requestLog==null) {
 			writeRequestLogPreamble();
 		} else {
-			RDFDataMgr.write(requestLogStream,requestLog,RDFFormat.NTRIPLES_UTF8);
+			StreamOps.graphToStream(requestLog.getGraph(),requestLogStreamRDF);
+			//RDFDataMgr.write(requestLogStream,requestLog,RDFFormat.NTRIPLES_UTF8);
 			requestLog.close();
 		}
 		requestLog = ModelFactory.createDefaultModel();
@@ -2763,13 +2782,18 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	@Override
-	public OutputStream getLogStream() {
-		return requestLogStream;
+	public StreamRDF getLogStream() {
+		return requestLogStreamRDF;
 	}
 
 	@Override
 	public String getStepUri() {
 		return currentStep.getURI();
 		//return "step-"+stepCount;
+	}
+
+	@Override
+	public String getRequestLogBaseUri() {
+		return sprRunUID;
 	}
 }

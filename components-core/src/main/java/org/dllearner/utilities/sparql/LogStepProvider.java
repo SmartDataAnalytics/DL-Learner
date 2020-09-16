@@ -1,9 +1,10 @@
 package org.dllearner.utilities.sparql;
 
-import java.io.OutputStream;
+import org.apache.jena.riot.system.StreamRDF;
 
 public interface LogStepProvider {
-    OutputStream getLogStream();
+    StreamRDF getLogStream();
 
     String getStepUri();
+    String getRequestLogBaseUri();
 }

@@ -8,6 +8,8 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.system.StreamOps;
+import org.apache.jena.riot.system.StreamRDF;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -19,7 +21,7 @@ public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDeco
 {
     private LogStepProvider provider;
     private long stepRequestCount;
-    private OutputStream logStream;
+    private StreamRDF logStream;
     private String lastStep;
 
     public QueryExecutionFactoryQueryLogging(QueryExecutionFactory decoratee, LogStepProvider prov) {
@@ -67,7 +69,7 @@ public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDeco
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "time"), fmt.print(dt), XSDDatatype.XSDdateTimeStamp);
         logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "step"), model.createResource(stepUri));
-        RDFDataMgr.write(logStream,model, RDFFormat.NTRIPLES_UTF8);
+        StreamOps.graphToStream(model.getGraph(), logStream);
         model.close();
         stepRequestCount++;
     }
