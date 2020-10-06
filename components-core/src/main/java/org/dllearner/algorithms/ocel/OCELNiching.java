@@ -18,8 +18,12 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
+import org.aksw.commons.util.Pair;
 import org.apache.log4j.Level;
 import org.dllearner.accuracymethods.AccMethodNoWeakness;
 import org.dllearner.core.*;
@@ -28,10 +32,11 @@ import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.*;
+import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
@@ -44,14 +49,17 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The DL-Learner learning algorithm component for the example
@@ -79,6 +87,15 @@ import java.util.*;
  */
 @ComponentAnn(name = "OWL Class Expression Learner with Niching", shortName = "ocelniche", version = 1.2)
 public class OCELNiching extends OCEL {
+
+    private LoadingCache<Pair<ExampleBasedNode, ExampleBasedNode>, Double> similarityPenaltyCache =
+            CacheBuilder.newBuilder().maximumSize(100000).build(
+                    new CacheLoader<Pair<ExampleBasedNode, ExampleBasedNode>, Double>() {
+                        @Override
+                        public Double load(Pair<ExampleBasedNode, ExampleBasedNode> key) throws Exception {
+                            return computeSimilarityPenalty(key.getKey(), key.getValue());
+                        }
+                    });
 
 	// actual algorithm
 	private static Logger logger = LoggerFactory.getLogger(OCELNiching.class);
@@ -500,13 +517,23 @@ public class OCELNiching extends OCEL {
 			while (it.hasNext()) {
 				ExampleBasedNode candidateNode = it.next();
 
-				double similarityPenalty =
-						computeSimilarityPenalty(candidateNode, searchTree.best());
-				double similarityPenalty2 =
-						computeSimilarityPenalty(candidateNode, previousBestNode);
+                double similarityPenalty = 0;
+                double similarityPenalty2 = 0;
+                try {
+                    similarityPenalty = similarityPenaltyCache.get(
+                            new Pair<>(candidateNode, searchTree.best()));
+//						computeSimilarityPenalty(candidateNode, searchTree.best());
 
-				if (similarityPenalty < similarityPenaltyThreshold &&
-						similarityPenalty2 < similarityPenaltyThreshold) {
+                    similarityPenalty2 = similarityPenaltyCache.get(
+                            new Pair<>(candidateNode, previousBestNode));
+//                            computeSimilarityPenalty(candidateNode, previousBestNode);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+
+				if ((similarityPenalty < similarityPenaltyThreshold
+						&& similarityPenalty2 < similarityPenaltyThreshold)
+						|| (searchTree.size() < (2*(1/similarityPenaltyThreshold)))) {
 
 					previousBestNode = bestNode;
 					bestNode = candidateNode;
@@ -1067,9 +1094,18 @@ public class OCELNiching extends OCEL {
 			boolean hasRefinementPotential = (misclassifiedPositives <= Math.floor(0.65d * allowedMisclassifications));
 			boolean keep = hasAccuracyGain && hasRefinementPotential;
 
-			double similarityPenalty = computeSimilarityPenalty(node, searchTree.best());
+            double similarityPenalty = 0;
+            try {
+                similarityPenalty = similarityPenaltyCache.get(
+                        new Pair<>(node, searchTree.best()));
+//                    computeSimilarityPenalty(node, searchTree.best());
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
 
-			if (keep && (similarityPenalty < similarityPenaltyThreshold)) {
+			if (keep //) {
+					&& ((similarityPenalty < similarityPenaltyThreshold)
+					|| (searchTreeStable.size() < (2*(1/similarityPenalty))))) {
 				promisingNodes.add(node);
 			}
 			i++;
