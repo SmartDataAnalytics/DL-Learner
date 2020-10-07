@@ -271,10 +271,12 @@ public class OCELNiching extends OCEL {
 
 	public void setSimilarityPenaltyThreshold(double similarityPenaltyThreshold) {
 		this.similarityPenaltyThreshold = similarityPenaltyThreshold;
+		this.maxSimilarityHopCount = (int) Math.ceil(1.0/similarityPenaltyThreshold);
 	}
 
 	@ConfigOption(defaultValue = "1/4")
 	private double similarityPenaltyThreshold = 1.0/4.0;
+	private int maxSimilarityHopCount = (int) Math.ceil(1.0/similarityPenaltyThreshold);
 
 	// Variablen zur Einstellung der Protokollierung
 	@ConfigOption(defaultValue = "false", description = "show additional timing info for benchmark purposes")
@@ -1522,6 +1524,10 @@ public class OCELNiching extends OCEL {
 		// traverse up from the second node to either first node or owl:Thing
 		while (true) {
 			hopCount++;
+
+			if (hopCount > maxSimilarityHopCount) {
+				return 0.0;
+			}
 
 			if (tmpNode.getConcept().isOWLThing()) {
 				break;
