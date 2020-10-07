@@ -1508,24 +1508,55 @@ public class OCELNiching extends OCEL {
 			return 1.0;
 		}
 
-		// in case the second node is more general than the first we swap both
-		// to ensure that one upward traversal is enough for computing the
-		// similarity (penalty)
-		if (reasoner.isSuperClassOf(second.getConcept(), first.getConcept())) {
-			ExampleBasedNode tmp = first;
-			first = second;
-			second = tmp;
+		/* Commented out since it gets too expensive if CE are very complex */
+//		// in case the second node is more general than the first we swap both
+//		// to ensure that one upward traversal is enough for computing the
+//		// similarity (penalty)
+//		if (reasoner.isSuperClassOf(second.getConcept(), first.getConcept())) {
+//			ExampleBasedNode tmp = first;
+//			first = second;
+//			second = tmp;
+//		}
+
+		int hopCountFirstToSecond = 1;
+		boolean found = false;
+		ExampleBasedNode tmpNode = first;
+
+		// traverse up from the first node to either second node or owl:Thing
+		while (true) {
+			hopCountFirstToSecond++;
+
+			if (hopCountFirstToSecond > maxSimilarityHopCount) {
+				// we assume something far away
+				hopCountFirstToSecond = 100;
+				break;
+			}
+
+			if (tmpNode.getConcept().isOWLThing()) {
+				break;
+			} else {
+				ExampleBasedNode tmpParent = tmpNode.getParent();
+
+				if (tmpParent != null && tmpParent.equals(second)) {
+					found = true;
+					break;
+				}
+
+				tmpNode = tmpParent;
+			}
 		}
 
-		int hopCount = 1;
-		boolean found = false;
-		ExampleBasedNode tmpNode = second;
+		if (found) {
+			return 1.0 / hopCountFirstToSecond;
+		}
 
+		int hopCountSecondToFirst = 1;
+		tmpNode = second;
 		// traverse up from the second node to either first node or owl:Thing
 		while (true) {
-			hopCount++;
+			hopCountSecondToFirst++;
 
-			if (hopCount > maxSimilarityHopCount) {
+			if (hopCountSecondToFirst > maxSimilarityHopCount) {
 				return 0.0;
 			}
 
@@ -1544,7 +1575,7 @@ public class OCELNiching extends OCEL {
 		}
 
 		if (found) {
-			return 1.0 / hopCount;
+			return 1.0 / hopCountSecondToFirst;
 		} else {
 			// case that both nodes are in neighboring sub-trees
 			return 0.0;
