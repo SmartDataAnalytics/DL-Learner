@@ -18,9 +18,13 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.aksw.commons.util.Pair;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -49,6 +53,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,6 +67,15 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("CloneDoesntCallSuperClone")
 @ComponentAnn(name="CELOE with Niching", shortName="celoeniche", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOENiching extends AbstractCELA implements Cloneable{
+
+	private LoadingCache<Pair<OENode, OENode>, Double> similarityPenaltyCache =
+			CacheBuilder.newBuilder().maximumSize(100000).build(
+					new CacheLoader<Pair<OENode, OENode>, Double>() {
+						@Override
+						public Double load(Pair<OENode, OENode> key) throws Exception {
+							return computeSimilarityPenalty(key.getKey(), key.getValue());
+						}
+					});
 
 	private static final Logger logger = LoggerFactory.getLogger(CELOENiching.class);
 	private static final Marker sparql_debug = MarkerFactory.getMarker("SD");
@@ -183,10 +197,13 @@ public class CELOENiching extends AbstractCELA implements Cloneable{
 
 	public void setSimilarityPenaltyThreshold(double similarityPenaltyThreshold) {
 		this.similarityPenaltyThreshold = similarityPenaltyThreshold;
+		this.maxSimilarityHopCount = (int) Math.ceil(1.0/similarityPenaltyThreshold);
 	}
 
 	@ConfigOption(defaultValue = "1/4")
 	private double similarityPenaltyThreshold = 1.0/4.0;
+	private int maxSimilarityHopCount = (int) Math.ceil(1.0/similarityPenaltyThreshold);
+
 
 	public CELOENiching() {}
 
@@ -478,7 +495,14 @@ public class CELOENiching extends AbstractCELA implements Cloneable{
 		while(it.hasNext()) {
 			OENode node = it.next();
 
-			double similarityPenalty = computeSimilarityPenalty(node, searchTree.best());
+			double similarityPenalty = 0;
+			try {
+				similarityPenalty = similarityPenaltyCache.get(new Pair<>(node, searchTree.best()));
+				//					computeSimilarityPenalty(node, searchTree.best());
+
+			} catch (ExecutionException e) {
+				throw new RuntimeException(e);
+			}
 
 			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() &&
@@ -1200,32 +1224,40 @@ public class CELOENiching extends AbstractCELA implements Cloneable{
 			return 0.0;
 		}
 
-		// in case the second node is more general than the first we swap both
-		// to ensure that one upward traversal is enough for computing the
-		// similarity (penalty)
-		if (reasoner.isSuperClassOf(second.getDescription(), first.getDescription())) {
-			OENode tmp = first;
-			first = second;
-			second = tmp;
-		}
+		/* Commented out since it gets too expensive if CE are very complex */
+//		// in case the second node is more general than the first we swap both
+//		// to ensure that one upward traversal is enough for computing the
+//		// similarity (penalty)
+//		if (reasoner.isSuperClassOf(second.getDescription(), first.getDescription())) {
+//			OENode tmp = first;
+//			first = second;
+//			second = tmp;
+//		}
 
-		int hopCount = 1;
+		int hopCountFirstToSecond = 1;
 		boolean found = false;
-		OENode tmpNode = second;
+		OENode tmpNode = first;
 
-		// traverse up from the second node to either first node or owl:Thing
+		// traverse up from the second node to either second node or owl:Thing
 		while (true) {
-			hopCount++;
+			hopCountFirstToSecond++;
+
+			if (hopCountFirstToSecond > maxSimilarityHopCount) {
+				// we assume something far away
+				hopCountFirstToSecond = 100;
+				break;
+			}
 
 			if (tmpNode.getDescription().isOWLThing()) {
 				break;
 			} else {
 				OENode tmpParent = tmpNode.getParent();
+
 				if (tmpParent == null) {
 					break;
 				}
 
-				if (tmpParent != null && tmpParent.equals(first)) {
+				if (tmpParent.equals(second)) {
 					found = true;
 					break;
 				}
@@ -1235,7 +1267,40 @@ public class CELOENiching extends AbstractCELA implements Cloneable{
 		}
 
 		if (found) {
-			return 1.0 / hopCount;
+			return 1.0 / hopCountFirstToSecond;
+		}
+
+		int hopCountSecondToFirst = 1;
+		tmpNode = second;
+
+		// traverse up from the second node to either first node or owl:Thing
+		while (true) {
+			hopCountSecondToFirst++;
+
+			if (hopCountSecondToFirst > maxSimilarityHopCount) {
+				return 0.0;
+			}
+
+			if (tmpNode.getDescription().isOWLThing()) {
+				break;
+			} else {
+				OENode tmpParent = tmpNode.getParent();
+
+				if (tmpParent == null) {
+					break;
+				}
+
+				if (tmpParent.equals(first)) {
+					found = true;
+					break;
+				}
+
+				tmpNode = tmpParent;
+			}
+		}
+
+		if (found) {
+			return 1.0 / hopCountSecondToFirst;
 		} else {
 			// case that both nodes are in neighboring sub-trees
 			return 0.0;
