@@ -896,11 +896,11 @@
 			<!--This is the bridge that ties calls from the slf4j api to the log4j
 				framework. This is a runtime dependency for programs which wish to use log4j
 				as their implementation. -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.slf4j</groupId>-->
+<!--				<artifactId>slf4j-log4j12</artifactId>-->
+<!--				<version>${slf4j.version}</version>-->
+<!--			</dependency>-->
 
 			<!-- This is the concrete implementation of the log4j framework - it is
 				a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
@@ -960,12 +960,22 @@
 						<artifactId>google-collections</artifactId>
 						<groupId>com.google.collections</groupId>
 					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 				<version>3.20</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
