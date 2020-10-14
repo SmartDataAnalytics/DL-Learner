@@ -47,7 +47,7 @@
 										<extraRexource>
 											<directory>${basedir}/src/main/resources/</directory>
 											<includes>
-												<include>log4j.properties</include>
+												<include>log4j2.properties</include>
 											</includes>
 										</extraRexource>
 									</extraResources>
@@ -111,7 +111,7 @@
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
 								-Xms256m -Xmx2g
-								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
+								-Dlog4j.configurationFile=file:@BASEDIR@/etc/log4j2.properties
 							</extraJvmArguments>
 							<installArtifacts>false</installArtifacts>
 							<platforms>
@@ -171,7 +171,7 @@
 								<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
 								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
 							</excludes>
-							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+							<argLine>-Dlog4j.configurationFile=log4j2.properties</argLine>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -202,7 +202,7 @@
 							<repoPath>/usr/share/dl-learner/lib</repoPath>
 							<repositoryName>${install-dir}/lib</repositoryName>
 							<extraJvmArguments>-Xms256m -Xmx1024m
-								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
+								-Dlog4j.configurationFile=file:@BASEDIR@/etc/log4j2.properties</extraJvmArguments>
 							<configurationDirectory>/</configurationDirectory>
 							<platforms>
 								<platform>unix</platform>
@@ -259,7 +259,7 @@
 											</mapper>
 										</data>
 										<data>
-											<src>${basedir}/log4j.properties</src>
+											<src>${basedir}/log4j2.properties</src>
 											<type>file</type>
 											<mapper>
 												<type>perm</type>
@@ -305,7 +305,7 @@
 								<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
 								<exclude>org/dllearner/test/junit/ExampleTests.java</exclude>
 							</excludes>
-							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
+							<argLine>-Dlog4j.configurationFile=log4j2.properties</argLine>
 						</configuration>
 					</plugin>
 				</plugins>

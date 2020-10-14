@@ -277,8 +277,21 @@ public class Helper {
 		}
 	}
 
+	public static final int DEFAULT_PROGRESSBAR_SIZE = 10;
+
+	public static void displayProgressFinished(int progressBarSize) {
+		displayProgressPercentage(progressBarSize, progressBarSize, progressBarSize);
+	}
+
+	public static void displayProgressFinished() {
+		displayProgressFinished(DEFAULT_PROGRESSBAR_SIZE);
+	}
+
 	public static void displayProgressPercentage(int done, int total) {
-		int size = 5;
+		displayProgressPercentage(done, total, DEFAULT_PROGRESSBAR_SIZE);
+	}
+
+	public static void displayProgressPercentage(int done, int total, int progressBarSize) {
 		String iconLeftBoundary = "[";
 		String iconDone = "=";
 		String iconRemain = ".";
@@ -288,10 +301,11 @@ public class Helper {
 			throw new IllegalArgumentException();
 		}
 		int donePercents = (100 * done) / total;
-		int doneLength = size * donePercents / 100;
+		int doneLength = progressBarSize * donePercents / 100;
+//		System.out.printf("%d/%d %d%n\n", done, total, donePercents);
 
 		StringBuilder bar = new StringBuilder(iconLeftBoundary);
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < progressBarSize; i++) {
 			if (i < doneLength) {
 				bar.append(iconDone);
 			} else {

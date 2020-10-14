@@ -320,6 +320,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedClass));
             }
         });
+        Helper.displayProgressFinished();
 //        for (OWLClass cls : baseReasoner.getClasses()) {
 //            if (!cls.getIRI().isReservedVocabulary()) {
 //                SortedSet<OWLIndividual> pos = baseReasoner.getIndividuals(cls);
@@ -350,6 +351,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
             opPos.put(p, baseReasoner.getPropertyMembers(p));
         });
+        Helper.displayProgressFinished();
 
         // materialize the data property facts
         logger.info("materialising datatype properties");
@@ -357,6 +359,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             Helper.displayProgressPercentage(i.getAndIncrement(), totalEntities);
             dpPos.put(p, baseReasoner.getDatatypeMembers(p));
         });
+        Helper.displayProgressFinished();
 
         for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
             bdPos.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getTrueDatatypeMembers(dp));
