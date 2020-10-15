@@ -224,6 +224,7 @@ public class CLI extends CLIBase2 {
             cli.setContext(context);
             cli.setConfFile(file);
             cli.run();
+            cli.close();
         } catch (Exception e) {
             String stacktraceFileName = "log/error.log";
             

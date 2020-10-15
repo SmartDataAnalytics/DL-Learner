@@ -18,12 +18,27 @@
  */
 package org.dllearner.kb.repository;
 
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * An ontology repository representing and hosting a set of ontologies.
+ *
+ * @author Lorenz Buehmann
+ */
 public interface OntologyRepository {
+
+    Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	
 	/**
      * Gets the name of the repository
@@ -32,8 +47,8 @@ public interface OntologyRepository {
     String getName();
 
     /**
-     * Gets a OWLClassExpression of the location of the repository
-     * @return A human readable OWLClassExpression of the repository location
+     * Gets a description of the location of the repository
+     * @return A human readable description of the repository location
      */
     String getLocation();
 
@@ -41,13 +56,51 @@ public interface OntologyRepository {
      * Ensures the repository is up to date
      */
     void refresh();
-    
+
+    /**
+     * Initialize the repository
+     */
     void initialize();
 
+    /**
+     * @return all entries in the repository
+     */
     Collection<OntologyRepositoryEntry> getEntries();
     
-    List<Object> getMetaDataKeys();
+    /**
+     * Returns the ontology for the repository entry, i.e. the file also parsed.
+     * @param entry
+     * @return
+     */
+    default OWLOntology getOntology(OntologyRepositoryEntry entry) throws OWLOntologyCreationException{
+        try(InputStream is = getInputStream(entry)) {
+            OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+            man.addMissingImportListener(e -> {
+                log.warn("Missing import: " + e.getImportedOntologyURI());
+            });
 
-    OWLOntology getOntology(OntologyRepositoryEntry entry);
+            // handle missing imports
+            OWLOntologyLoaderConfiguration conf = new OWLOntologyLoaderConfiguration();
+            conf.setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+
+            // the List ontology isn't online anymore, thus, we ignore it'S import
+            conf.addIgnoredImport(IRI.create("http://www.co-ode.org/ontologies/lists/2008/09/11/list.owl"));
+            man.setOntologyLoaderConfiguration(conf);
+
+            return man.loadOntologyFromOntologyDocument(is);
+        } catch (Exception e) {
+            throw new OWLOntologyCreationException("Failed to load ontology from " + entry.getPhysicalURI(), e);
+        }
+    }
+
+    /**
+     * Returns an input stream for the repository entry, i.e. the file isn't parsed.
+     * @param entry
+     * @return
+     */
+    default InputStream getInputStream(OntologyRepositoryEntry entry) throws IOException {
+        URL url = entry.getPhysicalURI().toURL();
+        return url.openStream();
+    }
 
 }

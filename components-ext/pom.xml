@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.dllearner</groupId>
         <artifactId>dllearner-parent</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.4.1-SNAPSHOT</version>
     </parent>
 	<profiles>
 		<profile>
@@ -99,7 +99,6 @@
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.2</version>
         </dependency>
 
         <!--
@@ -117,24 +116,24 @@
             <version>1.4.1.RC2</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.apache.solr</groupId>-->
-<!--            <artifactId>solr-core</artifactId>-->
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<artifactId>httpclient</artifactId>-->
-<!--					<groupId>org.apache.httpcomponents</groupId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<artifactId>httpcore</artifactId>-->
-<!--					<groupId>org.apache.httpcomponents</groupId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<artifactId>httpmime</artifactId>-->
-<!--					<groupId>org.apache.httpcomponents</groupId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
-<!--        </dependency>-->
+<!--        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>httpclient</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>httpcore</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>httpmime</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+			</exclusions>
+        </dependency>-->
 
 
 
@@ -194,28 +193,13 @@
         </dependency>-->
         
         
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        
         <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-        <!--        <dependency>
+<!--
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.11</version>
-            <scope>runtime</scope>
-        </dependency>-->
-
-        <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-        </dependency>
+-->
         
         <!--         <dependency>
            <groupId>org.slf4j</groupId>
@@ -271,6 +255,12 @@
             <groupId>ml.dmlc</groupId>
             <artifactId>xgboost4j</artifactId>
             <version>0.90</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>

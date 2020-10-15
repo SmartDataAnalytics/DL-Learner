@@ -52,10 +52,10 @@ public class QuickStart {
 		String lastused = readit();
 		String tab = "	";
 		int the_Number = 0;
-		ArrayList<String> finalSelection = new ArrayList<>();
+		List<String> finalSelection = new ArrayList<>();
 		finalSelection.add("na");
 
-		HashMap<String, ArrayList<String>> hm = new HashMap<>();
+		HashMap<String, List<String>> hm = new HashMap<>();
 		String path = pm + File.separator + "examples";
 		File f = new File(path);
 		getAllConfs(f, path, hm);
@@ -78,7 +78,7 @@ public class QuickStart {
 			else
 				System.out.println(s);
 
-			ArrayList<String> al = hm.get(s);
+			List<String> al = hm.get(s);
 			String[] files = new String[al.size()];
 			for (int j = 0; j < al.size(); j++) {
 				files[j] = al.get(j);
@@ -171,7 +171,7 @@ public class QuickStart {
 		// System.out.println(f.isDirectory()+f.getAbsolutePath());
 	}
 
-	public static void getAllConfs(File f, String path, Map<String, ArrayList<String>> confs) {
+	public static void getAllConfs(File f, String path, Map<String, List<String>> confs) {
 		path = path + File.separator;
 		// System.out.println(path);
 		String[] act = f.list();System.out.println(f);

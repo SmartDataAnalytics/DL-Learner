@@ -89,12 +89,12 @@ public class JamonMonitorLogger {
 		String retVal = m.getLabel()+"|\t";
 		String unit = m.getUnits();
 		retVal+=unit+"|\t";
-		long content = new Double(m.getTotal()).longValue();
+		long content = Double.valueOf(m.getTotal()).longValue();
 		content = content / (1000*1000);
 		String contentstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
 		retVal+= "total:"+contentstr+"|\t";
 		
-		long avg = new Double(m.getAvg()).longValue();
+		long avg = Double.valueOf(m.getAvg()).longValue();
 		avg = avg / (1000*1000);
 		String avgstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
 		retVal+= "avg:"+avgstr+"|\t";
