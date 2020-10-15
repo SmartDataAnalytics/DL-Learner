@@ -222,10 +222,15 @@ public class DescriptionSubsumptionTree {
 		 * @param node
 		 * @return
 		 */
-		public boolean equals(Node node) {
+		@Override
+		public boolean equals(Object node) {
 			return this == node;
 		}
 
+		@Override
+		public int hashCode() {
+			return Objects.hash(accuracy);
+		}
 	}
 
 	/*

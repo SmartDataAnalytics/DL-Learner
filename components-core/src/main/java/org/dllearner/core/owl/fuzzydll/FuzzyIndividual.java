@@ -20,6 +20,7 @@ package org.dllearner.core.owl.fuzzydll;
 
 import org.semanticweb.owlapi.model.IRI;
 
+import org.semanticweb.owlapi.model.OWLObject;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 public class FuzzyIndividual extends OWLNamedIndividualImpl{
@@ -38,7 +39,18 @@ public class FuzzyIndividual extends OWLNamedIndividualImpl{
 	public void setTruthDegree(double beliefDegree) {
 		this.truthDegree = beliefDegree;
 	}
-	
+
+	@Override
+	public int compareTo(OWLObject o) {
+		if (o instanceof FuzzyIndividual) {
+			int d = Double.compare(truthDegree, ((FuzzyIndividual) o).getTruthDegree());
+			if (d != 0) return d;
+			return super.compareTo(o);
+		} else {
+			return -1;
+		}
+	}
+
 	public int compareTo(FuzzyIndividual o) {
 		int d = Double.compare(truthDegree, o.getTruthDegree());
 		if (d == 0)

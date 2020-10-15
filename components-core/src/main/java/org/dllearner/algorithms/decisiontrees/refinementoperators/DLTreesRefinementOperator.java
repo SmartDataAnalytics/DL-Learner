@@ -188,14 +188,16 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return newConcept;
 	}
 
-	public SortedSet<OWLClassExpression>generateNewConcepts(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, boolean seed) {
+	public SortedSet<OWLClassExpression> generateNewConcepts(SortedSet<OWLIndividual> posExs,
+															 SortedSet<OWLIndividual> negExs,
+															 boolean seed) {
 
 		logger.info("Generating node concepts ");
 		TreeSet<OWLClassExpression> rConcepts = new TreeSet<>();
 
-		OWLClassExpression newConcept=null;
+		OWLClassExpression newConcept;
 		boolean emptyIntersection;
-		for (int c=0; c<beam; c++) {
+		for (int c = 0; c < beam; c++) {
 
 			do {
 				emptyIntersection =  false;
@@ -204,9 +206,9 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 				//System.out.println("---------->");
 				newConcept = getRandomConcept();
 				logger.info(c+"-  New Concept: "+newConcept);
-				SortedSet<OWLIndividual> individuals;
+				SortedSet<OWLIndividual> individuals = (reasoner.getIndividuals(newConcept));
 
-				individuals = (reasoner.getIndividuals(newConcept));
+
 				Iterator<OWLIndividual> instIterator = individuals.iterator();
 				while (emptyIntersection && instIterator.hasNext()) {
 					Node<OWLNamedIndividual> nextInd = (Node<OWLNamedIndividual>) instIterator.next();

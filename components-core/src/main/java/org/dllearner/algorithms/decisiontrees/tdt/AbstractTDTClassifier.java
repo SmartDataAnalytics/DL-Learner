@@ -44,8 +44,6 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	
 	private static Logger logger = LoggerFactory.getLogger(AbstractTDTClassifier.class);
 
-	protected boolean stop;
-
 	public double getPuritythreshold() {
 		return puritythreshold;
 	}
@@ -197,19 +195,6 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		
 		
 		initialized = true;
-	}
-
-	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		stop = true;
-
-	}
-
-	@Override
-	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return (!stop);
 	}
 
 	public abstract DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,	SortedSet<OWLIndividual> undExs);

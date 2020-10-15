@@ -439,7 +439,7 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
 
     @Override
     public OWLAxiom visit(OWLHasKeyAxiom axiom) {
-        return null;
+        return axiom;
     }
 
     @Override

@@ -1159,7 +1159,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			try {
 				return getSubPropertiesImpl(role);
 			} catch (ReasoningMethodUnsupportedException e) {
-				e.printStackTrace();
+				handleExceptions(e);
 			}
 		}
 		return null;
@@ -1181,10 +1181,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			try {
 				return getDomainImpl(role);
 			} catch (ReasoningMethodUnsupportedException e) {
-				e.printStackTrace();
+				handleExceptions(e);
 			}
 		}
-		throw null;
+		return null;
 	}
 
 	protected <T extends OWLProperty> OWLClassExpression getDomainImpl(T role) throws ReasoningMethodUnsupportedException {

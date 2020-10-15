@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.xsd.impl.RDFLangString;
 import org.apache.jena.vocabulary.RDF;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -185,7 +186,7 @@ public abstract class AbstractSampleGenerator implements HasProgressMonitor<Abst
 					} else if(datatype.equals(XSDDatatype.XSDdate)) {
 						iterator.remove();
 						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
-					} else if(datatype.equals(RDF.langString)) {
+					} else if(datatype.equals(RDFLangString.rdfLangString)) {
 						iterator.remove();
 						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", new BaseDatatype(RDF.dtLangString.getURI()))));
 					}

@@ -18,6 +18,7 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import com.google.common.collect.ComparisonChain;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -140,15 +141,10 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	public int compare(ExampleBasedNode node1, ExampleBasedNode node2) {
 		double score1 = getNodeScore(node1);
 		double score2 = getNodeScore(node2);
-		double diff = score1 - score2;
-		if(diff>0)
-			return 1;
-		else if(diff<0)
-			return -1;
-		else
-			// we cannot return 0 here otherwise different nodes/concepts with the
-			// same score may be ignored (not added to a set because an equal element exists)
-			return node1.getConcept().compareTo(node2.getConcept());
+		return ComparisonChain.start()
+				.compare(score1, score2)
+				.compare(node1.getConcept(), node2.getConcept())
+				.result();
 	}
 
 	public double getNodeScore(ExampleBasedNode node) {

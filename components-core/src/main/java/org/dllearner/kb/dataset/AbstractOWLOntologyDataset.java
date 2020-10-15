@@ -212,20 +212,28 @@ public abstract class AbstractOWLOntologyDataset implements AnalyzedOWLOntologyD
 	protected OWLOntology loadOWLOntology(URL url) {
 		OWLOntology ontology = loadFromLocal(url);
 		if(ontology == null){
-			File file = null;
+			String filename = getFilename(url);
 			try {
-				file = downloadFile(url);
-				if(file != null){
-					ontology = man.loadOntologyFromOntologyDocument(file);
+				File file = downloadFile(url);
+				if (file != null) {
+					try {
+						ontology = man.loadOntologyFromOntologyDocument(file);
+					} catch (Exception e2) { // parsing/loading failed
+						File to = new File(errorSubdirectory, filename);
+						try {
+							Files.move(file, to);
+						} catch (IOException e3) {
+							e2.printStackTrace();
+						}
+					}
 				}
-			} catch (Exception e) {
+			} catch (Exception e) { // download failed
 				e.printStackTrace();
-				String filename = getFilename(url);
-				File to = new File(errorSubdirectory, filename);
-				try {
-					Files.move(file, to);
-				} catch (IOException e2) {
-					e2.printStackTrace();
+				File file = new File(errorSubdirectory, filename + ".downloadfailed");
+				try(PrintWriter pw = new PrintWriter(file)) {
+					e.printStackTrace(pw);
+				} catch (FileNotFoundException fileNotFoundException) {
+					fileNotFoundException.printStackTrace();
 				}
 			}
 		}

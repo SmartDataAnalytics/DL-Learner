@@ -96,18 +96,19 @@ public class TONESRepository implements OntologyRepository{
 
             entries.clear();
             URI listURI = URI.create(repositoryLocation + "/list");
-            BufferedReader br = new BufferedReader(new InputStreamReader(listURI.toURL().openStream()));
-            String line;
-            while((line = br.readLine()) != null) {
-                try {
-                    URI ontologyURI = new URI(line);
-                    URI physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyURI);
+            try(BufferedReader br = new BufferedReader(new InputStreamReader(listURI.toURL().openStream()))){
+                String line;
+                while((line = br.readLine()) != null) {
+                    try {
+                        URI ontologyURI = new URI(line);
+                        URI physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyURI);
 
-                    String shortName = sfp.getShortForm(IRI.create(ontologyURI));
-                    entries.add(new SimpleRepositoryEntry(ontologyURI, physicalURI, shortName ));
-                }
-                catch (URISyntaxException e) {
-                    e.printStackTrace();
+                        String shortName = sfp.getShortForm(IRI.create(ontologyURI));
+                        entries.add(new SimpleRepositoryEntry(ontologyURI, physicalURI, shortName ));
+                    }
+                    catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

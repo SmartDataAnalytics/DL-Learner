@@ -54,6 +54,7 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 	
 	public IndividualBasedFragmentExtractor(SparqlEndpointKS ks, int maxNrOfIndividuals) {
 		this.maxNrOfIndividuals = maxNrOfIndividuals;
+		this.qef = ks.getQueryExecutionFactory();
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 	}
 
@@ -76,22 +77,20 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 		}
 		return fragment;
 	}
-	
-	private Set<OWLIndividual> getRandomIndividuals(OWLClass cls){
+
+	private Set<OWLIndividual> getRandomIndividuals(OWLClass cls) {
 		Set<OWLIndividual> individuals = new HashSet<>();
-		
-		String query = "SELECT ?s WHERE {?s a <" + cls.toStringID() + ">} LIMIT " + maxNrOfIndividuals;
-		QueryExecution qe = qef.createQueryExecution(query);
-		ResultSet rs = qe.execSelect();
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			if(qs.get("s").isURIResource()){
-				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI())));
-			}
+
+		String query = String.format("SELECT ?s WHERE {?s a <%s>} LIMIT %d", cls.toStringID(), maxNrOfIndividuals);
+		try (QueryExecution qe = qef.createQueryExecution(query)) {
+			ResultSet rs = qe.execSelect();
+			rs.forEachRemaining(qs -> {
+				if (qs.get("s").isURIResource()) {
+					individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI())));
+				}
+			});
 		}
-		qe.close();
-		
+
 		return individuals;
 	}
 }

@@ -733,7 +733,7 @@ public class QueryTreeUtils {
 		if(!nodes2Select.isEmpty()) {
 			sb.append(String.format("SELECT %s %s WHERE {%n", targetVar, nodes2Select.stream().map(node -> "?var" + nodes2Select.indexOf(node)).collect(Collectors.joining(" "))));
 		} else {
-			sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
+			sb.append(String.format("SELECT DISTINCT %s WHERE {%n", targetVar));
 		}
 
     	// triple patterns

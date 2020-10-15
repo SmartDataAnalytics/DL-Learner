@@ -220,11 +220,11 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 			if(child.isInNode()) {
 				var = "?x_in" + inIndex.getAndIncrement();
 				String predVar = "?p" + predIndex.getAndIncrement();
-				query.append(String.format("%s %s %s .\n", var, predVar, rootVar));
+				query.append(String.format("%s %s %s .%n", var, predVar, rootVar));
 			} else {
 				var = "?x_out" + outIndex.getAndIncrement();
 				String predVar = "?p" + predIndex.getAndIncrement();
-				query.append(String.format("%s %s %s .\n", rootVar, predVar, var));
+				query.append(String.format("%s %s %s .%n", rootVar, predVar, var));
 			}
 
 			// recursively process the child node
@@ -259,11 +259,11 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 				if (node.isInNode()) {
 					var = "?x_in" + inIndex.getAndIncrement();
 					String predVar = "?p" + predIndex.getAndIncrement();
-					tps.append(String.format("%s %s %s .\n", var, predVar, currentVar.toString()));
+					tps.append(String.format("%s %s %s .%n", var, predVar, currentVar.toString()));
 				} else {
 					var = "?x_out" + outIndex.getAndIncrement();
 					String predVar = "?p" + predIndex.getAndIncrement();
-					tps.append(String.format("%s %s %s .\n", currentVar.toString(), predVar, var));
+					tps.append(String.format("%s %s %s .%n", currentVar.toString(), predVar, var));
 					lastOut.set(true);
 				}
 				currentVar.setLength(0);
@@ -311,12 +311,12 @@ public class TreeBasedConciseBoundedDescriptionGenerator implements ConciseBound
 						}
 						var = "?x_in" + inIndex.getAndIncrement();
 						String predVar = "?p" + predIndex.getAndIncrement();
-						tps.append(String.format("%s %s %s .\n", var, predVar, currentVar.toString()));
+						tps.append(String.format("%s %s %s .%n", var, predVar, currentVar.toString()));
 
 					} else {
 						var = "?x_out" + outIndex.getAndIncrement();
 						String predVar = "?p" + predIndex.getAndIncrement();
-						tps.append(String.format("%s %s %s .\n", currentVar.toString(), predVar, var));
+						tps.append(String.format("%s %s %s .%n", currentVar.toString(), predVar, var));
 						lastOut.set(true);
 					}
 					currentVar.setLength(0);

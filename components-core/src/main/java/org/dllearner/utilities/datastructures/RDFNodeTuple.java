@@ -18,6 +18,8 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import java.util.Objects;
+
 import com.google.common.collect.ComparisonChain;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.util.NodeComparator;
@@ -43,8 +45,18 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 		return "<" + a.toString() + "|" + b.toString() + ">";
 	}
 
-	public boolean equals(RDFNodeTuple t) {
-		return b.equals(t.b) && a.equals(t.a);
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RDFNodeTuple that = (RDFNodeTuple) o;
+		return Objects.equals(a, that.a) &&
+				Objects.equals(b, that.b);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(a, b);
 	}
 
 	@Override
