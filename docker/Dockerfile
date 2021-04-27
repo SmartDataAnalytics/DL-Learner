@@ -2,7 +2,7 @@ FROM maven:3.6.2-jdk-8
 
 MAINTAINER Gezim Sejdiu <g.sejdiu@gmail.com>
 
-ENV DLLEARNER_VERSION=1.4.0
+ENV DLLEARNER_VERSION=1.5.0
 
 RUN apt-get update && apt-get install -y openjfx wget
 RUN wget https://github.com/SmartDataAnalytics/DL-Learner/releases/download/${DLLEARNER_VERSION}/dllearner-${DLLEARNER_VERSION}.zip
