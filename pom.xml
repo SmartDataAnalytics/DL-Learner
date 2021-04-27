@@ -1029,19 +1029,14 @@
 		<repository>
 			<id>maven.aksw.internal</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/internal</url>
+			<url>https://maven.aksw.org/repository/internal</url>
 			<releases />
 		</repository>
 		<repository>
 			<id>maven.aksw.snapshots</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/snapshots</url>
+			<url>https://maven.aksw.org/repository/snapshots</url>
 			<snapshots />
-		</repository>
-		<repository>
-			<id>davidsoergel.releases</id>
-			<name>David Soergel's Maven Repository</name>
-			<url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
 		</repository>
 	</repositories>
 
@@ -1049,12 +1044,12 @@
 		<repository>
 			<id>maven.aksw.internal</id>
 			<name>AKSW Internal Release Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/internal</url>
+			<url>https://maven.aksw.org/archiva/repository/internal</url>
 		</repository>
 		<snapshotRepository>
 			<id>maven.aksw.snapshots</id>
 			<name>AKSW Snapshot Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
+			<url>https://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
 		<!-- start - location where site is deployed - username/password for site.deployments
 			in server.xml -->
@@ -1157,8 +1152,8 @@
 	<mailingLists>
 		<mailingList>
 			<name>DL-Learner discussion</name>
-			<subscribe>https://lists.sourceforge.net/lists/listinfo/dl-learner-discussion</subscribe>
-			<archive>http://sourceforge.net/p/dl-learner/mailman/dl-learner-discussion/</archive>
+			<subscribe>https://www.freelists.org/list/dl-learner-discussion</subscribe>
+			<archive>https://www.freelists.org/archive/dl-learner-discussion/</archive>
 		</mailingList>
 	</mailingLists>
 
