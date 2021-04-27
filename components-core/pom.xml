@@ -469,7 +469,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.13-java7</version>
+			<version>1.4.16</version>
 			<exclusions>
 			  <exclusion>
 			    <groupId>xpp3</groupId>
