@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.4.0</version>
+		<version>1.5.0</version>
 	</parent>
 
 	<dependencies>
@@ -41,6 +41,10 @@
 			<exclusions>
 				<exclusion>
 					<artifactId>jena</artifactId>
+					<groupId>com.hp.hpl.jena</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>arq</artifactId>
 					<groupId>com.hp.hpl.jena</groupId>
 				</exclusion>
 			</exclusions>

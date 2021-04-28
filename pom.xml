@@ -5,7 +5,7 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
@@ -14,13 +14,13 @@
 		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--Define the AKSW dependency version -->
-        <slf4j.version>1.7.28</slf4j.version>
-        <log4j.version>2.12.1</log4j.version>
-        <solr.version>8.2.0</solr.version>
-        <owlapi.version>4.5.13</owlapi.version>
-        <spring.version>4.3.25.RELEASE</spring.version>
-        <jena.sparql.api.version>3.12.0-1</jena.sparql.api.version>
-		<jena.version>3.12.0</jena.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.version>2.13.3</log4j.version>
+        <solr.version>8.6.3</solr.version>
+        <owlapi.version>4.5.17</owlapi.version>
+        <spring.version>4.3.29.RELEASE</spring.version>
+        <jena.sparql.api.version>3.16.0-1</jena.sparql.api.version>
+		<jena.version>3.16.0</jena.version>
 		<pellet.version>2.5.2-dllearner</pellet.version>
 		<jgrapht.version>1.3.1</jgrapht.version>
 	</properties>
@@ -34,7 +34,7 @@
 	</modules>
 
 	<prerequisites>
-		<maven>3.0</maven>
+		<maven>3.3.9</maven>
 	</prerequisites>
 
 
@@ -45,7 +45,7 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-		<tag>1.4.0</tag>
+		<tag>1.5.0</tag>
 	</scm>
 
 	<licenses>
@@ -125,13 +125,13 @@
 					<configuration>
 						<useSystemClassLoader>false</useSystemClassLoader>
 					</configuration>
-					<version>2.22.0</version>
+					<version>2.22.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
@@ -148,7 +148,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -178,12 +178,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.2.0</version>
 					<configuration>
 						<source>${compiler.version}</source>
 						<failOnError>false</failOnError>
@@ -222,7 +222,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>1.17</version>
+					<version>1.19</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
@@ -247,7 +247,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
+					<version>3.0.0-M1</version>
 					<configuration>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 					</configuration>
@@ -258,7 +258,7 @@
 				<plugin>
 					<groupId>com.amashchenko.maven.plugin</groupId>
 					<artifactId>gitflow-maven-plugin</artifactId>
-					<version>1.13.0</version>
+					<version>1.14.0</version>
 					<configuration>
 						<installProject>false</installProject>
 						<verbose>true</verbose>
@@ -277,7 +277,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.8.2</version>
 					<configuration>
 						<!--<skipDeploy>true</skipDeploy> -->
 					</configuration>
@@ -285,7 +285,7 @@
 						<dependency><!-- add support for ssh/scp -->
 							<groupId>org.apache.maven.wagon</groupId>
 							<artifactId>wagon-ssh</artifactId>
-							<version>2.10</version>
+							<version>3.4.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -343,7 +343,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.1.1</version>
 					<executions>
 						<execution>
 							<phase>package</phase>
@@ -376,6 +376,119 @@
 						<rulesUri>file:./maven-version-rules.xml</rulesUri>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.basepom.maven</groupId>
+					<artifactId>duplicate-finder-maven-plugin</artifactId>
+					<configuration>
+						<ignoredResourcePatterns>
+							<ignoredResourcePattern>^log4j\.properties$</ignoredResourcePattern>
+							<ignoredResourcePattern>^log4j\.xml$</ignoredResourcePattern>
+							<ignoredResourcePattern>^plugin\.xml$</ignoredResourcePattern>
+							<ignoredResourcePattern>^rootdoc\.txt$</ignoredResourcePattern>
+						</ignoredResourcePatterns>
+						<exceptions>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
+										<artifactId>java-cup-11b-runtime</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
+										<artifactId>java-cup-11b</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>xalan</groupId>
+										<artifactId>xalan</artifactId>
+									</dependency>
+								</conflictingDependencies>
+								<classes>
+									<class>java_cup.runtime.ComplexSymbolFactory</class>
+									<class>java_cup.runtime.DefaultSymbolFactory</class>
+									<class>java_cup.runtime.SymbolFactory</class>
+									<class>java_cup.runtime.Scanner</class>
+									<class>java_cup.runtime.Symbol</class>
+									<class>java_cup.runtime.lr_parser</class>
+									<class>java_cup.runtime.virtual_parse_stack</class>
+								</classes>
+							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>unife</groupId>
+										<artifactId>bundle</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>com.clarkparsia.pellet</groupId>
+										<artifactId>pellet-explanation</artifactId>
+									</dependency>
+								</conflictingDependencies>
+								<classes>
+									<class>com.clarkparsia.owlapi.explanation.GlassBoxExplanation</class>
+								</classes>
+							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>com.esotericsoftware.kryo</groupId>
+										<artifactId>kryo</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>com.esotericsoftware.minlog</groupId>
+										<artifactId>minlog</artifactId>
+									</dependency>
+								</conflictingDependencies>
+								<classes>
+									<class>com.esotericsoftware.minlog.Log</class>
+								</classes>
+							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>unife</groupId>
+										<artifactId>bundle</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>com.clarkparsia.pellet</groupId>
+										<artifactId>pellet-core</artifactId>
+									</dependency>
+								</conflictingDependencies>
+								<classes>
+									<class>org.mindswap.pellet.tbox.impl.TgBox</class>
+								</classes>
+							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>jaxen</groupId>
+										<artifactId>jaxen</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>xml-apis</groupId>
+										<artifactId>xml-apis</artifactId>
+									</dependency>
+								</conflictingDependencies>
+								<classes>
+									<class>org.w3c.dom.UserDataHandler</class>
+								</classes>
+							</exception>
+						</exceptions>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.github.spotbugs</groupId>
+					<artifactId>spotbugs-maven-plugin</artifactId>
+					<version>4.1.3</version>
+					<dependencies>
+						<!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+						<dependency>
+							<groupId>com.github.spotbugs</groupId>
+							<artifactId>spotbugs</artifactId>
+							<version>4.1.3</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 		<!--<plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId>
@@ -386,16 +499,19 @@
 			<artifactId>maven-scm-publish-plugin</artifactId> <version>1.1</version>
 			<executions> <execution> <id>scm-publish</id> <phase>site-deploy</phase>
 			<goals> <goal>publish-scm</goal> </goals> </execution> </executions> </plugin>
-			</plugins> -->
+				</plugins> -->
+		<plugins>
+			<plugin>
+				<groupId>org.basepom.maven</groupId>
+				<artifactId>duplicate-finder-maven-plugin</artifactId>
+				<version>1.4.0</version>
+			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>3.0.2</version>
-		</dependency>
-	</dependencies>
 
 	<dependencyManagement>
 		<!-- - Dependency Management defines the dependencies at the parent level
@@ -531,7 +647,7 @@
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>org.semanticweb.hermit</artifactId>
-				<version>1.4.3.456</version>
+				<version>1.4.5.456</version>
 			</dependency>
 			<!-- Fact++ -->
 			<dependency>
@@ -589,7 +705,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20190722</version>
+				<version>20200518</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->
@@ -622,19 +738,19 @@
 			<dependency>
 				<groupId>com.jamonapi</groupId>
 				<artifactId>jamon</artifactId>
-				<version>2.81</version>
+				<version>2.82</version>
 			</dependency>
 
 			<!-- Apache Commons libs -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
-				<version>2.7.0</version>
+				<version>2.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.19</version>
+				<version>1.20</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -649,7 +765,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.9</version>
+				<version>3.11</version>
 			</dependency>
 
 			<!-- Jena SPARQL API -->
@@ -668,7 +784,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.12</version>
+				<version>4.13.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -690,32 +806,32 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.199</version>
+				<version>1.4.200</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>8.0.17</version>
+				<version>8.0.21</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.6</version>
+				<version>42.2.17</version>
 			</dependency>
 
 
 			<dependency>
 				<groupId>nz.ac.waikato.cms.weka</groupId>
 				<artifactId>weka-dev</artifactId>
-				<version>3.9.3</version>
+				<version>3.9.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>28.1-jre</version>
+				<version>29.0-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -843,7 +959,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.10.3</version>
+				<version>2.10.6</version>
 			</dependency>
 			<dependency>
 				<groupId>edu.berkeley.compbio</groupId>
@@ -900,6 +1016,12 @@
 				<version>1.1</version>
 			</dependency>
 
+			<dependency>
+				<groupId>edu.stanford.nlp</groupId>
+				<artifactId>stanford-corenlp</artifactId>
+				<version>4.0.0</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -907,19 +1029,14 @@
 		<repository>
 			<id>maven.aksw.internal</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/internal</url>
+			<url>https://maven.aksw.org/repository/internal</url>
 			<releases />
 		</repository>
 		<repository>
 			<id>maven.aksw.snapshots</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/snapshots</url>
+			<url>https://maven.aksw.org/repository/snapshots</url>
 			<snapshots />
-		</repository>
-		<repository>
-			<id>davidsoergel.releases</id>
-			<name>David Soergel's Maven Repository</name>
-			<url>http://dev.davidsoergel.com/nexus/content/repositories/releases</url>
 		</repository>
 	</repositories>
 
@@ -927,12 +1044,12 @@
 		<repository>
 			<id>maven.aksw.internal</id>
 			<name>AKSW Internal Release Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/internal</url>
+			<url>https://maven.aksw.org/archiva/repository/internal</url>
 		</repository>
 		<snapshotRepository>
 			<id>maven.aksw.snapshots</id>
 			<name>AKSW Snapshot Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
+			<url>https://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
 		<!-- start - location where site is deployed - username/password for site.deployments
 			in server.xml -->
@@ -959,18 +1076,23 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<id>aggregate</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>default</id>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 				<configuration>
 					<show>public</show>
-					<aggregate>true</aggregate>
-					<reportSets>
-						<reportSet>
-							<id>aggregate</id>
-							<inherited>false</inherited>
-							<reports>
-								<report>aggregate</report>
-							</reports>
-						</reportSet>
-					</reportSets>
 					<links>
 						<link>https://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
@@ -1011,7 +1133,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changes-plugin</artifactId>
-				<version>2.12.1</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -1031,8 +1152,8 @@
 	<mailingLists>
 		<mailingList>
 			<name>DL-Learner discussion</name>
-			<subscribe>https://lists.sourceforge.net/lists/listinfo/dl-learner-discussion</subscribe>
-			<archive>http://sourceforge.net/p/dl-learner/mailman/dl-learner-discussion/</archive>
+			<subscribe>https://www.freelists.org/list/dl-learner-discussion</subscribe>
+			<archive>https://www.freelists.org/archive/dl-learner-discussion/</archive>
 		</mailingList>
 	</mailingLists>
 

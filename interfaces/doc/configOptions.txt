@@ -3072,6 +3072,20 @@ required: false
 default value: true
 conf file usage: reasoner.preferAsk = true
 
+option name: requestLogFile
+description: Log file for reasoner request logging
+type: String
+required: false
+default value: 
+conf file usage: reasoner.requestLogFile = ""
+
+option name: requestLogging
+description: Log reasoner requests
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.requestLogging = false
+
 option name: sources
 description: the underlying knowledge sources
 type: Set
@@ -3118,6 +3132,20 @@ type: boolean
 required: false
 default value: true
 conf file usage: reasoner.preferAsk = true
+
+option name: requestLogFile
+description: Log file for reasoner request logging
+type: String
+required: false
+default value: 
+conf file usage: reasoner.requestLogFile = ""
+
+option name: requestLogging
+description: Log reasoner requests
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.requestLogging = false
 
 option name: useGenericSplitsCode
 description: Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended

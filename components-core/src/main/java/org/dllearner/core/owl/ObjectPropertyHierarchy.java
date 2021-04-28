@@ -18,10 +18,7 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
@@ -115,6 +112,6 @@ public class ObjectPropertyHierarchy extends AbstractHierarchy<OWLObjectProperty
 	
 	@Override
 	public ObjectPropertyHierarchy clone() {
-		return new ObjectPropertyHierarchy(getHierarchyUp(), getHierarchyDown());		
+		return new ObjectPropertyHierarchy(new TreeMap<>(getHierarchyUp()), new TreeMap<>(getHierarchyDown()));
 	}
 }

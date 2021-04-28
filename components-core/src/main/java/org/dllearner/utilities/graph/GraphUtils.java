@@ -133,7 +133,7 @@ public class GraphUtils {
     }
 
 
-    public static void main(String[] args) throws OWLOntologyCreationException {
+    public static void main(String[] args) throws Exception {
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
         OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("/home/user/work/datasets/poker/poker_straight_flush_p5-n347.owl"));
@@ -155,6 +155,9 @@ public class GraphUtils {
 
         startNodes.forEach(node -> {
 
+            System.out.println("----------------------------------------------");
+            System.out.println("node: " + node);
+
             // compute all path up to length
             List<GraphPath<TypedOWLIndividual, OWLPropertyEdge>> paths = new AllPaths<>(g).getAllPaths(node, true, maxPathLength);
 
@@ -170,9 +173,12 @@ public class GraphUtils {
             // show just the distinct list of the edge sequences
             List<List<OWLObjectPropertyExpression>> pathEdgesDistinct = new ArrayList<>(new HashSet<>(pathEdges));
 
-            Comparator<List<OWLObjectPropertyExpression>> c = Comparator.<List<OWLObjectPropertyExpression>>comparingInt(List::size).thenComparing(Object::toString);
-
+            // sort by length
+            Comparator<List<OWLObjectPropertyExpression>> c = Comparator
+                    .<List<OWLObjectPropertyExpression>>comparingInt(List::size)
+                    .thenComparing(Object::toString);
             Collections.sort(pathEdgesDistinct, c);
+
             pathEdgesDistinct.forEach(System.out::println);
 
         });

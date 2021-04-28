@@ -236,7 +236,7 @@ public class GlobalEnrichment {
 						List<OWLAxiom> axioms = new LinkedList<>();
 						int axiomCnt = 0;
 						for(AlgorithmRun run : runs) {
-							axiomCnt += e.getGeneratedOntology().getLogicalAxiomCount();
+							axiomCnt += e.getGeneratedOntology(f.toURI()).getLogicalAxiomCount();
 							axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
 						}
 						Model model = e.getModel(axioms);			

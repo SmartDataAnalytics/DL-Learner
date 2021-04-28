@@ -66,7 +66,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 				undExamples=((PosNegUndLP)lp).getUncertainExamples();
 			}
 		} else if(lp instanceof PosOnlyLP){
-			posExamples = ((PosNegLP)lp).getPositiveExamples();
+			posExamples = ((PosOnlyLP)lp).getPositiveExamples();
 			negExamples = new HashSet<>();
 			undExamples= new TreeSet<>();
 		} else {

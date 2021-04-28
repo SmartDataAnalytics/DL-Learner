@@ -12,6 +12,7 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -89,6 +90,10 @@ public abstract class CLIBase2 {
 	}
 
 	public abstract void run();
+
+	public void close() {
+		((ConfigurableApplicationContext)context).close();
+	}
 
 	public void setContext(ApplicationContext context) {
 		this.context = context;

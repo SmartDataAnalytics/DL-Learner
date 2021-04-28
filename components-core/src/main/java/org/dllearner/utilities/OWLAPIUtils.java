@@ -37,6 +37,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * A collection of utility methods for the OWL API.
@@ -46,8 +47,6 @@ import java.util.function.Supplier;
  */
 public class OWLAPIUtils {
 	
-	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
-
 	public static final OWLOntologyManager	manager	= OWLManager.createOWLOntologyManager();
 	public static final OWLDataFactory factory = manager.getOWLDataFactory();
 	
@@ -218,7 +217,7 @@ public class OWLAPIUtils {
 	 * @return a set of OWL classes
 	 */
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
-		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
+		return classExpressions.stream().map(OWLClassExpression::asOWLClass).collect(Collectors.toSet());
 	}
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";

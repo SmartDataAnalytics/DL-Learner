@@ -25,26 +25,34 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.dllearner.kb.repository.SimpleRepositoryEntry;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
+/**
+ * TONES Ontology Repository
+ * http://owl.cs.manchester.ac.uk/repository/
+ *
+ * @deprecated it looks like the repository isn't maintained anymore, so it's like to not work (19.09.2019)
+ *
+ * @author Lorenz Buehmann
+ */
 public class TONESRepository implements OntologyRepository{
 	
 	private static final Logger log = Logger.getLogger(TONESRepository.class);
 	
-	private final String repositoryName = "TONES";
+	private static final String repositoryName = "TONES";
 
     private final URI repositoryLocation = URI.create("http://owl.cs.manchester.ac.uk/repository");
 
-    private List<RepositoryEntry> entries;
+    private List<OntologyRepositoryEntry> entries;
 
     private OWLOntologyIRIMapper iriMapper;
 
@@ -75,37 +83,28 @@ public class TONESRepository implements OntologyRepository{
 
     @Override
     public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<>();
-        ret.addAll(entries);
-        return ret;
-    }
-
-    @Override
-    public List<Object> getMetaDataKeys() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public OWLOntology getOntology(OntologyRepositoryEntry entry) {
-        return null;
+        return new ArrayList<>(entries);
     }
 
     public void dispose() {
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //  Implementation details
 
     private void fillRepository() {
         try {
+            OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
+
             entries.clear();
             URI listURI = URI.create(repositoryLocation + "/list");
             BufferedReader br = new BufferedReader(new InputStreamReader(listURI.toURL().openStream()));
             String line;
             while((line = br.readLine()) != null) {
                 try {
-                    entries.add(new RepositoryEntry(new URI(line)));
+                    URI ontologyURI = new URI(line);
+                    URI physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyURI);
+
+                    String shortName = sfp.getShortForm(IRI.create(ontologyURI));
+                    entries.add(new SimpleRepositoryEntry(ontologyURI, physicalURI, shortName ));
                 }
                 catch (URISyntaxException e) {
                     e.printStackTrace();
@@ -118,48 +117,11 @@ public class TONESRepository implements OntologyRepository{
         log.info("Loaded " + entries.size() + " ontology entries from TONES.");
     }
 
-    private class RepositoryEntry implements OntologyRepositoryEntry {
-
-        private String shortName;
-
-        private URI ontologyURI;
-
-        private URI physicalURI;
-
-        public RepositoryEntry(URI ontologyIRI) {
-            this.ontologyURI = ontologyIRI;
-            OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
-            shortName = sfp.getShortForm(IRI.create(ontologyIRI));
-            physicalURI = URI.create(repositoryLocation + "/download?ontology=" + ontologyIRI);
-        }
-
-        @Override
-        public String getOntologyShortName() {
-            return shortName;
-        }
-
-        @Override
-        public URI getOntologyURI() {
-            return ontologyURI;
-        }
-
-        @Override
-        public URI getPhysicalURI() {
-            return physicalURI;
-        }
-
-        @Override
-        public String getMetaData(Object key) {
-            return null;
-        }
-
-    }
-
     private class RepositoryIRIMapper implements OWLOntologyIRIMapper {
 
         @Override
         public IRI getDocumentIRI(IRI iri) {
-            for(RepositoryEntry entry : entries) {
+            for(OntologyRepositoryEntry entry : entries) {
                 if(entry.getOntologyURI().equals(iri.toURI())) {
                     return IRI.create(entry.getPhysicalURI());
                 }

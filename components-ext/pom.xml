@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.dllearner</groupId>
         <artifactId>dllearner-parent</artifactId>
-        <version>1.4.0</version>
+        <version>1.5.0</version>
     </parent>
 	<profiles>
 		<profile>
@@ -99,7 +99,6 @@
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.2</version>
         </dependency>
 
         <!--
@@ -256,6 +255,12 @@
             <groupId>ml.dmlc</groupId>
             <artifactId>xgboost4j</artifactId>
             <version>0.90</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>

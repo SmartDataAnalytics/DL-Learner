@@ -654,12 +654,14 @@ public class Enrichment {
 		//add Parameters to algorithm run instance
 		OWLIndividual paramInd;
 		for(Entry<Field, Object> entry : parameters.entrySet()){
-			paramInd = f.getOWLNamedIndividual(IRI.create(generateId()));
+			paramInd = f.getOWLNamedIndividual(IRI.create(defaultNamespace+generateId()));
 			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Parameter, paramInd);
 			axioms.add(ax);
 			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterName, paramInd, AnnComponentManager.getName(entry.getKey()));
 			axioms.add(ax);
 			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterValue, paramInd, entry.getValue().toString());
+			axioms.add(ax);
+			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasParameter, algorithmRunInd, paramInd);
 			axioms.add(ax);
 		}
 		//add timestamp
@@ -814,7 +816,7 @@ public class Enrichment {
 
 	Model getModel(List<OWLAxiom> axioms) {
 		try {
-			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms));
+			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms), IRI.create(DEFAULT_NS + generateId()));
 			Model model = OwlApiJenaUtils.getModel(ontology);
 			model.setNsPrefix("enr", "http://www.dl-learner.org/enrichment.owl#");
 			return model;
@@ -824,11 +826,11 @@ public class Enrichment {
 		return null;
 	}
 
-	public OWLOntology getGeneratedOntology(){
+	public OWLOntology getGeneratedOntology(URI uri){
 		OWLOntology ontology = null;
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-			ontology = man.createOntology(learnedOWLAxioms);
+			ontology = man.createOntology(learnedOWLAxioms, IRI.create(uri));
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -836,7 +838,7 @@ public class Enrichment {
 		return ontology;
 	}
 
-	public OWLOntology getGeneratedOntology(boolean withConfidenceAsAnnotations){
+	public OWLOntology getGeneratedOntology(boolean withConfidenceAsAnnotations, URI uri){
 		OWLOntology ontology = null;
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -853,7 +855,7 @@ public class Enrichment {
 				}
 				axioms.add(ax);
 			}
-			ontology = man.createOntology(axioms);
+			ontology = man.createOntology(axioms, IRI.create(uri));
 
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -867,7 +869,7 @@ public class Enrichment {
 	private void printTurtleSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms)));
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms), IRI.create("http://localhost:8080/" + generateId())));
 			model.write(System.out, "TURTLE");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {
@@ -882,7 +884,7 @@ public class Enrichment {
 	private void printNTriplesSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms)));
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<>(axioms), IRI.create("http://localhost:8080/" + generateId())));
 			model.write(System.out, "N-TRIPLES");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {
@@ -1172,7 +1174,7 @@ public class Enrichment {
 			if(options.has("s")){
 				File file = (File)options.valueOf("s");
 				try {
-					OWLOntology ontology = e.getGeneratedOntology(options.has("a"));
+					OWLOntology ontology = e.getGeneratedOntology(options.has("a"), file.toURI());
 					OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLDocumentFormat(), os);
 				} catch (OWLOntologyStorageException e1) {

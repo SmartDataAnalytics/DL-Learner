@@ -71,7 +71,7 @@ public class SemKernelCLI extends CLIBase2 {
             cli.setContext(context);
             cli.setConfFile(file);
             cli.run();
-
+            cli.close();
         } catch (Exception e) {e.printStackTrace();
             String stacktraceFileName = "log/error.log";
 

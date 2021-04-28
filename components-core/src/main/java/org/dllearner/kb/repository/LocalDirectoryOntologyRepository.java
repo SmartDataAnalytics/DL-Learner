@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * A local directory of ontology files.
+ *
  * @author Lorenz Buehmann
  */
 public class LocalDirectoryOntologyRepository implements OntologyRepository{
@@ -32,6 +34,11 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 		this.directory = directory;
 	}
 
+	/**
+	 *
+	 * @param directory the directory
+	 * @param maxFileSizeInMB the max. size in MB of files being maintained as entries
+	 */
 	public LocalDirectoryOntologyRepository(File directory, long maxFileSizeInMB){
 		this.directory = directory;
 		this.maxFileSizeInMB = maxFileSizeInMB;
@@ -48,14 +55,10 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 	}
 
 	@Override
-	public void refresh() {
-
-	}
+	public void refresh() {}
 
 	@Override
-	public void initialize() {
-
-	}
+	public void initialize() {}
 
 	@Override
 	public Collection<OntologyRepositoryEntry> getEntries() {
@@ -65,7 +68,7 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 					.filter(path -> path.toFile().length() / 1024 / 1024 < maxFileSizeInMB)
 					.map(Path::toFile)
 					.sorted(Comparator.comparingLong(File::length))//.reversed())
-					.map(path -> new RepositoryEntry(path.toURI()))
+					.map(path -> new SimpleRepositoryEntry(path.toURI()))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,49 +77,7 @@ public class LocalDirectoryOntologyRepository implements OntologyRepository{
 	}
 
 	@Override
-	public List<Object> getMetaDataKeys() {
-		return null;
-	}
-
-	@Override
 	public OWLOntology getOntology(OntologyRepositoryEntry entry) {
 		return null;
-	}
-
-	private class RepositoryEntry implements OntologyRepositoryEntry {
-
-		private String shortName;
-
-		private URI ontologyURI;
-
-		private URI physicalURI;
-
-		public RepositoryEntry(URI ontologyIRI) {
-			this.ontologyURI = ontologyIRI;
-			OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
-			shortName = sfp.getShortForm(IRI.create(ontologyIRI));
-			physicalURI = ontologyIRI;
-		}
-
-		@Override
-		public String getOntologyShortName() {
-			return shortName;
-		}
-
-		@Override
-		public URI getOntologyURI() {
-			return ontologyURI;
-		}
-
-		@Override
-		public URI getPhysicalURI() {
-			return physicalURI;
-		}
-
-		@Override
-		public String getMetaData(Object key) {
-			return null;
-		}
-
 	}
 }

@@ -28,10 +28,7 @@ import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.semanticweb.owlapi.util.OWLAPIPreconditions.checkNotNull;
@@ -49,7 +46,7 @@ public class OWL2SPARULConverter
 	public OWL2SPARULConverter(OWLOntologyManager manager,
 							   OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance,
 							   AxiomAppearance axiomAppearance, AtomicInteger nextNode, Map<Object, Integer> blankNodeMap) {
-		super(manager, ontology, useStrongTyping, individualAppearance, axiomAppearance, nextNode, blankNodeMap);
+		super(manager, ontology, null, useStrongTyping, individualAppearance, axiomAppearance, nextNode, blankNodeMap, new HashSet<>());
 	}
 
 	public OWL2SPARULConverter(OWLOntology ontology, boolean useStrongTyping) {
