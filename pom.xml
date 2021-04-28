@@ -5,7 +5,7 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<description>A framework for supervised Machine Learning in OWL, RDF and Description Logics</description>
