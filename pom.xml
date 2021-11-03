@@ -19,8 +19,8 @@
         <solr.version>8.6.3</solr.version>
         <owlapi.version>4.5.17</owlapi.version>
         <spring.version>4.3.29.RELEASE</spring.version>
-        <jena.sparql.api.version>3.16.0-1</jena.sparql.api.version>
-		<jena.version>3.16.0</jena.version>
+        <jena.sparql.api.version>4.2.0-1-SNAPSHOT</jena.sparql.api.version>
+		<jena.version>4.2.0</jena.version>
 		<pellet.version>2.5.2-dllearner</pellet.version>
 		<jgrapht.version>1.3.1</jgrapht.version>
 	</properties>
