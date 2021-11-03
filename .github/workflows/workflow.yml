@@ -11,7 +11,7 @@ jobs:
     name: Build on Java ${{ matrix.java_version }} and ${{ matrix.os }}
     strategy:
       matrix:
-        java_version: ['1.8', '9.0.x']
+        java_version: ['11', '17']
         os: [ubuntu-latest, windows-latest, macOS-latest]
     
     runs-on: ${{ matrix.os }}
