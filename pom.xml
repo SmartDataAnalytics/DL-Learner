@@ -472,6 +472,31 @@
 									<class>org.w3c.dom.UserDataHandler</class>
 								</classes>
 							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>commons-codec</groupId>
+										<artifactId>commons-codec</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>org.apache.httpcomponents</groupId>
+										<artifactId>httpclient-osgi</artifactId>
+									</dependency>
+								</conflictingDependencies>
+							</exception>
+							<exception>
+								<conflictingDependencies>
+									<dependency>
+										<groupId>org.glassfish</groupId>
+										<artifactId>jakarta.json</artifactId>
+									</dependency>
+									<dependency>
+										<groupId>org.glassfish</groupId>
+										<artifactId>javax.json</artifactId>
+									</dependency>
+								</conflictingDependencies>
+							</exception>
+
 						</exceptions>
 					</configuration>
 				</plugin>
