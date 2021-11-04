@@ -596,6 +596,10 @@
 			    <groupId>commons-logging</groupId>
 			    <artifactId>commons-logging</artifactId>
 			  </exclusion>
+				<exclusion>
+					<groupId>com.google.collections</groupId>
+					<artifactId>google-collections</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
