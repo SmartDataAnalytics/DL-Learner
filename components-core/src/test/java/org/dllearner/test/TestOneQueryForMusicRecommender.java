@@ -18,9 +18,7 @@
  */
 package org.dllearner.test;
 
-import java.io.ByteArrayInputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -69,7 +67,7 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 		System.out.println(sparqlQueryString);
 		System.out.println("wget -S -O test.txt "+"'http://dbtune.org:2105/sparql/?query="+sparqlQueryString+"'");
 
-		ResultSet rs = ResultSetFactory.fromXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+		ResultSet rs = ResultSetFactory.fromXML(xml);
 		@SuppressWarnings("unchecked")
 		List<QuerySolution> l = ResultSetFormatter.toList(rs);
 

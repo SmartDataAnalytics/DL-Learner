@@ -32,7 +32,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.apache.jena.riot.system.Checker;
+import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
@@ -801,7 +801,7 @@ public class Enrichment {
 					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
 						newObject = model.createLiteral("shortened", "en");
 					}
-					validTriple = Checker.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1L, 1L);
+					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1L, 1L);
 				}
 				if (validTriple) {
 					statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));
