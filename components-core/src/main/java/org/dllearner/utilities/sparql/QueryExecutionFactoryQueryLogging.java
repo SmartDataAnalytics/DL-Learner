@@ -5,15 +5,17 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactoryDecorator;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.system.StreamOps;
 import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFOps;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.io.OutputStream;
 
 public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDecorator
 {
@@ -67,7 +69,7 @@ public class QueryExecutionFactoryQueryLogging extends QueryExecutionFactoryDeco
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "time"), fmt.print(dt), XSDDatatype.XSDdateTimeStamp);
         logQuery.addProperty(model.createProperty(SPARQLReasoner.REQUEST_LOG_NS + "step"), model.createResource(stepUri));
-        StreamRDFOps.graphToStream(model.getGraph(), logStream);
+        StreamOps.graphToStream(model.getGraph(), logStream);
         model.close();
         stepRequestCount++;
     }

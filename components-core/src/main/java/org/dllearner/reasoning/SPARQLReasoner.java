@@ -32,8 +32,8 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.system.StreamOps;
 import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFOps;
 import org.apache.jena.riot.system.StreamRDFWriter;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 import org.apache.jena.vocabulary.OWL;
@@ -301,7 +301,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if (requestLog==null) {
 			writeRequestLogPreamble();
 		} else {
-			StreamRDFOps.graphToStream(requestLog.getGraph(),requestLogStreamRDF);
+			StreamOps.graphToStream(requestLog.getGraph(),requestLogStreamRDF);
 			//RDFDataMgr.write(requestLogStream,requestLog,RDFFormat.NTRIPLES_UTF8);
 			requestLog.close();
 		}
