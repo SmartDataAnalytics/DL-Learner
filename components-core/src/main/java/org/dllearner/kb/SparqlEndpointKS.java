@@ -24,6 +24,7 @@ import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionHttpWrapper;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
@@ -179,6 +180,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 
 		if(retryCount > 0) {
 			qef = new QueryExecutionFactoryRetry(qef, retryCount, 1, TimeUnit.SECONDS);
+		}
+
+		if (pageSize > 0) {
+			qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 		}
 
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint

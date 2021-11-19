@@ -247,9 +247,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if(requestLogging) {
 					qef = new QueryExecutionFactoryQueryLogging(qef, this);
 				}
-				qef = new QueryExecutionFactoryDelay(qef, 50);
+//				qef = new QueryExecutionFactoryDelay(qef, 50);
 //				qef = new QueryExecutionFactoryCacheEx(qef, cache);
-				qef = new QueryExecutionFactoryPaginated(qef, 10000);
+//				qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			} else {
 				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 				if(requestLogging) {
