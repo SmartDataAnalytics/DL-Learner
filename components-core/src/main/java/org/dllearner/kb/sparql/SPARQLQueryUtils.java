@@ -45,6 +45,13 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_DATA_PROPERTIES_BY_RANGE_QUERY = PREFIXES
 			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";
 
+	public static final String SELECT_DATA_PROPERTIES_BY_RANGE_QUERY_ALT = PREFIXES +
+			"SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . " +
+			"[] ?var1 ?val . " +
+			"bind(datatype(?val) as ?rng) . " +
+			"FILTER ( ?rng = <%s> ) ." +
+			"} GROUP BY ?var1 ";
+
 	// class hierarchy queries
 	public static final String SELECT_TOP_LEVEL_OWL_CLASSES = PREFIXES +
 			"SELECT ?var1\n" +

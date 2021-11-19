@@ -1203,6 +1203,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		ResultSet rs = executeSelectQuery(query);
 		
 		SortedSet<OWLDataProperty> properties = asOWLEntities(EntityType.DATA_PROPERTY, rs, "var1");
+		if (properties.isEmpty()) {
+			query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY_ALT, iri.toString());
+			logger.debug(sparql_debug, "get properties by range query: " + query);
+			rs = executeSelectQuery(query);
+
+			properties = asOWLEntities(EntityType.DATA_PROPERTY, rs, "var1");
+		}
 		return properties;
 	}
 	/* (non-Javadoc)
@@ -2095,6 +2102,21 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			range = df.getOWLDatatype(IRI.create(qs.getResource("range").getURI()));
 
+		}
+		if (range == null) {
+			query = String.format("SELECT ?range WHERE {" +
+							"[] <%s> ?val." +
+							"FILTER(isLiteral(?val)) . " +
+							"BIND(datatype(?val) as ?range) ." +
+							"FILTER(isIRI(?range))" +
+							"} GROUP BY ?range ",
+					datatypeProperty.toStringID());
+
+			rs = executeSelectQuery(query);
+			if(rs.hasNext()){
+				qs = rs.next();
+				range = df.getOWLDatatype(IRI.create(qs.getResource("range").getURI()));
+			}
 		}
 		return range == null ? df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI()) : range;
 	}

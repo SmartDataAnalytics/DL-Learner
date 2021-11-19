@@ -231,11 +231,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     	}
     }
 
-    public void setReasoning(boolean reasoning) {
+    protected void setReasoning(boolean reasoning) {
 		this.setReasoning(reasoning ? "rdfs" : "");
 	}
 
-    public void setReasoning(OntModelSpec reasoning) {
+    protected void setReasoning(OntModelSpec reasoning) {
     	this.reasoning = reasoning;
     }
 
