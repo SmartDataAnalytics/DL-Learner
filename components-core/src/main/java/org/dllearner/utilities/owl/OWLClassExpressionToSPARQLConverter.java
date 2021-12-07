@@ -160,7 +160,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			Set<String> conditions = havingConditions.get(expr);
 			if(conditions != null) {
 				queryString += " HAVING(";
-				queryString += Joiner.on(" & ").join(conditions);
+				queryString += Joiner.on(" && ").join(conditions);
 				queryString += ")";
 			}
 		}
@@ -437,9 +437,15 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		variables.pop();
 		
 		String havingCondition = "COUNT(" + objectVariable + ")" + comparator + cardinality;
-		
-		groupingVars.put(parent.peek(), Sets.newHashSet(parentVar.peek()));
-		havingConditions.put(parent.peek(), Sets.newHashSet(havingCondition));
+
+		if (groupingVars.containsKey(parent.peek()))
+			groupingVars.get(parent.peek()).add(parentVar.peek());
+		else
+			groupingVars.put(parent.peek(), Sets.newHashSet(parentVar.peek()));
+		if (havingConditions.containsKey(parent.peek()))
+			havingConditions.get(parent.peek()).add(havingCondition);
+		else
+			havingConditions.put(parent.peek(), Sets.newHashSet(havingCondition));
 		
 //		sparql += "} GROUP BY " + subjectVariable + " HAVING(" + havingCondition + ")}";
 	}
@@ -779,11 +785,18 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		System.out.println(expr + "\n" + query);
 		
 		expr = df.getOWLObjectSomeValuesFrom(
-				propS, 
+				propS,
+				df.getOWLObjectIntersectionOf(
 				df.getOWLObjectMaxCardinality(
 						4, 
 						df.getOWLObjectProperty(IRI.create("http://dl-learner.org/carcinogenesis#hasAtom")), 
 						df.getOWLThing()
+				),
+						df.getOWLObjectMinCardinality(
+								1,
+								df.getOWLObjectProperty(IRI.create("http://dl-learner.org/carcinogenesis#hasAtom")),
+								df.getOWLThing()
+						)
 				)
 				);
 		query = converter.asQuery(rootVar, expr).toString();
