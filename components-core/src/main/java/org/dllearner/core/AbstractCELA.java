@@ -356,6 +356,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				
 				str += current + ": " + descriptionString + " (pred. acc.: "
 						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
+						+ " / " + dfPercent.format(computeTestingAccuracy(description))
 						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1));
 
 				AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
@@ -372,7 +373,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		}
 		return str;
 	}
-	
+
+	protected double computeTestingAccuracy(OWLClassExpression description) {
+		if (learningProblem instanceof PosNegLP) {
+			return ((PosNegLP) learningProblem).getTestAccuracyOrTooWeak(description, 1);
+		}
+
+		return 0.0;
+	}
+
 	/**
 	 * Computes an internal class hierarchy that only contains classes
 	 * that are allowed.
@@ -494,7 +503,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		
-		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
+//		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
 		
 		return niceDescription;
 	}

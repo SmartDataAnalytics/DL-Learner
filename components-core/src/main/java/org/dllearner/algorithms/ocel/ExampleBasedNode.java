@@ -20,10 +20,12 @@ package org.dllearner.algorithms.ocel;
 
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.core.Heuristic;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -71,12 +73,14 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	private boolean isPosOnlyCandidate = true;
 
 	private OCEL learningAlgorithm;
+	private ExampleBasedHeuristic heuristic;
 	
-	public ExampleBasedNode(OWLClassExpression concept, AbstractCELA learningAlgorithm) {
+	public ExampleBasedNode(OWLClassExpression concept, AbstractCELA learningAlgorithm, ExampleBasedHeuristic heuristic) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
 		this.learningAlgorithm = (OCEL) learningAlgorithm;
+		this.heuristic = heuristic;
 	}
 
 	public void setHorizontalExpansion(int horizontalExpansion) {
@@ -145,8 +149,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 			// comment this out to display the heuristic score with default parameters
 			//  learningAlgorithm.getHeuristic()
 			int nrOfPositiveExamples = ((PosNegLP) learningAlgorithm.getLearningProblem()).getPositiveExamples().size();
-			int nrOfNegativeExamples = ((PosNegLP) learningAlgorithm.getLearningProblem()).getNegativeExamples().size();
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, learningAlgorithm.getNegativeWeight(), learningAlgorithm.getStartNodeBonus(), learningAlgorithm.getExpansionPenaltyFactor(), learningAlgorithm.getNegationPenalty());
+			double heuristicScore = heuristic.getNodeScore(this);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();

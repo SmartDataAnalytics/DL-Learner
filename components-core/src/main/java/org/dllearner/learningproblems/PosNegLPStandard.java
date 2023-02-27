@@ -24,6 +24,7 @@ import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import java.util.SortedSet;
 
@@ -115,7 +116,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     @Override

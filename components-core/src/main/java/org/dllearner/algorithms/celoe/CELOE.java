@@ -21,6 +21,9 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.dllearner.algorithms.ocel.ExampleBasedNode;
+import org.dllearner.algorithms.ocel.MultiHeuristic;
+import org.dllearner.algorithms.ocel.QualityBasedComparator;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -50,6 +53,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -171,6 +175,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private boolean stopOnFirstDefinition = false;
 	
 	private int expressionTestCountLastImprovement;
+
+	OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
+
+	private TreeMap<OENode, Double> solutionCandidates;
+	private final double solutionCandidatesMinAccuracyDiff = 0.0001;
+
+	@ConfigOption(defaultValue = "0.0", description = "determines a lower bound on noisiness of an expression with respect to noisePercentage " +
+		"in order to be considered a reasonable solution candidate (must be non-negative), e.g. for noisePercentage = 15 and noisePercentageMargin = 5, " +
+		"the algorithm will suggest expressions with the number of misclassified positives less than or equal to 20% of all examples " +
+		"as solution candidates as well; note: difference between accuracies of any two candidates must be at least 0.01% to ensure diversity")
+	private double noisePercentageMargin = 0.0;
+
+	@ConfigOption(defaultValue = "20", description = "the number of solution candidates within margin to be presented, sorted in descending order by accuracy")
+	private int maxNrOfResultsWithinMargin = 20;
+
+	private double noiseWithMargin;
 	
 	
 	@SuppressWarnings("unused")
@@ -228,6 +248,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		setWriteSearchTree(celoe.writeSearchTree);
 		setReplaceSearchTree(celoe.replaceSearchTree);
+
+		setMaxNrOfResultsWithinMargin(celoe.maxNrOfResultsWithinMargin);
+		setNoisePercentageMargin(celoe.noisePercentageMargin);
 	}
 	
 	public CELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -259,6 +282,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			heuristic = new OEHeuristicRuntime();
 			heuristic.init();
 		}
+
+		// TODO: MY copy from MultiHeuristic
+//		if (heuristic instanceof OEHeuristicRuntime) {
+//			((OEHeuristicRuntime) heuristic).setLengthMetric(lengthMetric);
+//		}
 		
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
@@ -313,6 +341,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if (!((AbstractRefinementOperator) operator).isInitialized())
 			operator.init();
+
+		operator.setLengthMetric(lengthMetric);
+
+		AccuracyBasedComparator solutionComparator = new AccuracyBasedComparator(lengthMetric);
+		solutionCandidates = new TreeMap<>(solutionComparator);
+
+		if (noisePercentageMargin < 0) {
+			noisePercentageMargin = 0.0;
+		}
+
+		noiseWithMargin = (noisePercentage + noisePercentageMargin) / 100.0;
 		
 		initialized = true;
 	}
@@ -334,11 +373,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			showIfBetterSolutionsFound();
 
 			// chose best node according to heuristics
+//			long s = System.nanoTime();
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
 			
 			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
+//			accTime += (System.nanoTime() - s) / 1000;
 				
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
@@ -358,7 +399,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			showIfBetterSolutionsFound();
 			
 			// update the global min and max horizontal expansion values
-			updateMinMaxHorizExp(nextNode);
+//			updateMinMaxHorizExp(nextNode);
 			
 			// write the search tree (if configured)
 			if (writeSearchTree) {
@@ -372,6 +413,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// print some stats
 		printAlgorithmRunStats();
+
+		printSolutionCandidates();
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
@@ -506,7 +549,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		MonitorFactory.getTimeMonitor("refineNode").stop();
 		return refinements;
 	}
-	
+
 	/**
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
@@ -616,7 +659,23 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
-		
+
+		if (accuracy >= 1 - noiseWithMargin) {
+			if (solutionCandidates.isEmpty()
+				|| (node.getAccuracy() > solutionCandidates.firstKey().getAccuracy()
+					&& solutionCandidates.keySet().stream().allMatch(
+						n -> Math.abs(node.getAccuracy() - n.getAccuracy()) > solutionCandidatesMinAccuracyDiff
+					)
+				)
+			) {
+				solutionCandidates.put(node, getCurrentRuntimeInMilliSeconds() / 1000.0);
+			}
+
+			if (solutionCandidates.size() > maxNrOfResultsWithinMargin) {
+				solutionCandidates.pollFirstEntry();
+			}
+		}
+
 		return true;
 	}
 	
@@ -761,18 +820,45 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		runtimeVsBestScore.clear();
+
+		solutionCandidates.clear();
 	}
 	
 	private void printAlgorithmRunStats() {
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
+			logger.info(reasoner.toString());
 		} else {
 			totalRuntimeNs = System.nanoTime()-nanoStartTime;
 			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 	}
-	
+
+	private void printSolutionCandidates() {
+		DecimalFormat df = new DecimalFormat();
+
+		if (solutionCandidates.size() > 0) {
+			// we do not need to print the best node if we display the top 20 solutions below anyway
+			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");
+			int show = 1;
+			for (OENode c : solutionCandidates.descendingKeySet()) {
+				logger.info(show + ": " + renderer.render(c.getDescription())
+					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
+					+ df.format(100 * computeTestingAccuracy(c.getDescription())) + "%"
+					+ ", length " + OWLClassExpressionUtils.getLength(c.getDescription())
+					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getDescription())
+					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
+				if (show >= maxNrOfResultsWithinMargin) {
+					break;
+				}
+				show++;
+			}
+		} else {
+			logger.info("no appropriate solutions within margin found (try increasing the noisePercentageMargin)");
+		}
+	}
+
 	private void showIfBetterSolutionsFound() {
 		if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
 			currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
@@ -781,14 +867,18 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
 
+			OWLClassExpression bestDescription = bestEvaluatedDescriptions.getBest().getDescription();
+			double testAccuracy = computeTestingAccuracy(bestDescription);
+
 			// track new best accuracy if enabled
 			if(keepTrackOfBestScore) {
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
-			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+
+			logger.info("more accurate (training: " + dfPercent.format(currentHighestAccuracy) + ", testing: " + dfPercent.format(testAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 		}
 	}
-	
+
 	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
 		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
 		if (refinements.size() > 1) {
@@ -1098,6 +1188,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 
 		return map;
+	}
+
+	public int getMaxNrOfResultsWithinMargin() {
+		return maxNrOfResultsWithinMargin;
+	}
+
+	public void setMaxNrOfResultsWithinMargin(int maxNrOfResultsWithinMargin) {
+		this.maxNrOfResultsWithinMargin = maxNrOfResultsWithinMargin;
+	}
+
+	public double getNoisePercentageMargin() {
+		return noisePercentageMargin;
+	}
+
+	public void setNoisePercentageMargin(double noisePercentageMargin) {
+		this.noisePercentageMargin = noisePercentageMargin;
 	}
 
 	/* (non-Javadoc)

@@ -30,6 +30,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,12 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	@ConfigOption(description = "list of negative examples", required = true)
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<>();
 	protected Set<OWLIndividual> allExamples = new TreeSet<>();
+
+	@ConfigOption(description = "list of positive testing examples")
+	protected Set<OWLIndividual> positiveTestExamples = new TreeSet<>();
+	@ConfigOption(description = "list of negative testing examples")
+	protected Set<OWLIndividual> negativeTestExamples = new TreeSet<>();
+	protected Set<OWLIndividual> allTestExamples = new TreeSet<>();
 
 	@ConfigOption(description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
@@ -109,8 +116,33 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		
 		// sanity check whether examples are contained in KB
 		Helper.checkIndividuals(reasoner, allExamples);
+
+		if(positiveTestExamples.isEmpty()) {
+			logger.warn("No positive testing examples have been set.");
+		}
+
+		// check if some negative examples have been set and give warning if not
+		if(negativeTestExamples.isEmpty()) {
+			logger.warn("No negative testing examples have been set.");
+		}
+
+		// check if there is some overlap between positive and negative examples and give warning
+		// in that case
+		SetView<OWLIndividual> testOverlap = Sets.intersection(positiveTestExamples, negativeTestExamples);
+		if(!testOverlap.isEmpty()) {
+			logger.warn("You declared some individuals as both positive and negative testing examples.");
+		}
+
+		allTestExamples = Sets.union(positiveTestExamples, negativeTestExamples);
+
+		// sanity check whether examples are contained in KB
+		Helper.checkIndividuals(reasoner, allTestExamples);
 		
 		initialized = true;
+	}
+
+	public double getTestAccuracyOrTooWeak(OWLClassExpression description, double noise) {
+		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveTestExamples, negativeTestExamples, noise);
 	}
 
 	public Set<OWLIndividual> getNegativeExamples() {
@@ -127,6 +159,22 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 
 	public void setPositiveExamples(Set<OWLIndividual> set) {
 		this.positiveExamples=set;
+	}
+
+	public Set<OWLIndividual> getNegativeTestExamples() {
+		return negativeTestExamples;
+	}
+
+	public Set<OWLIndividual> getPositiveTestExamples() {
+		return positiveTestExamples;
+	}
+
+	public void setNegativeTestExamples(Set<OWLIndividual> negativeTestExamples) {
+		this.negativeTestExamples = negativeTestExamples;
+	}
+
+	public void setPositiveTestExamples(Set<OWLIndividual> positiveTestExamples) {
+		this.positiveTestExamples = positiveTestExamples;
 	}
 
 	public double getPercentPerLengthUnit() {

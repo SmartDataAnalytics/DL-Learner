@@ -23,10 +23,11 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.dllearner.utilities.owl.ExpressionDecomposer;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
+import org.semanticweb.owlapi.model.*;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -100,6 +101,10 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	private int nrOfNegativeExamples;
 	@NoConfigOption
 	private int nrOfExamples;
+
+	private final ExpressionDecomposer decomposer = new ExpressionDecomposer();
+
+	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 	
 	@Deprecated
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples) {
@@ -161,7 +166,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 		} else {
 			accuracy += startNodeBonus;
 		}
-		int he = node.getHorizontalExpansion() - getHeuristicLengthBonus(node.getConcept());
+		double he = node.getHorizontalExpansion() - getHeuristicLengthBonus(node.getConcept());
 		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * he - nodeChildPenalty * node.getChildren().size();
 	}
 	
@@ -176,34 +181,30 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
 	// this function can be used to give some constructs a length bonus
 	// compared to their syntactic length
-	private int getHeuristicLengthBonus(OWLClassExpression description) {
-		
-		
-		int bonus = 0;
-		
-		Set<OWLClassExpression> nestedClassExpressions = description.getNestedClassExpressions();
-		for (OWLClassExpression expression : nestedClassExpressions) {
-			// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
-			// as they provide no extra information
-			if(expression.isOWLThing())
-				bonus = 1; //2;
-			
-			// we put a penalty on negations, because they often overfit
-			// (TODO: make configurable)
-			else if(expression instanceof OWLObjectComplementOf) {
-				bonus = -negationPenalty;
+	private double getHeuristicLengthBonus(OWLClassExpression description) {
+		double bonus = 0.0;
+
+		for (OWLClassExpression expression : decomposer.decompose(description)) {
+			// encourage the algorithm to refine EXISTS r.TOP and MIN n r.TOP
+			// as they provide little extra information
+			if ((expression instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom) expression).getFiller().isOWLThing())
+				|| (expression instanceof OWLObjectMinCardinality && ((OWLObjectMinCardinality) expression).getFiller().isOWLThing())
+			) {
+				bonus += lengthMetric.getClassLength() / 2.0;
 			}
-			
-//			if(OWLClassExpression instanceof BooleanValueRestriction)
-//				bonus = -1;
-			
-			// some bonus for doubles because they are already penalised by length 3
-			else if(expression instanceof OWLDataSomeValuesFrom) {
-//				System.out.println(description);
-				bonus = 3; //2;
+			// do not count TOP symbols in ALL r.TOP and MAX n r.BOTTOM
+			// as they provide no extra information
+			else if ((expression instanceof OWLObjectAllValuesFrom && ((OWLObjectAllValuesFrom) expression).getFiller().isOWLThing())
+				|| (expression instanceof OWLObjectMaxCardinality && ((OWLObjectMaxCardinality) expression).getFiller().isOWLNothing())
+			) {
+				bonus += lengthMetric.getClassLength();
+			}
+			// optionally, penalize negations (they may cause the algorithm to overfit)
+			else if(expression instanceof OWLObjectComplementOf) {
+				bonus -= negationPenalty;
 			}
 		}
-		
+
 		return bonus;
 	}
 
@@ -269,5 +270,13 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 
 	public void setNegationPenalty(int negationPenalty) {
 		this.negationPenalty = negationPenalty;
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() {
+		return lengthMetric;
+	}
+
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		this.lengthMetric = lengthMetric;
 	}
 }
