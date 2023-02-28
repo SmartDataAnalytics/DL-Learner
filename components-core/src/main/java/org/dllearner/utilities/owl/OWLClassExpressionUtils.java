@@ -18,8 +18,7 @@
  */
 package org.dllearner.utilities.owl;
 
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -99,6 +98,38 @@ public class OWLClassExpressionUtils {
 	 */
 	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
 		return description.containsConjunct(cls);
+	}
+
+	/**
+	 * Replace the filler of an object property restriction.
+	 *
+	 * @param restriction the object property restriction
+	 * @param newFiller   the filler to replace the old one
+	 * @return the new object property restriction with a replaced filler
+	 */
+	public static OWLQuantifiedObjectRestriction replaceFiller(OWLQuantifiedObjectRestriction restriction,
+															   OWLClassExpression newFiller) {
+		OWLQuantifiedObjectRestriction newRestriction = null;
+		OWLObjectPropertyExpression property = restriction.getProperty();
+		if (restriction instanceof OWLObjectSomeValuesFrom) {
+			newRestriction = dataFactory.getOWLObjectSomeValuesFrom(property, newFiller);
+		} else if (restriction instanceof OWLObjectAllValuesFrom) {
+			newRestriction = dataFactory.getOWLObjectAllValuesFrom(property, newFiller);
+		} else if (restriction instanceof OWLObjectCardinalityRestriction) {
+			int cardinality = ((OWLObjectCardinalityRestriction) restriction).getCardinality();
+
+			if (restriction instanceof OWLObjectMinCardinality) {
+				newRestriction = dataFactory.getOWLObjectMinCardinality(cardinality, property, newFiller);
+			} else if (restriction instanceof OWLObjectMaxCardinality) {
+				newRestriction = dataFactory.getOWLObjectMaxCardinality(cardinality, property, newFiller);
+			} else if (restriction instanceof OWLObjectExactCardinality) {
+				newRestriction = dataFactory.getOWLObjectExactCardinality(cardinality, property, newFiller);
+			}
+		} else {
+			throw new IllegalArgumentException("unsupported restriction type for filler replacement: "
+				+ restriction.getClassExpressionType().getName());
+		}
+		return newRestriction;
 	}
 
 }

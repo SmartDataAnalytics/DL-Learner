@@ -21,9 +21,6 @@ package org.dllearner.algorithms.celoe;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.dllearner.algorithms.ocel.ExampleBasedNode;
-import org.dllearner.algorithms.ocel.MultiHeuristic;
-import org.dllearner.algorithms.ocel.QualityBasedComparator;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -366,6 +363,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		currentHighestAccuracy = 0.0;
 		OENode nextNode;
 
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
 		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
@@ -373,13 +371,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			showIfBetterSolutionsFound();
 
 			// chose best node according to heuristics
-//			long s = System.nanoTime();
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
 			
 			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-//			accTime += (System.nanoTime() - s) / 1000;
 				
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
@@ -399,7 +395,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			showIfBetterSolutionsFound();
 			
 			// update the global min and max horizontal expansion values
-//			updateMinMaxHorizExp(nextNode);
+			updateMinMaxHorizExp(nextNode);
 			
 			// write the search tree (if configured)
 			if (writeSearchTree) {
@@ -418,6 +414,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
+
+		printBestConceptsTimesAndAccuracies();
 		
 		isRunning = false;
 	}
@@ -668,7 +666,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					)
 				)
 			) {
-				solutionCandidates.put(node, getCurrentRuntimeInMilliSeconds() / 1000.0);
+				solutionCandidates.put(node, getCurrentCpuMillis() / 1000.0);
 			}
 
 			if (solutionCandidates.size() > maxNrOfResultsWithinMargin) {
@@ -806,8 +804,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		stop ||
 		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
-		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L))) ||
-		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L))) ||
+		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((getCurrentCpuMillis() - timeLastImprovement) >= (maxExecutionTimeInSecondsAfterImprovement * 1000L))) ||
+		(maxExecutionTimeInSeconds != 0 && (getCurrentCpuMillis() >= (maxExecutionTimeInSeconds * 1000L))) ||
 		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
 		(stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
 	}
@@ -845,7 +843,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			for (OENode c : solutionCandidates.descendingKeySet()) {
 				logger.info(show + ": " + renderer.render(c.getDescription())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
-					+ df.format(100 * computeTestingAccuracy(c.getDescription())) + "%"
+					+ df.format(100 * computeTestAccuracy(c.getDescription())) + "%"
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getDescription())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getDescription())
 					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
@@ -863,19 +861,29 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
 			currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 			expressionTestCountLastImprovement = expressionTests;
-			timeLastImprovement = System.nanoTime();
+			timeLastImprovement = getCurrentCpuMillis();
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
 
+			double cpuTime = getCurrentCpuMillis() / 1000.0;
+
 			OWLClassExpression bestDescription = bestEvaluatedDescriptions.getBest().getDescription();
-			double testAccuracy = computeTestingAccuracy(bestDescription);
+			double testAccuracy = computeTestAccuracy(bestDescription);
 
 			// track new best accuracy if enabled
 			if(keepTrackOfBestScore) {
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
 
-			logger.info("more accurate (training: " + dfPercent.format(currentHighestAccuracy) + ", testing: " + dfPercent.format(testAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+			logger.info(
+				"Time " + cpuTime +
+				"s: more accurate (training: " + dfPercent.format(currentHighestAccuracy) +
+				", test: " + dfPercent.format(testAccuracy) +
+				") class expression found after " + durationStr + ": " +
+				descriptionToString(bestEvaluatedDescriptions.getBest().getDescription())
+			);
+
+			recordBestConceptTimeAndAccuracy(cpuTime, currentHighestAccuracy, testAccuracy);
 		}
 	}
 

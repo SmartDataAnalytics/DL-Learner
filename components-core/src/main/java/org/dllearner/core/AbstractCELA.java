@@ -18,6 +18,7 @@
  */
 package org.dllearner.core;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -46,9 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -127,6 +130,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected Set<OWLDataProperty> allowedDataProperties = null;
 	@ConfigOption(description="List of data properties to ignore")
 	protected Set<OWLDataProperty> ignoredDataProperties = null;
+
+	private List<Double> bestConceptsTimes = new ArrayList<>();
+	private List<Double> bestConceptsTrainingAccuracies = new ArrayList<>();
+	private List<Double> bestConceptsTestAccuracies = new ArrayList<>();
 
     /**
      * Default Constructor
@@ -356,7 +363,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				
 				str += current + ": " + descriptionString + " (pred. acc.: "
 						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
-						+ " / " + dfPercent.format(computeTestingAccuracy(description))
+						+ " / " + dfPercent.format(computeTestAccuracy(description))
 						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1));
 
 				AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
@@ -374,12 +381,29 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return str;
 	}
 
-	protected double computeTestingAccuracy(OWLClassExpression description) {
+	protected double computeTestAccuracy(OWLClassExpression description) {
 		if (learningProblem instanceof PosNegLP) {
 			return ((PosNegLP) learningProblem).getTestAccuracyOrTooWeak(description, 1);
 		}
 
 		return 0.0;
+	}
+
+	protected void recordBestConceptTimeAndAccuracy(double seconds, double trainingAccuracy, double testAccuracy) {
+		bestConceptsTimes.add(seconds);
+		bestConceptsTrainingAccuracies.add(trainingAccuracy);
+		bestConceptsTestAccuracies.add(testAccuracy);
+	}
+
+	protected void printBestConceptsTimesAndAccuracies() {
+		String times = bestConceptsTimes.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Times: [" + times + "]");
+
+		String trainingAccuracies = bestConceptsTrainingAccuracies.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Acc: [" + trainingAccuracies + "]");
+
+		String testAccuracies = bestConceptsTestAccuracies.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Test Acc: [" + testAccuracies + "]");
 	}
 
 	/**
@@ -464,6 +488,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
+	}
+
+	// beware that this includes the setup time as well
+	protected long getCurrentCpuMillis() {
+		OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		return bean.getProcessCpuTime() / 1_000_000;
 	}
 	
 	protected boolean isTimeExpired() {

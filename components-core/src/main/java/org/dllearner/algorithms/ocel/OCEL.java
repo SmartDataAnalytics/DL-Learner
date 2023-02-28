@@ -474,6 +474,7 @@ public class OCEL extends AbstractCELA {
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
 		logger.info("starting top down refinement with: " + renderer.render(startNode.getConcept()) + " (" + df.format(100 * startNode.getAccuracy()) + "% accuracy)");
 
 		int loop = 0;
@@ -512,18 +513,24 @@ public class OCEL extends AbstractCELA {
 			// we record when a more accurate node is found and log it
 			if (bestNodeStable.getCovPosMinusCovNeg() < searchTreeStable.best()
 					.getCovPosMinusCovNeg()) {
-				String acc = new DecimalFormat(".00%").format((searchTreeStable.best().getAccuracy()));
-				String testAcc = new DecimalFormat(".00%").format(computeTestingAccuracy(searchTreeStable.best().getConcept()));
+				double time = getCurrentCpuMillis() / 1000.0;
+				double acc = (searchTreeStable.best().getAccuracy());
+				double testAcc = computeTestAccuracy(searchTreeStable.best().getConcept());
+
+				DecimalFormat percentFormatter = new DecimalFormat(".00%");
 				// no handling needed, it will just look ugly in the output
 				logger.info(
-					"Time " + ((System.currentTimeMillis() - runtime) / 1000.0) +
-					"s: more accurate (training: " + acc + ", testing: " + testAcc +
+					"Time " + time +
+					"s: more accurate (training: " + percentFormatter.format(acc) + ", test: " + percentFormatter.format(testAcc) +
 					") class expression found: " + renderer.render(searchTreeStable.best().getConcept())
 				);
 				if (logger.isTraceEnabled()) {
 					logger.trace(Sets.difference(positiveExamples, bestNodeStable.getCoveredNegatives()).toString());
 					logger.trace(Sets.difference(negativeExamples, bestNodeStable.getCoveredNegatives()).toString());
 				}
+
+				recordBestConceptTimeAndAccuracy(time, acc, testAcc);
+
 				printBestSolutions(5);
 				printStatistics(false);
 				bestNodeStable = searchTreeStable.best();
@@ -568,7 +575,7 @@ public class OCEL extends AbstractCELA {
 			for (ExampleBasedNode c : solutionCandidates.descendingKeySet()) {
 				logger.info(show + ": " + renderer.render(c.getConcept())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
-					+ df.format(100 * computeTestingAccuracy(c.getConcept())) + "%"
+					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
 					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
@@ -588,7 +595,7 @@ public class OCEL extends AbstractCELA {
 			for (ExampleBasedNode c : solutions.descendingKeySet()) {
 				logger.info(show + ": " + renderer.render(c.getConcept())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
-					+ df.format(100 * computeTestingAccuracy(c.getConcept())) + "%"
+					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
 					+ ", time " + df.format(solutions.get(c)) + "s)");
@@ -600,6 +607,9 @@ public class OCEL extends AbstractCELA {
 		} else {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
+
+
+		printBestConceptsTimesAndAccuracies();
 
 		logger.debug("size of candidate set: " + searchTree.size());
 		printBestSolutions(20);
@@ -857,7 +867,7 @@ public class OCEL extends AbstractCELA {
 					// Lösung gefunden
 					if (quality >= 0) {
 						if (quality <= allowedMisclassifications) {
-							solutions.put(newNode, (System.currentTimeMillis() - runtime) / 1000.0);
+							solutions.put(newNode, getCurrentCpuMillis() / 1000.0);
 
 							if (solutions.size() > maxNrOfResults) {
 								solutions.pollFirstEntry();
@@ -872,7 +882,7 @@ public class OCEL extends AbstractCELA {
 									)
 								)
 							) {
-								solutionCandidates.put(newNode, (System.currentTimeMillis() - runtime) / 1000.0);
+								solutionCandidates.put(newNode, getCurrentCpuMillis() / 1000.0);
 							}
 
 							if (solutionCandidates.size() > maxNrOfResultsWithinMargin) {
@@ -1231,7 +1241,7 @@ public class OCEL extends AbstractCELA {
 			return true;
 		}
 
-		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
+		long totalTimeNeeded = getCurrentCpuMillis();
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
 		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
@@ -1244,7 +1254,7 @@ public class OCEL extends AbstractCELA {
 		else if (maxExecutionTimeAlreadyReached)
 			return true;
 			//test
-		else if (maxMilliSeconds < totalTimeNeeded) {
+		else if (maxMilliSeconds <= totalTimeNeeded) {
 			this.stop();
 			logger.info("Maximum time (" + maxExecutionTimeInSeconds
 					+ " seconds) reached, stopping now...");

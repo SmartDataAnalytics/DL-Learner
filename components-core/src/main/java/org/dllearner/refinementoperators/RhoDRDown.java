@@ -69,7 +69,7 @@ import static com.google.common.primitives.Ints.max;
  *
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
-public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
+public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator, Cloneable {
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
@@ -200,6 +200,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
 
+	@ConfigOption(description="support of disjunction (owl:unionOf), e.g. C\u2294 D ", defaultValue="true")
+	private boolean useDisjunction = true;
+
 	@ConfigOption(description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
@@ -249,10 +252,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 */
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
+		setApplyExistsFilter(op.applyExistsFilter);
 		setCardinalityLimit(op.cardinalityLimit);
-		setClassHierarchy(op.classHierarchy);
-		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
-		setDataPropertyHierarchy(op.dataPropertyHierarchy);
+		setClassHierarchy(op.classHierarchy.clone());
+		setObjectPropertyHierarchy(op.objectPropertyHierarchy.clone());
+		setDataPropertyHierarchy(op.dataPropertyHierarchy.clone());
 		setDropDisjuncts(op.dropDisjuncts);
 		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
 		setReasoner(op.reasoner);
@@ -261,16 +265,24 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
 		setUseExistsConstructor(op.useExistsConstructor);
 		setUseNegation(op.useNegation);
+		setUseDisjunction(op.useDisjunction);
 		setUseHasValueConstructor(op.useHasValueConstructor);
 		setUseObjectValueNegation(op.useObjectValueNegation);
-		setFrequencyThreshold(op.frequencyThreshold);
 		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
 		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseStringDatatypes(op.useStringDatatypes);
 		setUseNumericDatatypes(op.useNumericDatatypes);
 		setUseTimeDatatypes(op.useTimeDatatypes);
 		setUseSomeOnly(op.useSomeOnly);
+		setUseHasSelf(op.useHasSelf);
+		setUseInverse(op.useInverse);
+		setFrequencyThreshold(op.frequencyThreshold);
 		setAllowedRolesInCardinalityRestrictions(op.allowedRolesInCardinalityRestrictions);
+		setSplits(op.splits);
+		setMaxNrOfSplits(op.maxNrOfSplits);
+		setNumericValuesSplitter(op.numericValuesSplitter);
+		setDisjointChecks(op.disjointChecks);
+		setLengthMetric(op.lengthMetric);
 
 		initialized = false;
 	}
@@ -342,18 +354,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
-			if(reasoner instanceof SPARQLReasoner
-					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
-				// TODO SPARQL support for splits
-				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
-			} else {
-				// create default splitter if none was set
-				if(numericValuesSplitter == null) {
-					numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
-				}
-				splits.putAll(numericValuesSplitter.computeSplits());
-				if (logger.isDebugEnabled()) {
-					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
+			if (splits == null) {
+				if (reasoner instanceof SPARQLReasoner
+					&& !((SPARQLReasoner) reasoner).isUseGenericSplitsCode()) {
+					// TODO SPARQL support for splits
+					logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
+				} else {
+					// create default splitter if none was set
+					if (numericValuesSplitter == null) {
+						numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+					}
+					splits.putAll(numericValuesSplitter.computeSplits());
+					if (logger.isDebugEnabled()) {
+						logger.debug(sparql_debug, "Numeric Splits: {}", splits);
+					}
 				}
 			}
 		}
@@ -856,11 +870,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain
 	) {
 		OWLClassExpression negatedDescription = constructNegationInNNF(description);
+
+		boolean useNegationBackup = useNegation;
+		useNegation = true;
+
 		// concept length can change because of the conversion process; as a heuristic
 		// we increase maxLength by the length difference of negated and original concept
 		int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription, lengthMetric) - OWLClassExpressionUtils.getLength(description, lengthMetric));
 		Set<OWLClassExpression> refinements = refine(negatedDescription, maxLength+lengthDiff+1, knownRefinements, currDomain);
 		TreeSet<OWLClassExpression> results = new TreeSet<>();
+
+		useNegation = useNegationBackup;
 
 		description = description.getNNF();
 
@@ -870,7 +890,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// to satisfy the guarantee that the method does not return longer
 			// concepts, we perform an additional check
-			if(description.compareTo(dNeg) != 0 && OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength) {
+			if(description.compareTo(dNeg) != 0
+				&& (useNegation || !containsNegation(dNeg))
+				&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
+			) {
 				results.add(dNeg);
 			}
 		}
@@ -887,6 +910,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		negatedDescription = ConceptTransformation.nnf(negatedDescription);
 
 		return negatedDescription;
+	}
+
+	private boolean containsNegation(OWLClassExpression description) {
+		return description.getNestedClassExpressions()
+			.stream().anyMatch(e ->
+				e instanceof OWLObjectComplementOf || e instanceof OWLDataComplementOf
+			);
 	}
 
 	private boolean checkRefinability(OWLNaryBooleanClassExpression description) {
@@ -1228,7 +1258,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					else
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 				// combinations has several numbers => generate disjunct
-				} else {
+				} else if (useDisjunction) {
 
 					// check whether the combination makes sense, i.e. whether
 					// all lengths mentioned in it have corresponding elements
@@ -2053,6 +2083,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useNegation = useNegation;
 	}
 
+	public void setUseDisjunction(boolean useDisjunction) {
+		this.useDisjunction = useDisjunction;
+	}
+
+	public boolean isUseDisjunction() {
+		return useDisjunction;
+	}
+
 	public boolean isUseBooleanDatatypes() {
 		return useBooleanDatatypes;
 	}
@@ -2187,6 +2225,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.maxNrOfSplits = maxNrOfSplits;
 	}
 
+	public void setSplits(Map<OWLDataProperty, List<OWLLiteral>> splits) {
+		this.splits = new TreeMap<>(splits);
+	}
+
 	public boolean isDisjointChecks() {
 		return disjointChecks;
 	}
@@ -2233,6 +2275,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setAllowedRolesInCardinalityRestrictions(Set<OWLObjectProperty> allowedRolesInCardinalityRestrictions) {
-		this.allowedRolesInCardinalityRestrictions = allowedRolesInCardinalityRestrictions;
+		if (allowedRolesInCardinalityRestrictions != null) {
+			this.allowedRolesInCardinalityRestrictions = new TreeSet<>(allowedRolesInCardinalityRestrictions);
+		} else {
+			this.allowedRolesInCardinalityRestrictions = null;
+		}
+	}
+
+	@Override
+	public RhoDRDown clone() {
+		return new RhoDRDown(this);
 	}
 }
