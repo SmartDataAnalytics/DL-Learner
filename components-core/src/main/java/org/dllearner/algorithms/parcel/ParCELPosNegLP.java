@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -33,7 +34,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	//currently uncovered positive examples
 	protected Set<OWLIndividual> uncoveredPositiveExamples;
 
-	// private Logger logger = Logger.getLogger(this.getClass());
+	private final Logger logger = Logger.getLogger(ParCELPosNegLP.class);
 
 	// reasoner component is declared in AbstractLearningProblem class
 
@@ -635,6 +636,54 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 
 	public Set<OWLIndividual> getNegativeTestExamples() {
 		return this.negativeTestExamples;
+	}
+
+	public void printTestEvaluation(Set<OWLClassExpression> partialDefinitions) {
+		Set<OWLIndividual> tp = new TreeSet<>();
+
+		for (OWLClassExpression def : partialDefinitions) {
+			tp.addAll(reasoner.hasType(def, positiveTestExamples));
+		}
+
+		Set<OWLIndividual> fn = new TreeSet<>(positiveTestExamples);
+		fn.removeAll(tp);
+
+		Set<OWLIndividual> fp = new TreeSet<>();
+
+		for (OWLClassExpression def : partialDefinitions) {
+			Set<OWLIndividual> defFP = reasoner.hasType(def, negativeTestExamples);
+
+			for (OWLIndividual ex : defFP) {
+				logger.info("Partial definition: " + def);
+				logger.info("False positive: " + ex.toStringID());
+			}
+
+			fp.addAll(defFP);
+		}
+
+		Set<OWLIndividual> tn = new TreeSet<>(negativeTestExamples);
+		tn.removeAll(fp);
+
+		double acc = (tp.size() + tn.size()) / (double) (positiveTestExamples.size() + negativeTestExamples.size());
+		double precision = tp.size() / (double) (tp.size() + fp.size());
+		double rec = tp.size() / (double) (tp.size() + fn.size());
+		double spec = tn.size() / (double) (fp.size() + tn.size());
+		double fpr = fp.size() / (double) (fp.size() + tn.size());
+		double fm = 2 / ((1 / precision) + (1 / rec));
+
+		logger.info("======================================================");
+		logger.info("Test evaluation.");
+		logger.info("True positives: " + tp.size());
+		logger.info("True negatives: " + tn.size());
+		logger.info("False positives: " + fp.size());
+		logger.info("False negatives: " + fn.size());
+
+		logger.info("Accuracy: " + acc);
+		logger.info("Precission: " + precision);
+		logger.info("Recall: " + rec);
+		logger.info("Specificity: " + spec);
+		logger.info("FP rate: " + fpr);
+		logger.info("F-measure: " + fm);
 	}
 }
 

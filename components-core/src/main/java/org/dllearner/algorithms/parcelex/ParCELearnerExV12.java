@@ -23,6 +23,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.text.*;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.parcel.ParCELCompletenessComparator;
@@ -438,6 +439,13 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 
 					}	//if in the debug mode: Print the learning tree 
 
+				}
+
+				if (learningProblem instanceof ParCELPosNegLP) {
+					Set<OWLClassExpression> partialDefs = getReducedPartialDefinition()
+						.stream().map(OENode::getDescription).collect(Collectors.toSet());
+
+					((ParCELPosNegLP) learningProblem).printTestEvaluation(partialDefs);
 				}
 
 				printBestConceptsTimesAndAccuracies();

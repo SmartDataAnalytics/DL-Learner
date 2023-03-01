@@ -35,6 +35,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -143,6 +144,42 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 
 	public double getTestAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveTestExamples, negativeTestExamples, noise);
+	}
+
+	public void printTestEvaluation(OWLClassExpression description) {
+		Set<OWLIndividual> tp = reasoner.hasType(description, positiveTestExamples);
+		Set<OWLIndividual> fn = new TreeSet<>(positiveTestExamples);
+		fn.removeAll(tp);
+
+		Set<OWLIndividual> fp = reasoner.hasType(description, negativeTestExamples);
+		Set<OWLIndividual> tn = new TreeSet<>(negativeTestExamples);
+
+		for (OWLIndividual ex : fp) {
+			logger.info("False positive: " + ex.toStringID());
+			tn.remove(ex);
+		}
+
+		double acc = (tp.size() + tn.size()) / (double) (positiveTestExamples.size() + negativeTestExamples.size());
+		double precision = tp.size() / (double) (tp.size() + fp.size());
+		double rec = tp.size() / (double) (tp.size() + fn.size());
+		double spec = tn.size() / (double) (fp.size() + tn.size());
+		double fpr = fp.size() / (double) (fp.size() + tn.size());
+		double fm = 2 / ((1 / precision) + (1 / rec));
+
+		logger.info("======================================================");
+		logger.info("Test evaluation.");
+		logger.info("Concept: " + description);
+		logger.info("True positives: " + tp.size());
+		logger.info("True negatives: " + tn.size());
+		logger.info("False positives: " + fp.size());
+		logger.info("False negatives: " + fn.size());
+
+		logger.info("Accuracy: " + acc);
+		logger.info("Precission: " + precision);
+		logger.info("Recall: " + rec);
+		logger.info("Specificity: " + spec);
+		logger.info("FP rate: " + fpr);
+		logger.info("F-measure: " + fm);
 	}
 
 	public Set<OWLIndividual> getNegativeExamples() {

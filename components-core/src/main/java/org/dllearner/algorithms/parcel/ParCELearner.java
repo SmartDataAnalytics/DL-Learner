@@ -13,21 +13,26 @@ package org.dllearner.algorithms.parcel;
  *	@author An C. Tran
  */
 
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.stream.Collectors;
 
 @ComponentAnn(name = "ParCEL", shortName = "parcel", version = 0.1, description = "PARallel Class Expression Learning")
 public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
@@ -292,6 +297,13 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 					 * parent.getParent(); } }
 					 */
 					
+				}
+
+				if (learningProblem instanceof ParCELPosNegLP) {
+					Set<OWLClassExpression> partialDefs = getReducedPartialDefinition()
+						.stream().map(OENode::getDescription).collect(Collectors.toSet());
+
+					((ParCELPosNegLP) learningProblem).printTestEvaluation(partialDefs);
 				}
 
 				printBestConceptsTimesAndAccuracies();

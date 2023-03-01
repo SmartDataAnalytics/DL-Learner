@@ -92,22 +92,47 @@ public class ExpressionValidation extends CLIBase2 {
 //			throw new RuntimeException("Expression is empty.");
 //		}
 
-		expression = dataFactory.getOWLObjectSomeValuesFrom(
-			dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
-			dataFactory.getOWLObjectIntersectionOf(
-				dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
-				dataFactory.getOWLObjectMinCardinality(
-					2,
-					dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
-					dataFactory.getOWLThing()
+//		expression = dataFactory.getOWLObjectSomeValuesFrom(
+//			dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
+//			dataFactory.getOWLObjectIntersectionOf(
+//				dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
+//				dataFactory.getOWLObjectMinCardinality(
+//					2,
+//					dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
+//					dataFactory.getOWLThing()
+//				)
+//			)
+//		);
+
+//		expression = dataFactory.getOWLObjectSomeValuesFrom(
+//			dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
+//			dataFactory.getOWLObjectMinCardinality(
+//				2,
+//				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
+//				dataFactory.getOWLObjectComplementOf(dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#HighEntropy")))
+//			)
+//		);
+
+		expression = dataFactory.getOWLObjectIntersectionOf(
+			dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#ExecutableFile")),
+			dataFactory.getOWLObjectMinCardinality(
+				2,
+				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
+				dataFactory.getOWLObjectIntersectionOf(
+					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
+					dataFactory.getOWLObjectMinCardinality(
+						2,
+						dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
+						dataFactory.getOWLThing()
+					)
 				)
 			)
 		);
 
 		logger.info("#EVAL# expression: " + expression);
 
-		Set<OWLIndividual> pos = ((ParCELPosNegLP) lp).getPositiveExamples();
-		Set<OWLIndividual> neg = ((ParCELPosNegLP) lp).getNegativeExamples();
+		Set<OWLIndividual> pos = ((ParCELPosNegLP) lp).getPositiveTestExamples();
+		Set<OWLIndividual> neg = ((ParCELPosNegLP) lp).getNegativeTestExamples();
 
 		int tp = rs.hasType(expression, pos).size();
 		int fp = rs.hasType(expression, neg).size();

@@ -415,6 +415,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
 
+		if (learningProblem instanceof PosNegLP) {
+			((PosNegLP) learningProblem).printTestEvaluation(bestEvaluatedDescriptions.getBest().getDescription());
+		}
+
 		printBestConceptsTimesAndAccuracies();
 		
 		isRunning = false;

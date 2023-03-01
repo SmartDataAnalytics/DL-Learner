@@ -608,6 +608,9 @@ public class OCEL extends AbstractCELA {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
 
+		if (learningProblem instanceof PosNegLP) {
+			((PosNegLP) learningProblem).printTestEvaluation(bestNodeStable.getConcept());
+		}
 
 		printBestConceptsTimesAndAccuracies();
 
@@ -838,6 +841,13 @@ public class OCEL extends AbstractCELA {
 								newlyCoveredNegatives.add(i);
 						}
 					}
+
+//					Set<OWLIndividual> newlyCoveredPositives = reasoner.hasType(refinement, positiveExamples);
+//					Set<OWLIndividual> newlyCoveredNegatives = reasoner.hasType(refinement, negativeExamples);
+//					int misclassifiedPositives = nrOfPositiveExamples - newlyCoveredPositives.size();
+//
+//					if (misclassifiedPositives > allowedMisclassifications)
+//						quality = -1;
 
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
