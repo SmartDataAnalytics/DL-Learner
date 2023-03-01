@@ -267,7 +267,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setDataPropertyHierarchy(op.dataPropertyHierarchy.clone());
 		setDropDisjuncts(op.dropDisjuncts);
 		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
-		setReasoner(op.reasoner);
+		setReasoner(op.reasoner); // use clone if you would like to avoid reasoner exceptions
 		setStartClass(op.startClass);
 		setUseAllConstructor(op.useAllConstructor);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
@@ -314,6 +314,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
 		*/
+
+		if (!reasoner.isInitialized()) {
+			reasoner.init();
+		}
 
 		if (classHierarchy == null) classHierarchy = reasoner.getClassHierarchy();
 		if (dataPropertyHierarchy == null) dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();

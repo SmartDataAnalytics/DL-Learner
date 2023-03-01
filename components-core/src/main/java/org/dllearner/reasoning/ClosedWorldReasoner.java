@@ -210,6 +210,31 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         this.baseReasoner = baseReasoner;
     }
 
+    public ClosedWorldReasoner(ClosedWorldReasoner reasoner) {
+        super(reasoner);
+
+        setReasonerComponent(reasoner.reasonerComponent);
+
+        setDefaultNegation(reasoner.defaultNegation);
+        setForAllSemantics(reasoner.forAllSemantics);
+
+        setMaterializeExistentialRestrictions(reasoner.materializeExistentialRestrictions);
+        setUseMaterializationCaching(reasoner.useMaterializationCaching);
+        setHandlePunning(reasoner.handlePunning);
+
+        disjointnessSemantics = reasoner.disjointnessSemantics;
+        precomputeNegations = reasoner.precomputeNegations;
+
+        if (baseReasoner == null) {
+            baseReasoner = new OWLAPIReasoner(sources);
+            try {
+                baseReasoner.init();
+            } catch (ComponentInitException e) {
+                throw new RuntimeException("Intialization of base reasoner failed.", e);
+            }
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -1813,4 +1838,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
     }
 
+    @Override
+    public ClosedWorldReasoner clone() {
+        return new ClosedWorldReasoner(this);
+    }
 }

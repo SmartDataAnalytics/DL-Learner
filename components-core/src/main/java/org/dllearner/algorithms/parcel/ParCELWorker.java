@@ -105,7 +105,7 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
 
                 try {
                     addedNode = checkAndCreateNewNode(refinement, nodeToProcess);
-                } catch (InternalReasonerException e) {}
+                } catch (InternalReasonerException | NullPointerException e) {}
 
                 // make decision on the new node (new search tree node or new partial definition)
                 if (addedNode != null) {

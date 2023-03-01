@@ -112,16 +112,13 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
     @Override
     public RefinementOperator create() throws Exception {
         if (operatorPrototype == null) {
-            //clone a new class hierarchy to avoid the competition between refinement operators
-            ClassHierarchy clonedClassHierarchy = classHierarchy.clone();
-
             if (logger.isDebugEnabled())
                 logger.info("A new refinement operator had been created");
 
             //create a new RhoDRDown and return
             operatorPrototype = new RhoDRDown();
             operatorPrototype.setReasoner(reasoner);
-            operatorPrototype.setClassHierarchy(clonedClassHierarchy);
+            operatorPrototype.setClassHierarchy(classHierarchy);
             operatorPrototype.setStartClass(startClass);
             operatorPrototype.setUseDisjunction(useDisjunction);
             operatorPrototype.setUseNegation(useNegation);

@@ -98,7 +98,7 @@ public class ParCELWorkerExV12 extends ParCELExWorkerAbstract<ParCELExAbstract> 
 
 					try {
 						newNode = checkAndCreateNewNodeV2(refinement, nodeToProcess);
-					} catch (InternalReasonerException e) {}
+					} catch (InternalReasonerException | NullPointerException e) {}
 
 					//check for the type of new node: weak description, partial definition, counter partial definition or potential description
 					if (newNode != null) {

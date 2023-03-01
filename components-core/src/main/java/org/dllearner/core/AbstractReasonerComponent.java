@@ -74,7 +74,7 @@ import java.util.stream.Collectors;
  * @author Jens Lehmann
  * 
  */
-public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent {
+public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent, Cloneable {
 
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
@@ -157,6 +157,18 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	public AbstractReasonerComponent(KnowledgeSource source) {
 		this(Collections.singleton(source));
+	}
+
+	public AbstractReasonerComponent(AbstractReasonerComponent reasonerComponent) {
+		setUseInstanceChecks(reasonerComponent.useInstanceChecks);
+		setPrecomputeClassHierarchy(reasonerComponent.precomputeClassHierarchy);
+		setPrecomputeObjectPropertyHierarchy(reasonerComponent.precomputeObjectPropertyHierarchy);
+		setPrecomputeDataPropertyHierarchy(reasonerComponent.precomputeDataPropertyHierarchy);
+
+		setSources(reasonerComponent.sources);
+
+		precomputePropertyDomains = reasonerComponent.precomputePropertyDomains;
+		precomputeObjectPropertyRanges = reasonerComponent.precomputeObjectPropertyRanges;
 	}
 
 	/**
@@ -1645,5 +1657,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	public void setUseInstanceChecks(boolean useInstanceChecks) {
 		this.useInstanceChecks = useInstanceChecks;
+	}
+
+	public AbstractReasonerComponent clone() {
+		return null;
 	}
 }
