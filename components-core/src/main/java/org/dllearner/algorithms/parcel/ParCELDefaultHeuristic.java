@@ -27,7 +27,7 @@ public class ParCELDefaultHeuristic implements ParCELHeuristic {
     protected double nodeRefinementPenalty = 0.0001;
 
     // award for node with high accuracy
-    protected double accuracyAwardFactor = 0.5;    //0.01
+    protected double accuracyAwardFactor = 0.01;    //0.01
 
 
     /**

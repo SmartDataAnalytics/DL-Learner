@@ -113,18 +113,29 @@ public class ExpressionValidation extends CLIBase2 {
 //			)
 //		);
 
+//		expression = dataFactory.getOWLObjectIntersectionOf(
+//			dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#ExecutableFile")),
+//			dataFactory.getOWLObjectMinCardinality(
+//				2,
+//				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
+//				dataFactory.getOWLObjectIntersectionOf(
+//					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
+//					dataFactory.getOWLObjectMinCardinality(
+//						2,
+//						dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
+//						dataFactory.getOWLThing()
+//					)
+//				)
+//			)
+//		);
+
 		expression = dataFactory.getOWLObjectIntersectionOf(
 			dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#ExecutableFile")),
-			dataFactory.getOWLObjectMinCardinality(
-				2,
+			dataFactory.getOWLObjectSomeValuesFrom(
 				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
 				dataFactory.getOWLObjectIntersectionOf(
 					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
-					dataFactory.getOWLObjectMinCardinality(
-						2,
-						dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section_feature")),
-						dataFactory.getOWLThing()
-					)
+					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#UninitializedDataSection"))
 				)
 			)
 		);

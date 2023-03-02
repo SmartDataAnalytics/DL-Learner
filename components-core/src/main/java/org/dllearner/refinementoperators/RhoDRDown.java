@@ -250,6 +250,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description = "class expression length metric (should match learning algorithm usage)", defaultValue = "default cel_metric")
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 
+	@ConfigOption(description = "whether to clone the associated reasoner when cloning an operator instance", defaultValue = "false")
+	private boolean cloneReasoner = false;
+
 	private final OWLDataFactory df = new OWLDataFactoryImpl();
 	private final ExpressionDecomposer decomposer = new ExpressionDecomposer();
 
@@ -267,7 +270,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setDataPropertyHierarchy(op.dataPropertyHierarchy.clone());
 		setDropDisjuncts(op.dropDisjuncts);
 		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
-		setReasoner(op.reasoner); // use clone if you would like to avoid reasoner exceptions
+		setCloneReasoner(op.cloneReasoner);
+
+		if (cloneReasoner) {
+			setReasoner(op.reasoner.clone());
+		} else {
+			setReasoner(op.reasoner);
+		}
+
 		setStartClass(op.startClass);
 		setUseAllConstructor(op.useAllConstructor);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
@@ -2326,6 +2336,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setRefineMaxCardinalityRestrictionsUpwards(boolean refineMaxCardinalityRestrictionsUpwards) {
 		this.refineMaxCardinalityRestrictionsUpwards = refineMaxCardinalityRestrictionsUpwards;
+	}
+
+	public boolean isCloneReasoner() {
+		return cloneReasoner;
+	}
+
+	public void setCloneReasoner(boolean cloneReasoner) {
+		this.cloneReasoner = cloneReasoner;
 	}
 
 	@Override

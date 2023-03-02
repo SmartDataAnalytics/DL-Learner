@@ -46,8 +46,6 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -135,11 +133,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      */
     public enum DisjointnessSemantics {
 
-        EXPLICIT,
-        INSTANCE_BASED
+        Explicit,
+        InstanceBased
     }
 
-    private DisjointnessSemantics disjointnessSemantics = DisjointnessSemantics.EXPLICIT;
+    @ConfigOption(description = "whether to determine concept disjointness based on logical inference (Explicit) or "
+        + "based on the interpretation this reasoner works with (InstanceBased)",
+        defaultValue = "Explicit")
+    private DisjointnessSemantics disjointnessSemantics = DisjointnessSemantics.Explicit;
 
     @ConfigOption(defaultValue = "false")
     private boolean materializeExistentialRestrictions = false;
@@ -1487,7 +1488,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      */
     @Override
     public boolean isDisjointImpl(OWLClass clsA, OWLClass clsB) {
-        if (disjointnessSemantics == DisjointnessSemantics.INSTANCE_BASED) {
+        if (disjointnessSemantics == DisjointnessSemantics.InstanceBased) {
             TreeSet<OWLIndividual> instancesA = classInstancesPos.get(clsA);
             TreeSet<OWLIndividual> instancesB = classInstancesPos.get(clsB);
 
@@ -1703,6 +1704,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
      */
     public void setMaterializeExistentialRestrictions(boolean materializeExistentialRestrictions) {
         this.materializeExistentialRestrictions = materializeExistentialRestrictions;
+    }
+
+    public DisjointnessSemantics getDisjointnessSemantics() {
+        return disjointnessSemantics;
+    }
+
+    public void setDisjointnessSemantics(DisjointnessSemantics disjointnessSemantics) {
+        this.disjointnessSemantics = disjointnessSemantics;
     }
 
     /* (non-Javadoc)
