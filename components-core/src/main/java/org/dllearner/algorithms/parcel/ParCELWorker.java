@@ -3,6 +3,7 @@ package org.dllearner.algorithms.parcel;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
@@ -10,6 +11,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 /**
  * ParCEL worker which find and evaluate the refinements for a given node.
@@ -92,6 +94,11 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
         // expression into the search tree
         while (refinements != null && refinements.size() > 0) {
             OWLClassExpression refinement = refinements.pollFirst();
+
+//            if (refinement instanceof OWLObjectUnionOf) {
+//                continue;
+//            }
+
             int refinementLength = new OWLClassExpressionLengthCalculator().getLength(refinement);
 
             // we ignore all refinements with lower length (may it happen?)

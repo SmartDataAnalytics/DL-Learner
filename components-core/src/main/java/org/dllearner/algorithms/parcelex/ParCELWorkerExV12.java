@@ -5,6 +5,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -86,6 +87,11 @@ public class ParCELWorkerExV12 extends ParCELExWorkerAbstract<ParCELExAbstract> 
 			//2. process the refinement result: calculate the accuracy and completeness and add the new expression into the search tree
 			while (refinements.size() > 0) {
 				OWLClassExpression refinement = refinements.pollFirst();
+
+//				if (refinement instanceof OWLObjectUnionOf) {
+//					continue;
+//				}
+
 				int refinementLength = new OWLClassExpressionLengthCalculator().getLength(refinement);
 
 
