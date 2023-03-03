@@ -106,7 +106,7 @@ public class ParCELExtraNode extends ParCELNode {
 			double correctness, double completeness, Set<OWLIndividual> cp)
 	{
 		super(parentNode, description, accuracy, correctness, completeness);
-		super.setCoveredPositiveExamples(cp);
+		setCoveredPositiveExamples(cp);
 	}
 
 	
@@ -123,8 +123,8 @@ public class ParCELExtraNode extends ParCELNode {
                            double correctness, double completeness, Set<OWLIndividual> cp, Set<OWLIndividual> cn)
 	{
 		super(parentNode, description, accuracy, correctness, completeness);
-		super.setCoveredPositiveExamples(cp);
-		super.setCoveredNegativeExamples(cn);
+		setCoveredPositiveExamples(cp);
+		setCoveredNegativeExamples(cn);
 	}
 	
 	

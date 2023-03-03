@@ -264,30 +264,24 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	}
 
 	protected void initSearchTree() {
+		// TODO: only ParCELPosNegLP supported
+
 		// create a start node in the search tree
-		// currently, start class is always Thing (initialised in the init() method)
 		allDescriptions.add(startClass);
 
-		ParCELNode startNode;
+		Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
+		Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
 
-		if (learningProblem instanceof ParCELPosNegLP) {
-			Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
-			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
+		ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem)
+			.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 
-			ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem)
-				.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+		ParCELNode startNode = new ParCELNode(
+			null, startClass,
+			accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
+		);
 
-			startNode = new ParCELNode(
-				null, startClass,
-				accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
-			);
-
-			startNode.setCoveredPositiveExamples(coveredPositives);
-			startNode.setCoveredNegativeExamples(coveredNegatives);
-		} else {
-			double accuracy = this.positiveExamples.size() / (double) (this.positiveExamples.size() + this.negativeExamples.size());
-			startNode = new ParCELNode(null, startClass, accuracy, 0, 1.0);
-		}
+		startNode.setCoveredPositiveExamples(coveredPositives);
+		startNode.setCoveredNegativeExamples(coveredNegatives);
 
 		searchTree.add(startNode);
 	}

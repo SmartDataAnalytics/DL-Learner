@@ -212,10 +212,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		reset();
 
 		initSearchTree();
-
-		ParCELNode startNode = searchTree.first();
-		startNode.setCoveredPositiveExamples(positiveExamples);
-		startNode.setCoveredNegativeExamples(negativeExamples);
 		
 		createWorkerPool();
 		
