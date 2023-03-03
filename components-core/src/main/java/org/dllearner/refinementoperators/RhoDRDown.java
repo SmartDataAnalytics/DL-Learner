@@ -196,7 +196,7 @@ public class RhoDRDown
 	private boolean useCardinalityRestrictions = true;
 
 	@ConfigOption(description="a set of roles which can be used in qualified cardinality restrictions")
-	protected Set<OWLObjectProperty> allowedRolesInCardinalityRestrictions = null;
+	private Set<OWLObjectProperty> allowedRolesInCardinalityRestrictions = null;
 
 	@ConfigOption(description="support of local reflexivity of an object property expression (owl:hasSelf), e.g. \u2203 loves.Self for a narcissistic", defaultValue="false")
 	private boolean useHasSelf = false;
@@ -480,10 +480,6 @@ public class RhoDRDown
 		initialized = true;
 	}
 
-	protected void isFinal() {
-		if (initialized) throw new IllegalStateException(this.getClass() + " already initialised in " + Thread.currentThread().getStackTrace()[2].getMethodName());
-	}
-
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression concept) {
 		throw new RuntimeException();
@@ -546,7 +542,7 @@ public class RhoDRDown
 			}
 
 			if (useSomeOnly) {
-				refinements.removeIf(r -> r instanceof OWLObjectAllValuesFrom || !isSomeOnlySatisfied(r));
+				refinements.removeIf(r -> r instanceof OWLObjectAllValuesFrom || !isSomeOnlySatisfied(r, Set.of()));
 			}
 
 //			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
@@ -917,15 +913,20 @@ public class RhoDRDown
 		OWLClassExpression description, int maxLength,
 		List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain
 	) {
-		boolean useNegationBackup = useNegation;
-		boolean useDisjunctionBackup = useDisjunction;
-		boolean useAllConstructorBackup = useAllConstructor;
-		boolean useExistsConstructorBackup = useExistsConstructor;
+		RhoDRDownConfigOptionsMemento configOptions = new RhoDRDownConfigOptionsMemento(this);
 
 		useNegation = true;
 		useDisjunction = true;
-		useAllConstructor = useExistsConstructorBackup;
-		useExistsConstructor = useAllConstructorBackup;
+		useSomeOnly = false;
+		useObjectValueNegation = true;
+
+		boolean optionTmp = useAllConstructor;
+		useAllConstructor = useExistsConstructor;
+		useExistsConstructor = optionTmp;
+
+		optionTmp = applyAllFilter;
+		applyAllFilter = applyExistsFilter;
+		applyExistsFilter = optionTmp;
 
 		TreeSet<OWLClassExpression> results = new TreeSet<>();
 
@@ -936,6 +937,8 @@ public class RhoDRDown
 			// we increase maxLength by the length difference of negated and original concept
 			int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription, lengthMetric) - OWLClassExpressionUtils.getLength(description, lengthMetric));
 			Set<OWLClassExpression> refinements = refine(negatedDescription, maxLength+lengthDiff+1, knownRefinements, currDomain);
+
+			configOptions.restore(this);
 
 			description = description.getNNF();
 
@@ -948,10 +951,10 @@ public class RhoDRDown
 				// to satisfy the guarantee that the method does not return longer
 				// concepts, we perform an additional check
 				if(description.compareTo(dNeg) != 0
-					&& (useDisjunctionBackup || !containsDisjunction(dNeg))
-					&& (useNegationBackup || !containsNegation(dNeg))
+					&& (useDisjunction || !containsDisjunction(dNeg))
+					&& (useNegation || !containsNegation(dNeg))
 					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
-					&& (!useSomeOnly || (!(dNeg instanceof OWLObjectAllValuesFrom) && isSomeOnlySatisfied(dNeg)))
+					&& (!useSomeOnly || (!(dNeg instanceof OWLObjectAllValuesFrom) && isSomeOnlySatisfied(dNeg, Set.of())))
 					&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
 				) {
 					results.add(dNeg);
@@ -961,12 +964,9 @@ public class RhoDRDown
 			if (description.isOWLNothing()) {
 				results.add(df.getOWLThing());
 			}
-		} catch (Throwable t) {}
-
-		useNegation = useNegationBackup;
-		useDisjunction = useDisjunctionBackup;
-		useAllConstructor = useAllConstructorBackup;
-		useExistsConstructor = useExistsConstructorBackup;
+		} catch (Throwable t) {
+			configOptions.restore(this);
+		}
 
 		return results;
 	}
@@ -997,7 +997,7 @@ public class RhoDRDown
 			);
 	}
 
-	private boolean isSomeOnlySatisfied(OWLClassExpression description) {
+	private boolean isSomeOnlySatisfied(OWLClassExpression description, Set<OWLObjectPropertyExpression> prevSomeValuesProperties) {
 		if (description instanceof OWLObjectIntersectionOf) {
 			Set<OWLObjectPropertyExpression> allValuesProperties =
 				((OWLObjectIntersectionOf) description).getOperands()
@@ -1014,29 +1014,34 @@ public class RhoDRDown
 			allValuesProperties.removeAll(someValuesProperties);
 
 			return allValuesProperties.isEmpty()
-				&& ((OWLObjectIntersectionOf) description).getOperands().stream().allMatch(this::isSomeOnlySatisfied);
+				&& ((OWLObjectIntersectionOf) description).getOperands()
+					.stream().allMatch(op -> isSomeOnlySatisfied(op, someValuesProperties));
 		}
 
 		if (description instanceof OWLObjectUnionOf) {
-			return ((OWLObjectUnionOf) description).getOperands().stream().allMatch(this::isSomeOnlySatisfied);
+			return ((OWLObjectUnionOf) description).getOperands()
+				.stream().allMatch(op ->
+					(!(op instanceof OWLObjectSomeValuesFrom) || prevSomeValuesProperties.contains(op))
+					&& isSomeOnlySatisfied(op, Set.of())
+				);
 		}
 
 		if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
 
-			return isSomeOnlySatisfied(filler);
+			return isSomeOnlySatisfied(filler, Set.of());
 		}
 
 		if (description instanceof OWLObjectAllValuesFrom) {
 			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
 
-			return isSomeOnlySatisfied(filler);
+			return isSomeOnlySatisfied(filler, Set.of());
 		}
 
 		if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
 
-			return isSomeOnlySatisfied(filler);
+			return isSomeOnlySatisfied(filler, Set.of());
 		}
 
 		return true;
@@ -1191,6 +1196,10 @@ public class RhoDRDown
 	 */
 	public void setDropDisjuncts(boolean dropDisjuncts) {
 		this.dropDisjuncts = dropDisjuncts;
+	}
+
+	public boolean isDropDisjuncts() {
+		return dropDisjuncts;
 	}
 
 	private void computeTopRefinements(int maxLength) {
@@ -2002,7 +2011,6 @@ public class RhoDRDown
 	}
 
 	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
-		isFinal();
 		this.useDataHasValueConstructor = useDataHasValueConstructor;
 	}
 
@@ -2043,7 +2051,6 @@ public class RhoDRDown
 	}
 
 	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
-		isFinal();
 		this.useHasValueConstructor = useHasValueConstructor;
 	}
 
@@ -2052,7 +2059,6 @@ public class RhoDRDown
 	}
 
 	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
-		isFinal();
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 	}
 
@@ -2173,12 +2179,15 @@ public class RhoDRDown
 		this.useObjectValueNegation = useObjectValueNegation;
 	}
 
+	public boolean isUseObjectValueNegation() {
+		return useObjectValueNegation;
+	}
+
 	public boolean isUseNumericDatatypes() {
 		return useNumericDatatypes;
 	}
 
 	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
-		isFinal();
 		this.useNumericDatatypes = useNumericDatatypes;
 	}
 
@@ -2186,8 +2195,11 @@ public class RhoDRDown
 	 * @param useInverse whether to use inverse properties in property restrictions
 	 */
 	public void setUseInverse(boolean useInverse) {
-		isFinal();
 		this.useInverse = useInverse;
+	}
+
+	public boolean isUseInverse() {
+		return useInverse;
 	}
 
 	/**
@@ -2198,12 +2210,19 @@ public class RhoDRDown
 		this.useSomeOnly = useSomeOnly;
 	}
 
+	public boolean isUseSomeOnly() {
+		return useSomeOnly;
+	}
+
 	/**
 	 * @param useTimeDatatypes whether to use data/time literal restrictions
 	 */
 	public void setUseTimeDatatypes(boolean useTimeDatatypes) {
-		isFinal();
 		this.useTimeDatatypes = useTimeDatatypes;
+	}
+
+	public boolean isUseTimeDatatypes() {
+		return useTimeDatatypes;
 	}
 
 	public int getMaxNrOfSplits() {
