@@ -157,7 +157,7 @@ public class ExpressionValidation extends CLIBase2 {
 		logger.info("#EVAL# fn: " + fn);
 		logger.info("#EVAL# acc: " + acc);
 
-		ParCELEvaluationResult ev =((ParCELPosNegLP) lp).getAccuracyAndCorrectness4(expression, 1);
+		ParCELEvaluationResult ev =((ParCELPosNegLP) lp).getAccuracyAndCorrectness4(expression);
 		System.out.println(ev);
 
 		Set<OWLIndividual> coveredIndividuals = rs.getIndividuals(expression);

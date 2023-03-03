@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.parcel;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer;
@@ -11,10 +13,8 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.RefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -24,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.naming.OperationNotSupportedException;
 import java.lang.invoke.MethodHandles;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -267,8 +268,27 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		// currently, start class is always Thing (initialised in the init() method)
 		allDescriptions.add(startClass);
 
-		double accuracy = this.positiveExamples.size() / (double) (this.positiveExamples.size() + this.negativeExamples.size());
-		ParCELNode startNode = new ParCELNode(null, startClass, accuracy, 0, 1.0);
+		ParCELNode startNode;
+
+		if (learningProblem instanceof ParCELPosNegLP) {
+			Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
+			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
+
+			ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem)
+				.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+
+			startNode = new ParCELNode(
+				null, startClass,
+				accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
+			);
+
+			startNode.setCoveredPositiveExamples(coveredPositives);
+			startNode.setCoveredNegativeExamples(coveredNegatives);
+		} else {
+			double accuracy = this.positiveExamples.size() / (double) (this.positiveExamples.size() + this.negativeExamples.size());
+			startNode = new ParCELNode(null, startClass, accuracy, 0, 1.0);
+		}
+
 		searchTree.add(startNode);
 	}
 
@@ -445,6 +465,35 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		if (logger.isInfoEnabled())
 			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize() +
 								", max pool size: " + workerPool.getMaximumPoolSize());
+	}
+
+	public ParCELEvaluationResult getAccuracyAndCorrectness(OENode parent, OWLClassExpression refinement) {
+		// TODO: only ParCELPosNegLP supported
+
+		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+		Set<OWLIndividual> coveredPositives;
+		Set<OWLIndividual> coveredNegatives;
+
+		if (parent == null) {
+			coveredPositives = reasoner.hasType(refinement, posNegLP.getPositiveExamples());
+			coveredNegatives = reasoner.hasType(refinement, posNegLP.getNegativeExamples());
+		} else if (refinementOperatorPool.getFactory().getOperatorPrototype() instanceof DownwardRefinementOperator) {
+			coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
+			coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
+		} else {
+			Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
+			uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
+			Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
+			uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
+
+			coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
+			coveredPositives.addAll(parent.getCoveredPositiveExamples());
+			coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
+			coveredNegatives.addAll(parent.getCoveredNegativeExamples());
+		}
+
+		return posNegLP.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 	}
 
 	/**

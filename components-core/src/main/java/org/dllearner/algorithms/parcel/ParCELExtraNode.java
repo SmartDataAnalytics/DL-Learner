@@ -74,7 +74,7 @@ public class ParCELExtraNode extends ParCELNode {
 	 */
 	public ParCELExtraNode(ParCELNode node, Set<OWLIndividual> cp) {
 		super(node.getParent(), node.getDescription(), node.getAccuracy(), node.getCorrectness(), node.getCompleteness());
-		super.coveredPositiveExamples = cp;
+		setCoveredPositiveExamples(cp);
 	}
 
 	/**
