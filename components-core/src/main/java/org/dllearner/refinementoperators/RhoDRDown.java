@@ -105,6 +105,9 @@ public class RhoDRDown
 	@ConfigOption(defaultValue = "5", description = "limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)")
 	private int cardinalityLimit = 5;
 
+	@ConfigOption(defaultValue = "cardinalityLimit", description = "limit for max cardinality restrictions")
+	private int maxCardinalityLimit = -1;
+
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as
 	// start class, then the algorithm should start the search with class
@@ -475,6 +478,10 @@ public class RhoDRDown
 		}
 		if(dataPropertyHierarchy == null) {
 			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
+		}
+
+		if (maxCardinalityLimit < 0) {
+			maxCardinalityLimit = cardinalityLimit;
 		}
 
 		initialized = true;
@@ -1021,7 +1028,7 @@ public class RhoDRDown
 		if (description instanceof OWLObjectUnionOf) {
 			return ((OWLObjectUnionOf) description).getOperands()
 				.stream().allMatch(op ->
-					(!(op instanceof OWLObjectSomeValuesFrom) || prevSomeValuesProperties.contains(op))
+					(!(op instanceof OWLObjectSomeValuesFrom) || prevSomeValuesProperties.contains(((OWLObjectSomeValuesFrom) op).getProperty()))
 					&& isSomeOnlySatisfied(op, Set.of())
 				);
 		}
@@ -1445,7 +1452,7 @@ public class RhoDRDown
 			int lc = lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				if (isPropertyAllowedInCardinalityRestrictions(r)) {
-					int maxFillers = maxNrOfFillers.get(r);
+					int maxFillers = Math.min(maxCardinalityLimit + 1, maxNrOfFillers.get(r));
 					logger.debug(sparql_debug, "`"+r+"="+maxFillers);
 					// zero fillers: <= -1 r.C does not make sense
 					// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
@@ -1615,7 +1622,7 @@ public class RhoDRDown
 			int lc = lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : mgr.get(nc)) {
 				if (isPropertyAllowedInCardinalityRestrictions(r)) {
-					int maxFillers = maxNrOfFillers.get(r);
+					int maxFillers = Math.min(maxCardinalityLimit + 1, maxNrOfFillers.get(r));
 					// zero fillers: <= -1 r.C does not make sense
 					// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
 					// but we still keep it, because ALL r.NOT C may be difficult to reach
@@ -2142,6 +2149,14 @@ public class RhoDRDown
 
 	public void setCardinalityLimit(int cardinalityLimit) {
 		this.cardinalityLimit = cardinalityLimit;
+	}
+
+	public int getMaxCardinalityLimit() {
+		return maxCardinalityLimit;
+	}
+
+	public void setMaxCardinalityLimit(int maxCardinalityLimit) {
+		this.maxCardinalityLimit = maxCardinalityLimit;
 	}
 
 	public ObjectPropertyHierarchy getObjectPropertyHierarchy() {
