@@ -73,7 +73,7 @@ import static com.google.common.primitives.Ints.max;
 public class RhoDRDown
 	extends RefinementOperatorAdapter
 	implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator,
-	ReasoningBasedRefinementOperator, Cloneable, DownwardRefinementOperator
+	ReasoningBasedRefinementOperator, Cloneable
 {
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);

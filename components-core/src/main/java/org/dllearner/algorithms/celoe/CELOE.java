@@ -573,22 +573,28 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
-		
-		OENode node = createNode(parentNode, description);
-		
+
+		// quality of class expression (return if too weak)
+		Monitor mon = MonitorFactory.start("lp");
+		logger.trace(sparql_debug, sparql_debug_out);
+		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		logger.trace(sparql_debug, "`acc:"+accuracy);
+		mon.stop();
+
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
-		if(node.getAccuracy() > 1.0 || (node.getAccuracy() < 0.0 && node.getAccuracy() != -1)) {
-			throw new RuntimeException("Invalid accuracy value " + node.getAccuracy() + " for class expression " + description +
-					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
+			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
+				". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
-		
+
 		expressionTests++;
-		
+
 		// return FALSE if 'too weak'
-		if(node.getAccuracy() == -1) {
+		if(accuracy == -1) {
 			return false;
 		}
 
+		OENode node = new OENode(description, accuracy);
 		searchTree.addNode(parentNode, node);
 		
 		// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
@@ -673,51 +679,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 
 		return true;
-	}
-
-	private OENode createNode(OENode parent, OWLClassExpression refinement) {
-		if (!(learningProblem instanceof PosNegLP)) {
-			Monitor mon = MonitorFactory.start("lp");
-			double accuracy = learningProblem.getAccuracyOrTooWeak(refinement, noise);
-			mon.stop();
-
-			return new OENode(refinement, accuracy);
-		}
-
-		PosNegLP posNegLP = (PosNegLP) learningProblem;
-
-		Set<OWLIndividual> coveredPositives;
-		Set<OWLIndividual> coveredNegatives;
-
-		Monitor mon = MonitorFactory.start("lp");
-
-		if (parent == null) {
-			coveredPositives = reasoner.hasType(refinement, posNegLP.getPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, posNegLP.getNegativeExamples());
-		} else if (operator instanceof DownwardRefinementOperator) {
-			coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
-		} else {
-			Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
-			uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
-			Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
-			uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
-
-			coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
-			coveredPositives.addAll(parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
-			coveredNegatives.addAll(parent.getCoveredNegativeExamples());
-		}
-
-		double accuracy = posNegLP.getAccuracyOrTooWeak(coveredPositives, coveredNegatives, noise);
-
-		mon.stop();
-
-		OENode node = new OENode(refinement, accuracy);
-		node.setCoveredPositiveExamples(coveredPositives);
-		node.setCoveredNegativeExamples(coveredNegatives);
-
-		return node;
 	}
 	
 	// checks whether the class expression is allowed

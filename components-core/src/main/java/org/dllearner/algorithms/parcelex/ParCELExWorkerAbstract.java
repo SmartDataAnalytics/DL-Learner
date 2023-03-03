@@ -79,7 +79,7 @@ public abstract class ParCELExWorkerAbstract<L extends ParCELExAbstract> extends
 		 * </ul>
 		 * </ol>
 		 */
-		ParCELEvaluationResult evaluationResult = learner.getAccuracyAndCorrectness(parentNode, description);
+		ParCELEvaluationResult evaluationResult = learningProblem.getAccuracyAndCorrectnessEx(description);
 
 		// cover no positive example && no negative example ==> weak description
 		if ((evaluationResult.getCompleteness() == 0) && (evaluationResult.getCorrectness() == 1))

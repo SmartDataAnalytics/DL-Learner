@@ -264,30 +264,21 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	}
 
 	protected void initSearchTree() {
+		// TODO: only ParCELPosNegLP supported
+
 		// create a start node in the search tree
-		// currently, start class is always Thing (initialised in the init() method)
 		allDescriptions.add(startClass);
 
-		ParCELNode startNode;
+		Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
+		Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
 
-		if (learningProblem instanceof ParCELPosNegLP) {
-			Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
-			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
-
-			ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem)
-				.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
-
-			startNode = new ParCELNode(
-				null, startClass,
-				accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
-			);
-
-			startNode.setCoveredPositiveExamples(coveredPositives);
-			startNode.setCoveredNegativeExamples(coveredNegatives);
-		} else {
-			double accuracy = this.positiveExamples.size() / (double) (this.positiveExamples.size() + this.negativeExamples.size());
-			startNode = new ParCELNode(null, startClass, accuracy, 0, 1.0);
-		}
+		ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem).getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+		ParCELNode startNode = new ParCELNode(
+			null, startClass,
+			accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
+		);
+		startNode.setCoveredPositiveExamples(coveredPositives);
+		startNode.setCoveredNegativeExamples(coveredNegatives);
 
 		searchTree.add(startNode);
 	}
@@ -465,35 +456,6 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		if (logger.isInfoEnabled())
 			logger.info("Worker pool created, core pool size: " + workerPool.getCorePoolSize() +
 								", max pool size: " + workerPool.getMaximumPoolSize());
-	}
-
-	public ParCELEvaluationResult getAccuracyAndCorrectness(OENode parent, OWLClassExpression refinement) {
-		// TODO: only ParCELPosNegLP supported
-
-		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
-
-		Set<OWLIndividual> coveredPositives;
-		Set<OWLIndividual> coveredNegatives;
-
-		if (parent == null) {
-			coveredPositives = reasoner.hasType(refinement, posNegLP.getPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, posNegLP.getNegativeExamples());
-		} else if (refinementOperatorPool.getFactory().getOperatorPrototype() instanceof DownwardRefinementOperator) {
-			coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
-		} else {
-			Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
-			uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
-			Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
-			uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
-
-			coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
-			coveredPositives.addAll(parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
-			coveredNegatives.addAll(parent.getCoveredNegativeExamples());
-		}
-
-		return posNegLP.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 	}
 
 	/**
