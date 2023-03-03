@@ -637,6 +637,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                 int nrOfFillers = 0;
                 int nrOfEntries = mapping.keySet().size();
                 for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+                    index++;
+
                     OWLIndividual subject = entry.getKey();
                     SortedSet<OWLIndividual> objects = entry.getValue();
 
@@ -650,7 +652,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                                 return true;
                             }
                         } else {
-                            if (nrOfEntries - index < cardinality) {
+                            if (nrOfEntries - index + nrOfFillers < cardinality) {
                                 return false;
                             }
                         }

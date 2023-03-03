@@ -147,8 +147,7 @@ public class ParCELExtraNode extends ParCELNode {
 	public void setExtraInfo(double d) {
 		this.extraInfo = d;
 	}
- 
-	
+
 	public void setType(int t) {
 		this.type = t;
 	}

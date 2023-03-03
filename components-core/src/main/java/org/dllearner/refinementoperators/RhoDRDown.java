@@ -1242,49 +1242,49 @@ public class RhoDRDown
 					else
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 					// combinations has several numbers => generate disjunct
-				}
-
-				// check whether the combination makes sense, i.e. whether
-				// all lengths mentioned in it have corresponding elements
-				// e.g. when negation is deactivated there won't be elements of
-				// length 2 in M
-				boolean validCombo = true;
-				for(Integer j : combo) {
-					if((domain == null && m.get(j).size()==0) ||
-						(domain != null && mA.get(domain).get(j).size()==0))
-						validCombo = false;
-				}
-
-				if(validCombo) {
-
-					SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
+				} else {
+					// check whether the combination makes sense, i.e. whether
+					// all lengths mentioned in it have corresponding elements
+					// e.g. when negation is deactivated there won't be elements of
+					// length 2 in M
+					boolean validCombo = true;
 					for(Integer j : combo) {
-						if(domain == null)
-							baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
-						else
-							baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+						if((domain == null && m.get(j).size()==0) ||
+							(domain != null && mA.get(domain).get(j).size()==0))
+							validCombo = false;
 					}
 
-					// convert all concepts in ordered negation normal form
-					Set<OWLObjectUnionOf> tmp = new HashSet<>();
-					for(OWLClassExpression concept : baseSet) {
-						tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
-					}
-					baseSet = new TreeSet<>(tmp);
+					if(validCombo) {
 
-					// apply the exists filter (throwing out all refinements with
-					// double \exists r for any r)
-					// TODO: similar filtering can be done for boolean datatype
-					// properties
-					if(applyExistsFilter) {
-						baseSet.removeIf(MathOperations::containsDoubleObjectSomeRestriction);
-					}
+						SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
+						for(Integer j : combo) {
+							if(domain == null)
+								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+							else
+								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+						}
 
-					// add computed refinements
-					if(domain == null) {
-						topRefinements.get(i).addAll(baseSet);
-					} else {
-						topARefinements.get(domain).get(i).addAll(baseSet);
+						// convert all concepts in ordered negation normal form
+						Set<OWLObjectUnionOf> tmp = new HashSet<>();
+						for(OWLClassExpression concept : baseSet) {
+							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
+						}
+						baseSet = new TreeSet<>(tmp);
+
+						// apply the exists filter (throwing out all refinements with
+						// double \exists r for any r)
+						// TODO: similar filtering can be done for boolean datatype
+						// properties
+						if(applyExistsFilter) {
+							baseSet.removeIf(MathOperations::containsDoubleObjectSomeRestriction);
+						}
+
+						// add computed refinements
+						if(domain == null) {
+							topRefinements.get(i).addAll(baseSet);
+						} else {
+							topARefinements.get(domain).get(i).addAll(baseSet);
+						}
 					}
 				}
 			}
