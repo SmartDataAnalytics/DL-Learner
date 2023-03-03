@@ -468,10 +468,14 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 
 	}
 
-	public ParCELEvaluationResult getAccuracyAndCorrectness4(OWLClassExpression description, double noise) {
+	public ParCELEvaluationResult getAccuracyAndCorrectness4(OWLClassExpression description) {
 		Set<OWLIndividual> coveredPositiveExamples = reasoner.hasType(description, positiveExamples);
 		Set<OWLIndividual> coveredNegativeExamples = reasoner.hasType(description, negativeExamples);
 
+		return getAccuracyAndCorrectness4(coveredPositiveExamples, coveredNegativeExamples);
+	}
+
+	public ParCELEvaluationResult getAccuracyAndCorrectness4(Set<OWLIndividual> coveredPositiveExamples, Set<OWLIndividual> coveredNegativeExamples) {
 		if (coveredPositiveExamples.isEmpty()) {
 			return new ParCELEvaluationResult(-1, 0, 0);
 		}
@@ -485,9 +489,8 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 		result.correctness = un / (double) negativeExamples.size();
 		result.completeness = cp / (double) positiveExamples.size();
 
-		if (result.correctness >= 1.0d - noise) {
-			result.coveredPositiveExamples = coveredPositiveExamples;
-		}
+		result.coveredPositiveExamples = coveredPositiveExamples;
+		result.coveredNegativeExamples = coveredNegativeExamples;
 
 		return result;
 	}

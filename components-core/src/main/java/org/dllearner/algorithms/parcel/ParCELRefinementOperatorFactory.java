@@ -202,4 +202,8 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
     public boolean getUseCardinalityRestrictions() {
         return this.useCardinalityRestrictions;
     }
+
+    public RefinementOperator getOperatorPrototype() {
+        return operatorPrototype;
+    }
 }

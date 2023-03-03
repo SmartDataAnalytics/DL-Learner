@@ -23,9 +23,12 @@ import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.text.DecimalFormat;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
@@ -54,6 +57,9 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
 	private int refinementCount = 0;
+
+	private Set<OWLIndividual> coveredPositiveExamples = new TreeSet<>();
+	private Set<OWLIndividual> coveredNegativeExamples = new TreeSet<>();
 	
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
@@ -134,5 +140,29 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	 */
 	public void setRefinementCount(int refinementCount) {
 		this.refinementCount = refinementCount;
+	}
+
+	public Set<OWLIndividual> getCoveredPositiveExamples() {
+		return coveredPositiveExamples;
+	}
+
+	public Set<OWLIndividual> getCoveredNegativeExamples() {
+		return coveredNegativeExamples;
+	}
+
+	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
+		this.coveredPositiveExamples.clear();
+
+		if (coveredPositiveExamples != null) {
+			this.coveredPositiveExamples.addAll(coveredPositiveExamples);
+		}
+	}
+
+	public void setCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
+		this.coveredNegativeExamples.clear();
+
+		if (coveredNegativeExamples != null) {
+			this.coveredNegativeExamples.addAll(coveredNegativeExamples);
+		}
 	}
 }

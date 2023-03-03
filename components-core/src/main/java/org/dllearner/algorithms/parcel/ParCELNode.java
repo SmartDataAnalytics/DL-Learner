@@ -22,9 +22,6 @@ public class ParCELNode extends OENode {
 	private double correctness = -1.0;
 	private double completeness = -1.0;
 
-	protected Set<OWLIndividual> coveredPositiveExamples = new HashSet<>();
-	protected final Set<OWLIndividual> coveredNegativeExamples = new HashSet<>();
-
 	private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
 
 
@@ -41,8 +38,8 @@ public class ParCELNode extends OENode {
 					  Set<OWLIndividual> coveredPositiveExamples, Set<OWLIndividual> coveredNegativeExamples) {
 		super(description, 0);
 		setParent(parentNode);
-		this.coveredPositiveExamples.addAll(coveredPositiveExamples);
-		this.coveredNegativeExamples.addAll(coveredNegativeExamples);
+		setCoveredPositiveExamples(coveredPositiveExamples);
+		setCoveredNegativeExamples(coveredNegativeExamples);
 	}
 
 	public void setCorrectness(double cor) {
@@ -63,28 +60,6 @@ public class ParCELNode extends OENode {
 
 	public void setAccuracy(double acc) {
 		this.accuracy = acc;
-	}
-
-	public Set<OWLIndividual> getCoveredPositiveExamples() {
-		return this.coveredPositiveExamples;
-	}
-
-	public Set<OWLIndividual> getCoveredNegativeExamples() {
-		return this.coveredNegativeExamples;
-	}
-
-	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
-		if (coveredPositiveExamples != null)
-			this.coveredPositiveExamples.addAll(coveredPositiveExamples);
-		else
-			this.coveredPositiveExamples.clear();
-	}
-
-	public void setCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
-		if (coveredNegativeExamples != null)
-			this.coveredNegativeExamples.addAll(coveredNegativeExamples);
-		else
-			this.coveredNegativeExamples.clear();
 	}
 
 	@Override

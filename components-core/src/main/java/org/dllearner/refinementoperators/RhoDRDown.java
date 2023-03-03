@@ -70,7 +70,11 @@ import static com.google.common.primitives.Ints.max;
  *
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
-public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator, Cloneable {
+public class RhoDRDown
+	extends RefinementOperatorAdapter
+	implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator,
+	ReasoningBasedRefinementOperator, Cloneable, DownwardRefinementOperator
+{
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
@@ -535,6 +539,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			if (!useNegation) {
 				refinements.removeIf(this::containsNegation);
+			}
+
+			if (!useDisjunction) {
+				refinements.removeIf(r -> r instanceof OWLObjectUnionOf);
 			}
 
 			if (useSomeOnly) {
@@ -1034,145 +1042,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return true;
 	}
 
-	private boolean checkRefinability(OWLNaryBooleanClassExpression description) {
-		Set<OWLClassExpression> unrefinableOperands = new TreeSet<>();
-
-		for (OWLClassExpression op : description.getOperandsAsList()) {
-			if (unrefinableOperands.contains(op)) {
-				return false;
-			}
-
-			if (!mayBeRefinable(op)) {
-				unrefinableOperands.add(op);
-			}
-		}
-
-		return true;
-	}
-
-	private boolean mayBeRefinable(OWLClassExpression description) {
-		if (description.isOWLThing()) {
-			return true;
-		}
-
-		if (description.isOWLNothing()) {
-			return false;
-		}
-
-		if(!description.isAnonymous()) {
-			Set<OWLClassExpression> refinements = classHierarchy.getSubClasses(description, true);
-			refinements.remove(df.getOWLNothing());
-
-			return !refinements.isEmpty();
-		}
-
-		if (description instanceof OWLObjectComplementOf) {
-			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
-
-			if (operand.isAnonymous()){
-				return false;
-			}
-
-			Set<OWLClassExpression> refinements = classHierarchy.getSuperClasses(operand, true);
-			refinements.remove(df.getOWLThing());
-
-			return !refinements.isEmpty();
-		}
-
-		if (description instanceof OWLObjectIntersectionOf || description instanceof OWLObjectUnionOf) {
-			return true;
-		}
-
-		if (description instanceof OWLObjectSomeValuesFrom) {
-			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) description).getProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
-
-			if (mayBeRefinable(filler)) {
-				return true;
-			}
-
-			Set<OWLObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(role.getNamedProperty());
-
-			if (!moreSpecialRoles.isEmpty()) {
-				return true;
-			}
-
-			OWLObjectProperty prop = role.isAnonymous() ? role.getNamedProperty() : role.asOWLObjectProperty();
-
-			if (useCardinalityRestrictions
-				&& isPropertyAllowedInCardinalityRestrictions(prop)
-				&& maxNrOfFillers.get(role) > 1
-			) {
-				return true;
-			}
-
-			if (useHasValueConstructor && filler.isOWLThing()){
-				Set<OWLIndividual> frequentIndividuals = frequentValues.get(role);
-
-				return frequentIndividuals != null;
-			}
-
-			return false;
-		}
-
-		if (description instanceof OWLObjectAllValuesFrom) {
-			OWLObjectPropertyExpression role = ((OWLObjectAllValuesFrom) description).getProperty();
-			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
-
-			if (mayBeRefinable(filler)) {
-				return true;
-			}
-
-			if (!filler.isOWLNothing() && !filler.isAnonymous()) {
-				return true;
-			}
-
-			Set<OWLObjectProperty> subProperties = objectPropertyHierarchy.getMoreSpecialRoles(role.getNamedProperty());
-
-			return !subProperties.isEmpty();
-		}
-
-		if (description instanceof OWLObjectCardinalityRestriction) {
-			OWLObjectPropertyExpression role = ((OWLObjectCardinalityRestriction) description).getProperty();
-			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
-			int cardinality = ((OWLObjectCardinalityRestriction) description).getCardinality();
-
-			if (description instanceof OWLObjectMaxCardinality) {
-				if (cardinality > 1) {
-					return true;
-				}
-
-				return (useNegation || cardinality > 0) && mayBeRefinable(constructNegationInNNF(description));
-			}
-
-			if (description instanceof OWLObjectMinCardinality) {
-				return cardinality < maxNrOfFillers.get(role) || mayBeRefinable(filler);
-			}
-
-			if (description instanceof OWLObjectExactCardinality) {
-				return mayBeRefinable(filler);
-			}
-		}
-
-		if (description instanceof OWLDataSomeValuesFrom) {
-			return true; // TODO: MY not implemented
-		}
-
-		if (description instanceof OWLDataHasValue) {
-			OWLDataPropertyExpression dp = ((OWLDataHasValue) description).getProperty();
-
-			if (dp.isAnonymous()) {
-				return false;
-			}
-
-			Set<OWLDataProperty> subDPs = dataPropertyHierarchy.getMoreSpecialRoles(dp.asOWLDataProperty());
-
-			return !subDPs.isEmpty();
-		}
-
-		return false;
-	}
-
 	private boolean isCombinable(OWLClassExpression ce, OWLClassExpression child) {
 		boolean combinable = true;
 
@@ -1373,50 +1242,49 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					else
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 					// combinations has several numbers => generate disjunct
-				} else if (useDisjunction) {
+				}
 
-					// check whether the combination makes sense, i.e. whether
-					// all lengths mentioned in it have corresponding elements
-					// e.g. when negation is deactivated there won't be elements of
-					// length 2 in M
-					boolean validCombo = true;
+				// check whether the combination makes sense, i.e. whether
+				// all lengths mentioned in it have corresponding elements
+				// e.g. when negation is deactivated there won't be elements of
+				// length 2 in M
+				boolean validCombo = true;
+				for(Integer j : combo) {
+					if((domain == null && m.get(j).size()==0) ||
+						(domain != null && mA.get(domain).get(j).size()==0))
+						validCombo = false;
+				}
+
+				if(validCombo) {
+
+					SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
 					for(Integer j : combo) {
-						if((domain == null && m.get(j).size()==0) ||
-							(domain != null && mA.get(domain).get(j).size()==0))
-							validCombo = false;
+						if(domain == null)
+							baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+						else
+							baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
 					}
 
-					if(validCombo) {
+					// convert all concepts in ordered negation normal form
+					Set<OWLObjectUnionOf> tmp = new HashSet<>();
+					for(OWLClassExpression concept : baseSet) {
+						tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
+					}
+					baseSet = new TreeSet<>(tmp);
 
-						SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
-						for(Integer j : combo) {
-							if(domain == null)
-								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
-							else
-								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
-						}
+					// apply the exists filter (throwing out all refinements with
+					// double \exists r for any r)
+					// TODO: similar filtering can be done for boolean datatype
+					// properties
+					if(applyExistsFilter) {
+						baseSet.removeIf(MathOperations::containsDoubleObjectSomeRestriction);
+					}
 
-						// convert all concepts in ordered negation normal form
-						Set<OWLObjectUnionOf> tmp = new HashSet<>();
-						for(OWLClassExpression concept : baseSet) {
-							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
-						}
-						baseSet = new TreeSet<>(tmp);
-
-						// apply the exists filter (throwing out all refinements with
-						// double \exists r for any r)
-						// TODO: similar filtering can be done for boolean datatype
-						// properties
-						if(applyExistsFilter) {
-							baseSet.removeIf(MathOperations::containsDoubleObjectSomeRestriction);
-						}
-
-						// add computed refinements
-						if(domain == null) {
-							topRefinements.get(i).addAll(baseSet);
-						} else {
-							topARefinements.get(domain).get(i).addAll(baseSet);
-						}
+					// add computed refinements
+					if(domain == null) {
+						topRefinements.get(i).addAll(baseSet);
+					} else {
+						topARefinements.get(domain).get(i).addAll(baseSet);
 					}
 				}
 			}

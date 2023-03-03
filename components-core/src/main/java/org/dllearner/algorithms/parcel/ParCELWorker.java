@@ -2,15 +2,19 @@ package org.dllearner.algorithms.parcel;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.refinementoperators.DownwardRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 /**
@@ -160,18 +164,19 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
             return null; // false, node cannot be added
 
         // currently, noise is not processed. it should be processed later
-        ParCELEvaluationResult accurateAndCorrectness = learningProblem
-                .getAccuracyAndCorrectness4(description, learner.getNoiseAllowed());
-//        System.out.println(description + ":" + accurateAndCorrectness);
+        ParCELEvaluationResult accuracyAndCorrectness = learner.getAccuracyAndCorrectness(parentNode, description);
 
         // description is too weak, i.e. covered no positive example
-        if (accurateAndCorrectness.accuracy == -1.0d)
+        if (accuracyAndCorrectness.accuracy == -1.0d)
             return null;
 
-        ParCELExtraNode newNode = new ParCELExtraNode(parentNode, description,
-                accurateAndCorrectness.accuracy, accurateAndCorrectness.correctness,
-                accurateAndCorrectness.completeness,
-                accurateAndCorrectness.coveredPositiveExamples);
+        ParCELExtraNode newNode = new ParCELExtraNode(
+            parentNode, description,
+            accuracyAndCorrectness.accuracy, accuracyAndCorrectness.correctness,
+            accuracyAndCorrectness.completeness,
+            accuracyAndCorrectness.coveredPositiveExamples,
+            accuracyAndCorrectness.coveredNegativeExamples
+        );
 
         if (parentNode != null)
             parentNode.addChild(newNode);

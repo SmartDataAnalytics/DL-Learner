@@ -79,21 +79,17 @@ public abstract class ParCELExWorkerAbstract<L extends ParCELExAbstract> extends
 		 * </ul>
 		 * </ol>
 		 */
-		ParCELEvaluationResult evaluationResult = learningProblem
-				.getAccuracyAndCorrectnessEx(description);
+		ParCELEvaluationResult evaluationResult = learner.getAccuracyAndCorrectness(parentNode, description);
 
 		// cover no positive example && no negative example ==> weak description
 		if ((evaluationResult.getCompleteness() == 0) && (evaluationResult.getCorrectness() == 1))
 			return null;
 
-		ParCELExtraNode newNode = new ParCELExtraNode(parentNode, description,
-													  evaluationResult.getAccuracy(), evaluationResult.getCorrectness(),
-													  evaluationResult.getCompleteness(), evaluationResult.getCoveredPositiveExamples());
-
-		// newNode.setCorrectness(evaluationResult.getCorrectness());
-		// newNode.setCompleteness(evaluationResult.getCompleteness());
-		// newNode.setCoveredPositiveExamples(evaluationResult.getCoveredPossitiveExamples());
-		newNode.setCoveredNegativeExamples(evaluationResult.getCoveredNegativeExamples());
+		ParCELExtraNode newNode = new ParCELExtraNode(
+			parentNode, description,
+			evaluationResult.getAccuracy(), evaluationResult.getCorrectness(), evaluationResult.getCompleteness(),
+			evaluationResult.getCoveredPositiveExamples(), evaluationResult.getCoveredNegativeExamples()
+		);
 
 		if (parentNode != null)
 			parentNode.addChild(newNode);
@@ -101,5 +97,6 @@ public abstract class ParCELExWorkerAbstract<L extends ParCELExAbstract> extends
 		return newNode;
 
 	} // addNode()
+
 
 }
