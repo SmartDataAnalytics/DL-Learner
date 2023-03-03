@@ -27,10 +27,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
@@ -645,7 +642,16 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
 //					System.out.println(node + "->" + niceDescription);
-					bestEvaluatedDescriptions.add(niceDescription, node.getAccuracy(), learningProblem);
+
+					if (learningProblem instanceof PosNegLPStandard) {
+						EvaluatedDescription<? extends Score> ed = ((PosNegLPStandard) learningProblem).constructEvaluatedDescription(
+							niceDescription, node.getCoveredPositiveExamples(), node.getCoveredNegativeExamples(), node.getAccuracy()
+						);
+						bestEvaluatedDescriptions.add(ed);
+					} else {
+						bestEvaluatedDescriptions.add(niceDescription, node.getAccuracy(), learningProblem);
+					}
+
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
@@ -676,7 +682,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	private OENode createNode(OENode parent, OWLClassExpression refinement) {
-		if (!(learningProblem instanceof PosNegLP)) {
+		if (!(learningProblem instanceof PosNegLPStandard)) {
 			Monitor mon = MonitorFactory.start("lp");
 			double accuracy = learningProblem.getAccuracyOrTooWeak(refinement, noise);
 			mon.stop();
@@ -684,7 +690,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			return new OENode(refinement, accuracy);
 		}
 
-		PosNegLP posNegLP = (PosNegLP) learningProblem;
+		PosNegLPStandard posNegLP = (PosNegLPStandard) learningProblem;
 
 		Set<OWLIndividual> coveredPositives;
 		Set<OWLIndividual> coveredNegatives;
