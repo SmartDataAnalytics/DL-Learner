@@ -106,7 +106,7 @@ public class RhoDRDown
 	private int cardinalityLimit = 5;
 
 	@ConfigOption(defaultValue = "cardinalityLimit", description = "limit for max cardinality restrictions")
-	private int maxCardinalityLimit = -1;
+	private int maxCardinalityLimit = cardinalityLimit;
 
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as
@@ -158,7 +158,7 @@ public class RhoDRDown
 	private ValuesSplitter numericValuesSplitter;
 
 	// splits for double datatype properties in ascending order
-	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
+	private Map<OWLDataProperty,List<OWLLiteral>> splits;
 
 	@ConfigOption(description = "the number of generated split intervals for numeric types", defaultValue = "12")
 	private int maxNrOfSplits = 12;
@@ -393,6 +393,7 @@ public class RhoDRDown
 					if (numericValuesSplitter == null) {
 						numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 					}
+					splits = new TreeMap<>();
 					splits.putAll(numericValuesSplitter.computeSplits());
 					if (logger.isDebugEnabled()) {
 						logger.debug(sparql_debug, "Numeric Splits: {}", splits);
@@ -480,7 +481,7 @@ public class RhoDRDown
 			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
-		if (maxCardinalityLimit < 0) {
+		if (maxCardinalityLimit < 0 || maxCardinalityLimit > cardinalityLimit) {
 			maxCardinalityLimit = cardinalityLimit;
 		}
 
@@ -595,9 +596,7 @@ public class RhoDRDown
 						mc = ConceptTransformation.nnf(mc);
 
 						// check whether the intersection is OK (sanity checks), then add it
-						if(checkIntersection((OWLObjectIntersectionOf) mc)
-//							&& checkRefinability((OWLNaryBooleanClassExpression) mc)
-						)
+						if(checkIntersection((OWLObjectIntersectionOf) mc))
 							refinements.add(mc);
 					}
 				}
@@ -628,9 +627,7 @@ public class RhoDRDown
 					// note that we do not have to call clean here because a disjunction will
 					// never be nested in another disjunction in this operator
 
-//					if (checkRefinability((OWLNaryBooleanClassExpression) md)) {
 					refinements.add(md);
-//					}
 				}
 			}
 
@@ -896,9 +893,7 @@ public class RhoDRDown
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if (checkIntersection(mc)
-//							&& checkRefinability(mc)
-						)
+						if (checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -935,6 +930,8 @@ public class RhoDRDown
 		applyAllFilter = applyExistsFilter;
 		applyExistsFilter = optionTmp;
 
+		maxCardinalityLimit = cardinalityLimit;
+
 		TreeSet<OWLClassExpression> results = new TreeSet<>();
 
 		try {
@@ -953,11 +950,13 @@ public class RhoDRDown
 				OWLClassExpression dNeg = constructNegationInNNF(d);
 				dNeg = ConceptTransformation.cleanConcept(dNeg);
 
-				// TODO: dropDisjuncts not supported
+				// TODO: MY dropDisjuncts not supported
+				// TODO: MY some values from and has value for datatype properties not supported
 
 				// to satisfy the guarantee that the method does not return longer
 				// concepts, we perform an additional check
 				if(description.compareTo(dNeg) != 0
+					&& (maxCardinalityLimit == cardinalityLimit || isMaxCardinalityLimitSatisfied(dNeg))
 					&& (useDisjunction || !containsDisjunction(dNeg))
 					&& (useNegation || !containsNegation(dNeg))
 					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
@@ -983,6 +982,13 @@ public class RhoDRDown
 		negatedDescription = ConceptTransformation.nnf(negatedDescription);
 
 		return negatedDescription;
+	}
+
+	private boolean isMaxCardinalityLimitSatisfied(OWLClassExpression description) {
+		return decomposer.decompose(description)
+			.stream().allMatch(e ->
+				!(e instanceof OWLObjectMaxCardinality) || ((OWLObjectMaxCardinality) e).getCardinality() <= maxCardinalityLimit
+			);
 	}
 
 	private boolean containsDisjunction(OWLClassExpression description) {

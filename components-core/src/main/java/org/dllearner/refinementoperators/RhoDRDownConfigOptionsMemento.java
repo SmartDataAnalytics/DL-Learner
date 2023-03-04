@@ -19,6 +19,8 @@ public class RhoDRDownConfigOptionsMemento {
     private final boolean useSomeOnly;
     private final boolean useObjectValueNegation;
 
+    private final int maxCardinalityLimit;
+
     public RhoDRDownConfigOptionsMemento(RhoDRDown originator) {
         applyAllFilter = originator.isApplyAllFilter();
         applyExistsFilter = originator.isApplyExistsFilter();
@@ -30,6 +32,8 @@ public class RhoDRDownConfigOptionsMemento {
         useDisjunction = originator.isUseDisjunction();
         useSomeOnly = originator.isUseSomeOnly();
         useObjectValueNegation = originator.isUseObjectValueNegation();
+
+        maxCardinalityLimit = originator.getMaxCardinalityLimit();
     }
 
     public void restore(RhoDRDown originator) {
@@ -43,5 +47,7 @@ public class RhoDRDownConfigOptionsMemento {
         originator.setUseDisjunction(useDisjunction);
         originator.setUseSomeOnly(useSomeOnly);
         originator.setUseObjectValueNegation(useObjectValueNegation);
+
+        originator.setMaxCardinalityLimit(maxCardinalityLimit);
     }
 }
