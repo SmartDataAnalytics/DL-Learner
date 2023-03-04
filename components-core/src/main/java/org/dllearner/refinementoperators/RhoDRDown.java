@@ -565,7 +565,7 @@ public class RhoDRDown
 				tmp = classHierarchy.getSuperClasses(operand, true);
 
 				for(OWLClassExpression c : tmp) {
-					if(!c.isOWLThing()){
+					if(!c.isOWLThing() && !isDisjoint(df.getOWLObjectComplementOf(c), currDomain)){
 						refinements.add(df.getOWLObjectComplementOf(c));
 					}
 				}
