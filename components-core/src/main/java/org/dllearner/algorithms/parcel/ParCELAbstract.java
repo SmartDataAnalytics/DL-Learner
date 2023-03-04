@@ -345,10 +345,9 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 										 + "\n\t - uncovered positive examples left: "
 										 + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
 				} else if (logger.isInfoEnabled()) {
-					logger.info("PARTIAL definition found: "
-										+ OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
-										+ ", uncovered positive examples left: "
-										+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
+					logger.info("PARTIAL definition found. Uncovered positive examples left: "
+										+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size()
+										+ "\n" + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()));
 					double acc = this.getCurrentAccuracy();
 					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
 
