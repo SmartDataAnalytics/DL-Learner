@@ -315,7 +315,6 @@ public class OCEL extends AbstractCELA {
 				throw new RuntimeException("does not work with positive examples only yet");
 			} else {
 				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(), ((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-				((MultiHeuristic) heuristic).setLengthMetric(lengthMetric);
 			}
 		} else {
 			// we need to set some variables to make the heuristic work
