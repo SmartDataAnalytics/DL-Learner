@@ -235,7 +235,7 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 			
 			ParCELNode nodeToProcess;
 			
-			nodeToProcess = searchTree.pollLast();
+			nodeToProcess = searchTree.pollFirst();
 					
 			//TODO: why this? why "blocking" concept does not help in this case?
 			//remove this checking will exploit the heap memory and no definition found
@@ -678,7 +678,7 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 	 * 	3. Create an empty 
 	 */
 	private void reset() {
-		this.searchTree = new ConcurrentSkipListSet<>(heuristic);
+		this.searchTree = new ConcurrentSkipListSet<>(heuristic.reversed());
 		
 		//allDescriptions = new TreeSet<Description>(new ConceptComparator());
 		this.allDescriptions = new ConcurrentSkipListSet<>();
