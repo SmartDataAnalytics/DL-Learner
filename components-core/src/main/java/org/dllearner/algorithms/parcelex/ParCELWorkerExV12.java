@@ -88,10 +88,6 @@ public class ParCELWorkerExV12 extends ParCELExWorkerAbstract<ParCELExAbstract> 
 			while (refinements.size() > 0) {
 				OWLClassExpression refinement = refinements.pollFirst();
 
-//				if (refinement instanceof OWLObjectUnionOf) {
-//					continue;
-//				}
-
 				int refinementLength = new OWLClassExpressionLengthCalculator().getLength(refinement);
 
 

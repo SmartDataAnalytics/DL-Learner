@@ -90,10 +90,6 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
         while (refinements != null && refinements.size() > 0) {
             OWLClassExpression refinement = refinements.pollFirst();
 
-//            if (refinement instanceof OWLObjectUnionOf) {
-//                continue;
-//            }
-
             int refinementLength = new OWLClassExpressionLengthCalculator().getLength(refinement);
 
             // we ignore all refinements with lower length (may it happen?)
