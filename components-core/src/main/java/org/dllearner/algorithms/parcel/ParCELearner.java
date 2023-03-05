@@ -26,10 +26,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
@@ -153,7 +150,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		//allDescriptions = new TreeSet<Description>(new ConceptComparator());
 		allDescriptions = new ConcurrentSkipListSet<>();
 
-		searchTree = new ConcurrentSkipListSet<>(heuristic);
+		searchTree = new ConcurrentSkipListSet<>(heuristic.reversed());
 
 		partialDefinitions = new TreeSet<>(new ParCELCorrectnessComparator());
 
@@ -197,7 +194,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// ----------------------------------------------------------
 		while (!isTerminateCriteriaSatisfied()) {
 
-			ParCELNode nodeToProcess = searchTree.pollLast();
+			ParCELNode nodeToProcess = searchTree.pollFirst();
 
 			// TODO: why this? why "blocking" concept does not help in this case?
 			// remove this checking will exploit the heap memory and no definition found
