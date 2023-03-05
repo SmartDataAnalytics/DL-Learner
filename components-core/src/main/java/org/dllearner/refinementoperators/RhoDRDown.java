@@ -922,14 +922,6 @@ public class RhoDRDown
 		useSomeOnly = false;
 		useObjectValueNegation = true;
 
-		boolean optionTmp = useAllConstructor;
-		useAllConstructor = useExistsConstructor;
-		useExistsConstructor = optionTmp;
-
-		optionTmp = applyAllFilter;
-		applyAllFilter = applyExistsFilter;
-		applyExistsFilter = optionTmp;
-
 		maxCardinalityLimit = cardinalityLimit;
 
 		TreeSet<OWLClassExpression> results = new TreeSet<>();
@@ -952,6 +944,7 @@ public class RhoDRDown
 
 				// TODO: MY dropDisjuncts not supported
 				// TODO: MY some values from and has value for datatype properties not supported
+				// TODO: MY useAllConstructor, useExistsConstructor, applyAllFilter, applyExistsFilter ignored (assuming they are all set to true)
 
 				// to satisfy the guarantee that the method does not return longer
 				// concepts, we perform an additional check
