@@ -824,12 +824,16 @@ public class RhoDRDown
 			if(topRefLength>0) {
 				Set<OWLClassExpression> topRefs;
 				if(currDomain.isOWLThing())
-					topRefs = topRefinementsCumulative.get(topRefLength);
+					topRefs = (TreeSet<OWLClassExpression>) topRefinementsCumulative.get(topRefLength).clone();
 				else
-					topRefs = topARefinementsCumulative.get(currDomain).get(topRefLength);
+					topRefs = (TreeSet<OWLClassExpression>) topARefinementsCumulative.get(currDomain).get(topRefLength).clone();
 
 				if (!useNegation) {
-					topRefs = topRefs.stream().filter(c -> !containsNegation(c)).collect(Collectors.toSet());
+					topRefs.removeIf(this::containsNegation);
+				}
+
+				if (!useDisjunction) {
+					topRefs.removeIf(r -> r instanceof OWLObjectUnionOf);
 				}
 
 				for(OWLClassExpression c : topRefs) {
