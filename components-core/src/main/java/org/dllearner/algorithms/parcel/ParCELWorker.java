@@ -1,21 +1,12 @@
 package org.dllearner.algorithms.parcel;
 
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.refinementoperators.DownwardRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 /**
  * ParCEL worker which find and evaluate the refinements for a given node.

@@ -578,9 +578,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			throw new RuntimeException("Invalid accuracy value " + node.getAccuracy() + " for class expression " + description +
 					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
-		
+
 		expressionTests++;
-		
+
 		// return FALSE if 'too weak'
 		if(node.getAccuracy() == -1) {
 			return false;
