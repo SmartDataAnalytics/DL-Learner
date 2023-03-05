@@ -165,7 +165,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		setPrecomputeObjectPropertyHierarchy(reasonerComponent.precomputeObjectPropertyHierarchy);
 		setPrecomputeDataPropertyHierarchy(reasonerComponent.precomputeDataPropertyHierarchy);
 
-		setSources(reasonerComponent.sources);
+		setSources(new HashSet<>(reasonerComponent.sources));
 
 		precomputePropertyDomains = reasonerComponent.precomputePropertyDomains;
 		precomputeObjectPropertyRanges = reasonerComponent.precomputeObjectPropertyRanges;

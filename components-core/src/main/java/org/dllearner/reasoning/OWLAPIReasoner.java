@@ -124,6 +124,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         sources = Collections.singleton(ks);
     }
 
+	public OWLAPIReasoner(OWLAPIReasoner reasoner) {
+		super(reasoner);
+
+		setReasonerImplementation(reasoner.reasonerImplementation);
+		setUseFallbackReasoner(reasoner.useFallbackReasoner);
+		setOwlLinkURL(reasoner.owlLinkURL);
+	}
+
     @Override
     public void init() throws ComponentInitException {
         // reset variables (otherwise subsequent initialisation with
@@ -1261,6 +1269,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
 			reasoner = new ThreadSafeOWLReasoner(reasoner);
 		}
+	}
+
+	@Override
+	public AbstractReasonerComponent clone() {
+		return new OWLAPIReasoner(this);
 	}
 
 	public static void main(String[] args) throws Exception{

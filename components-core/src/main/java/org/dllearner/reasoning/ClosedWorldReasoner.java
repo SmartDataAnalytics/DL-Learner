@@ -73,7 +73,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasoner.class);
 
     // the underlying base reasoner implementation
-    private OWLAPIReasoner baseReasoner;
+    protected OWLAPIReasoner baseReasoner;
     @ConfigOption(description = "the underlying reasoner implementation", defaultValue = "OWL API Reasoner")
     private final OWLAPIReasoner reasonerComponent = null;
     /**
