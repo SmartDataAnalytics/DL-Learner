@@ -572,9 +572,14 @@ public class OCEL extends AbstractCELA {
 			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");
 			int show = 1;
 			for (ExampleBasedNode c : solutionCandidates.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getConcept())
+					: 0;
+
 				logger.info(show + ": " + renderer.render(c.getConcept())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
 					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
+					+ ", coverage " + c.getCoveredPositives().size() + " / " + tpTest
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
 					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
@@ -592,9 +597,14 @@ public class OCEL extends AbstractCELA {
 			logger.info("solutions (at most " + maxNrOfResults + " are shown):");
 			int show = 1;
 			for (ExampleBasedNode c : solutions.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getConcept())
+					: 0;
+
 				logger.info(show + ": " + renderer.render(c.getConcept())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
 					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
+					+ ", coverage " + c.getCoveredPositives().size() + " / " + tpTest
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
 					+ ", time " + df.format(solutions.get(c)) + "s)");

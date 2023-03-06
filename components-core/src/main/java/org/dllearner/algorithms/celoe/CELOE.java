@@ -890,9 +890,14 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");
 			int show = 1;
 			for (OENode c : solutionCandidates.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getDescription())
+					: 0;
+
 				logger.info(show + ": " + renderer.render(c.getDescription())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
 					+ df.format(100 * computeTestAccuracy(c.getDescription())) + "%"
+					+ ", coverage " + c.getCoveredPositiveExamples().size() + " / " + tpTest
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getDescription())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getDescription())
 					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");

@@ -146,6 +146,14 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveTestExamples, negativeTestExamples, noise);
 	}
 
+	public int getCoverage(OWLClassExpression description) {
+		return reasoningUtil.getCoverageCount(description, positiveExamples)[0].trueCount;
+	}
+
+	public int getTestCoverage(OWLClassExpression description) {
+		return reasoningUtil.getCoverageCount(description, positiveTestExamples)[0].trueCount;
+	}
+
 	public double getAccuracyOrTooWeak(Set<OWLIndividual> coveredPositives, Set<OWLIndividual> coveredNegatives, double noise) {
 		int tp = coveredPositives.size();
 		int fp = coveredNegatives.size();
