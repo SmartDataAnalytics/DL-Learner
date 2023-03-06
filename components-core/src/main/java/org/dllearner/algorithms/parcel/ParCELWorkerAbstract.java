@@ -122,7 +122,7 @@ public abstract class ParCELWorkerAbstract<L extends ParCELAbstract> implements 
 		try {
 			// TODO that's odd, we should just restrict the whole code to LengthLimitedRefinementOperator
 			if (refinementOperator instanceof LengthLimitedRefinementOperator) {
-				refinements = (TreeSet<OWLClassExpression>) ((LengthLimitedRefinementOperator) refinementOperator).refine(node.getDescription(), horizExp + 1);
+				refinements = (TreeSet<OWLClassExpression>) ((LengthLimitedRefinementOperator) refinementOperator).refine(node.getDescription(), horizExp);
 			} else {
 				refinements = (TreeSet<OWLClassExpression>) refinementOperator.refine(node.getDescription());
 			}

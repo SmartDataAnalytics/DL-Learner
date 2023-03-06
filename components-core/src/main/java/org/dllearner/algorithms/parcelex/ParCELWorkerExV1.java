@@ -91,7 +91,7 @@ public class ParCELWorkerExV1 extends ParCELExWorkerAbstract<ParCELExAbstract> {
 
 				// we ignore all refinements with lower length (may it happen?)
 				// (this also avoids duplicate node children)
-				if(refinementLength > horizExp) { 
+				if(refinementLength >= horizExp) {
 
 					//calculate accuracy, correctness, positive examples covered by the description, resulted in a node
 					ParCELExtraNode newNode = checkAndCreateNewNodeV2(refinement, nodeToProcess);

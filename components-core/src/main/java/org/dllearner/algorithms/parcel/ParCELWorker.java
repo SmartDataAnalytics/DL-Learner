@@ -94,7 +94,7 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
 
             // we ignore all refinements with lower length (may it happen?)
             // (this also avoids duplicate children)
-            if (refinementLength > horizExp) {
+            if (refinementLength >= horizExp) {
 
                 // calculate accuracy, correctness, positive examples covered by the description,
                 // resulted in a node
