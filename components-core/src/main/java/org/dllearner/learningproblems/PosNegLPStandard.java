@@ -23,10 +23,13 @@ import org.dllearner.utilities.CoverageAdapter;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -107,12 +110,41 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
+	public double getAccuracyOrTooWeak(Set<OWLIndividual> coveredPositives, Set<OWLIndividual> coveredNegatives, double noise) {
+		int tp = coveredPositives.size();
+		int fp = coveredNegatives.size();
+		int tn = negativeExamples.size() - fp;
+		int fn = positiveExamples.size() - tp;
+
+		return accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, noise);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
 	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
 		ScorePosNeg score = computeScore(description, noise);
+		return new EvaluatedDescriptionPosNeg(description, score);
+	}
+
+	public EvaluatedDescription<? extends Score> constructEvaluatedDescription(
+		OWLClassExpression description,
+		Set<OWLIndividual> coveredPositiveExamples, Set<OWLIndividual> coveredNegativeExamples,
+		double accuracy
+	) {
+		Set<OWLIndividual> uncoveredPositiveExamples = new TreeSet<>(positiveExamples);
+		uncoveredPositiveExamples.removeAll(coveredPositiveExamples);
+		Set<OWLIndividual> uncoveredNegativeExamples = new TreeSet<>(negativeExamples);
+		uncoveredNegativeExamples.removeAll(coveredNegativeExamples);
+
+		ScoreTwoValued score = new ScoreTwoValued(
+			OWLClassExpressionUtils.getLength(description),
+			getPercentPerLengthUnit(),
+			coveredPositiveExamples, uncoveredPositiveExamples, coveredNegativeExamples, uncoveredNegativeExamples,
+			accuracy
+		);
+
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 

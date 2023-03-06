@@ -151,7 +151,7 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
             return null; // false, node cannot be added
 
         // currently, noise is not processed. it should be processed later
-        ParCELEvaluationResult accuracyAndCorrectness = learningProblem.getAccuracyAndCorrectness4(description);
+        ParCELEvaluationResult accuracyAndCorrectness = learner.getAccuracyAndCorrectness(parentNode, description);
 
         // description is too weak, i.e. covered no positive example
         if (accuracyAndCorrectness.accuracy == -1.0d)
@@ -161,7 +161,8 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
             parentNode, description,
             accuracyAndCorrectness.accuracy, accuracyAndCorrectness.correctness,
             accuracyAndCorrectness.completeness,
-            accuracyAndCorrectness.coveredPositiveExamples
+            accuracyAndCorrectness.coveredPositiveExamples,
+            accuracyAndCorrectness.coveredNegativeExamples
         );
 
         if (parentNode != null)
