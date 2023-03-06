@@ -18,7 +18,6 @@ import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -232,18 +231,13 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// -------------------------------
 		if (logger.isInfoEnabled()) {
 			synchronized (partialDefinitions) {
-				double acc = (this.negativeExamples.size() + this.positiveExamples.size() - 
-						this.uncoveredPositiveExamples.size())/
-						(double) (this.positiveExamples.size() + this.negativeExamples.size());
-				
 				if (this.getCurrentlyOveralMaxCompleteness() == 1)
 					logger.info("Learning finishes in: " + this.miliLearningTime + "ms, with: "
 							+ partialDefinitions.size() + " definitions");
 				else if (this.isTimeout()) {
 					logger.info("Learning timeout in " + this.maxExecutionTimeInSeconds
 							+ "s. Overall completeness: "
-							+ df.format(this.getCurrentlyOveralMaxCompleteness()) + ", accuracy: "
-							+ df.format(acc));
+							+ df.format(this.getCurrentlyOveralMaxCompleteness()));
 
 					logger.info("Uncovered positive examples left "
 							+ this.uncoveredPositiveExamples.size()
@@ -262,6 +256,10 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 									this.uncoveredPositiveExamples.toString(), this.baseURI,
 									this.prefix));
 				}
+
+				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+				double acc = computeAccuracy(bestDescription);
+				logger.info("Accuracy: " + acc);
 				
 				logger.info("Total descriptions generated: " + allDescriptions.size()
 						+ ", best description length: "  + getCurrentlyBestDescriptionLength()
@@ -274,7 +272,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 				int count = 1;
 				for (ParCELExtraNode def : compactedDefinitions) {
 					int tpTest = learningProblem instanceof ParCELPosNegLP
-						? ((ParCELPosNegLP) learningProblem).getNumberCoveredPositiveTestExamples(def.getDescription())
+						? ((ParCELPosNegLP) learningProblem).getNumberOfCoveredPositiveTestExamples(def.getDescription())
 						: 0;
 
 					logger.info(count++ + ". "

@@ -235,14 +235,6 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		//this.reducer = new ParCELPredScoreReducer();
 	}
 
-	private double getCurrentAccuracy()
-	{
-		double acc = (this.negativeExamples.size() + this.positiveExamples.size() - 
-				this.uncoveredPositiveExamples.size())/
-				(double) (this.positiveExamples.size() + this.negativeExamples.size());
-		return acc;
-	}
-
 	protected void initOperatorIfAny() {
 		if (operator == null) {
 			return;
@@ -348,10 +340,10 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 					logger.info("PARTIAL definition found. Uncovered positive examples left: "
 										+ uncoveredPositiveExamplesSize + "/" + positiveExamples.size()
 										+ "\n" + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()));
-					double acc = this.getCurrentAccuracy();
 					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
 
 					OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+					double acc = computeAccuracy(bestDescription);
 					double testAcc = computeTestAccuracy(bestDescription);
 
 					logger.info("Training time: " + actualTrainingTime + "s Accuracy: " + acc + " Test accuracy: " + testAcc);
@@ -374,6 +366,15 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 			}
 		}
 	}
+
+	protected double computeAccuracy(OWLClassExpression description) {
+		if (learningProblem instanceof ParCELPosNegLP) {
+			return ((ParCELPosNegLP) learningProblem).getAccuracy(description);
+		}
+
+		return 0.0;
+	}
+
 
 	@Override
 	protected double computeTestAccuracy(OWLClassExpression description) {

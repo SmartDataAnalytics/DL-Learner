@@ -10,7 +10,6 @@ package org.dllearner.algorithms.parcel;
  */
 
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeSet;
 
@@ -117,15 +116,15 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	 *            Description
 	 * @return Number if positive examples covered by the description
 	 */
-	protected int getNumberCoveredPositiveExamples(OWLClassExpression description) {
-		return getNumberCoveredPositiveExamples(description, positiveExamples);
+	public int getNumberOfCoveredPositiveExamples(OWLClassExpression description) {
+		return getNumberOfCoveredPositiveExamples(description, positiveExamples);
 	}
 
-	protected int getNumberCoveredPositiveTestExamples(OWLClassExpression description) {
-		return getNumberCoveredPositiveExamples(description, positiveTestExamples);
+	public int getNumberOfCoveredPositiveTestExamples(OWLClassExpression description) {
+		return getNumberOfCoveredPositiveExamples(description, positiveTestExamples);
 	}
 
-	protected int getNumberCoveredPositiveExamples(OWLClassExpression description, Set<OWLIndividual> allPosExamples) {
+	protected int getNumberOfCoveredPositiveExamples(OWLClassExpression description, Set<OWLIndividual> allPosExamples) {
 		int coveredPos = 0;
 
 		for (OWLIndividual example : allPosExamples) {
@@ -144,11 +143,11 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	 * 
 	 * @return Number of negative examples covered by the description
 	 */
-	protected int getNumberOfCoveredNegativeExamples(OWLClassExpression description) {
+	public int getNumberOfCoveredNegativeExamples(OWLClassExpression description) {
 		return getNumberOfCoveredNegativeExamples(description, negativeExamples);
 	}
 
-	protected int getNumberOfCoveredNegativeTestExamples(OWLClassExpression description) {
+	public int getNumberOfCoveredNegativeTestExamples(OWLClassExpression description) {
 		return getNumberOfCoveredNegativeExamples(description, negativeTestExamples);
 	}
 
@@ -174,7 +173,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	 * @return Predictive accuracy of a description
 	 */
 	protected double accuracy_cal(OWLClassExpression description) {
-		int cp = this.getNumberCoveredPositiveExamples(description);
+		int cp = this.getNumberOfCoveredPositiveExamples(description);
 		int un = this.negativeExamples.size()
 				- this.getNumberOfCoveredNegativeExamples(description);
 
@@ -182,7 +181,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	}
 
 	protected double testAccuracy_cal(OWLClassExpression description) {
-		int cp = this.getNumberCoveredPositiveTestExamples(description);
+		int cp = this.getNumberOfCoveredPositiveTestExamples(description);
 		int un = this.negativeTestExamples.size()
 			- this.getNumberOfCoveredNegativeTestExamples(description);
 
@@ -212,7 +211,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	 * @return Complete if the description
 	 */
 	protected double completeness_cal(OWLClassExpression description) {
-		int cp = this.getNumberCoveredPositiveExamples(description);
+		int cp = this.getNumberOfCoveredPositiveExamples(description);
 		return cp / (double) this.positiveExamples.size();
 	}
 

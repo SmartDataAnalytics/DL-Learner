@@ -14,13 +14,9 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.text.*;
 import java.util.stream.Collectors;
@@ -37,22 +33,13 @@ import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReduc
 import org.dllearner.algorithms.parcel.ParCELNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
-import org.dllearner.algorithms.parcel.ParCELRefinementOperatorPool;
 import org.dllearner.algorithms.parcel.ParCELStringUtilities;
-import org.dllearner.algorithms.parcel.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.algorithms.parcel.ParCELWorkerThreadFactory;
 import org.dllearner.core.*;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.refinementoperators.RefinementOperator;
 
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.dllearner.algorithms.parcel.ParCELearnerMBean;
 
 @ComponentAnn(name="ParCELearnerExV12", shortName="parcelearnerExV12", version=0.1, description="Parallel Class Expression Logic Learning with Exception")
@@ -100,14 +87,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 	 */
 	public static String getName() {
 		return "PLLearningReducer";
-	}
-
-	private double getCurrentAccuracy()
-	{
-		double acc = (this.negativeExamples.size() + this.positiveExamples.size() -
-			this.uncoveredPositiveExamples.size())/
-			(double) (this.positiveExamples.size() + this.negativeExamples.size());
-		return acc;
 	}
 
 	/**=========================================================================================================<br>
@@ -390,15 +369,24 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 					logger.info("Learning is manually terminated at " + this.miliLearningTime + "ms. Overall completeness (%): " + this.getCurrentlyOveralMaxCompleteness());
 					logger.info("Uncovered positive examples left " + this.uncoveredPositiveExamples.size() + " - " + ParCELStringUtilities.replaceString(this.uncoveredPositiveExamples.toString(), this.baseURI, this.prefix));					
 				}
+
+				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+				double acc = computeAccuracy(bestDescription);
+				logger.info("Accuracy: " + acc);
 						
 				logger.info("**Reduced partial definitions:");
 				TreeSet<ParCELExtraNode> compactedDefinitions = (TreeSet<ParCELExtraNode>) this.getReducedPartialDefinition();
 				this.noOfCompactedPartialDefinition = compactedDefinitions.size();
 				int count = 1;
 				for (ParCELExtraNode def : compactedDefinitions) {
+					int tpTest = learningProblem instanceof ParCELPosNegLP
+						? ((ParCELPosNegLP) learningProblem).getNumberOfCoveredPositiveTestExamples(def.getDescription())
+						: 0;
+
 					logger.info(count++ + ". " + OWLAPIRenderers.toManchesterOWLSyntax(ParCELExUtilities.groupDefinition(def.getDescription())).replace("and (not", "\nand (not") + //def.getDescription().toManchesterSyntaxString(baseURI, prefix) +
 							" (length:" + new OWLClassExpressionLengthCalculator().getLength(def.getDescription()) +
 							", accuracy: " + df.format(def.getAccuracy()) + " / " + computeTestAccuracy(def.getDescription()) +
+							", coverage: " + def.getCoveredPositiveExamples().size() + " / " + tpTest + ")" +
 							", type: " + def.getType() + ")");
 					
 					//print out the learning tree
@@ -518,10 +506,10 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 					String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
 					logger.info(timeStamp + ": " + def);
 
-					double acc = this.getCurrentAccuracy();
 					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
 
 					OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+					double acc = computeAccuracy(bestDescription);
 					double testAcc = computeTestAccuracy(bestDescription);
 
 					logger.info("Training time: " + actualTrainingTime + "s Accuracy: " + acc + " Test accuracy: " + testAcc);
@@ -634,10 +622,10 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 					String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
 					logger.info(timeStamp + ": " + def);
 
-					double acc = this.getCurrentAccuracy();
 					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
 
 					OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+					double acc = computeAccuracy(bestDescription);
 					double testAcc = computeTestAccuracy(bestDescription);
 
 					logger.info("Training time: " + actualTrainingTime + "s Accuracy: " + acc + " Test accuracy: " + testAcc);
