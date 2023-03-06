@@ -946,9 +946,9 @@ public class RhoDRDown
 				OWLClassExpression dNeg = constructNegationInNNF(d);
 				dNeg = ConceptTransformation.cleanConcept(dNeg);
 
-				// TODO: MY dropDisjuncts not supported
-				// TODO: MY some values from and has value for datatype properties not supported
-				// TODO: MY useAllConstructor, useExistsConstructor, applyAllFilter, applyExistsFilter ignored (assuming they are all set to true)
+				// TODO: dropDisjuncts not supported
+				// TODO: some values from and has value for datatype properties not supported
+				// TODO: useAllConstructor, useExistsConstructor, applyAllFilter, applyExistsFilter ignored (assuming they are all set to true)
 
 				// to satisfy the guarantee that the method does not return longer
 				// concepts, we perform an additional check

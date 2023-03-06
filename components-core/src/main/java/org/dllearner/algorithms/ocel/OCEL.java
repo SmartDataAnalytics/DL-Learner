@@ -860,7 +860,6 @@ public class OCEL extends AbstractCELA {
 
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
-					// TODO: MY use noise or remove noise variable entirely
 					if (quality != -1 && !(((PosNegLP) learningProblem).getAccuracyMethod() instanceof AccMethodNoWeakness) &&
 							((PosNegLP) learningProblem).getAccuracyMethod().getAccOrTooWeak2(
 									newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),

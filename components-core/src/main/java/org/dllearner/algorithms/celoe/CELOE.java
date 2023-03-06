@@ -276,11 +276,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			heuristic = new OEHeuristicRuntime();
 			heuristic.init();
 		}
-
-		// TODO: MY copy from MultiHeuristic
-//		if (heuristic instanceof OEHeuristicRuntime) {
-//			((OEHeuristicRuntime) heuristic).setLengthMetric(lengthMetric);
-//		}
 		
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		

@@ -122,7 +122,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
             operatorPrototype.setStartClass(startClass);
             operatorPrototype.setUseDisjunction(useDisjunction);
             operatorPrototype.setUseNegation(useNegation);
-            operatorPrototype.setUseDataHasValueConstructor(useHasData); // TODO: MY set default back to true
+            operatorPrototype.setUseDataHasValueConstructor(useHasData);
             operatorPrototype.setUseHasValueConstructor(useHasValue);
             operatorPrototype.setCardinalityLimit(cardinalityLimit);
             operatorPrototype.setMaxNrOfSplits(maxNoOfSplits);
