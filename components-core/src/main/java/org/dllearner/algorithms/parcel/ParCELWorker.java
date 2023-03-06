@@ -127,11 +127,10 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
 
         newNodes.add(nodeToProcess);
 
-        if (definitionsFound.size() > 0)
-            learner.newPartialDefinitionsFound(definitionsFound);
-
         learner.newRefinementDescriptions(newNodes);
 
+        if (definitionsFound.size() > 0)
+            learner.newPartialDefinitionsFound(definitionsFound);
     }
 
     /**

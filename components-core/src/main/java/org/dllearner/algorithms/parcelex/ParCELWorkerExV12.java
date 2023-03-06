@@ -158,20 +158,16 @@ public class ParCELWorkerExV12 extends ParCELExWorkerAbstract<ParCELExAbstract> 
 		
 		newNodes.add(nodeToProcess);
 
+		learner.newRefinementDescriptions(newNodes);		//don't need to check for empty since newNodes is never empty
 
 		if (newPartialDefinitions.size() > 0)
 			learner.newPartialDefinitionsFound(newPartialDefinitions);
 		
 		if (newCounterPartialDefinitions.size() > 0)
 			learner.newCounterPartialDefinitionsFound(newCounterPartialDefinitions);
-		
-		
+
 		if (newPotentialPartialDefinitions.size() > 0)
 			((ParCELearnerExV12)learner).newPotentialPartialDefinition(newPotentialPartialDefinitions);
-		 
-		
-		learner.newRefinementDescriptions(newNodes);		//don't need to check for empty since newNodes is never empty 
-
 	}
 
 }
