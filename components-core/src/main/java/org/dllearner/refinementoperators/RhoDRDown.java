@@ -550,7 +550,7 @@ public class RhoDRDown
 			}
 
 			if (useSomeOnly) {
-				refinements.removeIf(r -> r instanceof OWLObjectAllValuesFrom || !isSomeOnlySatisfied(r, Set.of()));
+				refinements.removeIf(r -> !isSomeOnlySatisfied(r, Set.of()));
 			}
 
 //			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
@@ -583,22 +583,20 @@ public class RhoDRDown
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					if(!useSomeOnly || isCombinable(description, c)) {
-						List<OWLClassExpression> newChildren = new ArrayList<>(operands);
-						newChildren.add(c);
-						newChildren.remove(child);
-						Collections.sort(newChildren);
-						OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
+					List<OWLClassExpression> newChildren = new ArrayList<>(operands);
+					newChildren.add(c);
+					newChildren.remove(child);
+					Collections.sort(newChildren);
+					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
 
-						// clean concept and transform it to ordered negation normal form
-						// (non-recursive variant because only depth 1 was modified)
-						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-						mc = ConceptTransformation.nnf(mc);
+					// clean concept and transform it to ordered negation normal form
+					// (non-recursive variant because only depth 1 was modified)
+					mc = ConceptTransformation.cleanConceptNonRecursive(mc);
+					mc = ConceptTransformation.nnf(mc);
 
-						// check whether the intersection is OK (sanity checks), then add it
-						if(checkIntersection((OWLObjectIntersectionOf) mc))
-							refinements.add(mc);
-					}
+					// check whether the intersection is OK (sanity checks), then add it
+					if((!useSomeOnly || isSomeOnlySatisfied(mc, Set.of(), 2)) && checkIntersection((OWLObjectIntersectionOf) mc))
+						refinements.add(mc);
 				}
 
 			}
@@ -862,9 +860,10 @@ public class RhoDRDown
 
 					// we only add \forall r.C to an intersection if there is
 					// already some existential restriction \exists r.C
-					if(useSomeOnly) {
-						skip = !isCombinable(description, c);
-					}
+					// => checking later using isSomeOnlySatisfied
+//					if(useSomeOnly) {
+//						skip = !isCombinable(description, c);
+//					}
 
 					// check for double datatype properties
 					/*
@@ -897,7 +896,7 @@ public class RhoDRDown
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if (checkIntersection(mc))
+						if ((!useSomeOnly || isSomeOnlySatisfied(mc, Set.of())) && checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -957,7 +956,7 @@ public class RhoDRDown
 					&& (useDisjunction || !containsDisjunction(dNeg))
 					&& (useNegation || !containsNegation(dNeg))
 					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
-					&& (!useSomeOnly || (!(dNeg instanceof OWLObjectAllValuesFrom) && isSomeOnlySatisfied(dNeg, Set.of())))
+					&& (!useSomeOnly || isSomeOnlySatisfied(dNeg, Set.of()))
 					&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
 				) {
 					results.add(dNeg);
@@ -1008,50 +1007,52 @@ public class RhoDRDown
 	}
 
 	private boolean isSomeOnlySatisfied(OWLClassExpression description, Set<OWLObjectPropertyExpression> prevSomeValuesProperties) {
-		if (description instanceof OWLObjectIntersectionOf) {
-			Set<OWLObjectPropertyExpression> allValuesProperties =
-				((OWLObjectIntersectionOf) description).getOperands()
-					.stream().filter(op -> op instanceof OWLObjectAllValuesFrom)
-					.map(op -> ((OWLObjectAllValuesFrom) op).getProperty())
-					.collect(Collectors.toSet());
+		return isSomeOnlySatisfied(description, prevSomeValuesProperties, -1);
+	}
 
+	// maxRecursiveCalls < 0 means that the entire description should be traversed recursively
+	private boolean isSomeOnlySatisfied(OWLClassExpression description, Set<OWLObjectPropertyExpression> prevSomeValuesProperties, int maxRecursiveCalls) {
+		if (maxRecursiveCalls == 0) {
+			return !(description instanceof OWLObjectAllValuesFrom)
+				|| prevSomeValuesProperties.contains(((OWLObjectAllValuesFrom) description).getProperty());
+		}
+
+		if (description instanceof OWLObjectIntersectionOf) {
 			Set<OWLObjectPropertyExpression> someValuesProperties =
 				((OWLObjectIntersectionOf) description).getOperands()
 					.stream().filter(op -> op instanceof OWLObjectSomeValuesFrom)
 					.map(op -> ((OWLObjectSomeValuesFrom) op).getProperty())
 					.collect(Collectors.toSet());
 
-			allValuesProperties.removeAll(someValuesProperties);
-
-			return allValuesProperties.isEmpty()
-				&& ((OWLObjectIntersectionOf) description).getOperands()
-					.stream().allMatch(op -> isSomeOnlySatisfied(op, someValuesProperties));
+			return ((OWLObjectIntersectionOf) description).getOperands()
+				.stream().allMatch(op -> isSomeOnlySatisfied(op, someValuesProperties, maxRecursiveCalls - 1));
 		}
 
 		if (description instanceof OWLObjectUnionOf) {
 			return ((OWLObjectUnionOf) description).getOperands()
-				.stream().allMatch(op ->
-					(!(op instanceof OWLObjectSomeValuesFrom) || prevSomeValuesProperties.contains(((OWLObjectSomeValuesFrom) op).getProperty()))
-					&& isSomeOnlySatisfied(op, Set.of())
-				);
+				.stream().allMatch(op -> isSomeOnlySatisfied(op, prevSomeValuesProperties, maxRecursiveCalls - 1));
 		}
 
 		if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
 
-			return isSomeOnlySatisfied(filler, Set.of());
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
 		}
 
 		if (description instanceof OWLObjectAllValuesFrom) {
+			if (!prevSomeValuesProperties.contains(((OWLObjectAllValuesFrom) description).getProperty())) {
+				return false;
+			}
+
 			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
 
-			return isSomeOnlySatisfied(filler, Set.of());
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
 		}
 
 		if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
 
-			return isSomeOnlySatisfied(filler, Set.of());
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
 		}
 
 		return true;
