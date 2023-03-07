@@ -567,6 +567,8 @@ public class OCEL extends AbstractCELA {
 			loop++;
 		}// end while
 
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+
 		if (solutionCandidates.size() > 0) {
 			// we do not need to print the best node if we display the top 20 solutions below anyway
 			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");

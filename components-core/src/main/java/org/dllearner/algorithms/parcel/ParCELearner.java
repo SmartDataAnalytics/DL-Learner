@@ -257,6 +257,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 									this.prefix));
 				}
 
+				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+
 				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
 				double acc = computeAccuracy(bestDescription);
 				logger.info("Accuracy: " + acc);

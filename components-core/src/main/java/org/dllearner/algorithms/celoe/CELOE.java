@@ -867,12 +867,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	private void printAlgorithmRunStats() {
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
 			logger.info(reasoner.toString());
 		} else {
-			totalRuntimeNs = System.nanoTime()-nanoStartTime;
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 	}
