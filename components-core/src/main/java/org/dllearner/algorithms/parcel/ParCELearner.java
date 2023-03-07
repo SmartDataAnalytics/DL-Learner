@@ -25,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.RejectedExecutionException;
@@ -185,7 +186,9 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 		// start time of the learner
 		miliStarttime = System.currentTimeMillis();
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 
 		// ----------------------------------------------------------
 		// perform the learning process until the conditions for
@@ -257,7 +260,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 									this.prefix));
 				}
 
-				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+				timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 
 				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
 				double acc = computeAccuracy(bestDescription);

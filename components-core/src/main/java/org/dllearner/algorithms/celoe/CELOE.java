@@ -48,6 +48,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -355,7 +356,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		currentHighestAccuracy = 0.0;
 		OENode nextNode;
 
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
@@ -867,7 +869,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	private void printAlgorithmRunStats() {
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");

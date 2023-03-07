@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -473,7 +474,8 @@ public class OCEL extends AbstractCELA {
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		logger.info("starting top down refinement with: " + renderer.render(startNode.getConcept()) + " (" + df.format(100 * startNode.getAccuracy()) + "% accuracy)");
 
 		int loop = 0;
@@ -567,7 +569,8 @@ public class OCEL extends AbstractCELA {
 			loop++;
 		}// end while
 
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+		timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 
 		if (solutionCandidates.size() > 0) {
 			// we do not need to print the best node if we display the top 20 solutions below anyway

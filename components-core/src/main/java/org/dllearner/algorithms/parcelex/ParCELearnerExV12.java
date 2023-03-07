@@ -196,7 +196,9 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		
 		//start time of reducer, statistical purpose only
 		miliStarttime = System.currentTimeMillis();
-		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		
 		//----------------------------------------------------------
 		// perform the learning process until the conditions for 
@@ -370,7 +372,8 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 					logger.info("Uncovered positive examples left " + this.uncoveredPositiveExamples.size() + " - " + ParCELStringUtilities.replaceString(this.uncoveredPositiveExamples.toString(), this.baseURI, this.prefix));					
 				}
 
-				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s");
+				timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 
 				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
 				double acc = computeAccuracy(bestDescription);
