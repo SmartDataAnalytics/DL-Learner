@@ -144,10 +144,10 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				//i) option 1: create an object pool
 				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1, maxNoOfSplits);
 			}
-						
-			refinementOperatorPool.getFactory().setUseDisjunction(false);
+
 			refinementOperatorPool.getFactory().setUseNegation(false);
 			refinementOperatorPool.getFactory().setUseHasValue(this.getUseHasValue());
+			refinementOperatorPool.getFactory().setUseRestrictedDisjunction(useRestrictedDisjunction);
 
 		}		
 

@@ -35,7 +35,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
 
     private int cardinalityLimit = 5;
     private boolean useNegation = true;
-    private boolean useDisjunction = true;
+    private boolean useRestrictedDisjunction = true;
     private boolean useHasValue = true;
     private boolean useHasData = false;
     private boolean useCardinalityRestrictions = true;
@@ -120,7 +120,8 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
             operatorPrototype.setReasoner(reasoner);
             operatorPrototype.setClassHierarchy(classHierarchy);
             operatorPrototype.setStartClass(startClass);
-            operatorPrototype.setUseDisjunction(useDisjunction);
+            operatorPrototype.setUseDisjunction(false);
+            operatorPrototype.setUseRestrictedDisjunction(useRestrictedDisjunction);
             operatorPrototype.setUseNegation(useNegation);
             operatorPrototype.setUseDataHasValueConstructor(useHasData);
             operatorPrototype.setUseHasValueConstructor(useHasValue);
@@ -162,13 +163,13 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Ref
     }
 
 
-    public boolean isUseDisjunction() {
-        return useDisjunction;
+    public boolean isUseRestrictedDisjunction() {
+        return useRestrictedDisjunction;
     }
 
 
-    public void setUseDisjunction(boolean useDisjunction) {
-        this.useDisjunction = useDisjunction;
+    public void setUseRestrictedDisjunction(boolean useRestrictedDisjunction) {
+        this.useRestrictedDisjunction = useRestrictedDisjunction;
     }
 
     public void setUseHasValue(boolean useHasValue) {

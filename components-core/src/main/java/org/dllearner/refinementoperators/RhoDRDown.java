@@ -210,6 +210,9 @@ public class RhoDRDown
 	@ConfigOption(description="support of disjunction (owl:unionOf), e.g. C\u2294 D ", defaultValue="true")
 	private boolean useDisjunction = true;
 
+	@ConfigOption(description="support of disjunction (owl:unionOf) within a qualified number restriction or a universal quantification; takes effect only if useDisjunction = false", defaultValue="true")
+	private boolean useRestrictedDisjunction = true;
+
 	@ConfigOption(description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
@@ -290,6 +293,7 @@ public class RhoDRDown
 		setUseExistsConstructor(op.useExistsConstructor);
 		setUseNegation(op.useNegation);
 		setUseDisjunction(op.useDisjunction);
+		setUseRestrictedDisjunction(op.useRestrictedDisjunction);
 		setUseHasValueConstructor(op.useHasValueConstructor);
 		setUseObjectValueNegation(op.useObjectValueNegation);
 		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
@@ -708,14 +712,25 @@ public class RhoDRDown
 			if(description instanceof OWLObjectMaxCardinality) {
 				// rule 1: <= x r.C =>  <= x r.D
 				if(useNegation || cardinality > 0){
-					if (refineMaxCardinalityRestrictionsUpwards) {
-						tmp = refine(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
-					} else {
-						tmp = refineUpwards(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
+					boolean useDisjunctionBackup = useDisjunction;
+					if (!useDisjunction && useRestrictedDisjunction) {
+						useDisjunction = true;
 					}
 
-					for(OWLClassExpression d : tmp) {
-						refinements.add(df.getOWLObjectMaxCardinality(cardinality,role,d));
+					try {
+						if (refineMaxCardinalityRestrictionsUpwards) {
+							tmp = refine(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
+						} else {
+							tmp = refineUpwards(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
+						}
+
+						useDisjunction = useDisjunctionBackup;
+
+						for(OWLClassExpression d : tmp) {
+							refinements.add(df.getOWLObjectMaxCardinality(cardinality,role,d));
+						}
+					} catch (Throwable t) {
+						useDisjunction = useDisjunctionBackup;
 					}
 				}
 
@@ -726,10 +741,21 @@ public class RhoDRDown
 				}
 
 			} else if(description instanceof OWLObjectMinCardinality) {
-				tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+				boolean useDisjunctionBackup = useDisjunction;
+				if (!useDisjunction && useRestrictedDisjunction) {
+					useDisjunction = true;
+				}
 
-				for(OWLClassExpression d : tmp) {
-					refinements.add(df.getOWLObjectMinCardinality(cardinality,role,d));
+				try {
+					tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+
+					useDisjunction = useDisjunctionBackup;
+
+					for(OWLClassExpression d : tmp) {
+						refinements.add(df.getOWLObjectMinCardinality(cardinality,role,d));
+					}
+				} catch (Throwable t) {
+					useDisjunction = useDisjunctionBackup;
 				}
 
 				// >= x r.C  =>  >= (x+1) r.C
@@ -1098,10 +1124,21 @@ public class RhoDRDown
 		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role.asOWLObjectProperty());
 
 		// rule 1: ALL r.D => ALL r.E
-		Set<OWLClassExpression> tmp = refine(filler, maxLength-lengthMetric.objectAllValuesLength-lengthMetric.objectProperyLength, null, range);
+		boolean useDisjunctionBackup = useDisjunction;
+		if (!useDisjunction && useRestrictedDisjunction) {
+			useDisjunction = true;
+		}
 
-		for(OWLClassExpression c : tmp) {
-			refinements.add(df.getOWLObjectAllValuesFrom(role, c));
+		try {
+			Set<OWLClassExpression> tmp = refine(filler, maxLength-lengthMetric.objectAllValuesLength-lengthMetric.objectProperyLength, null, range);
+
+			useDisjunction = useDisjunctionBackup;
+
+			for(OWLClassExpression c : tmp) {
+				refinements.add(df.getOWLObjectAllValuesFrom(role, c));
+			}
+		} catch (Throwable t) {
+			useDisjunction = useDisjunctionBackup;
 		}
 
 		// rule 2 UPDATED: ALL r.TOP => ALL r.BOTTOM
@@ -2100,6 +2137,14 @@ public class RhoDRDown
 
 	public boolean isUseDisjunction() {
 		return useDisjunction;
+	}
+
+	public boolean isUseRestrictedDisjunction() {
+		return useRestrictedDisjunction;
+	}
+
+	public void setUseRestrictedDisjunction(boolean useRestrictedDisjunction) {
+		this.useRestrictedDisjunction = useRestrictedDisjunction;
 	}
 
 	public boolean isUseBooleanDatatypes() {

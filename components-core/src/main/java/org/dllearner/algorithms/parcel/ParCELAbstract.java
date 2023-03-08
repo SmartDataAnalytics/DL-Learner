@@ -1,7 +1,5 @@
 package org.dllearner.algorithms.parcel;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.reducer.ParCELImprovedCoverageGreedyReducer;
@@ -13,7 +11,6 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -22,9 +19,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.naming.OperationNotSupportedException;
 import java.lang.invoke.MethodHandles;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -71,6 +66,9 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 	@ConfigOption(defaultValue = "5", description = "Cardinality limit")
 	protected int cardinalityLimit = 5;
+
+	@ConfigOption(description="support of disjunction (owl:unionOf) within a qualified number restriction or a universal quantification", defaultValue="false")
+	protected boolean useRestrictedDisjunction = false;
 
 	@ConfigOption(defaultValue = "owl:Thing",
 			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
@@ -252,6 +250,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 		if (operator instanceof RhoDRDown) {
 			((RhoDRDown) operator).setUseDisjunction(false);
+			((RhoDRDown) operator).setUseRestrictedDisjunction(useRestrictedDisjunction);
 		}
 	}
 
@@ -420,11 +419,11 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 					startClass, numberOfWorkers + 1, maxNoOfSplits);
 			}
 
-			refinementOperatorPool.getFactory().setUseDisjunction(false);
 			refinementOperatorPool.getFactory().setUseNegation(useNegation);
 			refinementOperatorPool.getFactory().setUseHasValue(useHasValue);
 			refinementOperatorPool.getFactory().setUseHasData(useHasData);
 			refinementOperatorPool.getFactory().setCardinalityLimit(cardinalityLimit);
+			refinementOperatorPool.getFactory().setUseRestrictedDisjunction(useRestrictedDisjunction);
 			refinementOperatorPool.getFactory().setUseCardinalityRestrictions(useCardinalityRestrictions);
 		} else {
 			ParCELRefinementOperatorFactory opFactory;
@@ -731,6 +730,14 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 	public int getCardinalityLimit() {
 		return this.cardinalityLimit;
+	}
+
+	public boolean isUseRestrictedDisjunction() {
+		return useRestrictedDisjunction;
+	}
+
+	public void setUseRestrictedDisjunction(boolean useRestrictedDisjunction) {
+		this.useRestrictedDisjunction = useRestrictedDisjunction;
 	}
 
 	public void setOperator(RefinementOperator refinementOp) {
