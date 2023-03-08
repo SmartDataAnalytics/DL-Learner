@@ -155,12 +155,13 @@ public class RhoDRDown
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<>();
 
 	// numeric values splitter
+	@ConfigOption(description = "the splitter to use for computing split intervals for numeric types", defaultValue = "DefaultNumericValuesSplitter")
 	private ValuesSplitter numericValuesSplitter;
 
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits;
 
-	@ConfigOption(description = "the number of generated split intervals for numeric types", defaultValue = "12")
+	@ConfigOption(description = "the number of generated split intervals for numeric types, applies only to default splitter", defaultValue = "12")
 	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
