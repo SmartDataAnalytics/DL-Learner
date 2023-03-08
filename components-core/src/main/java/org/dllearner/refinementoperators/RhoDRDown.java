@@ -550,7 +550,7 @@ public class RhoDRDown
 			}
 
 			if (useSomeOnly) {
-				refinements.removeIf(r -> !isSomeOnlySatisfied(r, Set.of()));
+				refinements.removeIf(r -> !isSomeOnlySatisfied(r));
 			}
 
 //			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
@@ -595,7 +595,7 @@ public class RhoDRDown
 					mc = ConceptTransformation.nnf(mc);
 
 					// check whether the intersection is OK (sanity checks), then add it
-					if((!useSomeOnly || isSomeOnlySatisfied(mc, Set.of(), 2)) && checkIntersection((OWLObjectIntersectionOf) mc))
+					if((!useSomeOnly || isSomeOnlySatisfied(mc, 2)) && checkIntersection((OWLObjectIntersectionOf) mc))
 						refinements.add(mc);
 				}
 
@@ -896,7 +896,7 @@ public class RhoDRDown
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if ((!useSomeOnly || isSomeOnlySatisfied(mc, Set.of())) && checkIntersection(mc))
+						if ((!useSomeOnly || isSomeOnlySatisfied(mc)) && checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -956,7 +956,7 @@ public class RhoDRDown
 					&& (useDisjunction || !containsDisjunction(dNeg))
 					&& (useNegation || !containsNegation(dNeg))
 					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
-					&& (!useSomeOnly || isSomeOnlySatisfied(dNeg, Set.of()))
+					&& (!useSomeOnly || isSomeOnlySatisfied(dNeg))
 					&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
 				) {
 					results.add(dNeg);
@@ -1006,8 +1006,13 @@ public class RhoDRDown
 			);
 	}
 
-	private boolean isSomeOnlySatisfied(OWLClassExpression description, Set<OWLObjectPropertyExpression> prevSomeValuesProperties) {
-		return isSomeOnlySatisfied(description, prevSomeValuesProperties, -1);
+	private boolean isSomeOnlySatisfied(OWLClassExpression description) {
+		return isSomeOnlySatisfied(description, -1);
+	}
+
+	// maxRecursiveCalls < 0 means that the entire description should be traversed recursively
+	private boolean isSomeOnlySatisfied(OWLClassExpression description, int maxRecursiveCalls) {
+		return isSomeOnlySatisfied(description, Set.of(), maxRecursiveCalls);
 	}
 
 	// maxRecursiveCalls < 0 means that the entire description should be traversed recursively
