@@ -923,7 +923,7 @@ public class RhoDRDown
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if ((!useSomeOnly || isSomeOnlySatisfied(mc)) && checkIntersection(mc))
+						if ((!useSomeOnly || isSomeOnlySatisfied(mc, 2)) && checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -1052,8 +1052,10 @@ public class RhoDRDown
 		if (description instanceof OWLObjectIntersectionOf) {
 			Set<OWLObjectPropertyExpression> someValuesProperties =
 				((OWLObjectIntersectionOf) description).getOperands()
-					.stream().filter(op -> op instanceof OWLObjectSomeValuesFrom)
-					.map(op -> ((OWLObjectSomeValuesFrom) op).getProperty())
+					.stream().filter(op ->
+						op instanceof OWLObjectSomeValuesFrom
+							|| (op instanceof OWLObjectMinCardinality && ((OWLObjectMinCardinality) op).getCardinality() > 0))
+					.map(op -> ((OWLObjectRestriction) op).getProperty())
 					.collect(Collectors.toSet());
 
 			return ((OWLObjectIntersectionOf) description).getOperands()
