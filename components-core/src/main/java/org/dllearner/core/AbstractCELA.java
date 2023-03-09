@@ -135,6 +135,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	private List<Double> bestConceptsTrainingAccuracies = new ArrayList<>();
 	private List<Double> bestConceptsTestAccuracies = new ArrayList<>();
 
+	private final OperatingSystemMXBean osBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
     /**
      * Default Constructor
      */
@@ -500,8 +502,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 
 	// beware that this includes the setup time as well
 	protected long getCurrentCpuMillis() {
-		OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-		return bean.getProcessCpuTime() / 1_000_000;
+		return osBean.getProcessCpuTime() / 1_000_000;
 	}
 	
 	protected boolean isTimeExpired() {
