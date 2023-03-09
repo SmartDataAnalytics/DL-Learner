@@ -567,29 +567,35 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
-		
-		OENode node = createNode(parentNode, description);
-		
+
+		// quality of class expression (return if too weak)
+		Monitor mon = MonitorFactory.start("lp");
+		logger.trace(sparql_debug, sparql_debug_out);
+		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		logger.trace(sparql_debug, "`acc:"+accuracy);
+		mon.stop();
+
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
-		if(node.getAccuracy() > 1.0 || (node.getAccuracy() < 0.0 && node.getAccuracy() != -1)) {
-			throw new RuntimeException("Invalid accuracy value " + node.getAccuracy() + " for class expression " + description +
+		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
+			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
 					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
 
 		expressionTests++;
 
 		// return FALSE if 'too weak'
-		if(node.getAccuracy() == -1) {
+		if(accuracy == -1) {
 			return false;
 		}
 
+		OENode node = new OENode(description, accuracy);
 		searchTree.addNode(parentNode, node);
 		
 		// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
 		if(singleSuggestionMode) {
-			if(node.getAccuracy() > bestAccuracy) {
-				bestAccuracy = node.getAccuracy();
+			if(accuracy > bestAccuracy) {
+				bestAccuracy = accuracy;
 				bestDescription = description;
 				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription));
 			}
@@ -604,8 +610,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			EvaluatedDescription<? extends Score> worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
 			isCandidate =
-				(node.getAccuracy() > accThreshold ||
-				(node.getAccuracy() >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
+				(accuracy > accThreshold ||
+				(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
 		}
 		
 		if(isCandidate) {
@@ -626,7 +632,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			boolean shorterDescriptionExists = false;
 			if(forceMutualDifference) {
 				for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
-					if(Math.abs(ed.getAccuracy()-node.getAccuracy()) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
 //						System.out.println("shorter: " + ed.getDescription());
 						shorterDescriptionExists = true;
 						break;
@@ -639,16 +645,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
 //					System.out.println(node + "->" + niceDescription);
-
-					if (learningProblem instanceof PosNegLPStandard) {
-						EvaluatedDescription<? extends Score> ed = ((PosNegLPStandard) learningProblem).constructEvaluatedDescription(
-							niceDescription, node.getCoveredPositiveExamples(), node.getCoveredNegativeExamples(), node.getAccuracy()
-						);
-						bestEvaluatedDescriptions.add(ed);
-					} else {
-						bestEvaluatedDescriptions.add(niceDescription, node.getAccuracy(), learningProblem);
-					}
-
+					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
@@ -659,11 +656,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
 
-		if (node.getAccuracy() >= 1 - noiseWithMargin) {
+		if (accuracy >= 1 - noiseWithMargin) {
 			if (solutionCandidates.isEmpty()
-				|| (node.getAccuracy() > solutionCandidates.firstKey().getAccuracy()
+				|| (accuracy > solutionCandidates.firstKey().getAccuracy()
 					&& solutionCandidates.keySet().stream().allMatch(
-						n -> Math.abs(node.getAccuracy() - n.getAccuracy()) > solutionCandidatesMinAccuracyDiff
+						n -> Math.abs(accuracy - n.getAccuracy()) > solutionCandidatesMinAccuracyDiff
 					)
 				)
 			) {
@@ -676,51 +673,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 
 		return true;
-	}
-
-	private OENode createNode(OENode parent, OWLClassExpression refinement) {
-		if (!(learningProblem instanceof PosNegLPStandard)) {
-			Monitor mon = MonitorFactory.start("lp");
-			double accuracy = learningProblem.getAccuracyOrTooWeak(refinement, noise);
-			mon.stop();
-
-			return new OENode(refinement, accuracy);
-		}
-
-		PosNegLPStandard posNegLP = (PosNegLPStandard) learningProblem;
-
-		Set<OWLIndividual> coveredPositives;
-		Set<OWLIndividual> coveredNegatives;
-
-		Monitor mon = MonitorFactory.start("lp");
-
-		if (parent == null) {
-			coveredPositives = reasoner.hasType(refinement, posNegLP.getPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, posNegLP.getNegativeExamples());
-		} else if (operator instanceof DownwardRefinementOperator) {
-			coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
-		} else {
-			Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
-			uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
-			Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
-			uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
-
-			coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
-			coveredPositives.addAll(parent.getCoveredPositiveExamples());
-			coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
-			coveredNegatives.addAll(parent.getCoveredNegativeExamples());
-		}
-
-		double accuracy = posNegLP.getAccuracyOrTooWeak(coveredPositives, coveredNegatives, noise);
-
-		mon.stop();
-
-		OENode node = new OENode(refinement, accuracy);
-		node.setCoveredPositiveExamples(coveredPositives);
-		node.setCoveredNegativeExamples(coveredNegatives);
-
-		return node;
 	}
 	
 	// checks whether the class expression is allowed
