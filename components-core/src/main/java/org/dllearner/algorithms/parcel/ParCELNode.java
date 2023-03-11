@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -77,4 +79,14 @@ public class ParCELNode extends OENode {
 		this.description = newDescription;
 	}
 
+	public static void enableCompactCoverageRepresentation(LearningProblem learningProblem) {
+		if (!(learningProblem instanceof ParCELPosNegLP)) {
+			throw new UnsupportedOperationException("Compacted coverage representation is only supported for ParCELPosNegLP learning problems.");
+		}
+
+		Set<OWLIndividual> positives = ((ParCELPosNegLP) learningProblem).getPositiveExamples();
+		Set<OWLIndividual> negatives = ((ParCELPosNegLP) learningProblem).getNegativeExamples();
+
+		enableCompactCoverageRepresentation(positives, negatives);
+	}
 }

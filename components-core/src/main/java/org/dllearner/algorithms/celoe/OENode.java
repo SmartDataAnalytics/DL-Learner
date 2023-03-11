@@ -18,7 +18,10 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -26,9 +29,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
@@ -58,9 +61,17 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	// (and avoids the problem that adding children changes the heuristic value)
 	private int refinementCount = 0;
 
-	private Set<OWLIndividual> coveredPositiveExamples = new TreeSet<>();
-	private Set<OWLIndividual> coveredNegativeExamples = new TreeSet<>();
-	
+	private static boolean useCompactedCoverage = false;
+
+	private static OWLIndividual[] allPositiveExamplesSorted;
+	private static OWLIndividual[] allNegativeExamplesSorted;
+
+	private Boolean[] compactedCoveredPositiveExamples;
+	private Boolean[] compactedCoveredNegativeExamples;
+
+	private final Set<OWLIndividual> coveredPositiveExamples = new TreeSet<>();
+	private final Set<OWLIndividual> coveredNegativeExamples = new TreeSet<>();
+
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
 	public OENode(OWLClassExpression description, double accuracy) {
@@ -143,14 +154,41 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	public Set<OWLIndividual> getCoveredPositiveExamples() {
+		if (useCompactedCoverage) {
+			return getCompactedCoveredPositiveExamples();
+		}
+
 		return coveredPositiveExamples;
 	}
 
+	private Set<OWLIndividual> getCompactedCoveredPositiveExamples() {
+		return IntStream.range(0, allPositiveExamplesSorted.length)
+				.mapToObj(i -> compactedCoveredPositiveExamples[i] ? allPositiveExamplesSorted[i] : null)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+	}
+
 	public Set<OWLIndividual> getCoveredNegativeExamples() {
+		if (useCompactedCoverage) {
+			return getCompactedCoveredNegativeExamples();
+		}
+
 		return coveredNegativeExamples;
 	}
 
+	private Set<OWLIndividual> getCompactedCoveredNegativeExamples() {
+		return IntStream.range(0, allNegativeExamplesSorted.length)
+				.mapToObj(i -> compactedCoveredNegativeExamples[i] ? allNegativeExamplesSorted[i] : null)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+	}
+
 	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
+		if (useCompactedCoverage) {
+			setCompactedCoveredPositiveExamples(coveredPositiveExamples);
+			return;
+		}
+
 		this.coveredPositiveExamples.clear();
 
 		if (coveredPositiveExamples != null) {
@@ -158,11 +196,46 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		}
 	}
 
+	private void setCompactedCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
+		compactedCoveredPositiveExamples = Arrays.stream(allPositiveExamplesSorted)
+				.map(coveredPositiveExamples::contains)
+				.toArray(Boolean[]::new);
+	}
+
 	public void setCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
+		if (useCompactedCoverage) {
+			setCompactedCoveredNegativeExamples(coveredNegativeExamples);
+			return;
+		}
+
 		this.coveredNegativeExamples.clear();
 
 		if (coveredNegativeExamples != null) {
 			this.coveredNegativeExamples.addAll(coveredNegativeExamples);
 		}
+	}
+
+	private void setCompactedCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
+		compactedCoveredNegativeExamples = Arrays.stream(allNegativeExamplesSorted)
+				.map(coveredNegativeExamples::contains)
+				.toArray(Boolean[]::new);
+	}
+
+	public static void enableCompactCoverageRepresentation(LearningProblem learningProblem) {
+		if (!(learningProblem instanceof PosNegLP)) {
+			throw new UnsupportedOperationException("Compacted coverage representation is only supported for PosNegLP learning problems.");
+		}
+
+		Set<OWLIndividual> positives = ((PosNegLP) learningProblem).getPositiveExamples();
+		Set<OWLIndividual> negatives = ((PosNegLP) learningProblem).getNegativeExamples();
+
+		enableCompactCoverageRepresentation(positives, negatives);
+	}
+
+	protected static void enableCompactCoverageRepresentation(Set<OWLIndividual> allPositiveExamples, Set<OWLIndividual> allNegativeExamples) {
+		allPositiveExamplesSorted = allPositiveExamples.stream().sorted().toArray(OWLIndividual[]::new);
+		allNegativeExamplesSorted = allNegativeExamples.stream().sorted().toArray(OWLIndividual[]::new);
+
+		useCompactedCoverage = true;
 	}
 }

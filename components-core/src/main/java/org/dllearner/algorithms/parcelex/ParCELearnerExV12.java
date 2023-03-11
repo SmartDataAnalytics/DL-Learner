@@ -111,8 +111,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		positiveTestExamples = ((ParCELPosNegLP) learningProblem).getPositiveTestExamples();
 		negativeTestExamples = ((ParCELPosNegLP) learningProblem).getNegativeTestExamples();
 		
-		((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(this.positiveExamples);
-		
 		//initial heuristic which will be used by reducer to sort the search tree (expansion strategy)
 		//the heuristic need to get some constant from the configurator for scoring the description
 		if (heuristic == null) {
@@ -491,9 +489,6 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 				synchronized (partialDefinitions) {
 					partialDefinitions.add(def);
 				}
-				
-				//update the uncovered positive examples for the learning problem
-				((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(uncoveredPositiveExamples);
 				
 				if (logger.isTraceEnabled()) {
 					logger.trace("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +

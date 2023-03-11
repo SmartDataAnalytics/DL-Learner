@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.ParCELAbstract;
+import org.dllearner.algorithms.parcel.ParCELEvaluationResult;
 import org.dllearner.algorithms.parcel.ParCELExtraNode;
 import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
@@ -183,4 +186,15 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 				timeout;
 	}
 
+	@Override
+	protected ParCELEvaluationResult getAccuracyAndCorrectnessDownward(OENode parent, OWLClassExpression refinement) {
+		// TODO: only ParCELPosNegLP supported
+
+		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+		Set<OWLIndividual> coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
+		Set<OWLIndividual> coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
+
+		return posNegLP.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+	}
 }

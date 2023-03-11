@@ -400,9 +400,6 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 					partialDefinitions.add(def);
 				}
 				
-				//update the uncovered positive examples for the learning problem
-				((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(uncoveredPositiveExamples);
-				
 				if (logger.isTraceEnabled()) {
 					logger.trace("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
 							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +

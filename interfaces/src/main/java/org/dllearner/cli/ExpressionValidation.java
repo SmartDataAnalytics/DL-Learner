@@ -129,21 +129,35 @@ public class ExpressionValidation extends CLIBase2 {
 //			)
 //		);
 
+//		expression = dataFactory.getOWLObjectIntersectionOf(
+//			dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#ExecutableFile")),
+//			dataFactory.getOWLObjectSomeValuesFrom(
+//				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
+//				dataFactory.getOWLObjectIntersectionOf(
+//					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
+//					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#UninitializedDataSection"))
+//				)
+//			)
+//		);
+
 		expression = dataFactory.getOWLObjectIntersectionOf(
-			dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#ExecutableFile")),
 			dataFactory.getOWLObjectSomeValuesFrom(
-				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_section")),
-				dataFactory.getOWLObjectIntersectionOf(
-					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#CodeSection")),
-					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#UninitializedDataSection"))
+				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_file_feature")),
+				dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#MultipleExecutableSections"))
+			),
+			dataFactory.getOWLObjectMaxCardinality(
+				1,
+				dataFactory.getOWLObjectProperty(IRI.create("https://orbis-security.com/pe-malware-ontology#has_file_feature")),
+				dataFactory.getOWLObjectComplementOf(
+					dataFactory.getOWLClass(IRI.create("https://orbis-security.com/pe-malware-ontology#Resources"))
 				)
 			)
 		);
 
 		logger.info("#EVAL# expression: " + expression);
 
-		Set<OWLIndividual> pos = ((ParCELPosNegLP) lp).getPositiveTestExamples();
-		Set<OWLIndividual> neg = ((ParCELPosNegLP) lp).getNegativeTestExamples();
+		Set<OWLIndividual> pos = ((ParCELPosNegLP) lp).getPositiveExamples();
+		Set<OWLIndividual> neg = ((ParCELPosNegLP) lp).getNegativeExamples();
 
 		int tp = rs.hasType(expression, pos).size();
 		int fp = rs.hasType(expression, neg).size();

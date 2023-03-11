@@ -444,7 +444,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 
 			double correctness = (double) notCoveredNeg / (double) negativeExamples.size();
 			double completeness = (double) coveredPositiveExamples.size()
-					/ uncoveredPositiveExamples.size();
+					/ localUncoveredPositiveExamples.size();
 
 			// double accuracy = (positiveExamples.size() - notCoveredPos +
 			// notCoveredNeg)/(double)(positiveExamples.size() + negativeExamples.size());
@@ -492,6 +492,43 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 		result.coveredNegativeExamples = coveredNegativeExamples;
 
 		return result;
+	}
+
+	public ParCELEvaluationResult getAccuracyAndCorrectness5(
+			OWLClassExpression description,
+			Set<OWLIndividual> potentiallyCoveredPositiveExamples, Set<OWLIndividual> potentiallyCoveredNegativeExamples
+	) {
+		Set<OWLIndividual> uncoveredPositives;
+
+		if (uncoveredPositiveExamples != null) {
+			synchronized (uncoveredPositiveExamples) {
+				uncoveredPositives = new HashSet<>(uncoveredPositiveExamples);
+			}
+		} else {
+			uncoveredPositives = new HashSet<>(positiveExamples);
+		}
+
+		Set<OWLIndividual> potentiallyCoveredUncoveredPositives = new HashSet<>();
+		Set<OWLIndividual> potentiallyCoveredCoveredPositives = new HashSet<>();
+
+		for (OWLIndividual ex : potentiallyCoveredPositiveExamples) {
+			if (uncoveredPositives.contains(ex)) {
+				potentiallyCoveredUncoveredPositives.add(ex);
+			} else {
+				potentiallyCoveredCoveredPositives.add(ex);
+			}
+		}
+
+		Set<OWLIndividual> coveredPositives = reasoner.hasType(description, potentiallyCoveredUncoveredPositives);
+
+		if (coveredPositives.isEmpty()) {
+			return new ParCELEvaluationResult(-1, 0, 0);
+		}
+
+		coveredPositives.addAll(reasoner.hasType(description, potentiallyCoveredCoveredPositives));
+		Set<OWLIndividual> coveredNegatives = reasoner.hasType(description, potentiallyCoveredNegativeExamples);
+
+		return getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 	}
 
 	/**
@@ -621,7 +658,9 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	}
 
 	public void setUncoveredPositiveExamples(Set<OWLIndividual> uncoveredPositiveExamples) {
-		this.uncoveredPositiveExamples = uncoveredPositiveExamples;
+		if (this.uncoveredPositiveExamples == null) {
+			this.uncoveredPositiveExamples = uncoveredPositiveExamples;
+		}
 	}
 
 	public void setPositiveTestExamples(Set<OWLIndividual> positiveTestExamples) {

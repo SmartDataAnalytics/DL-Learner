@@ -1,12 +1,14 @@
 package org.dllearner.algorithms.parcel;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * ParCEL worker which find and evaluate the refinements for a given node.
@@ -61,6 +63,12 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
                     + ParCELStringUtilities.replaceString(nodeToProcess.toString(), this.baseURI,
                     this.prefix));
 
+        if (!learner.canIncreaseCoverage(nodeToProcess)) {
+            // we can safely remove the node from the tree, since it is no longer valuable
+            // TODO: check that it is sufficient to remove it from the parent's children
+            nodeToProcess.getParent().getChildren().remove(nodeToProcess);
+            return;
+        }
 
         HashSet<ParCELExtraNode> definitionsFound = new HashSet<>(); // hold the
         // partial

@@ -18,6 +18,7 @@ import org.dllearner.algorithms.parcel.reducer.ParCELReducer;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.refinementoperators.DownwardRefinementOperator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -317,6 +318,23 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	private void createNewTask(ParCELNode nodeToProcess) {
 		workerPool.execute(new ParCELWorker(this, this.refinementOperatorPool,
 											(ParCELPosNegLP) learningProblem, nodeToProcess, "ParCELTask-" + (noOfTask++)));
+	}
+
+	/**
+	 * Determines whether the refinements of the description represented by a given node can cover any uncovered positive
+	 * examples.
+	 *
+	 * @param nodeToProcess the node to investigate
+	 * @return true if an increase is possible, false otherwise
+	 */
+	protected boolean canIncreaseCoverage(ParCELNode nodeToProcess) {
+		if (refinementOperatorPool.getFactory().getOperatorPrototype() instanceof DownwardRefinementOperator) {
+			synchronized (uncoveredPositiveExamples) {
+				return nodeToProcess.getCoveredPositiveExamples().stream().anyMatch(uncoveredPositiveExamples::contains);
+			}
+		} else {
+			return true;
+		}
 	}
 
 	/**
