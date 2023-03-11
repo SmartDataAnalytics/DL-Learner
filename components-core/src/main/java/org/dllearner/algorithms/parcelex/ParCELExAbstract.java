@@ -1,9 +1,7 @@
 package org.dllearner.algorithms.parcelex;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
+
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.ParCELAbstract;
@@ -186,6 +184,18 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 				timeout;
 	}
 
+
+	protected ParCELEvaluationResult getAccuracyAndCorrectnessRoot(OWLClassExpression refinement) {
+		// TODO: only ParCELPosNegLP supported
+
+		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+		Set<OWLIndividual> coveredPositives = reasoner.hasType(refinement, posNegLP.getPositiveExamples());
+		Set<OWLIndividual> coveredNegatives = reasoner.hasType(refinement, posNegLP.getNegativeExamples());
+
+		return posNegLP.getAccuracyAndCorrectnessNoChecks(coveredPositives, coveredNegatives);
+	}
+
 	@Override
 	protected ParCELEvaluationResult getAccuracyAndCorrectnessDownward(OENode parent, OWLClassExpression refinement) {
 		// TODO: only ParCELPosNegLP supported
@@ -195,6 +205,18 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 		Set<OWLIndividual> coveredPositives = reasoner.hasType(refinement, parent.getCoveredPositiveExamples());
 		Set<OWLIndividual> coveredNegatives = reasoner.hasType(refinement, parent.getCoveredNegativeExamples());
 
-		return posNegLP.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+		return posNegLP.getAccuracyAndCorrectnessNoChecks(coveredPositives, coveredNegatives);
+	}
+
+	@Override
+	protected ParCELEvaluationResult getAccuracyAndCorrectnessUpward(OENode parent, OWLClassExpression refinement) {
+		// TODO: only ParCELPosNegLP supported
+
+		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+		Set<OWLIndividual> coveredPositives = getCoveredPositiveExamplesUpward(parent, refinement);
+		Set<OWLIndividual> coveredNegatives = getCoveredNegativeExamplesUpward(parent, refinement);
+
+		return posNegLP.getAccuracyAndCorrectnessNoChecks(coveredPositives, coveredNegatives);
 	}
 }

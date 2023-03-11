@@ -263,19 +263,15 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		// create a start node in the search tree
 		allDescriptions.add(startClass);
 
-		Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
-		Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
-
-		ParCELEvaluationResult accAndCorr = ((ParCELPosNegLP) learningProblem)
-			.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
+		ParCELEvaluationResult accAndCorr = getAccuracyAndCorrectness(null, startClass);
 
 		ParCELNode startNode = new ParCELNode(
 			null, startClass,
 			accAndCorr.accuracy, accAndCorr.correctness, accAndCorr.completeness
 		);
 
-		startNode.setCoveredPositiveExamples(coveredPositives);
-		startNode.setCoveredNegativeExamples(coveredNegatives);
+		startNode.setCoveredPositiveExamples(accAndCorr.coveredPositiveExamples);
+		startNode.setCoveredNegativeExamples(accAndCorr.coveredNegativeExamples);
 
 		searchTree.add(startNode);
 	}
@@ -480,18 +476,20 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 		Set<OWLIndividual> potentiallyCoveredPositives = posNegLP.getPositiveExamples();
 		Set<OWLIndividual> potentiallyCoveredNegatives = posNegLP.getNegativeExamples();
 
-		return posNegLP.getAccuracyAndCorrectness5(refinement, potentiallyCoveredPositives, potentiallyCoveredNegatives);
+		return posNegLP.getAccuracyAndCorrectness5(
+                refinement, potentiallyCoveredPositives, potentiallyCoveredNegatives
+        );
 	}
 
 	protected ParCELEvaluationResult getAccuracyAndCorrectnessDownward(OENode parent, OWLClassExpression refinement) {
 		// TODO: only ParCELPosNegLP supported
 
-		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
-
 		Set<OWLIndividual> potentiallyCoveredPositives = parent.getCoveredPositiveExamples();
 		Set<OWLIndividual> potentiallyCoveredNegatives = parent.getCoveredNegativeExamples();
 
-		return posNegLP.getAccuracyAndCorrectness5(refinement, potentiallyCoveredPositives, potentiallyCoveredNegatives);
+		return ((ParCELPosNegLP) learningProblem).getAccuracyAndCorrectness5(
+                refinement, potentiallyCoveredPositives, potentiallyCoveredNegatives
+        );
 	}
 
 	protected ParCELEvaluationResult getAccuracyAndCorrectnessUpward(OENode parent, OWLClassExpression refinement) {
@@ -499,18 +497,39 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 
 		ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
 
-		Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
-		uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
-		Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
-		uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
-
-		Set<OWLIndividual> coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
-		coveredPositives.addAll(parent.getCoveredPositiveExamples());
-		Set<OWLIndividual> coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
-		coveredNegatives.addAll(parent.getCoveredNegativeExamples());
+		Set<OWLIndividual> coveredPositives = getCoveredPositiveExamplesUpward(parent, refinement);
+		Set<OWLIndividual> coveredNegatives = getCoveredNegativeExamplesUpward(parent, refinement);
 
 		return posNegLP.getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 	}
+
+    protected Set<OWLIndividual> getCoveredPositiveExamplesUpward(OENode parent, OWLClassExpression refinement) {
+        // TODO: only ParCELPosNegLP supported
+
+        ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+        Set<OWLIndividual> uncoveredPositives = new TreeSet<>(posNegLP.getPositiveExamples());
+        uncoveredPositives.removeAll(parent.getCoveredPositiveExamples());
+
+        Set<OWLIndividual> coveredPositives = reasoner.hasType(refinement, uncoveredPositives);
+        coveredPositives.addAll(parent.getCoveredPositiveExamples());
+
+        return coveredPositives;
+    }
+
+    protected Set<OWLIndividual> getCoveredNegativeExamplesUpward(OENode parent, OWLClassExpression refinement) {
+        // TODO: only ParCELPosNegLP supported
+
+        ParCELPosNegLP posNegLP = (ParCELPosNegLP) learningProblem;
+
+        Set<OWLIndividual> uncoveredNegatives = new TreeSet<>(posNegLP.getNegativeExamples());
+        uncoveredNegatives.removeAll(parent.getCoveredNegativeExamples());
+
+        Set<OWLIndividual> coveredNegatives = reasoner.hasType(refinement, uncoveredNegatives);
+        coveredNegatives.addAll(parent.getCoveredNegativeExamples());
+
+        return coveredNegatives;
+    }
 
 	/**
 	 * Get the union of all the best (reduced) partial definitions

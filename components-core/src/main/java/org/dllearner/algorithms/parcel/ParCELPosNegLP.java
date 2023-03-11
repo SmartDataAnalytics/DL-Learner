@@ -479,19 +479,7 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 			return new ParCELEvaluationResult(-1, 0, 0);
 		}
 
-		ParCELEvaluationResult result = new ParCELEvaluationResult();
-
-		int cp = coveredPositiveExamples.size();
-		int un = negativeExamples.size() - coveredNegativeExamples.size();
-
-		result.accuracy = (cp + un) / (double) (positiveExamples.size() + negativeExamples.size());
-		result.correctness = un / (double) negativeExamples.size();
-		result.completeness = cp / (double) positiveExamples.size();
-
-		result.coveredPositiveExamples = coveredPositiveExamples;
-		result.coveredNegativeExamples = coveredNegativeExamples;
-
-		return result;
+		return getAccuracyAndCorrectnessNoChecks(coveredPositiveExamples, coveredNegativeExamples);
 	}
 
 	public ParCELEvaluationResult getAccuracyAndCorrectness5(
@@ -553,7 +541,6 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 	 * @return
 	 */
 	public ParCELEvaluationResult getAccuracyAndCorrectnessEx(OWLClassExpression description) {
-
 		Set<OWLIndividual> coveredPositiveExamples = new HashSet<>();
 		Set<OWLIndividual> coveredNegativeExamples = new HashSet<>();
 
@@ -569,24 +556,23 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 				coveredNegativeExamples.add(example);
 		}
 
+		return getAccuracyAndCorrectnessNoChecks(coveredPositiveExamples, coveredNegativeExamples);
+	}
+
+	public ParCELEvaluationResult getAccuracyAndCorrectnessNoChecks(Set<OWLIndividual> coveredPositiveExamples, Set<OWLIndividual> coveredNegativeExamples) {
 		ParCELEvaluationResult result = new ParCELEvaluationResult();
 
 		int cp = coveredPositiveExamples.size();
 		int un = negativeExamples.size() - coveredNegativeExamples.size();
-		double accuracy = (cp + un) / (double) (positiveExamples.size() + negativeExamples.size());
 
-		result.accuracy = accuracy;
+		result.accuracy = (cp + un) / (double) (positiveExamples.size() + negativeExamples.size());
 		result.correctness = un / (double) negativeExamples.size();
 		result.completeness = cp / (double) positiveExamples.size();
 
-		if (coveredPositiveExamples.size() > 0)
-			result.coveredPositiveExamples = coveredPositiveExamples;
-
-		if (coveredNegativeExamples.size() > 0)
-			result.coveredNegativeExamples = coveredNegativeExamples;
+		result.coveredPositiveExamples = coveredPositiveExamples;
+		result.coveredNegativeExamples = coveredNegativeExamples;
 
 		return result;
-
 	}
 
 	public static String getName() {
