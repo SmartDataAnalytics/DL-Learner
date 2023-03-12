@@ -275,6 +275,7 @@ public class RhoDRDown
 		setApplyAllFilter(op.applyAllFilter);
 		setApplyExistsFilter(op.applyExistsFilter);
 		setCardinalityLimit(op.cardinalityLimit);
+		setMaxCardinalityLimit(op.maxCardinalityLimit);
 		setClassHierarchy(op.classHierarchy.clone());
 		setObjectPropertyHierarchy(op.objectPropertyHierarchy.clone());
 		setDataPropertyHierarchy(op.dataPropertyHierarchy.clone());
