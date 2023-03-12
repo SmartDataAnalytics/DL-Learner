@@ -565,6 +565,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             OWLClassExpression fillerConcept = ((OWLObjectAllValuesFrom) description).getFiller();
 
             // \forall r.\top \equiv \top -> TRUE
+            // TODO: not true for NoneEmpty and SomeOnly semantics
             if (fillerConcept.isOWLThing()) {
                 return true;
             }
@@ -588,18 +589,25 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
                     return forAllSemantics == ForallSemantics.Standard;
                 }
 
+                boolean hasCorrectFiller = false;
                 for (OWLIndividual value : values) {
-                    if (!hasTypeImpl(fillerConcept, value)) {
+                    if (hasTypeImpl(fillerConcept, value)) {
+                        hasCorrectFiller = true;
+                    } else {
                         return false;
                     }
                 }
 
-                return true;
+                if (forAllSemantics == ForallSemantics.SomeOnly) {
+                    return hasCorrectFiller;
+                } else {
+                    return true;
+                }
             } else {// \forall r.C
                 SortedSet<OWLIndividual> values = opPos.get(property).get(individual);
 
                 // if there is no value, by standard semantics we have to return TRUE
-                if (values == null) {
+                if (values == null || values.isEmpty()) {
                     return forAllSemantics == ForallSemantics.Standard;
                 }
 
@@ -1104,6 +1112,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
             // each individual is connected to a set of individuals via the property;
             // we loop through the complete mapping
+            // TODO: SomeOnly and NoneEmpty semantics not taken into account
             mapping.entrySet().stream()
                 .filter(e -> e.getValue().stream().anyMatch(ind -> !targetSet.contains(ind)))
                 .forEach(e -> returnSet.remove(e.getKey()));
