@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.celoe;
 
-import org.dllearner.algorithms.parcel.ParCELPosNegLP;
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -66,8 +65,8 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	private static OWLIndividual[] allPositiveExamplesSorted;
 	private static OWLIndividual[] allNegativeExamplesSorted;
 
-	private Boolean[] compactedCoveredPositiveExamples;
-	private Boolean[] compactedCoveredNegativeExamples;
+	private boolean[] coveredPositiveExamplesCompact;
+	private boolean[] coveredNegativeExamplesCompact;
 
 	private final Set<OWLIndividual> coveredPositiveExamples = new TreeSet<>();
 	private final Set<OWLIndividual> coveredNegativeExamples = new TreeSet<>();
@@ -155,37 +154,37 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 
 	public Set<OWLIndividual> getCoveredPositiveExamples() {
 		if (useCompactedCoverage) {
-			return getCompactedCoveredPositiveExamples();
+			return getCoveredPositiveExamplesCompact();
 		}
 
 		return coveredPositiveExamples;
 	}
 
-	private Set<OWLIndividual> getCompactedCoveredPositiveExamples() {
+	private Set<OWLIndividual> getCoveredPositiveExamplesCompact() {
 		return IntStream.range(0, allPositiveExamplesSorted.length)
-				.mapToObj(i -> compactedCoveredPositiveExamples[i] ? allPositiveExamplesSorted[i] : null)
+				.mapToObj(i -> coveredPositiveExamplesCompact[i] ? allPositiveExamplesSorted[i] : null)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 	}
 
 	public Set<OWLIndividual> getCoveredNegativeExamples() {
 		if (useCompactedCoverage) {
-			return getCompactedCoveredNegativeExamples();
+			return getCoveredNegativeExamplesCompact();
 		}
 
 		return coveredNegativeExamples;
 	}
 
-	private Set<OWLIndividual> getCompactedCoveredNegativeExamples() {
+	private Set<OWLIndividual> getCoveredNegativeExamplesCompact() {
 		return IntStream.range(0, allNegativeExamplesSorted.length)
-				.mapToObj(i -> compactedCoveredNegativeExamples[i] ? allNegativeExamplesSorted[i] : null)
+				.mapToObj(i -> coveredNegativeExamplesCompact[i] ? allNegativeExamplesSorted[i] : null)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 	}
 
 	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
 		if (useCompactedCoverage) {
-			setCompactedCoveredPositiveExamples(coveredPositiveExamples);
+			setCoveredPositiveExamplesCompact(coveredPositiveExamples);
 			return;
 		}
 
@@ -196,15 +195,17 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		}
 	}
 
-	private void setCompactedCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
-		compactedCoveredPositiveExamples = Arrays.stream(allPositiveExamplesSorted)
-				.map(coveredPositiveExamples::contains)
-				.toArray(Boolean[]::new);
+	private void setCoveredPositiveExamplesCompact(Set<OWLIndividual> coveredPositiveExamples) {
+		coveredPositiveExamplesCompact = new boolean[allPositiveExamplesSorted.length];
+
+        for (int i = 0; i < allPositiveExamplesSorted.length; i++) {
+            coveredPositiveExamplesCompact[i] = coveredPositiveExamples.contains(allPositiveExamplesSorted[i]);
+        }
 	}
 
 	public void setCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
 		if (useCompactedCoverage) {
-			setCompactedCoveredNegativeExamples(coveredNegativeExamples);
+			setCoveredNegativeExamplesCompact(coveredNegativeExamples);
 			return;
 		}
 
@@ -215,10 +216,12 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		}
 	}
 
-	private void setCompactedCoveredNegativeExamples(Set<OWLIndividual> coveredNegativeExamples) {
-		compactedCoveredNegativeExamples = Arrays.stream(allNegativeExamplesSorted)
-				.map(coveredNegativeExamples::contains)
-				.toArray(Boolean[]::new);
+	private void setCoveredNegativeExamplesCompact(Set<OWLIndividual> coveredNegativeExamples) {
+        coveredNegativeExamplesCompact = new boolean[allNegativeExamplesSorted.length];
+
+        for (int i = 0; i < allNegativeExamplesSorted.length; i++) {
+            coveredNegativeExamplesCompact[i] = coveredNegativeExamples.contains(allNegativeExamplesSorted[i]);
+        }
 	}
 
 	public static void enableCompactCoverageRepresentation(LearningProblem learningProblem) {
