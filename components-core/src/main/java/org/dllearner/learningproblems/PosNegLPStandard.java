@@ -110,13 +110,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
-	public double getAccuracyOrTooWeak(Set<OWLIndividual> coveredPositives, Set<OWLIndividual> coveredNegatives, double noise) {
-		int tp = coveredPositives.size();
-		int fp = coveredNegatives.size();
-		int tn = negativeExamples.size() - fp;
-		int fn = positiveExamples.size() - tp;
-
-		return accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, noise);
+	public double getTestAccuracyOrTooWeak(OWLClassExpression description, double noise) {
+		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveTestExamples, negativeTestExamples, noise);
 	}
 
 	/* (non-Javadoc)

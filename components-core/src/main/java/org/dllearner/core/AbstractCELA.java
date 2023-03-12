@@ -28,6 +28,7 @@ import org.dllearner.accuracymethods.AccMethodFMeasure;
 import org.dllearner.accuracymethods.AccMethodPredAcc;
 import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
@@ -392,8 +393,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
 
 	protected double computeTestAccuracy(OWLClassExpression description) {
-		if (learningProblem instanceof PosNegLP) {
-			return ((PosNegLP) learningProblem).getTestAccuracyOrTooWeak(description, 1);
+		if (learningProblem instanceof PosNegLPStandard) {
+			return ((PosNegLPStandard) learningProblem).getTestAccuracyOrTooWeak(description, 1);
 		}
 
 		return 0.0;
