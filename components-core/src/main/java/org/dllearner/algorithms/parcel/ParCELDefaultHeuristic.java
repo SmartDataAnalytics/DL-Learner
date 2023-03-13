@@ -20,7 +20,7 @@ public class ParCELDefaultHeuristic implements ParCELHeuristic {
     protected double expansionPenaltyFactor = 0.05;    //0.01, 0.05
 
     // bonus for gained accuracy
-    protected double gainBonusFactor = 0.2; //0.2;        //0.1, 0.2
+    protected double gainBonusFactor = 0.2;        //0.1, 0.2
 
     // penalty if a node description has very many refinements since exploring
     // such a node is computationally very expensive
