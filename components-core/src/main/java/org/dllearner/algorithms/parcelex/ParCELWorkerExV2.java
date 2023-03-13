@@ -170,7 +170,7 @@ public class ParCELWorkerExV2 extends ParCELExWorkerAbstract<ParCELearnerExV2> {
 									newPD.setCorrectness(1);
 									newPD.setAccuracy(learningProblem.getAccuracy(
 										newPD.getNumberOfCoveredPositiveExamples(),
-										learningProblem.getPositiveExamples().size()
+										learningProblem.getNegativeExamples().size()
 									));
 
 									newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_ONLINE_COMBINATION);
