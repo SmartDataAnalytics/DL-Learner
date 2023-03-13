@@ -592,8 +592,13 @@ public class RhoDRDown
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
 					List<OWLClassExpression> newChildren = new ArrayList<>(operands);
-					newChildren.add(c);
 					newChildren.remove(child);
+
+					if (applyAllFilter && !passesAllFilter(newChildren, c)) {
+						continue;
+					}
+
+					newChildren.add(c);
 					Collections.sort(newChildren);
 					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
 
@@ -871,21 +876,8 @@ public class RhoDRDown
 
 					// if a refinement of of the form ALL r, we check whether ALL r
 					// does not occur already
-					if(applyAllFilter) {
-						if(c instanceof OWLObjectAllValuesFrom) {
-							if(description instanceof OWLNaryBooleanClassExpression){
-								for(OWLClassExpression child : ((OWLNaryBooleanClassExpression) description).getOperands()) {
-									if(child instanceof OWLObjectAllValuesFrom) {
-										OWLObjectPropertyExpression r1 = ((OWLObjectAllValuesFrom) c).getProperty();
-										OWLObjectPropertyExpression r2 = ((OWLObjectAllValuesFrom) child).getProperty();
-										if(r1.equals(r2)){
-											skip = true;
-											break;
-										}
-									}
-								}
-							}
-						}
+					if (applyAllFilter && !passesAllFilter(List.of(description), c)) {
+						skip = true;
 					}
 
 					// we only add \forall r.C to an intersection if there is
@@ -911,7 +903,7 @@ public class RhoDRDown
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
 					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
 					// are generated which are all equal to A1 due to disjointness of A2 and A3
-					if(disjointChecks && !c.isAnonymous() && !description.isAnonymous() && isDisjoint(description, c)) {
+					if(!skip && disjointChecks && !c.isAnonymous() && !description.isAnonymous() && isDisjoint(description, c)) {
 						skip = true;
 //						System.out.println(c + " ignored when refining " + description);
 					}
@@ -1033,6 +1025,29 @@ public class RhoDRDown
 			.stream().anyMatch(e ->
 				e instanceof OWLObjectComplementOf && ((OWLObjectComplementOf) e).getOperand() instanceof OWLObjectOneOf
 			);
+	}
+
+	private boolean passesAllFilter(List<OWLClassExpression> otherOperands, OWLClassExpression newOperand) {
+		List<OWLClassExpression> operandsToCheck = (newOperand instanceof OWLObjectIntersectionOf)
+			? ((OWLObjectIntersectionOf) newOperand).getOperandsAsList()
+			: List.of(newOperand);
+
+		List<OWLObjectPropertyExpression> allValuesProperties = otherOperands.stream()
+			.filter(op -> op instanceof OWLObjectAllValuesFrom)
+			.map(op -> ((OWLObjectAllValuesFrom) op).getProperty())
+			.collect(Collectors.toList());
+
+		for (OWLClassExpression op : operandsToCheck) {
+			if (op instanceof OWLObjectAllValuesFrom) {
+				OWLObjectPropertyExpression prop = ((OWLObjectAllValuesFrom) op).getProperty();
+
+				if (allValuesProperties.contains(prop)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	private boolean isSomeOnlySatisfied(OWLClassExpression description) {
