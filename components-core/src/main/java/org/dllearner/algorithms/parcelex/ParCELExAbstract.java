@@ -30,13 +30,6 @@ public abstract class ParCELExAbstract extends ParCELAbstract {
 	protected int[] partialDefinitionType = new int[5];
 	protected int counterPartialDefinitionUsed = 0;
 
-	/**
-	 * 	Holds the covered negative examples, this will be updated when the worker found a partial definition
-	 *	since the callback method "partialDefinitionFound" is synchronized,
-	 * 	there is no need to create a thread-safe for this set
-	 */
-	protected HashSet<OWLIndividual> coveredNegativeExamples;
-
 
 	//---------------------------------------------------------
 	//flags to indicate the status of the application

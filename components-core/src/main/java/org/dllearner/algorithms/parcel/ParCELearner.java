@@ -88,6 +88,8 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// this will be used to check the coverage of the partial definition (completeness)
 		this.uncoveredPositiveExamples = new HashSet<>(this.positiveExamples);
 
+		this.coveredNegativeExamples = new HashSet<>();
+
 		// initial heuristic which will be used by reducer to sort the search tree
 		// the heuristic need to get some constant from the configurator for scoring the description
 		if (this.heuristic == null)

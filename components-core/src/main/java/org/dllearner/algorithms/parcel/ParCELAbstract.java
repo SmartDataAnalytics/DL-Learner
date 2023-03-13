@@ -174,6 +174,13 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 	 */
 	protected Set<OWLIndividual> uncoveredPositiveExamples;
 
+    /**
+     * 	Holds the covered negative examples, this will be updated when the worker found a partial definition
+     *	since the callback method "partialDefinitionFound" is synchronized,
+     * 	there is no need to create a thread-safe for this set
+     */
+    protected Set<OWLIndividual> coveredNegativeExamples;
+
 	// ---------------------------------------------------------
 	// flags to indicate the status of the application
 	// ---------------------------------------------------------
@@ -319,6 +326,10 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 				synchronized (partialDefinitions) {
 					partialDefinitions.add(def);
 				}
+
+                synchronized (coveredNegativeExamples) {
+                    coveredNegativeExamples.addAll(def.getCoveredNegativeExamples());
+                }
 
 				// for used in bean (for tracing purpose)
 				this.noOfUncoveredPositiveExamples -= uncoveredPositiveExamplesRemoved;

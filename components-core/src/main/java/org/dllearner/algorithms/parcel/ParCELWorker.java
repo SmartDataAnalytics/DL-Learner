@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.common.collect.Sets;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
@@ -117,7 +118,7 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
                 if (addedNode != null) {
 
                     // PARTIAL DEFINITION (correct and not necessary to be complete)
-                    if (addedNode.getCorrectness() >= 1.0d - learner.getNoiseAllowed()) {
+                    if (addedNode.getCorrectness() >= 1.0d - learner.getNoiseAllowed() && addsMorePositives(addedNode)) {
                         addedNode.setGenerationTime(System.currentTimeMillis());
                         addedNode.setExtraInfo(learner.getTotalDescriptions());
                         definitionsFound.add(addedNode);
@@ -179,6 +180,23 @@ public class ParCELWorker extends ParCELWorkerAbstract<ParCELearner> {
 
     } // addNode()
 
+    private boolean addsMorePositives(ParCELNode node) {
+        if (node.getCorrectness() == 1) {
+            return true;
+        }
+
+        int tp, fp;
+
+        synchronized (learner.uncoveredPositiveExamples) {
+            tp = Sets.intersection(node.getCoveredPositiveExamples(), learner.uncoveredPositiveExamples).size();
+        }
+
+        synchronized (learner.coveredNegativeExamples) {
+            fp = Sets.difference(node.getCoveredNegativeExamples(), learner.coveredNegativeExamples).size();
+        }
+
+        return tp > fp;
+    }
 
     /**
      * Get the node which is currently being processed
