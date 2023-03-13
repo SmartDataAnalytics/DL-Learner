@@ -2,6 +2,7 @@ package org.dllearner.algorithms.parcelex;
 
 import org.dllearner.algorithms.parcel.*;
 import org.dllearner.refinementoperators.RefinementOperator;
+import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -113,7 +114,11 @@ public class ParCELWorkerExV2 extends ParCELExWorkerAbstract<ParCELearnerExV2> {
 				if(refinementLength >= horizExp) {
 	
 					//calculate accuracy, correctness, positive examples covered by the description, resulted in a node
-					ParCELExtraNode newNode = checkAndCreateNewNodeV2(refinement, nodeToProcess);
+					ParCELExtraNode newNode = null;
+
+					try {
+						newNode = checkAndCreateNewNodeV2(refinement, nodeToProcess);
+					} catch (InternalReasonerException | NullPointerException e) {}
 	
 					//check for the type of new node: weak description, partial definition, counter partial definition or potential description
 					if (newNode != null) {
@@ -156,21 +161,18 @@ public class ParCELWorkerExV2 extends ParCELExWorkerAbstract<ParCELearnerExV2> {
 								
 								//PARTIAL DEFINITION
 								//the new description may be combined with the counter partial definitions to become a partial definition
-								if (combinableCounterPartialDefinitions != null) {	
-									//for (ParCELExtraNode def : combinableCounterPartialDefinitions) {
-										newNode.setDescription(ParCELExUtilities.createIntersection(newNode.getDescription(), 
-												combinableCounterPartialDefinitions, true));										
-										//def.setType(ParCELExNodeTypes.COUNTER_PARTIAL_DEFINITION_USED);	//2 - to mark the counter definition had been used to generate the partial definition
-									//}
-									
-									//3 - means the partial definition is the result of the combination of a new refined description and a counter partial definition  
-									newNode.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_ONLINE_COMBINATION);	
-									newNode.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
-									newNode.setExtraInfo(learner.getTotalDescriptions());
-									newPartialDefinitions.add(newNode);
+								if (combinableCounterPartialDefinitions != null) {
+									ParCELExtraNode newPD = new ParCELExtraNode(newNode);
+									newPD.setDescription(ParCELExUtilities.createIntersection(newNode.getDescription(),
+											combinableCounterPartialDefinitions, true));
+
+									newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_ONLINE_COMBINATION);
+									newPD.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+									newPD.setExtraInfo(learner.getTotalDescriptions());
+									newPartialDefinitions.add(newPD);
 								}
-								else	//the new node cannot be combined ==> this is a DESCRIPTION  
-									newNodes.add(newNode);
+
+								newNodes.add(newNode);
 							}
 						}
 					}	//if (node != null)
@@ -182,32 +184,30 @@ public class ParCELWorkerExV2 extends ParCELExWorkerAbstract<ParCELearnerExV2> {
 		}
 		
 		//process the input node: check if is it potentially a partial definition
-		Set<ParCELExtraNode> combinableCounterPartialDefinitions = 
-			ParCELExCombineCounterPartialDefinition.getCombinable(nodeToProcess, learner.getCurrentCounterPartialDefinitions());
-				
-		if (combinableCounterPartialDefinitions != null) {		
-			//for (ParCELExtraNode def : combinableCounterPartialDefinitions)
-				nodeToProcess.setDescription(ParCELExUtilities.createIntersection(
-						nodeToProcess.getDescription(), combinableCounterPartialDefinitions, true));
-			
-			ParCELExtraNode newPD = new ParCELExtraNode(nodeToProcess);
-			newPD.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
-			newPD.setExtraInfo(learner.getTotalDescriptions());
-			newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_REFINED_NODE);	//4 - (refined node + counter pdef) 
-			newPartialDefinitions.add(newPD);
-		}
-		else
+//		Set<ParCELExtraNode> combinableCounterPartialDefinitions =
+//			ParCELExCombineCounterPartialDefinition.getCombinable(nodeToProcess, learner.getCurrentCounterPartialDefinitions());
+//
+//		if (combinableCounterPartialDefinitions != null) {
+//			//for (ParCELExtraNode def : combinableCounterPartialDefinitions)
+//				nodeToProcess.setDescription(ParCELExUtilities.createIntersection(
+//						nodeToProcess.getDescription(), combinableCounterPartialDefinitions, true));
+//
+//			ParCELExtraNode newPD = new ParCELExtraNode(nodeToProcess);
+//			newPD.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
+//			newPD.setExtraInfo(learner.getTotalDescriptions());
+//			newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_REFINED_NODE);	//4 - (refined node + counter pdef)
+//			newPartialDefinitions.add(newPD);
+//		}
+//		else
 			newNodes.add(nodeToProcess);
-		
+
+		learner.newRefinementDescriptions(newNodes);		//don't need to check for empty since newNodes is never empty
 
 		if (newPartialDefinitions.size() > 0)
 			learner.newPartialDefinitionsFound(newPartialDefinitions);
 		
 		if (newCounterPartialDefinitions.size() > 0)
 			learner.newCounterPartialDefinitionsFound(newCounterPartialDefinitions);
-
-		learner.newRefinementDescriptions(newNodes);		//don't need to check for empty since newNodes is never empty 
-
 	}
 
 }

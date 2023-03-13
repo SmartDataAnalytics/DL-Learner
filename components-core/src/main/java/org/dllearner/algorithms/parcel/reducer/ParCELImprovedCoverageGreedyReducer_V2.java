@@ -89,7 +89,7 @@ public class ParCELImprovedCoverageGreedyReducer_V2 implements ParCELReducer {
 					maxLength = curLength;
 				
 				//max coverage
-				int curCoverage = pdef.getCoveredPositiveExamples().size();
+				int curCoverage = pdef.getNumberOfCoveredPositiveExamples();
 				if (maxCoverage < curCoverage)
 					maxCoverage = curCoverage;
 			}
@@ -108,7 +108,7 @@ public class ParCELImprovedCoverageGreedyReducer_V2 implements ParCELReducer {
 				//------------------
 				//count the number of positive examples covered by the partial definition i
 				//------------------
-				int counti = ((ParCELExtraNode)partialDefs[i]).getCoveredPositiveExamples().size();
+				int counti = ((ParCELExtraNode)partialDefs[i]).getNumberOfCoveredPositiveExamples();
 					
 				for (OWLIndividual ind : ((ParCELExtraNode)partialDefs[i]).getCoveredPositiveExamples()) {
 					if (coveredPositiveExamples.size() == 0)
@@ -129,7 +129,7 @@ public class ParCELImprovedCoverageGreedyReducer_V2 implements ParCELReducer {
 					//-----------
 					//count the number of positive examples covered by the partial definition j
 					//-----------
-					int countj = ((ParCELExtraNode)partialDefs[j]).getCoveredPositiveExamples().size();
+					int countj = ((ParCELExtraNode)partialDefs[j]).getNumberOfCoveredPositiveExamples();
 					
 					for (OWLIndividual ind : ((ParCELExtraNode)partialDefs[j]).getCoveredPositiveExamples()) {
 						if (coveredPositiveExamples.size() == 0)
@@ -161,7 +161,7 @@ public class ParCELImprovedCoverageGreedyReducer_V2 implements ParCELReducer {
 				
 				//calculate the relative coverage score
 				double relativeCoverageScore = scoringRelativeCoverage(maxCoverage, 
-								((ParCELExtraNode)partialDefs[i]).getCoveredPositiveExamples().size(),
+								((ParCELExtraNode)partialDefs[i]).getNumberOfCoveredPositiveExamples(),
 								maxLocalCoverage);
 				
 				//calculate score of other dimensions: currently there is only length 

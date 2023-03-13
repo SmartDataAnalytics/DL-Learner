@@ -16,8 +16,8 @@ public class ParCELCompletenessComparator implements Comparator<ParCELNode> {
 	@Override
 	public int compare(ParCELNode node1, ParCELNode node2) {
 
-		int v1 = node1.getCoveredPositiveExamples().size();
-		int v2 = node2.getCoveredPositiveExamples().size();
+		int v1 = node1.getNumberOfCoveredPositiveExamples();
+		int v2 = node2.getNumberOfCoveredPositiveExamples();
 
 		if (v1 > v2)
 			return -1;

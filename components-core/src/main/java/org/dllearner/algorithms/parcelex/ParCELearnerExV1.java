@@ -368,7 +368,7 @@ public class ParCELearnerExV1 extends ParCELExAbstract {
 				//			but there is no need to do it for the counter partial definition, i.e. no update for covered negative examples
 				if (logger.isTraceEnabled() || logger.isDebugEnabled()) {
 					logger.trace("COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
+							"\n\t - covered negative examples (" + def.getNumberOfCoveredNegativeExamples() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);					
 				} else if (logger.isInfoEnabled()) {

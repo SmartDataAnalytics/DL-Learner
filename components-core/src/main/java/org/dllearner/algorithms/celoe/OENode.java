@@ -167,6 +167,10 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
             .collect(Collectors.toSet());
 	}
 
+    public int getNumberOfCoveredPositiveExamples() {
+        return useCompactedCoverage ? coveredPositiveExamplesCompact.length : coveredPositiveExamples.size();
+    }
+
 	public Set<OWLIndividual> getCoveredNegativeExamples() {
 		if (useCompactedCoverage) {
 			return getCoveredNegativeExamplesCompact();
@@ -179,6 +183,10 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		return Arrays.stream(coveredNegativeExamplesCompact).mapToObj(i -> allNegativeExamples[i])
             .collect(Collectors.toSet());
 	}
+
+    public int getNumberOfCoveredNegativeExamples() {
+        return useCompactedCoverage ? coveredNegativeExamplesCompact.length : coveredNegativeExamples.size();
+    }
 
 	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
 		if (useCompactedCoverage) {

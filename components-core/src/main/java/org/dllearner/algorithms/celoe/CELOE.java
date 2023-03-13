@@ -848,7 +848,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				logger.info(show + ": " + renderer.render(c.getDescription())
 					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
 					+ df.format(100 * computeTestAccuracy(c.getDescription())) + "%"
-					+ ", coverage " + c.getCoveredPositiveExamples().size() + " / " + tpTest
+					+ ", coverage " + c.getNumberOfCoveredPositiveExamples() + " / " + tpTest
 					+ ", length " + OWLClassExpressionUtils.getLength(c.getDescription())
 					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getDescription())
 					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");

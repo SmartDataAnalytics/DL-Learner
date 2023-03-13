@@ -12,8 +12,10 @@ package org.dllearner.algorithms.parcelex;
  *	@author An C. Tran
  */
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.parcel.*;
@@ -26,6 +28,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthCalculator;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 
 
@@ -86,19 +89,22 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		//get the positive and negative examples from the learning problem
 		positiveExamples = ((ParCELPosNegLP)learningProblem).getPositiveExamples();
 		negativeExamples = ((ParCELPosNegLP)learningProblem).getNegativeExamples();
-		
-		
-		((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(this.positiveExamples);
+		positiveTestExamples = ((ParCELPosNegLP) learningProblem).getPositiveTestExamples();
+		negativeTestExamples = ((ParCELPosNegLP) learningProblem).getNegativeTestExamples();
 		
 		//initial heuristic which will be used by reducer to sort the search tree (expansion strategy)
 		//the heuristic need to get some constant from the configurator for scoring the description
-		if (heuristic == null)
-			heuristic = new ParCELDefaultHeuristic();		
-		
-		startClass = dataFactory.getOWLThing();	//this will be revise later using least common super class of all observations
-		
+		if (heuristic == null) {
+			heuristic = new ParCELDefaultHeuristic();
+		}
 
-		this.uncoveredPositiveExampleAllowed = (int)Math.ceil(getNoisePercentage()*positiveExamples.size());
+		//this will be revise later using least common super class of all observations
+		if (startClass == null) {
+			startClass = dataFactory.getOWLThing();
+		}
+
+		this.uncoveredPositiveExampleAllowed = (int)Math.ceil((getNoisePercentage()/100)*positiveExamples.size());
+		logger.info("Uncovered positive examples allowed (noise): " + this.uncoveredPositiveExampleAllowed);
 		
 		//initialise the existing uncovered positive examples
 		((ParCELPosNegLP)this.learningProblem).setUncoveredPositiveExamples(uncoveredPositiveExamples);
@@ -106,54 +112,11 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		//----------------------------------
 		//create refinement operator pool
 		//----------------------------------
-		if (operator == null) {
-			//-----------------------------------------
-			//prepare for refinement operator creation
-			//-----------------------------------------
-			Set<OWLClass> usedConcepts = new TreeSet<>(reasoner.getClasses());
-			
-			
-			//remove the ignored concepts out of the list of concepts will be used by refinement operator
-			if (this.ignoredConcepts != null) { 
-				try {
-					usedConcepts.removeAll(ignoredConcepts);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			ClassHierarchy classHiearachy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
-			Map<OWLDataProperty, List<Double>> splits = null;
-			
-			//create a splitter and refinement operator pool
-			//there are two options: i) using object pool, ii) using set of objects (removed from this revision) 
-			if (this.splitter != null) {
-				splitter.setReasoner(reasoner);
-				splitter.setPositiveExamples(positiveExamples);
-				splitter.setNegativeExamples(negativeExamples);
-				splitter.init();
-
-				splits = splitter.computeSplits();
-				
-				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, splits, numberOfWorkers + 1);
-
-			}			
-			else {	//no splitter provided
-				//i) option 1: create an object pool
-				refinementOperatorPool = new ParCELRefinementOperatorPool(reasoner, classHiearachy, startClass, numberOfWorkers + 1, maxNoOfSplits);
-			}
-
-			refinementOperatorPool.getFactory().setUseNegation(false);
-			refinementOperatorPool.getFactory().setUseHasValue(this.getUseHasValue());
-			refinementOperatorPool.getFactory().setUseRestrictedDisjunction(useRestrictedDisjunction);
-
-		}		
+		initOperatorIfAny();
+		createRefinementOperatorPool();
 
 		baseURI = reasoner.getBaseURI();
 		prefix = reasoner.getPrefixes();
-		//new DecimalFormat();
 		
 		
 		//logging the information (will use slf4j)
@@ -163,6 +126,8 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		}
 		
 		minNumberOfWorker = maxNumberOfWorker = numberOfWorkers;
+
+		trainingTime = System.currentTimeMillis();
 
 	}	//init()
 	
@@ -192,6 +157,9 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		
 		//start time of reducer, statistical purpose only
 		miliStarttime = System.currentTimeMillis();
+
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		
 		//----------------------------------------------------------
 		// perform the learning process until the conditions for 
@@ -202,7 +170,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 			//-------------------
 			//check for timeout
             //-------------------
-			timeout = (this.maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - miliStarttime) > this.maxExecutionTimeInSeconds*1000);
+			timeout = (this.maxExecutionTimeInSeconds > 0 && (getCurrentCpuMillis()) > this.maxExecutionTimeInSeconds*1000);
 				
 			if (timeout)
 				break;
@@ -210,7 +178,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 			
 			ParCELNode nodeToProcess;
 			
-			nodeToProcess = searchTree.pollLast();
+			nodeToProcess = searchTree.pollFirst();
 					
 			//TODO: why this? why "blocking" concept does not help in this case?
 			//remove this checking will exploit the heap memory and no definition found
@@ -297,27 +265,43 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 		//post-learning processing
 		//-------------------------------
 		
-		if (logger.isInfoEnabled()) {			
+		if (logger.isInfoEnabled()) {
+			synchronized (searchTree) {
+				logger.info("Search tree size: " + searchTree.size());
+			}
+
 			synchronized (partialDefinitions) {
 				if (this.getCurrentlyOveralMaxCompleteness() == 1)
 					logger.info("Learning finishes in: " + this.miliLearningTime + "ms, with: " + partialDefinitions.size() + " definitions");
 				else if (this.isTimeout()) {
-					logger.info("Learning timeout in " + this.maxExecutionTimeInSeconds + "ms. Overall completeness (%): " + this.getCurrentlyOveralMaxCompleteness());
+					logger.info("Learning timeout in " + this.maxExecutionTimeInSeconds + "s. Overall completeness (%): " + this.getCurrentlyOveralMaxCompleteness());
 					logger.info("Uncovered positive examples left " + this.uncoveredPositiveExamples.size() + " - " + ParCELStringUtilities.replaceString(this.uncoveredPositiveExamples.toString(), this.baseURI, this.prefix));
 				}				
 				else {
 					logger.info("Learning is manually terminated at " + this.miliLearningTime + "ms. Overall completeness (%): " + this.getCurrentlyOveralMaxCompleteness());
 					logger.info("Uncovered positive examples left " + this.uncoveredPositiveExamples.size() + " - " + ParCELStringUtilities.replaceString(this.uncoveredPositiveExamples.toString(), this.baseURI, this.prefix));					
 				}
+
+				timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+				logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
+
+				OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+				double acc = computeAccuracy(bestDescription);
+				logger.info("Accuracy: " + acc);
 						
 				logger.info("**Reduced partial definitions:");
 				TreeSet<ParCELExtraNode> compactedDefinitions = (TreeSet<ParCELExtraNode>) this.getReducedPartialDefinition();
 				this.noOfReducedPartialDefinition = compactedDefinitions.size();
 				int count = 1;
 				for (ParCELExtraNode def : compactedDefinitions) {
+					int tpTest = learningProblem instanceof ParCELPosNegLP
+						? ((ParCELPosNegLP) learningProblem).getNumberOfCoveredPositiveTestExamples(def.getDescription())
+						: 0;
+
 					logger.info(count++ + ". " + OWLAPIRenderers.toManchesterOWLSyntax(ParCELExUtilities.groupDefinition(def.getDescription())).replace("and (not", "\nand (not") + //def.getDescription().toManchesterSyntaxString(baseURI, prefix) +
 							" (length:" + new OWLClassExpressionLengthCalculator().getLength(def.getDescription()) +
-							", accuracy: " + df.format(def.getAccuracy()) +
+							", accuracy: " + df.format(def.getAccuracy()) + " / " + computeTestAccuracy(def.getDescription()) +
+							", coverage: " + def.getNumberOfCoveredPositiveExamples() + " / " + tpTest + ")" +
 							", type: " + def.getType() + ")");
 					
 					//test the new representation of the partial definition 
@@ -346,6 +330,15 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 						}
 					} //end of printing the learning tree
 				}
+
+				if (learningProblem instanceof ParCELPosNegLP) {
+					Set<OWLClassExpression> partialDefs = getReducedPartialDefinition()
+							.stream().map(OENode::getDescription).collect(Collectors.toSet());
+
+					((ParCELPosNegLP) learningProblem).printTestEvaluation(partialDefs);
+				}
+
+				printBestConceptsTimesAndAccuracies();
 			}					
 		}		
 				
@@ -402,18 +395,30 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				
 				if (logger.isTraceEnabled()) {
 					logger.trace("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
+							"\n\t - covered positive examples (" + def.getNumberOfCoveredPositiveExamples() + "): " +def.getCoveredPositiveExamples() +
 							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size() +
 							", des:" + def.getGenerationTime()
 							);					
 				}
 				else if (logger.isDebugEnabled())
 					logger.debug("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
+							"\n\t - covered positive examples (" + def.getNumberOfCoveredPositiveExamples() + "): " +def.getCoveredPositiveExamples() +
 							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size()
 							);
 				else if (logger.isInfoEnabled()) {
-					logger.info("(+) PARTIAL definition found. Uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
+					logger.info("PARTIAL definition found. Uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());
+					String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+					logger.info(timeStamp + ": " + def);
+
+					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
+
+					OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+					double acc = computeAccuracy(bestDescription);
+					double testAcc = computeTestAccuracy(bestDescription);
+
+					logger.info("Training time: " + actualTrainingTime + "s Accuracy: " + acc + " Test accuracy: " + testAcc);
+
+					recordBestConceptTimeAndAccuracy(actualTrainingTime, acc, testAcc);
 				}
 
 				//update the max accuracy and max description length
@@ -466,17 +471,29 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				//			but there is no need to do it for the counter partial definition, i.e. no update for covered negative examples
 				if (logger.isTraceEnabled()) {
 					logger.trace("(-) COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) + //TODO def.getDescription().getChild(0)
-							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
+							"\n\t - covered negative examples (" + def.getNumberOfCoveredNegativeExamples() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);					
 				}
 				else if (logger.isDebugEnabled())
 					logger.debug("(-) COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) + //TODO def.getDescription().getChild(0)
-							"\n\t - cn (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
+							"\n\t - cn (" + def.getNumberOfCoveredNegativeExamples() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total cn: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);
 				else if (logger.isInfoEnabled()) {
-					logger.info("(-) COUNTER PARTIAL definition found. Total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size());
+					logger.info("COUNTER PARTIAL definition found. Total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size());
+					String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+					logger.info(timeStamp + ": " + def);
+
+					double actualTrainingTime = getCurrentCpuMillis() / 1000.0;
+
+					OWLClassExpression bestDescription = getUnionCurrentlyBestDescription();
+					double acc = computeAccuracy(bestDescription);
+					double testAcc = computeTestAccuracy(bestDescription);
+
+					logger.info("Training time: " + actualTrainingTime + "s Accuracy: " + acc + " Test accuracy: " + testAcc);
+
+					recordBestConceptTimeAndAccuracy(actualTrainingTime, acc, testAcc);
 				}
 				
 				//complete counter definition found
@@ -498,7 +515,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 	 * 	3. Create an empty 
 	 */
 	private void reset() {
-		searchTree = new ConcurrentSkipListSet<>(heuristic);
+		searchTree = new ConcurrentSkipListSet<>(heuristic.reversed());
 		
 		//allDescriptions = new TreeSet<Description>(new ConceptComparator());
 		this.allDescriptions = new ConcurrentSkipListSet<>();
@@ -530,24 +547,24 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 	@Override
 	public void stop() {
 		
-		if (!stop) {			
+		if (!stop) {
 			stop = true;
-			
+
 			List<Runnable> waitingTasks = workerPool.shutdownNow();
-			
-			
-			
+
 			try {
-				workerPool.awaitTermination(0, TimeUnit.SECONDS);
+				workerPool.awaitTermination(10, TimeUnit.SECONDS);
 			}
 			catch (InterruptedException ie) {
 				logger.error(ie);
 			}
-			
+
 			//put the unexecuted tasks back to the search tree
-			logger.debug("Put incompleted task back to the search tree: " + waitingTasks.size());
-			for (Runnable node : waitingTasks)
-				searchTree.add(((ParCELWorkerExV2)node).getProcessingNode());
+			synchronized (this.searchTree) {
+				logger.debug("Put incompleted task back to the search tree: " + waitingTasks.size());
+				for (Runnable node : waitingTasks)
+					searchTree.add(((ParCELWorkerExV2)node).getProcessingNode());
+			}
 			
 			//don't stop immediately, wait until all workers finish their jobs
 			/*
@@ -561,7 +578,10 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 			*/
 		}
 	}
-	
+
+	public boolean isTimeout() {
+		return timeout;
+	}
 	
 
 	

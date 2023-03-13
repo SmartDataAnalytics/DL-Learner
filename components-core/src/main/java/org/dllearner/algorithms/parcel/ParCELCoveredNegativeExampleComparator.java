@@ -15,8 +15,8 @@ public class ParCELCoveredNegativeExampleComparator implements Comparator<ParCEL
 
 	@Override
 	public int compare(ParCELExtraNode node1, ParCELExtraNode node2) {
-		int coveredNeg1 = node1.getCoveredNegativeExamples().size();
-		int coveredNeg2 = node2.getCoveredPositiveExamples().size();
+		int coveredNeg1 = node1.getNumberOfCoveredNegativeExamples();
+		int coveredNeg2 = node2.getNumberOfCoveredNegativeExamples();
 
 		if (coveredNeg1 > coveredNeg2)
 			return -1; // smaller will be on the top

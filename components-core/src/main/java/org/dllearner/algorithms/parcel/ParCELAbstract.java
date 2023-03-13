@@ -338,7 +338,7 @@ public abstract class ParCELAbstract extends AbstractCELA implements ParCELearne
 					logger.trace("PARTIAL definition found: "
 										 + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
 										 + "\n\t - covered positive examples ("
-										 + def.getCoveredPositiveExamples().size() + "): "
+										 + def.getNumberOfCoveredPositiveExamples() + "): "
 										 + def.getCoveredPositiveExamples()
 										 + "\n\t - uncovered positive examples left: "
 										 + uncoveredPositiveExamplesSize + "/" + positiveExamples.size());

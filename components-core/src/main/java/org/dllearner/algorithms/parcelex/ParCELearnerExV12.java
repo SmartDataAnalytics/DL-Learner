@@ -241,7 +241,7 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		
 		this.miliLearningTime = System.currentTimeMillis() - miliStarttime;
 		
-		stop();				
+		stop();
 		
 		//-----------------------------------------------------------------------
 		//try to combine descriptions in the search tree with the counter partial 
@@ -254,40 +254,40 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		/*
 		synchronized (this.potentialPartialDefinitions) {
 			logger.info("Processing potential partial definition: " + this.potentialPartialDefinitions.size());
-			
+
 			for (ParCELExtraNode ppd : this.potentialPartialDefinitions) {
-				Set<ParCELExtraNode> combinableCounterPartialDefinitions = 
+				Set<ParCELExtraNode> combinableCounterPartialDefinitions =
 					ParCELCombineCounterPartialDefinition.getCombinable(ppd, this.counterPartialDefinitions);
-				
+
 				//new partial definition found if the description can be combined with the set of counter partial definitions
-				if (combinableCounterPartialDefinitions != null) {		
-					
+				if (combinableCounterPartialDefinitions != null) {
+
 					ParCELExtraNode newPD = new ParCELExtraNode(ppd);
-					
-					
+
+
 					LinkedList<Description> tmpCounterDes = new LinkedList<Description>();
 					tmpCounterDes.add(ppd.getDescription());
-					
+
 					for (ParCELExtraNode def : combinableCounterPartialDefinitions) {
 						tmpCounterDes.add(def.getDescription());
 						//newPD.setDescription(new Intersection(newPD.getDescription(), def.getDescription()));
 						def.setType(1);
 					}
-					
+
 					newPD.setDescription(new Intersection(tmpCounterDes));
-					
+
 					this.uncoveredPositiveExamples.removeAll(ppd.getCoveredPositiveExamples());
 
 					newPD.setCompositeList(combinableCounterPartialDefinitions);
-										
+
 					newPD.setGenerationTime(System.currentTimeMillis() - miliStarttime);
 					newPD.setType(2);
-					
+
 					if (allDescriptions.add(newPD.getDescription())) {
 						partialDefinitions.add(newPD);
 						newPartialDefCount++;
 					}
-					
+
 				}	//new partial definition found
 			}	//for
 		}	//synchronise potential partial definitions
@@ -301,52 +301,52 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 
 			List<ParCELNode> newSearchTree = new ArrayList<>(this.searchTree);
 			newSearchTree.sort(new ParCELCompletenessComparator());
-			
+
 
 			for (ParCELNode des : newSearchTree) {
-				
+
 				synchronized (this.counterPartialDefinitions) {
-					Set<ParCELExtraNode> combinableCounterPartialDefinitions = 
+					Set<ParCELExtraNode> combinableCounterPartialDefinitions =
 						ParCELExCombineCounterPartialDefinition.getCombinable(des, this.counterPartialDefinitions);
 
 					//new partial definition found if the description can be combined with the set of counter partial definitions
-					if (combinableCounterPartialDefinitions != null) {		
-						
+					if (combinableCounterPartialDefinitions != null) {
+
 						ParCELExtraNode newPD = new ParCELExtraNode(des);
-						
-						
+
+
 						/*
 						LinkedList<Description> tmpCounterDes = new LinkedList<Description>();
 						tmpCounterDes.add(des.getDescription());
-						
+
 						for (ParCELExtraNode def : combinableCounterPartialDefinitions) {
 							tmpCounterDes.add(def.getDescription());
 							//newPD.setDescription(new Intersection(newPD.getDescription(), def.getDescription()));
 							def.setType(1);
 						}
 						*/
-						
-						newPD.setDescription(ParCELExUtilities.createIntersection(des.getDescription(), 
+
+						newPD.setDescription(ParCELExUtilities.createIntersection(des.getDescription(),
 								combinableCounterPartialDefinitions, true));
-						
+
 						this.uncoveredPositiveExamples.removeAll(des.getCoveredPositiveExamples());
 
 						newPD.setCompositeList(combinableCounterPartialDefinitions);
-						
+
 						//PDLLExtraNode newPD = new PDLLExtraNode(des);
 						newPD.setGenerationTime(System.currentTimeMillis() - miliStarttime);
 						newPD.setType(2);
-						
+
 						if (allDescriptions.add(newPD.getDescription())) {
 							partialDefinitions.add(newPD);
 							newPartialDefCount++;
 						}
-						
+
 					}	//new partial definition found
 				}	//synch counter partial definition for processing
-								
+
 			}	//for each description in the search tree
-			
+
 		}	//synch search tree
 
 		if (logger.isInfoEnabled()) 								
@@ -389,7 +389,7 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 					logger.info(count++ + ". " + OWLAPIRenderers.toManchesterOWLSyntax(ParCELExUtilities.groupDefinition(def.getDescription())).replace("and (not", "\nand (not") + //def.getDescription().toManchesterSyntaxString(baseURI, prefix) +
 							" (length:" + new OWLClassExpressionLengthCalculator().getLength(def.getDescription()) +
 							", accuracy: " + df.format(def.getAccuracy()) + " / " + computeTestAccuracy(def.getDescription()) +
-							", coverage: " + def.getCoveredPositiveExamples().size() + " / " + tpTest + ")" +
+							", coverage: " + def.getNumberOfCoveredPositiveExamples() + " / " + tpTest + ")" +
 							", type: " + def.getType() + ")");
 					
 					//print out the learning tree
@@ -492,13 +492,13 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 				
 				if (logger.isTraceEnabled()) {
 					logger.trace("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
+							"\n\t - covered positive examples (" + def.getNumberOfCoveredPositiveExamples() + "): " +def.getCoveredPositiveExamples() +
 							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size() 
 							);					
 				}
 				else if (logger.isDebugEnabled())
 					logger.debug("PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered positive examples (" + def.getCoveredPositiveExamples().size() + "): " +def.getCoveredPositiveExamples() +
+							"\n\t - covered positive examples (" + def.getNumberOfCoveredPositiveExamples() + "): " +def.getCoveredPositiveExamples() +
 							"\n\t - uncovered positive examples left: " + uncoveredPositiveExamplesSize + "/" + positiveExamples.size()
 							);
 				else if (logger.isInfoEnabled()) {
@@ -552,7 +552,7 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 		for (ParCELExtraNode def :  potentialPartialDefinitions) {
 			if (this.potentialPartialDefinitions.add(def.getDescription())) {
 				synchronized (uncoveredPositiveExamples) {
-					this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());		
+					this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
 
 				}
 				this.potentialPartialDefinitions.add(def.getDescription());
@@ -608,13 +608,13 @@ public class ParCELearnerExV12 extends ParCELExAbstract implements ParCELearnerM
 				//			but there is no need to do it for the counter partial definition, i.e. no update for covered negative examples
 				if (logger.isTraceEnabled()) {
 					logger.trace("COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
+							"\n\t - covered negative examples (" + def.getNumberOfCoveredNegativeExamples() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);					
 				}
 				else if (logger.isDebugEnabled())
 					logger.debug("COUNTER PARTIAL definition found: " + OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription()) +
-							"\n\t - covered negative examples (" + def.getCoveredNegativeExamples().size() + "): " + def.getCoveredNegativeExamples() +
+							"\n\t - covered negative examples (" + def.getNumberOfCoveredNegativeExamples() + "): " + def.getCoveredNegativeExamples() +
 							"\n\t - total covered negative examples: " + numberOfCoveredNegativeExamples + "/" + this.negativeExamples.size() 
 							);
 				else if (logger.isInfoEnabled()) {

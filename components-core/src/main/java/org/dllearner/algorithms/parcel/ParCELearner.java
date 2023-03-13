@@ -288,7 +288,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 							+ OWLAPIRenderers.toManchesterOWLSyntax(def.getDescription())
 							+ " (length:" + new OWLClassExpressionLengthCalculator().getLength(def.getDescription())
 							+ ", accuracy: " + df.format(def.getAccuracy()) + " / " + computeTestAccuracy(def.getDescription())
-							+ ", coverage: " + def.getCoveredPositiveExamples().size() + " / " + tpTest + ")");
+							+ ", coverage: " + def.getNumberOfCoveredPositiveExamples() + " / " + tpTest + ")");
 
 					// print out the learning tree
 					/*
