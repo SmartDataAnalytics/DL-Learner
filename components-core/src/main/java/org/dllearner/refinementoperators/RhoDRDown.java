@@ -505,17 +505,23 @@ public class RhoDRDown
 		if(maxLength < OWLClassExpressionUtils.getLength(description, lengthMetric)) {
 			throw new Error("length has to be at least class expression length (class expression: " + description + " with length " + OWLClassExpressionUtils.getLength(description, lengthMetric) +", and max length: " + maxLength + ")");
 		}
-		return refine(description, maxLength, null, startClass);
+		return refine(description, maxLength, null);
 	}
 
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 										  List<OWLClassExpression> knownRefinements) {
-		return refine(description, maxLength, knownRefinements, startClass);
+		Set<OWLClassExpression> refinements = refine(description, maxLength, knownRefinements, startClass);
+
+		if (useSomeOnly) {
+			refinements.removeIf(r -> !isSomeOnlySatisfied(r));
+		}
+
+		return refinements;
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
+	private Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 										  List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
 
 //		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
@@ -553,10 +559,6 @@ public class RhoDRDown
 
 			if (!useDisjunction) {
 				refinements.removeIf(r -> r instanceof OWLObjectUnionOf);
-			}
-
-			if (useSomeOnly) {
-				refinements.removeIf(r -> !isSomeOnlySatisfied(r));
 			}
 
 //			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
@@ -601,7 +603,7 @@ public class RhoDRDown
 					mc = ConceptTransformation.nnf(mc);
 
 					// check whether the intersection is OK (sanity checks), then add it
-					if((!useSomeOnly || isSomeOnlySatisfied(mc, 2)) && checkIntersection((OWLObjectIntersectionOf) mc))
+					if(checkIntersection((OWLObjectIntersectionOf) mc))
 						refinements.add(mc);
 				}
 
@@ -924,7 +926,7 @@ public class RhoDRDown
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if ((!useSomeOnly || isSomeOnlySatisfied(mc, 2)) && checkIntersection(mc))
+						if (checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -984,7 +986,6 @@ public class RhoDRDown
 					&& (useDisjunction || !containsDisjunction(dNeg))
 					&& (useNegation || !containsNegation(dNeg))
 					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
-					&& (!useSomeOnly || isSomeOnlySatisfied(dNeg))
 					&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
 				) {
 					results.add(dNeg);
@@ -1055,7 +1056,7 @@ public class RhoDRDown
 				((OWLObjectIntersectionOf) description).getOperands()
 					.stream().filter(op ->
 						op instanceof OWLObjectSomeValuesFrom
-							|| (op instanceof OWLObjectMinCardinality && ((OWLObjectMinCardinality) op).getCardinality() > 0))
+						|| (op instanceof OWLObjectMinCardinality && ((OWLObjectMinCardinality) op).getCardinality() > 0))
 					.map(op -> ((OWLObjectRestriction) op).getProperty())
 					.collect(Collectors.toSet());
 
