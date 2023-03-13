@@ -519,6 +519,10 @@ public class ParCELPosNegLP extends AbstractClassExpressionLearningProblem<ParCE
 		return getAccuracyAndCorrectness4(coveredPositives, coveredNegatives);
 	}
 
+	public double getAccuracy(int tp, int tn) {
+		return (tp + tn) / (double) (positiveExamples.size() + negativeExamples.size());
+	}
+
 	/**
 	 * Accuracy calculation for the exception learning which provide both covered positive and
 	 * negative examples by the description<br>

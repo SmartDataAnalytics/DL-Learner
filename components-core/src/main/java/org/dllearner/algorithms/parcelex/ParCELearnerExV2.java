@@ -381,8 +381,8 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				uncoveredPositiveExamplesRemoved = this.uncoveredPositiveExamples.size();
 				this.uncoveredPositiveExamples.removeAll(def.getCoveredPositiveExamples());
 				uncoveredPositiveExamplesSize = this.uncoveredPositiveExamples.size();
-			
-			 
+			}
+
 			uncoveredPositiveExamplesRemoved -= uncoveredPositiveExamplesSize;
 			
 			if (uncoveredPositiveExamplesRemoved > 0) {
@@ -433,8 +433,6 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 					//stop();
 				}
 			}
-			}
-			
 
 		}	//for each partial definition
 		
@@ -457,7 +455,7 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 				this.coveredNegativeExamples.addAll(def.getCoveredNegativeExamples());
 				numberOfNewCoveredNegativeExamples = this.coveredNegativeExamples.size() - numberOfNewCoveredNegativeExamples;
 				numberOfCoveredNegativeExamples = this.coveredNegativeExamples.size();
-			
+			}
 			
 			//process the counter partial definition if it covers at least 1 new negative example
 			if (numberOfNewCoveredNegativeExamples > 0) {
@@ -501,7 +499,6 @@ public class ParCELearnerExV2 extends ParCELExAbstract implements ParCELearnerMB
 					this.counterDone = true;
 					//this.stop();
 				}
-			}
 			}
 			
 		}

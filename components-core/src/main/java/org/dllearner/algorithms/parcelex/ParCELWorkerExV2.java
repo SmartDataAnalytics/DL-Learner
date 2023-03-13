@@ -166,6 +166,13 @@ public class ParCELWorkerExV2 extends ParCELExWorkerAbstract<ParCELearnerExV2> {
 									newPD.setDescription(ParCELExUtilities.createIntersection(newNode.getDescription(),
 											combinableCounterPartialDefinitions, true));
 
+									newPD.setCoveredNegativeExamples(Set.of());
+									newPD.setCorrectness(1);
+									newPD.setAccuracy(learningProblem.getAccuracy(
+										newPD.getNumberOfCoveredPositiveExamples(),
+										learningProblem.getPositiveExamples().size()
+									));
+
 									newPD.setType(ParCELExNodeTypes.PARTIAL_DEFINITION_ONLINE_COMBINATION);
 									newPD.setGenerationTime(System.currentTimeMillis() - learner.getMiliStarttime());
 									newPD.setExtraInfo(learner.getTotalDescriptions());
