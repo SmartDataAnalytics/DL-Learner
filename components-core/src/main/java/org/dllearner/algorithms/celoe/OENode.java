@@ -30,7 +30,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
@@ -62,11 +61,14 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 
 	private static boolean useCompactedCoverage = false;
 
-	private static OWLIndividual[] allPositiveExamplesSorted;
-	private static OWLIndividual[] allNegativeExamplesSorted;
+	private static OWLIndividual[] allPositiveExamples;
+	private static OWLIndividual[] allNegativeExamples;
 
-	private boolean[] coveredPositiveExamplesCompact;
-	private boolean[] coveredNegativeExamplesCompact;
+    private static Map<OWLIndividual, Integer> positiveExamplesIndices;
+    private static Map<OWLIndividual, Integer> negativeExamplesIndices;
+
+	private int[] coveredPositiveExamplesCompact;
+	private int[] coveredNegativeExamplesCompact;
 
 	private final Set<OWLIndividual> coveredPositiveExamples = new TreeSet<>();
 	private final Set<OWLIndividual> coveredNegativeExamples = new TreeSet<>();
@@ -161,10 +163,8 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	private Set<OWLIndividual> getCoveredPositiveExamplesCompact() {
-		return IntStream.range(0, allPositiveExamplesSorted.length)
-				.mapToObj(i -> coveredPositiveExamplesCompact[i] ? allPositiveExamplesSorted[i] : null)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+		return Arrays.stream(coveredPositiveExamplesCompact).mapToObj(i -> allPositiveExamples[i])
+            .collect(Collectors.toSet());
 	}
 
 	public Set<OWLIndividual> getCoveredNegativeExamples() {
@@ -176,10 +176,8 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	private Set<OWLIndividual> getCoveredNegativeExamplesCompact() {
-		return IntStream.range(0, allNegativeExamplesSorted.length)
-				.mapToObj(i -> coveredNegativeExamplesCompact[i] ? allNegativeExamplesSorted[i] : null)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+		return Arrays.stream(coveredNegativeExamplesCompact).mapToObj(i -> allNegativeExamples[i])
+            .collect(Collectors.toSet());
 	}
 
 	public void setCoveredPositiveExamples(Set<OWLIndividual> coveredPositiveExamples) {
@@ -196,10 +194,12 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	private void setCoveredPositiveExamplesCompact(Set<OWLIndividual> coveredPositiveExamples) {
-		coveredPositiveExamplesCompact = new boolean[allPositiveExamplesSorted.length];
+		coveredPositiveExamplesCompact = new int[coveredPositiveExamples.size()];
 
-        for (int i = 0; i < allPositiveExamplesSorted.length; i++) {
-            coveredPositiveExamplesCompact[i] = coveredPositiveExamples.contains(allPositiveExamplesSorted[i]);
+        int ind = 0;
+        for (OWLIndividual ex : coveredPositiveExamples) {
+            coveredPositiveExamplesCompact[ind] = positiveExamplesIndices.get(ex);
+            ind++;
         }
 	}
 
@@ -217,10 +217,12 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	private void setCoveredNegativeExamplesCompact(Set<OWLIndividual> coveredNegativeExamples) {
-        coveredNegativeExamplesCompact = new boolean[allNegativeExamplesSorted.length];
+        coveredNegativeExamplesCompact = new int[coveredNegativeExamples.size()];
 
-        for (int i = 0; i < allNegativeExamplesSorted.length; i++) {
-            coveredNegativeExamplesCompact[i] = coveredNegativeExamples.contains(allNegativeExamplesSorted[i]);
+        int ind = 0;
+        for (OWLIndividual ex : coveredNegativeExamples) {
+            coveredNegativeExamplesCompact[ind] = negativeExamplesIndices.get(ex);
+            ind++;
         }
 	}
 
@@ -236,8 +238,26 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	}
 
 	protected static void enableCompactCoverageRepresentation(Set<OWLIndividual> allPositiveExamples, Set<OWLIndividual> allNegativeExamples) {
-		allPositiveExamplesSorted = allPositiveExamples.stream().sorted().toArray(OWLIndividual[]::new);
-		allNegativeExamplesSorted = allNegativeExamples.stream().sorted().toArray(OWLIndividual[]::new);
+		OENode.allPositiveExamples = allPositiveExamples.toArray(OWLIndividual[]::new);
+		OENode.allNegativeExamples = allNegativeExamples.toArray(OWLIndividual[]::new);
+
+        Map<OWLIndividual, Integer> positiveExamplesIndices = new TreeMap<>();
+        Map<OWLIndividual, Integer> negativeExamplesIndices = new TreeMap<>();
+
+        int ind = 0;
+        for (OWLIndividual ex : OENode.allPositiveExamples) {
+            positiveExamplesIndices.put(ex, ind);
+            ind++;
+        }
+
+        ind = 0;
+        for (OWLIndividual ex : OENode.allNegativeExamples) {
+            negativeExamplesIndices.put(ex, ind);
+            ind++;
+        }
+
+        OENode.positiveExamplesIndices = positiveExamplesIndices;
+        OENode.negativeExamplesIndices = negativeExamplesIndices;
 
 		useCompactedCoverage = true;
 	}
