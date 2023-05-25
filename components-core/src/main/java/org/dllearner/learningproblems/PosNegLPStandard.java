@@ -23,9 +23,13 @@ import org.dllearner.utilities.CoverageAdapter;
 import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -106,6 +110,10 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
+	public double getTestAccuracyOrTooWeak(OWLClassExpression description, double noise) {
+		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveTestExamples, negativeTestExamples, noise);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
@@ -115,7 +123,27 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
-    /* (non-Javadoc)
+	public EvaluatedDescription<? extends Score> constructEvaluatedDescription(
+		OWLClassExpression description,
+		Set<OWLIndividual> coveredPositiveExamples, Set<OWLIndividual> coveredNegativeExamples,
+		double accuracy
+	) {
+		Set<OWLIndividual> uncoveredPositiveExamples = new TreeSet<>(positiveExamples);
+		uncoveredPositiveExamples.removeAll(coveredPositiveExamples);
+		Set<OWLIndividual> uncoveredNegativeExamples = new TreeSet<>(negativeExamples);
+		uncoveredNegativeExamples.removeAll(coveredNegativeExamples);
+
+		ScoreTwoValued score = new ScoreTwoValued(
+			OWLClassExpressionUtils.getLength(description),
+			getPercentPerLengthUnit(),
+			coveredPositiveExamples, uncoveredPositiveExamples, coveredNegativeExamples, uncoveredNegativeExamples,
+			accuracy
+		);
+
+		return new EvaluatedDescriptionPosNeg(description, score);
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     @Override

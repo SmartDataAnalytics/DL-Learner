@@ -27,6 +27,7 @@ import org.dllearner.core.owl.*;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.ExpressionDecomposer;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
@@ -42,6 +43,7 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -49,7 +51,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.primitives.Ints.max;
-import static java.util.stream.Collectors.summingInt;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -69,13 +70,16 @@ import static java.util.stream.Collectors.summingInt;
  *
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
-public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
+public class RhoDRDown
+	extends RefinementOperatorAdapter
+	implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator,
+	ReasoningBasedRefinementOperator, Cloneable, DownwardRefinementOperator
+{
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
 
-	private static final OWLClass OWL_THING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_THING.getIRI());
+	private static final OWLClass OWL_THING = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
 
 	@ConfigOption(description = "the reasoner to use")
 	private AbstractReasonerComponent reasoner;
@@ -101,14 +105,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(defaultValue = "5", description = "limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)")
 	private int cardinalityLimit = 5;
 
+	@ConfigOption(defaultValue = "cardinalityLimit", description = "limit for max cardinality restrictions")
+	private int maxCardinalityLimit = cardinalityLimit;
+
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as
 	// start class, then the algorithm should start the search with class
 	// Compound (and not with Thing), because otherwise concepts like
 	// NOT Carbon-87 will be returned which itself is not a subclass of Compound
 	@ConfigOption(
-			defaultValue = "owl:Thing",
-			description = "You can specify a start class for the algorithm")
+		defaultValue = "owl:Thing",
+		description = "You can specify a start class for the algorithm")
 	private OWLClassExpression startClass = OWL_THING;
 
 	// the length of concepts of top refinements, the first values is
@@ -148,17 +155,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<>();
 
 	// numeric values splitter
+	@ConfigOption(description = "the splitter to use for computing split intervals for numeric types", defaultValue = "DefaultNumericValuesSplitter")
 	private ValuesSplitter numericValuesSplitter;
 
 	// splits for double datatype properties in ascending order
-	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
+	private Map<OWLDataProperty,List<OWLLiteral>> splits;
 
-	@ConfigOption(description = "the number of generated split intervals for numeric types", defaultValue = "12")
+	@ConfigOption(description = "the number of generated split intervals for numeric types, applies only to default splitter", defaultValue = "12")
 	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
 	@ConfigOption(defaultValue = "3", description = "minimum number an individual or literal has to be seen in the " +
-			"knowledge base before considering it for inclusion in concepts")
+		"knowledge base before considering it for inclusion in concepts")
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	// data structure with identified frequent values
 	private Map<OWLObjectPropertyExpression, Set<OWLIndividual>> frequentValues = new HashMap<>();
@@ -173,7 +181,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private boolean applyAllFilter = true;
 
 	@ConfigOption(defaultValue="true", description = "throwing out all refinements with " +
-			"duplicate \u2203 r for any r")
+		"duplicate \u2203 r for any r")
 	private boolean applyExistsFilter = true;
 
 	@ConfigOption(description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
@@ -191,11 +199,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description="support of qualified cardinality restrictions (owl:minCardinality, owl:maxCardinality, owl:exactCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
 	private boolean useCardinalityRestrictions = true;
 
+	@ConfigOption(description="a set of roles which can be used in qualified cardinality restrictions")
+	private Set<OWLObjectProperty> allowedRolesInCardinalityRestrictions = null;
+
 	@ConfigOption(description="support of local reflexivity of an object property expression (owl:hasSelf), e.g. \u2203 loves.Self for a narcissistic", defaultValue="false")
 	private boolean useHasSelf = false;
 
 	@ConfigOption(description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
+
+	@ConfigOption(description="support of disjunction (owl:unionOf), e.g. C\u2294 D ", defaultValue="true")
+	private boolean useDisjunction = true;
+
+	@ConfigOption(description="support of disjunction (owl:unionOf) within a qualified number restriction or a universal quantification; takes effect only if useDisjunction = false", defaultValue="true")
+	private boolean useRestrictedDisjunction = true;
 
 	@ConfigOption(description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
@@ -222,8 +239,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private boolean dropDisjuncts = false;
 
 	@ConfigOption(description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",
-			defaultValue="true")
+		defaultValue="true")
 	private boolean useSomeOnly = true;
+
+	@ConfigOption(
+		description="if set to true, concepts of the form \u2265 n r.C are refined to \u2265 n r.D, where D is a downward refinement of C, otherwise D must be a refinement of C in the upward direction",
+		defaultValue="false")
+	private boolean refineMaxCardinalityRestrictionsUpwards = false;
 
 	// caches for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<>();
@@ -237,7 +259,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(description = "class expression length metric (should match learning algorithm usage)", defaultValue = "default cel_metric")
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+
+	@ConfigOption(description = "whether to clone the associated reasoner when cloning an operator instance", defaultValue = "false")
+	private boolean cloneReasoner = false;
+
+	private final OWLDataFactory df = new OWLDataFactoryImpl();
+	private final ExpressionDecomposer decomposer = new ExpressionDecomposer();
 
 	public RhoDRDown() {}
 
@@ -246,47 +273,73 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 */
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
+		setApplyExistsFilter(op.applyExistsFilter);
 		setCardinalityLimit(op.cardinalityLimit);
-		setClassHierarchy(op.classHierarchy);
-		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
-		setDataPropertyHierarchy(op.dataPropertyHierarchy);
+		setMaxCardinalityLimit(op.maxCardinalityLimit);
+		setClassHierarchy(op.classHierarchy.clone());
+		setObjectPropertyHierarchy(op.objectPropertyHierarchy.clone());
+		setDataPropertyHierarchy(op.dataPropertyHierarchy.clone());
 		setDropDisjuncts(op.dropDisjuncts);
 		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
-		setReasoner(op.reasoner);
+		setCloneReasoner(op.cloneReasoner);
+
+		if (cloneReasoner) {
+			setReasoner(op.reasoner.clone());
+		} else {
+			setReasoner(op.reasoner);
+		}
+
 		setStartClass(op.startClass);
 		setUseAllConstructor(op.useAllConstructor);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
 		setUseExistsConstructor(op.useExistsConstructor);
 		setUseNegation(op.useNegation);
+		setUseDisjunction(op.useDisjunction);
+		setUseRestrictedDisjunction(op.useRestrictedDisjunction);
 		setUseHasValueConstructor(op.useHasValueConstructor);
 		setUseObjectValueNegation(op.useObjectValueNegation);
-		setFrequencyThreshold(op.frequencyThreshold);
 		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
 		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseStringDatatypes(op.useStringDatatypes);
 		setUseNumericDatatypes(op.useNumericDatatypes);
 		setUseTimeDatatypes(op.useTimeDatatypes);
+		setUseSomeOnly(op.useSomeOnly);
+		setUseHasSelf(op.useHasSelf);
+		setUseInverse(op.useInverse);
+		setFrequencyThreshold(op.frequencyThreshold);
+		setAllowedRolesInCardinalityRestrictions(op.allowedRolesInCardinalityRestrictions);
+		setSplits(op.splits);
+		setMaxNrOfSplits(op.maxNrOfSplits);
+		setNumericValuesSplitter(op.numericValuesSplitter);
+		setDisjointChecks(op.disjointChecks);
+		setLengthMetric(op.lengthMetric);
+		setRefineMaxCardinalityRestrictionsUpwards(op.refineMaxCardinalityRestrictionsUpwards);
+
 		initialized = false;
 	}
 
 	private <T> Set<T> frequentObjects(Collection<? extends Collection<T>> c, int frequencyThreshold) {
 		final int t = frequencyThreshold;
 		return c.stream()
-				.flatMap(Collection::stream)
-				.collect(Collectors.collectingAndThen(Collectors.groupingBy(Function.identity(), Collectors.counting()),
-						map -> {
-							map.values().removeIf(v -> v < t);
-							return map.keySet();
-						}));
+			.flatMap(Collection::stream)
+			.collect(Collectors.collectingAndThen(Collectors.groupingBy(Function.identity(), Collectors.counting()),
+				map -> {
+					map.values().removeIf(v -> v < t);
+					return map.keySet();
+				}));
 	}
 
 	@Override
-    public void init() throws ComponentInitException {
+	public void init() throws ComponentInitException {
 		/*
 		if(initialized) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
 		*/
+
+		if (!reasoner.isInitialized()) {
+			reasoner.init();
+		}
 
 		if (classHierarchy == null) classHierarchy = reasoner.getClassHierarchy();
 		if (dataPropertyHierarchy == null) dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
@@ -317,10 +370,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					// all related individuals, thus, the freuqncy of each individual as subject is just the number
 					// of objects
 					frequentInds = propertyMembers.entrySet().stream().collect(Collectors.collectingAndThen(
-							Collectors.toMap(Entry::getKey, e -> e.getValue().size()), map -> {
-								map.values().removeIf(v -> v < frequencyThreshold);
-								return map.keySet();
-					}));
+						Collectors.toMap(Entry::getKey, e -> e.getValue().size()), map -> {
+							map.values().removeIf(v -> v < frequencyThreshold);
+							return map.keySet();
+						}));
 					frequentValues.put(op.getInverseProperty(), frequentInds);
 				}
 			}
@@ -336,18 +389,21 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
-			if(reasoner instanceof SPARQLReasoner
-					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
-				// TODO SPARQL support for splits
-				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
-			} else {
-				// create default splitter if none was set
-				if(numericValuesSplitter == null) {
-					numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
-				}
-				splits.putAll(numericValuesSplitter.computeSplits());
-				if (logger.isDebugEnabled()) {
-					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
+			if (splits == null) {
+				if (reasoner instanceof SPARQLReasoner
+					&& !((SPARQLReasoner) reasoner).isUseGenericSplitsCode()) {
+					// TODO SPARQL support for splits
+					logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
+				} else {
+					// create default splitter if none was set
+					if (numericValuesSplitter == null) {
+						numericValuesSplitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+					}
+					splits = new TreeMap<>();
+					splits.putAll(numericValuesSplitter.computeSplits());
+					if (logger.isDebugEnabled()) {
+						logger.debug(sparql_debug, "Numeric Splits: {}", splits);
+					}
 				}
 			}
 		}
@@ -355,7 +411,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute splits for time data properties
 		if (useTimeDatatypes) {
 			if(reasoner instanceof SPARQLReasoner
-					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
+				&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
 				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
@@ -376,9 +432,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					maxNrOfFillers.put(op, 10);
 				} else {
 					int maxFillers = Math.min(cardinalityLimit,
-							reasoner.getPropertyMembers(op).values().stream()
-									.mapToInt(Set::size)
-									.max().orElse(0));
+						reasoner.getPropertyMembers(op).values().stream()
+							.mapToInt(Set::size)
+							.max().orElse(0));
 					maxNrOfFillers.put(op, maxFillers);
 
 //					int percentile95 = (int) new Percentile().evaluate(
@@ -392,18 +448,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					// handle inverse properties
 					if(useInverse) {
 						maxFillers = 0;
-	
+
 						Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
-	
+
 						for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(op).entrySet()) {
 							OWLIndividual subject = entry.getKey();
 							SortedSet<OWLIndividual> objects = entry.getValue();
-	
+
 							for (OWLIndividual obj : objects) {
 								map.put(obj, subject);
 							}
 						}
-	
+
 						for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
 							Collection<OWLIndividual> inds = entry.getValue();
 							if (inds.size() > maxFillers)
@@ -431,11 +487,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
-		initialized = true;
-	}
+		if (maxCardinalityLimit < 0 || maxCardinalityLimit > cardinalityLimit) {
+			maxCardinalityLimit = cardinalityLimit;
+		}
 
-	protected void isFinal() {
-		if (initialized) throw new IllegalStateException(this.getClass() + " already initialised in " + Thread.currentThread().getStackTrace()[2].getMethodName());
+		initialized = true;
 	}
 
 	@Override
@@ -449,18 +505,24 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(maxLength < OWLClassExpressionUtils.getLength(description, lengthMetric)) {
 			throw new Error("length has to be at least class expression length (class expression: " + description + " with length " + OWLClassExpressionUtils.getLength(description, lengthMetric) +", and max length: " + maxLength + ")");
 		}
-		return refine(description, maxLength, null, startClass);
+		return refine(description, maxLength, null);
 	}
 
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
-			List<OWLClassExpression> knownRefinements) {
-		return refine(description, maxLength, knownRefinements, startClass);
+										  List<OWLClassExpression> knownRefinements) {
+		Set<OWLClassExpression> refinements = refine(description, maxLength, knownRefinements, startClass);
+
+		if (useSomeOnly) {
+			refinements.removeIf(r -> !isSomeOnlySatisfied(r));
+		}
+
+		return refinements;
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
-			List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
+	private Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
+										  List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
 
 //		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
 
@@ -490,6 +552,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 				refinements = (TreeSet<OWLClassExpression>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
+
+			if (!useNegation) {
+				refinements.removeIf(this::containsNegation);
+			}
+
+			if (!useDisjunction) {
+				refinements.removeIf(r -> r instanceof OWLObjectUnionOf);
+			}
+
 //			refinements.addAll(classHierarchy.getMoreSpecialConcepts(description));
 		} else if(description.isOWLNothing()) {
 			// cannot be further refined
@@ -502,7 +573,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				tmp = classHierarchy.getSuperClasses(operand, true);
 
 				for(OWLClassExpression c : tmp) {
-					if(!c.isOWLThing()){
+					if(!c.isOWLThing() && !isDisjoint(df.getOWLObjectComplementOf(c), currDomain)){
 						refinements.add(df.getOWLObjectComplementOf(c));
 					}
 				}
@@ -520,22 +591,25 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					if(!useSomeOnly || isCombinable(description, c)) {
-						List<OWLClassExpression> newChildren = new ArrayList<>(operands);
-						newChildren.add(c);
-						newChildren.remove(child);
-						Collections.sort(newChildren);
-						OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
+					List<OWLClassExpression> newChildren = new ArrayList<>(operands);
+					newChildren.remove(child);
 
-						// clean concept and transform it to ordered negation normal form
-						// (non-recursive variant because only depth 1 was modified)
-						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-						mc = ConceptTransformation.nnf(mc);
-
-						// check whether the intersection is OK (sanity checks), then add it
-						if(checkIntersection((OWLObjectIntersectionOf) mc))
-							refinements.add(mc);
+					if (applyAllFilter && !passesAllFilter(newChildren, c)) {
+						continue;
 					}
+
+					newChildren.add(c);
+					Collections.sort(newChildren);
+					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
+
+					// clean concept and transform it to ordered negation normal form
+					// (non-recursive variant because only depth 1 was modified)
+					mc = ConceptTransformation.cleanConceptNonRecursive(mc);
+					mc = ConceptTransformation.nnf(mc);
+
+					// check whether the intersection is OK (sanity checks), then add it
+					if(checkIntersection((OWLObjectIntersectionOf) mc))
+						refinements.add(mc);
 				}
 
 			}
@@ -591,8 +665,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// we need the context of the filler which is either the domain (in case of an inverse property) or the range of p
 			OWLClassExpression domain = role.isAnonymous()
-					? opDomains.get(role.getNamedProperty()) // inv(p) -> D = domain(p)
-					: opRanges.get(role.asOWLObjectProperty()); // p -> D = range(p)
+				? opDomains.get(role.getNamedProperty()) // inv(p) -> D = domain(p)
+				: opRanges.get(role.asOWLObjectProperty()); // p -> D = range(p)
 
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(filler, maxLength-lengthMetric.objectSomeValuesLength-lengthMetric.objectProperyLength, null, domain);
@@ -610,9 +684,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// rule 3: EXISTS r.D => >= 2 r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if (useCardinalityRestrictions &&
-					maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) &&
-					maxNrOfFillers.get(role) > 1) {
+			OWLObjectProperty prop = role.isAnonymous() ? role.getNamedProperty() : role.asOWLObjectProperty();
+
+			if (useCardinalityRestrictions && isPropertyAllowedInCardinalityRestrictions(prop) &&
+				maxLength > OWLClassExpressionUtils.getLength(description, lengthMetric) &&
+				maxNrOfFillers.get(role) > 1) {
 				refinements.add(df.getOWLObjectMinCardinality(2, role, filler));
 
 			}
@@ -640,29 +716,55 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLObjectPropertyExpression role = ((OWLObjectCardinalityRestriction) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
-			OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+			OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role.asOWLObjectProperty());
 			int cardinality = ((OWLObjectCardinalityRestriction) description).getCardinality();
 			if(description instanceof OWLObjectMaxCardinality) {
 				// rule 1: <= x r.C =>  <= x r.D
 				if(useNegation || cardinality > 0){
-					tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+					boolean useDisjunctionBackup = useDisjunction;
+					if (!useDisjunction && useRestrictedDisjunction) {
+						useDisjunction = true;
+					}
 
-					for(OWLClassExpression d : tmp) {
-						refinements.add(df.getOWLObjectMaxCardinality(cardinality,role,d));
+					try {
+						if (refineMaxCardinalityRestrictionsUpwards) {
+							tmp = refine(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
+						} else {
+							tmp = refineUpwards(filler, maxLength - lengthMetric.objectCardinalityLength - lengthMetric.objectProperyLength, null, range);
+						}
+
+						useDisjunction = useDisjunctionBackup;
+
+						for(OWLClassExpression d : tmp) {
+							refinements.add(df.getOWLObjectMaxCardinality(cardinality,role,d));
+						}
+					} catch (Throwable t) {
+						useDisjunction = useDisjunctionBackup;
 					}
 				}
 
 				// rule 2: <= x r.C  =>  <= (x-1) r.C
 //				int number = max.getNumber();
-				if((useNegation && cardinality > 1) || (!useNegation && cardinality > 2)){
+				if (cardinality > 1) {
 					refinements.add(df.getOWLObjectMaxCardinality(cardinality-1,role,filler));
 				}
 
 			} else if(description instanceof OWLObjectMinCardinality) {
-				tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+				boolean useDisjunctionBackup = useDisjunction;
+				if (!useDisjunction && useRestrictedDisjunction) {
+					useDisjunction = true;
+				}
 
-				for(OWLClassExpression d : tmp) {
-					refinements.add(df.getOWLObjectMinCardinality(cardinality,role,d));
+				try {
+					tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+
+					useDisjunction = useDisjunctionBackup;
+
+					for(OWLClassExpression d : tmp) {
+						refinements.add(df.getOWLObjectMinCardinality(cardinality,role,d));
+					}
+				} catch (Throwable t) {
+					useDisjunction = useDisjunctionBackup;
 				}
 
 				// >= x r.C  =>  >= (x+1) r.C
@@ -670,19 +772,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				if(cardinality < maxNrOfFillers.get(role)){
 					refinements.add(df.getOWLObjectMinCardinality(cardinality+1,role,filler));
 				}
-			} else if(description instanceof OWLObjectExactCardinality) {
-				tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
-
-				for(OWLClassExpression d : tmp) {
-					refinements.add(df.getOWLObjectExactCardinality(cardinality,role,d));
-				}
-
-				// >= x r.C  =>  >= (x+1) r.C
-//				int number = min.getNumber();
-				if(cardinality < maxNrOfFillers.get(role)){
-					refinements.add(df.getOWLObjectExactCardinality(cardinality+1,role,filler));
-				}
 			}
+//			else if(description instanceof OWLObjectExactCardinality) { // (not downward refinements => commented out)
+//				tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
+//
+//				for(OWLClassExpression d : tmp) {
+//					refinements.add(df.getOWLObjectExactCardinality(cardinality,role,d));
+//				}
+//
+//				// = x r.C  =>  = (x+1) r.C
+//				// int number = min.getNumber();
+//				if(cardinality < maxNrOfFillers.get(role)){
+//					refinements.add(df.getOWLObjectExactCardinality(cardinality+1,role,filler));
+//				}
+//			}
 		} else if (description instanceof OWLDataSomeValuesFrom) {
 			OWLDataProperty dp = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
 			OWLDataRange dr = ((OWLDataSomeValuesFrom) description).getFiller();
@@ -737,9 +840,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 		}
 
-		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
+		// if a refinement is not Bottom, Top, ALL r.Bottom, or intersection a refinement of top can be appended
 		if(!description.isOWLThing() && !description.isOWLNothing()
-				&& !(description instanceof OWLObjectAllValuesFrom && ((OWLObjectAllValuesFrom)description).getFiller().isOWLNothing())) {
+			&& !(description instanceof OWLObjectIntersectionOf)
+			&& !(description instanceof OWLObjectAllValuesFrom && ((OWLObjectAllValuesFrom)description).getFiller().isOWLNothing())) {
 			// -1 because of the AND symbol which is appended
 			int topRefLength = maxLength - OWLClassExpressionUtils.getLength(description, lengthMetric) - 1;
 
@@ -753,9 +857,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(topRefLength>0) {
 				Set<OWLClassExpression> topRefs;
 				if(currDomain.isOWLThing())
-					topRefs = topRefinementsCumulative.get(topRefLength);
+					topRefs = (TreeSet<OWLClassExpression>) topRefinementsCumulative.get(topRefLength).clone();
 				else
-					topRefs = topARefinementsCumulative.get(currDomain).get(topRefLength);
+					topRefs = (TreeSet<OWLClassExpression>) topARefinementsCumulative.get(currDomain).get(topRefLength).clone();
+
+				if (!useNegation) {
+					topRefs.removeIf(this::containsNegation);
+				}
+
+				if (!useDisjunction) {
+					topRefs.removeIf(r -> r instanceof OWLObjectUnionOf);
+				}
 
 				for(OWLClassExpression c : topRefs) {
 					// true if refinement should be skipped due to filters,
@@ -764,28 +876,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 					// if a refinement of of the form ALL r, we check whether ALL r
 					// does not occur already
-					if(applyAllFilter) {
-						if(c instanceof OWLObjectAllValuesFrom) {
-							if(description instanceof OWLNaryBooleanClassExpression){
-								for(OWLClassExpression child : ((OWLNaryBooleanClassExpression) description).getOperands()) {
-									if(child instanceof OWLObjectAllValuesFrom) {
-										OWLObjectPropertyExpression r1 = ((OWLObjectAllValuesFrom) c).getProperty();
-										OWLObjectPropertyExpression r2 = ((OWLObjectAllValuesFrom) child).getProperty();
-										if(r1.equals(r2)){
-											skip = true;
-											break;
-										}
-									}
-								}
-							}
-						}
+					if (applyAllFilter && !passesAllFilter(List.of(description), c)) {
+						skip = true;
 					}
 
 					// we only add \forall r.C to an intersection if there is
 					// already some existential restriction \exists r.C
-					if(useSomeOnly) {
-						skip = !isCombinable(description, c);
-					}
+					// => checking later using isSomeOnlySatisfied
+//					if(useSomeOnly) {
+//						skip = !isCombinable(description, c);
+//					}
 
 					// check for double datatype properties
 					/*
@@ -803,7 +903,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
 					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
 					// are generated which are all equal to A1 due to disjointness of A2 and A3
-					if(disjointChecks && !c.isAnonymous() && !description.isAnonymous() && isDisjoint(description, c)) {
+					if(!skip && disjointChecks && !c.isAnonymous() && !description.isAnonymous() && isDisjoint(description, c)) {
 						skip = true;
 //						System.out.println(c + " ignored when refining " + description);
 					}
@@ -818,7 +918,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
-						if(checkIntersection(mc))
+						if (checkIntersection(mc))
 							refinements.add(mc);
 					}
 				}
@@ -836,6 +936,179 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return refinements;
 	}
 
+	private Set<OWLClassExpression> refineUpwards(
+		OWLClassExpression description, int maxLength,
+		List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain
+	) {
+		RhoDRDownConfigOptionsMemento configOptions = new RhoDRDownConfigOptionsMemento(this);
+
+		useNegation = true;
+		useDisjunction = true;
+		useSomeOnly = false;
+		useObjectValueNegation = true;
+
+		maxCardinalityLimit = cardinalityLimit;
+
+		TreeSet<OWLClassExpression> results = new TreeSet<>();
+
+		try {
+			OWLClassExpression negatedDescription = constructNegationInNNF(description);
+
+			// concept length can change because of the conversion process; as a heuristic
+			// we increase maxLength by the length difference of negated and original concept
+			int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription, lengthMetric) - OWLClassExpressionUtils.getLength(description, lengthMetric));
+			Set<OWLClassExpression> refinements = refine(negatedDescription, maxLength+lengthDiff+1, knownRefinements, currDomain);
+
+			configOptions.restore(this);
+
+			description = description.getNNF();
+
+			for (OWLClassExpression d : refinements) {
+				OWLClassExpression dNeg = constructNegationInNNF(d);
+				dNeg = ConceptTransformation.cleanConcept(dNeg);
+
+				// TODO: dropDisjuncts not supported
+				// TODO: some values from and has value for datatype properties not supported
+				// TODO: useAllConstructor, useExistsConstructor, applyAllFilter, applyExistsFilter ignored (assuming they are all set to true)
+
+				// to satisfy the guarantee that the method does not return longer
+				// concepts, we perform an additional check
+				if(description.compareTo(dNeg) != 0
+					&& (maxCardinalityLimit == cardinalityLimit || isMaxCardinalityLimitSatisfied(dNeg))
+					&& (useDisjunction || !containsDisjunction(dNeg))
+					&& (useNegation || !containsNegation(dNeg))
+					&& (!useHasValueConstructor || useObjectValueNegation || !containsObjectValueNegation(dNeg))
+					&& OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength
+				) {
+					results.add(dNeg);
+				}
+			}
+
+			if (description.isOWLNothing()) {
+				results.add(df.getOWLThing());
+			}
+		} catch (Throwable t) {
+			configOptions.restore(this);
+		}
+
+		return results;
+	}
+
+	private OWLClassExpression constructNegationInNNF(OWLClassExpression description) {
+		OWLClassExpression negatedDescription = new OWLObjectComplementOfImpl(description);
+		negatedDescription = ConceptTransformation.nnf(negatedDescription);
+
+		return negatedDescription;
+	}
+
+	private boolean isMaxCardinalityLimitSatisfied(OWLClassExpression description) {
+		return decomposer.decompose(description)
+			.stream().allMatch(e ->
+				!(e instanceof OWLObjectMaxCardinality) || ((OWLObjectMaxCardinality) e).getCardinality() <= maxCardinalityLimit
+			);
+	}
+
+	private boolean containsDisjunction(OWLClassExpression description) {
+		return decomposer.decompose(description)
+			.stream().anyMatch(e -> e instanceof OWLObjectUnionOf);
+	}
+
+	private boolean containsNegation(OWLClassExpression description) {
+		return decomposer.decompose(description)
+			.stream().anyMatch(e ->
+				e instanceof OWLObjectComplementOf || e instanceof OWLDataComplementOf
+			);
+	}
+
+	private boolean containsObjectValueNegation(OWLClassExpression description) {
+		return decomposer.decompose(description)
+			.stream().anyMatch(e ->
+				e instanceof OWLObjectComplementOf && ((OWLObjectComplementOf) e).getOperand() instanceof OWLObjectOneOf
+			);
+	}
+
+	private boolean passesAllFilter(List<OWLClassExpression> otherOperands, OWLClassExpression newOperand) {
+		List<OWLClassExpression> operandsToCheck = (newOperand instanceof OWLObjectIntersectionOf)
+			? ((OWLObjectIntersectionOf) newOperand).getOperandsAsList()
+			: List.of(newOperand);
+
+		List<OWLObjectPropertyExpression> allValuesProperties = otherOperands.stream()
+			.filter(op -> op instanceof OWLObjectAllValuesFrom)
+			.map(op -> ((OWLObjectAllValuesFrom) op).getProperty())
+			.collect(Collectors.toList());
+
+		for (OWLClassExpression op : operandsToCheck) {
+			if (op instanceof OWLObjectAllValuesFrom) {
+				OWLObjectPropertyExpression prop = ((OWLObjectAllValuesFrom) op).getProperty();
+
+				if (allValuesProperties.contains(prop)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isSomeOnlySatisfied(OWLClassExpression description) {
+		return isSomeOnlySatisfied(description, -1);
+	}
+
+	// maxRecursiveCalls < 0 means that the entire description should be traversed recursively
+	private boolean isSomeOnlySatisfied(OWLClassExpression description, int maxRecursiveCalls) {
+		return isSomeOnlySatisfied(description, Set.of(), maxRecursiveCalls);
+	}
+
+	// maxRecursiveCalls < 0 means that the entire description should be traversed recursively
+	private boolean isSomeOnlySatisfied(OWLClassExpression description, Set<OWLObjectPropertyExpression> prevSomeValuesProperties, int maxRecursiveCalls) {
+		if (maxRecursiveCalls == 0) {
+			return !(description instanceof OWLObjectAllValuesFrom)
+				|| prevSomeValuesProperties.contains(((OWLObjectAllValuesFrom) description).getProperty());
+		}
+
+		if (description instanceof OWLObjectIntersectionOf) {
+			Set<OWLObjectPropertyExpression> someValuesProperties =
+				((OWLObjectIntersectionOf) description).getOperands()
+					.stream().filter(op ->
+						op instanceof OWLObjectSomeValuesFrom
+						|| (op instanceof OWLObjectMinCardinality && ((OWLObjectMinCardinality) op).getCardinality() > 0))
+					.map(op -> ((OWLObjectRestriction) op).getProperty())
+					.collect(Collectors.toSet());
+
+			return ((OWLObjectIntersectionOf) description).getOperands()
+				.stream().allMatch(op -> isSomeOnlySatisfied(op, someValuesProperties, maxRecursiveCalls - 1));
+		}
+
+		if (description instanceof OWLObjectUnionOf) {
+			return ((OWLObjectUnionOf) description).getOperands()
+				.stream().allMatch(op -> isSomeOnlySatisfied(op, prevSomeValuesProperties, maxRecursiveCalls - 1));
+		}
+
+		if (description instanceof OWLObjectSomeValuesFrom) {
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
+
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
+		}
+
+		if (description instanceof OWLObjectAllValuesFrom) {
+			if (!prevSomeValuesProperties.contains(((OWLObjectAllValuesFrom) description).getProperty())) {
+				return false;
+			}
+
+			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
+
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
+		}
+
+		if (description instanceof OWLObjectCardinalityRestriction) {
+			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
+
+			return isSomeOnlySatisfied(filler, Set.of(), maxRecursiveCalls - 1);
+		}
+
+		return true;
+	}
+
 	private boolean isCombinable(OWLClassExpression ce, OWLClassExpression child) {
 		boolean combinable = true;
 
@@ -844,7 +1117,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			OWLObjectPropertyExpression r1 = ((OWLObjectAllValuesFrom) child).getProperty();
 			if(ce instanceof OWLObjectIntersectionOf){
 				for(OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
-					if(child instanceof OWLObjectSomeValuesFrom) {
+					if(operand instanceof OWLObjectSomeValuesFrom) {
 						OWLObjectPropertyExpression r2 = ((OWLObjectSomeValuesFrom) operand).getProperty();
 						if(r1.equals(r2)){
 							tmp = true;
@@ -868,17 +1141,29 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		OWLObjectPropertyExpression role = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
-		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role.asOWLObjectProperty());
 
 		// rule 1: ALL r.D => ALL r.E
-		Set<OWLClassExpression> tmp = refine(filler, maxLength-lengthMetric.objectAllValuesLength-lengthMetric.objectProperyLength, null, range);
-
-		for(OWLClassExpression c : tmp) {
-			refinements.add(df.getOWLObjectAllValuesFrom(role, c));
+		boolean useDisjunctionBackup = useDisjunction;
+		if (!useDisjunction && useRestrictedDisjunction) {
+			useDisjunction = true;
 		}
 
-		// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
-		if(!filler.isOWLNothing() && !filler.isAnonymous() && tmp.size()==0) {
+		try {
+			Set<OWLClassExpression> tmp = refine(filler, maxLength-lengthMetric.objectAllValuesLength-lengthMetric.objectProperyLength, null, range);
+
+			useDisjunction = useDisjunctionBackup;
+
+			for(OWLClassExpression c : tmp) {
+				refinements.add(df.getOWLObjectAllValuesFrom(role, c));
+			}
+		} catch (Throwable t) {
+			useDisjunction = useDisjunctionBackup;
+		}
+
+		// rule 2 UPDATED: ALL r.TOP => ALL r.BOTTOM
+		// rationale behind the update: the concepts of the form ALL r.BOTTOM were previously really hard to reach
+		if(filler.isOWLThing()) {
 			refinements.add(df.getOWLObjectAllValuesFrom(role, df.getOWLNothing()));
 		}
 
@@ -917,9 +1202,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// rule 4: no double occurences of hasValue restrictions
 		TreeSet<OWLObjectPropertyExpression> occuredVR = new TreeSet<>();
 		// rule 5: max. restrictions at most once
-				boolean maxIntOccurence = false;
-				// rule 6: min restrictions at most once
-				boolean minIntOccurence = false;
+		boolean maxIntOccurence = false;
+		// rule 6: min restrictions at most once
+		boolean minIntOccurence = false;
 
 		for(OWLClassExpression child : intersection.getOperands()) {
 			if(child instanceof OWLDataSomeValuesFrom) {
@@ -986,6 +1271,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.dropDisjuncts = dropDisjuncts;
 	}
 
+	public boolean isDropDisjuncts() {
+		return dropDisjuncts;
+	}
+
 	private void computeTopRefinements(int maxLength) {
 		computeTopRefinements(maxLength, null);
 	}
@@ -1034,9 +1323,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						topRefinements.get(i).addAll(m.get(i));
 					else
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
-				// combinations has several numbers => generate disjunct
+					// combinations has several numbers => generate disjunct
 				} else {
-
 					// check whether the combination makes sense, i.e. whether
 					// all lengths mentioned in it have corresponding elements
 					// e.g. when negation is deactivated there won't be elements of
@@ -1044,7 +1332,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					boolean validCombo = true;
 					for(Integer j : combo) {
 						if((domain == null && m.get(j).size()==0) ||
-								(domain != null && mA.get(domain).get(j).size()==0))
+							(domain != null && mA.get(domain).get(j).size()==0))
 							validCombo = false;
 					}
 
@@ -1130,13 +1418,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> m1 = classHierarchy.getSubClasses(df.getOWLThing(), true);
 		m.get(lengthMetric.classLength).addAll(m1);
 
-		if(useNegation) {
-			int lc = lengthMetric.objectComplementLength + lengthMetric.classLength;
-			Set<OWLClassExpression> m2tmp = classHierarchy.getSuperClasses(df.getOWLNothing(), true);
-			for(OWLClassExpression c : m2tmp) {
-				if(!c.isOWLThing()) {
-					m.get(lc).add(df.getOWLObjectComplementOf(c));
-				}
+		int lcn = lengthMetric.objectComplementLength + lengthMetric.classLength;
+		Set<OWLClassExpression> m2tmp = classHierarchy.getSuperClasses(df.getOWLNothing(), true);
+		for(OWLClassExpression c : m2tmp) {
+			if(!c.isOWLThing()) {
+				m.get(lcn).add(df.getOWLObjectComplementOf(c));
 			}
 		}
 
@@ -1189,11 +1475,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(useTimeDatatypes) {
 			Set<OWLDataProperty> dataProperties = dataPropertyHierarchy.getEntities().stream()
-					.filter(dp ->
-					{
-						OWLDatatype datatype = reasoner.getDatatype(dp);
-						return (datatype != null && OWLAPIUtils.dtDatatypes.contains(datatype));
-					}).collect(Collectors.toSet());
+				.filter(dp ->
+				{
+					OWLDatatype datatype = reasoner.getDatatype(dp);
+					return (datatype != null && OWLAPIUtils.dtDatatypes.contains(datatype));
+				}).collect(Collectors.toSet());
 			int lc = lengthMetric.dataSomeValuesLength + lengthMetric.dataProperyLength + 1;
 			for(OWLDataProperty dp : dataProperties) {
 				addNumericFacetRestrictions(lc, dp);
@@ -1231,15 +1517,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			logger.debug(sparql_debug, "most general properties:");
 			int lc = lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
-				int maxFillers = maxNrOfFillers.get(r);
-				logger.debug(sparql_debug, "`"+r+"="+maxFillers);
-				// zero fillers: <= -1 r.C does not make sense
-				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
-				// but we still keep it, because ALL r.NOT C may be difficult to reach
-				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1))
-					m.get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLThing()));
+				if (isPropertyAllowedInCardinalityRestrictions(r)) {
+					int maxFillers = Math.min(maxCardinalityLimit + 1, maxNrOfFillers.get(r));
+					logger.debug(sparql_debug, "`"+r+"="+maxFillers);
+					// zero fillers: <= -1 r.C does not make sense
+					// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
+					// but we still keep it, because ALL r.NOT C may be difficult to reach
+					if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1)) {
+						if (refineMaxCardinalityRestrictionsUpwards) {
+							m.get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLThing()));
+						} else {
+							m.get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLNothing()));
+						}
+					}
 
-//				m.get(lc).add(df.getOWLObjectExactCardinality(1, r, df.getOWLThing()));
+					// = 1 r.C
+//					m.get(lc).add(df.getOWLObjectExactCardinality(1, r, df.getOWLThing()));
+				}
 			}
 		}
 
@@ -1260,11 +1554,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			OWLLiteral min = splits.get(dp).get(0);
 			OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
 
-				OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
-				m.get(lc).add(df.getOWLDataSomeValuesFrom(dp, restriction));
+			OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
+			m.get(lc).add(df.getOWLDataSomeValuesFrom(dp, restriction));
 
-				restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
-				m.get(lc).add(df.getOWLDataSomeValuesFrom(dp, restriction));
+			restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
+			m.get(lc).add(df.getOWLDataSomeValuesFrom(dp, restriction));
 		}
 	}
 
@@ -1272,10 +1566,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		OWLDatatype datatype = reasoner.getDatatype(dp);
 
 		OWLDatatypeRestriction restriction = df.getOWLDatatypeRestriction(
-				datatype,
-				Collections.singleton(df.getOWLFacetRestriction(
-						facet,
-						value)));
+			datatype,
+			Collections.singleton(df.getOWLFacetRestriction(
+				facet,
+				value)));
 		return restriction;
 	}
 
@@ -1296,11 +1590,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mA.get(nc).get(lengthMetric.classLength).addAll(m1);
 
 		// most specific negated classes, which are not disjoint with nc
-		if(useNegation) {
-			SortedSet<OWLClassExpression> m2;
-			m2 = getNegClassCandidates(nc);
-			mA.get(nc).get(lengthMetric.classLength + lengthMetric.objectComplementLength).addAll(m2);
-		}
+		SortedSet<OWLClassExpression> m2;
+		m2 = getNegClassCandidates(nc);
+		mA.get(nc).get(lengthMetric.classLength + lengthMetric.objectComplementLength).addAll(m2);
 
 		// compute applicable properties
 		computeMg(nc);
@@ -1384,10 +1676,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //							.collect(Collectors.toSet()));
 			for(OWLObjectProperty p : mgr.get(nc)) {
 				Set<OWLIndividual> values = frequentValues.get(p);
-				values.forEach(val -> m.get(lc).add(df.getOWLObjectHasValue(p, val)));
+				values.forEach(val -> mA.get(nc).get(lc).add(df.getOWLObjectHasValue(p, val)));
 
 				if(useInverse) {
-					values.forEach(val -> m.get(lc_i).add(df.getOWLObjectHasValue(p.getInverseProperty(), val)));
+					values.forEach(val -> mA.get(nc).get(lc_i).add(df.getOWLObjectHasValue(p.getInverseProperty(), val)));
 				}
 			}
 		}
@@ -1395,23 +1687,29 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(useCardinalityRestrictions) {
 			int lc = lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : mgr.get(nc)) {
-				int maxFillers = maxNrOfFillers.get(r);
-				// zero fillers: <= -1 r.C does not make sense
-				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
-				// but we still keep it, because ALL r.NOT C may be difficult to reach
-				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1)) {
-					mA.get(nc).get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLThing()));
-				}
+				if (isPropertyAllowedInCardinalityRestrictions(r)) {
+					int maxFillers = Math.min(maxCardinalityLimit + 1, maxNrOfFillers.get(r));
+					// zero fillers: <= -1 r.C does not make sense
+					// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
+					// but we still keep it, because ALL r.NOT C may be difficult to reach
+					if ((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1)) {
+						if (refineMaxCardinalityRestrictionsUpwards) {
+							mA.get(nc).get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLThing()));
+						} else {
+							mA.get(nc).get(lc).add(df.getOWLObjectMaxCardinality(maxFillers-1, r, df.getOWLNothing()));
+						}
+					}
 
-				// = 1 r.C
-//				mA.get(nc).get(lc).add(df.getOWLObjectExactCardinality(1, r, df.getOWLThing()));
+					// = 1 r.C
+//					mA.get(nc).get(lc).add(df.getOWLObjectExactCardinality(1, r, df.getOWLThing()));
+				}
 			}
 		}
 
 		if(useHasSelf) {
 			int lc = lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.objectHasSelfLength;
 			for(OWLObjectProperty p : mgr.get(nc)) {
-				m.get(lc).add(df.getOWLObjectHasSelf(p));
+				mA.get(nc).get(lc).add(df.getOWLObjectHasSelf(p));
 			}
 		}
 
@@ -1443,40 +1741,40 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// the most general concepts satisfying the criteria
 			for(OWLClassExpression candidate :  subClasses) {
 //					System.out.println("testing " + candidate + " ... ");
-	//				NamedClass candidate = (OWLClass) d;
-					// check disjointness with index (if not no further traversal downwards is necessary)
-					if(!isDisjoint(candidate,index)) {
+				//				NamedClass candidate = (OWLClass) d;
+				// check disjointness with index (if not no further traversal downwards is necessary)
+				if(!isDisjoint(candidate,index)) {
 //						System.out.println( " passed disjointness test ... ");
-						// check whether the class is meaningful, i.e. adds something to the index
-						// to do this, we need to make sure that the class is not a superclass of the
-						// index (otherwise we get nothing new) - for instance based disjoints, we
-						// make sure that there is at least one individual, which is not already in the
-						// upper class
-						boolean meaningful;
-						if(instanceBasedDisjoints) {
-							// bug: tests should be performed against the index, not the upper class
-	//						SortedSet<OWLIndividual> tmp = rs.getIndividuals(upperClass);
-							SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
-							tmp.removeAll(reasoner.getIndividuals(candidate));
-	//						System.out.println("  instances of " + index + " and not " + candidate + ": " + tmp.size());
-							meaningful = tmp.size() != 0;
-						} else {
-							meaningful = !isDisjoint(df.getOWLObjectComplementOf(candidate),index);
-						}
-
-						if(meaningful) {
-							// candidate went successfully through all checks
-							candidates.add(candidate);
-	//						System.out.println(" real refinement");
-						} else {
-							// descend subsumption hierarchy to find candidates
-	//						System.out.println(" enter recursion");
-							candidates.addAll(getClassCandidatesRecursive(index, candidate));
-						}
+					// check whether the class is meaningful, i.e. adds something to the index
+					// to do this, we need to make sure that the class is not a superclass of the
+					// index (otherwise we get nothing new) - for instance based disjoints, we
+					// make sure that there is at least one individual, which is not already in the
+					// upper class
+					boolean meaningful;
+					if(instanceBasedDisjoints) {
+						// bug: tests should be performed against the index, not the upper class
+						//						SortedSet<OWLIndividual> tmp = rs.getIndividuals(upperClass);
+						SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
+						tmp.removeAll(reasoner.getIndividuals(candidate));
+						//						System.out.println("  instances of " + index + " and not " + candidate + ": " + tmp.size());
+						meaningful = tmp.size() != 0;
+					} else {
+						meaningful = !isDisjoint(df.getOWLObjectComplementOf(candidate),index);
 					}
-	//				else {
-	//					System.out.println(" ruled out, because it is disjoint");
-	//				}
+
+					if(meaningful) {
+						// candidate went successfully through all checks
+						candidates.add(candidate);
+						//						System.out.println(" real refinement");
+					} else {
+						// descend subsumption hierarchy to find candidates
+						//						System.out.println(" enter recursion");
+						candidates.addAll(getClassCandidatesRecursive(index, candidate));
+					}
+				}
+				//				else {
+				//					System.out.println(" ruled out, because it is disjoint");
+				//				}
 			}
 		}
 //		System.out.println("cc method exit");
@@ -1493,7 +1791,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> candidates = new TreeSet<>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
-		SortedSet<OWLClassExpression> superClasses = classHierarchy.getSuperClasses(lowerClass);
+		SortedSet<OWLClassExpression> superClasses = classHierarchy.getSuperClasses(lowerClass, true);
 
 		if(reasoner instanceof SPARQLReasoner) {
 			Collection<? extends OWLClassExpression> meaningfulClasses = ((SPARQLReasoner)reasoner).getMeaningfulClasses(index, superClasses);
@@ -1601,27 +1899,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLObjectProperty> roleAppRoles = ((SPARQLReasoner) reasoner).getApplicableProperties(domain, mostGeneral);
 			applicableRoles.addAll(roleAppRoles);
 		} else {
-			SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
 			// object properties
 			for (OWLObjectProperty role : mostGeneral) {
-				// TODO: currently we just rely on named classes as roles,
-				// instead of computing dom(r) and ran(r)
+				if (role.isTopEntity()) {
+					continue;
+				}
+
 				OWLClassExpression d = opDomains.get(role);
 
-				Set<OWLIndividual> individuals2 = new HashSet<>();
-				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
-					OWLIndividual ind = entry.getKey();
-					if (!entry.getValue().isEmpty()) {
-						individuals2.add(ind);
-					}
-				}
-
-				boolean disjoint = Sets.intersection(individuals1, individuals2).isEmpty();
-//			if(!isDisjoint(domain,d))
-				if (!disjoint) {
+				if (!isDisjoint(domain, d)) { // TODO: maybe do not use isDisjoint, it is meant for classes only
 					applicableRoles.add(role);
 				}
-
 			}
 		}
 
@@ -1761,9 +2049,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		if(tmp2==null) {
 		OWLClassExpression notA = df.getOWLObjectComplementOf(a);
 		OWLClassExpression d = df.getOWLObjectIntersectionOf(notA, b);
-			Boolean result = reasoner.isSuperClassOf(df.getOWLNothing(), d);
-			// ... add to cache ...
-			return result;
+		Boolean result = reasoner.isSuperClassOf(df.getOWLNothing(), d);
+		// ... add to cache ...
+		return result;
 //		} else
 //			return tmp2;
 	}
@@ -1779,6 +2067,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return !reasoner.isSuperClassOf(d, b);
 	}
 
+	private boolean isPropertyAllowedInCardinalityRestrictions(OWLObjectProperty property) {
+		return allowedRolesInCardinalityRestrictions == null || allowedRolesInCardinalityRestrictions.contains(property);
+	}
+
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;
 	}
@@ -1792,7 +2084,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
-		isFinal();
 		this.useDataHasValueConstructor = useDataHasValueConstructor;
 	}
 
@@ -1833,7 +2124,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
-		isFinal();
 		this.useHasValueConstructor = useHasValueConstructor;
 	}
 
@@ -1842,7 +2132,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
-		isFinal();
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 	}
 
@@ -1860,6 +2149,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setUseNegation(boolean useNegation) {
 		this.useNegation = useNegation;
+	}
+
+	public void setUseDisjunction(boolean useDisjunction) {
+		this.useDisjunction = useDisjunction;
+	}
+
+	public boolean isUseDisjunction() {
+		return useDisjunction;
+	}
+
+	public boolean isUseRestrictedDisjunction() {
+		return useRestrictedDisjunction;
+	}
+
+	public void setUseRestrictedDisjunction(boolean useRestrictedDisjunction) {
+		this.useRestrictedDisjunction = useRestrictedDisjunction;
 	}
 
 	public boolean isUseBooleanDatatypes() {
@@ -1890,7 +2195,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return reasoner;
 	}
 
-    @Autowired
+	@Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
@@ -1920,12 +2225,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.cardinalityLimit = cardinalityLimit;
 	}
 
+	public int getMaxCardinalityLimit() {
+		return maxCardinalityLimit;
+	}
+
+	public void setMaxCardinalityLimit(int maxCardinalityLimit) {
+		this.maxCardinalityLimit = maxCardinalityLimit;
+	}
+
 	public ObjectPropertyHierarchy getObjectPropertyHierarchy() {
 		return objectPropertyHierarchy;
 	}
 
 	@Override
-    public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
+	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
 		this.objectPropertyHierarchy = objectPropertyHierarchy;
 	}
 
@@ -1934,7 +2247,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	@Override
-    public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
+	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
 		this.dataPropertyHierarchy = dataPropertyHierarchy;
 	}
 
@@ -1955,12 +2268,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useObjectValueNegation = useObjectValueNegation;
 	}
 
+	public boolean isUseObjectValueNegation() {
+		return useObjectValueNegation;
+	}
+
 	public boolean isUseNumericDatatypes() {
 		return useNumericDatatypes;
 	}
 
 	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
-		isFinal();
 		this.useNumericDatatypes = useNumericDatatypes;
 	}
 
@@ -1968,8 +2284,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 * @param useInverse whether to use inverse properties in property restrictions
 	 */
 	public void setUseInverse(boolean useInverse) {
-		isFinal();
 		this.useInverse = useInverse;
+	}
+
+	public boolean isUseInverse() {
+		return useInverse;
 	}
 
 	/**
@@ -1980,12 +2299,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useSomeOnly = useSomeOnly;
 	}
 
+	public boolean isUseSomeOnly() {
+		return useSomeOnly;
+	}
+
 	/**
 	 * @param useTimeDatatypes whether to use data/time literal restrictions
 	 */
 	public void setUseTimeDatatypes(boolean useTimeDatatypes) {
-		isFinal();
 		this.useTimeDatatypes = useTimeDatatypes;
+	}
+
+	public boolean isUseTimeDatatypes() {
+		return useTimeDatatypes;
 	}
 
 	public int getMaxNrOfSplits() {
@@ -1994,6 +2320,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setMaxNrOfSplits(int maxNrOfSplits) {
 		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
+	public void setSplits(Map<OWLDataProperty, List<OWLLiteral>> splits) {
+		this.splits = new TreeMap<>(splits);
 	}
 
 	public boolean isDisjointChecks() {
@@ -2014,15 +2344,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.lengthMetric = lengthMetric;
 
 		mMaxLength = max (
-				lengthMetric.classLength,
-				lengthMetric.objectComplementLength + lengthMetric.classLength,
-				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
-				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
-				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
-				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
-				lengthMetric.dataHasValueLength + lengthMetric.dataProperyLength,
-				lengthMetric.dataSomeValuesLength + lengthMetric.dataProperyLength + 1,
-				lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
+			lengthMetric.classLength,
+			lengthMetric.objectComplementLength + lengthMetric.classLength,
+			lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
+			lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
+			lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
+			lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
+			lengthMetric.dataHasValueLength + lengthMetric.dataProperyLength,
+			lengthMetric.dataSomeValuesLength + lengthMetric.dataProperyLength + 1,
+			lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
 
 		logger.debug("mMaxLength = " + mMaxLength);
 	}
@@ -2035,5 +2365,38 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 */
 	public void setNumericValuesSplitter(ValuesSplitter numericValuesSplitter) {
 		this.numericValuesSplitter = numericValuesSplitter;
+	}
+
+	public Set<OWLObjectProperty> getAllowedRolesInCardinalityRestrictions() {
+		return allowedRolesInCardinalityRestrictions;
+	}
+
+	public void setAllowedRolesInCardinalityRestrictions(Set<OWLObjectProperty> allowedRolesInCardinalityRestrictions) {
+		if (allowedRolesInCardinalityRestrictions != null) {
+			this.allowedRolesInCardinalityRestrictions = new TreeSet<>(allowedRolesInCardinalityRestrictions);
+		} else {
+			this.allowedRolesInCardinalityRestrictions = null;
+		}
+	}
+
+	public boolean isRefineMaxCardinalityRestrictionsUpwards() {
+		return refineMaxCardinalityRestrictionsUpwards;
+	}
+
+	public void setRefineMaxCardinalityRestrictionsUpwards(boolean refineMaxCardinalityRestrictionsUpwards) {
+		this.refineMaxCardinalityRestrictionsUpwards = refineMaxCardinalityRestrictionsUpwards;
+	}
+
+	public boolean isCloneReasoner() {
+		return cloneReasoner;
+	}
+
+	public void setCloneReasoner(boolean cloneReasoner) {
+		this.cloneReasoner = cloneReasoner;
+	}
+
+	@Override
+	public RhoDRDown clone() {
+		return new RhoDRDown(this);
 	}
 }

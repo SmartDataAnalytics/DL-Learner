@@ -67,7 +67,7 @@
 			<build>
 				<finalName>interfaces</finalName>
 				<plugins>
-					<plugin>
+					<!-- <plugin>
 						<groupId>com.github.fracpete</groupId>
 						<artifactId>latex-maven-plugin</artifactId>
 						<version>1.4.4</version>
@@ -83,7 +83,7 @@
 							<forceBuild>true</forceBuild>
 							<bibtex>bibtex</bibtex>
 						</configuration>
-					</plugin>
+					</plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
@@ -110,7 +110,9 @@
 							<!-- Include the target configuration directory in the classpath -->
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
-								-Xms256m -Xmx2g
+								-Xms256m -Xmx64g
+								--add-opens java.base/java.lang=ALL-UNNAMED
+						  		--add-opens java.base/java.lang.invoke=ALL-UNNAMED
 								-Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
 							</extraJvmArguments>
 							<installArtifacts>false</installArtifacts>

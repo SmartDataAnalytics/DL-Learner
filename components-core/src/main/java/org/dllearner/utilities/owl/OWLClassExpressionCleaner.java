@@ -81,6 +81,11 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 				operands.add(newOperand);
 			}
 		}
+
+		if (operands.size() == 1) {
+			return operands.get(0);
+		}
+
 		Collections.sort(operands);
 		return new OWLObjectIntersectionOfImplExt(operands);
 	}
@@ -99,6 +104,11 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 				operands.add(newOperand);
 			}
 		}
+
+		if (operands.size() == 1) {
+			return operands.get(0);
+		}
+
 		Collections.sort(operands);
 		return new OWLObjectUnionOfImplExt(operands);
 	}

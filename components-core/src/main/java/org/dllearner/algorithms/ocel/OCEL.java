@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -83,14 +84,18 @@ public class OCEL extends AbstractCELA {
 
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
-	private OWLClassExpression startDescription;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
 	private Set<OWLIndividual> positiveExamples;
 	private int nrOfNegativeExamples;
 	private Set<OWLIndividual> negativeExamples;
 
+	private Set<OWLIndividual> positiveTestExamples;
+	private Set<OWLIndividual> negativeTestExamples;
+	private boolean anyTestExamples = false;
+
 	private int allowedMisclassifications = 0;
+	private int allowedMisclassificationsWithinMargin = 0;
 
 	// search tree options
 	@ConfigOption(defaultValue = "false", description = "specifies whether to write a search tree")
@@ -149,8 +154,13 @@ public class OCEL extends AbstractCELA {
 	@ConfigOption(defaultValue = "30", description = "maximum number of candidates to retain")
 	private int candidatePostReductionSize = 30;
 
+	@ConfigOption(defaultValue = "300", description = "the number of seconds between two consecutive candidate reductions")
+	private long candidateReductionInterval = 300L;
+
 	// solution protocol
-	private List<ExampleBasedNode> solutions = new LinkedList<>();
+	private TreeMap<ExampleBasedNode, Double> solutions;
+	private TreeMap<ExampleBasedNode, Double> solutionCandidates;
+	private final double solutionCandidatesMinAccuracyDiff = 0.0001;
 
 	@ConfigOption(defaultValue = "false", description = "specifies whether to compute and log benchmark information")
 	private boolean computeBenchmarkInformation = false;
@@ -243,6 +253,20 @@ public class OCEL extends AbstractCELA {
 	@ConfigOption(defaultValue = "0.0", description = "noise regulates how many positives can be misclassified and when " +
 			"the algorithm terminates")
 	private double noisePercentage = noisePercentageDefault;
+	private double noise = noisePercentage / 100.0;
+
+	@ConfigOption(defaultValue = "0.0", description = "determines a lower bound on noisiness of an expression with respect to noisePercentage " +
+		"in order to be considered a reasonable solution candidate (must be non-negative), e.g. for noisePercentage = 15 and noisePercentageMargin = 5, " +
+		"the algorithm will suggest expressions with the number of misclassified positives less than or equal to 20% of all examples " +
+		"as solution candidates as well; note: difference between accuracies of any two candidates must be at least 0.01% to ensure diversity")
+	private double noisePercentageMargin = 0.0;
+
+	@ConfigOption(defaultValue = "20", description = "the number of solutions to be presented, sorted in descending order by accuracy")
+	private int maxNrOfResults = 20;
+
+	@ConfigOption(defaultValue = "20", description = "the number of solution candidates within margin to be presented, sorted in descending order by accuracy")
+	private int maxNrOfResultsWithinMargin = 20;
+
 	@ConfigOption(
 			defaultValue = "owl:Thing",
 			description = "You can specify a start class for the algorithm",
@@ -358,6 +382,10 @@ public class OCEL extends AbstractCELA {
 		}
 		operator.setLengthMetric(lengthMetric);
 
+		if (heuristic instanceof MultiHeuristic) {
+			((MultiHeuristic) heuristic).setLengthMetric(lengthMetric);
+		}
+
 		// create an algorithm object and pass all configuration
 		// options to it
 
@@ -372,6 +400,20 @@ public class OCEL extends AbstractCELA {
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
+
+		noise = noisePercentage / 100.0;
+
+		positiveTestExamples = ((PosNegLP) learningProblem).getPositiveTestExamples();
+		negativeTestExamples = ((PosNegLP) learningProblem).getNegativeTestExamples();
+		anyTestExamples = positiveTestExamples.size() > 0 || negativeTestExamples.size() > 0;
+
+		QualityBasedComparator solutionComparator = new QualityBasedComparator(lengthMetric);
+		solutions = new TreeMap<>(solutionComparator);
+		solutionCandidates = new TreeMap<>(solutionComparator);
+
+		if (noisePercentageMargin < 0) {
+			noisePercentageMargin = 0.0;
+		}
 		
 		initialized = true;
 	}
@@ -386,6 +428,7 @@ public class OCEL extends AbstractCELA {
 		searchTree = new SearchTreeNonWeakPartialSet<>(heuristic);
 		searchTreeStable = new SearchTreeNonWeak<>(nodeComparatorStable);
 		solutions.clear();
+		solutionCandidates.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
 		guaranteeXgoodAlreadyReached = false;
@@ -409,17 +452,18 @@ public class OCEL extends AbstractCELA {
 		 */
 
 		// calculate quality threshold required for a solution
-		allowedMisclassifications = (int) Math.round(noisePercentage * nrOfExamples / 100);
+		allowedMisclassifications = (int) Math.round(noisePercentage * nrOfExamples / 100.0);
+		allowedMisclassificationsWithinMargin = (int) Math.round((noisePercentage + noisePercentageMargin) * nrOfExamples / 100.0);
 
 		// start search with start class
 		ExampleBasedNode startNode;
-		if (startDescription == null) {
-			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), this);
+		if (startClass == null) {
+			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), this, heuristic);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
 		} else {
-			startNode = new ExampleBasedNode(startDescription, this);
-			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startDescription, negativeExamples);
-			Set<OWLIndividual> coveredPositives = reasoner.hasType(startDescription, positiveExamples);
+			startNode = new ExampleBasedNode(startClass, this, heuristic);
+			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startClass, negativeExamples);
+			Set<OWLIndividual> coveredPositives = reasoner.hasType(startClass, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
 		}
 
@@ -430,6 +474,8 @@ public class OCEL extends AbstractCELA {
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		logger.info("starting top down refinement with: " + renderer.render(startNode.getConcept()) + " (" + df.format(100 * startNode.getAccuracy()) + "% accuracy)");
 
 		int loop = 0;
@@ -440,7 +486,7 @@ public class OCEL extends AbstractCELA {
 		long lastReductionTime = System.nanoTime();
 		// try a traversal after x seconds
 		long traversalInterval = 300L * 1000000000L;
-		long reductionInterval = 300L * 1000000000L;
+		long reductionInterval = candidateReductionInterval * 1000000000L;
 		long currentTime;
 
 		while (!isTerminationCriteriaReached()) {
@@ -468,13 +514,24 @@ public class OCEL extends AbstractCELA {
 			// we record when a more accurate node is found and log it
 			if (bestNodeStable.getCovPosMinusCovNeg() < searchTreeStable.best()
 					.getCovPosMinusCovNeg()) {
-				String acc = new DecimalFormat(".00%").format((searchTreeStable.best().getAccuracy()));
+				double time = getCurrentCpuMillis() / 1000.0;
+				double acc = (searchTreeStable.best().getAccuracy());
+				double testAcc = computeTestAccuracy(searchTreeStable.best().getConcept());
+
+				DecimalFormat percentFormatter = new DecimalFormat(".00%");
 				// no handling needed, it will just look ugly in the output
-				logger.info("more accurate (" + acc + ") class expression found: " + renderer.render(searchTreeStable.best().getConcept()));
+				logger.info(
+					"Time " + time +
+					"s: more accurate (training: " + percentFormatter.format(acc) + ", test: " + percentFormatter.format(testAcc) +
+					") class expression found: " + renderer.render(searchTreeStable.best().getConcept())
+				);
 				if (logger.isTraceEnabled()) {
 					logger.trace(Sets.difference(positiveExamples, bestNodeStable.getCoveredNegatives()).toString());
 					logger.trace(Sets.difference(negativeExamples, bestNodeStable.getCoveredNegatives()).toString());
 				}
+
+				recordBestConceptTimeAndAccuracy(time, acc, testAcc);
+
 				printBestSolutions(5);
 				printStatistics(false);
 				bestNodeStable = searchTreeStable.best();
@@ -512,17 +569,51 @@ public class OCEL extends AbstractCELA {
 			loop++;
 		}// end while
 
-		if (solutions.size() > 0) {
-			int solutionLimit = 20;
+		timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
+
+		if (solutionCandidates.size() > 0) {
 			// we do not need to print the best node if we display the top 20 solutions below anyway
-			logger.info("solutions (at most " + solutionLimit + " are shown):");
+			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");
 			int show = 1;
-			for (ExampleBasedNode c : solutions) {
+			for (ExampleBasedNode c : solutionCandidates.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getConcept())
+					: 0;
+
 				logger.info(show + ": " + renderer.render(c.getConcept())
-						+ " (accuracy " + df.format(100 * c.getAccuracy()) + "%, length "
-						+ OWLClassExpressionUtils.getLength(c.getConcept())
-						+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept()) + ")");
-				if (show >= solutionLimit) {
+					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
+					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
+					+ ", coverage " + c.getCoveredPositives().size() + " / " + tpTest
+					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
+					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
+					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
+				if (show >= maxNrOfResultsWithinMargin) {
+					break;
+				}
+				show++;
+			}
+		} else {
+			logger.info("no appropriate solutions within margin found (try increasing the noisePercentageMargin)");
+		}
+
+		if (solutions.size() > 0) {
+			// we do not need to print the best node if we display the top 20 solutions below anyway
+			logger.info("solutions (at most " + maxNrOfResults + " are shown):");
+			int show = 1;
+			for (ExampleBasedNode c : solutions.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getConcept())
+					: 0;
+
+				logger.info(show + ": " + renderer.render(c.getConcept())
+					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
+					+ df.format(100 * computeTestAccuracy(c.getConcept())) + "%"
+					+ ", coverage " + c.getCoveredPositives().size() + " / " + tpTest
+					+ ", length " + OWLClassExpressionUtils.getLength(c.getConcept())
+					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept())
+					+ ", time " + df.format(solutions.get(c)) + "s)");
+				if (show >= maxNrOfResults) {
 					break;
 				}
 				show++;
@@ -530,6 +621,12 @@ public class OCEL extends AbstractCELA {
 		} else {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
+
+		if (learningProblem instanceof PosNegLP) {
+			((PosNegLP) learningProblem).printTestEvaluation(bestNodeStable.getConcept());
+		}
+
+		printBestConceptsTimesAndAccuracies();
 
 		logger.debug("size of candidate set: " + searchTree.size());
 		printBestSolutions(20);
@@ -539,6 +636,7 @@ public class OCEL extends AbstractCELA {
 		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
 		if (stop) {
 			logger.info("Algorithm stopped (" + conceptTests + " descriptions tested).\n");
+			logger.info(reasoner.toString());
 		} else {
 			logger.info("Algorithm terminated successfully (" + conceptTests + " descriptions tested).\n");
 			logger.info(reasoner.toString());
@@ -634,7 +732,7 @@ public class OCEL extends AbstractCELA {
 							properRefinements.add(refinement);
 							tooWeakList.add(refinement);
 
-							ExampleBasedNode newNode = new ExampleBasedNode(refinement, this);
+							ExampleBasedNode newNode = new ExampleBasedNode(refinement, this, heuristic);
 							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
 							newNode.setTooWeak(true);
 							newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
@@ -691,7 +789,7 @@ public class OCEL extends AbstractCELA {
 			if (nonRedundant) {
 
 				// newly created node
-				ExampleBasedNode newNode = new ExampleBasedNode(refinement, this);
+				ExampleBasedNode newNode = new ExampleBasedNode(refinement, this, heuristic);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements
 				// für den neuen Knoten erlaubt wären z.B. person => male
 				newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
@@ -732,17 +830,18 @@ public class OCEL extends AbstractCELA {
 					// are performed => rely on fast instance checker)
 					for (OWLIndividual i : coveredPositives) {
 						// TODO: move code to a separate function
-						if (quality != -1) {
-							boolean covered = reasoner.hasType(refinement, i);
-							if (!covered)
-								misclassifiedPositives++;
-							else
-								newlyCoveredPositives.add(i);
-
-							if (misclassifiedPositives > allowedMisclassifications)
-								quality = -1;
-
+						if (quality == -1) {
+							break;
 						}
+
+						boolean covered = reasoner.hasType(refinement, i);
+						if (!covered)
+							misclassifiedPositives++;
+						else
+							newlyCoveredPositives.add(i);
+
+						if (misclassifiedPositives > allowedMisclassifications)
+							quality = -1;
 					}
 
 					Set<OWLIndividual> newlyCoveredNegatives = null;
@@ -756,6 +855,13 @@ public class OCEL extends AbstractCELA {
 								newlyCoveredNegatives.add(i);
 						}
 					}
+
+//					Set<OWLIndividual> newlyCoveredPositives = reasoner.hasType(refinement, positiveExamples);
+//					Set<OWLIndividual> newlyCoveredNegatives = reasoner.hasType(refinement, negativeExamples);
+//					int misclassifiedPositives = nrOfPositiveExamples - newlyCoveredPositives.size();
+//
+//					if (misclassifiedPositives > allowedMisclassifications)
+//						quality = -1;
 
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
@@ -782,8 +888,30 @@ public class OCEL extends AbstractCELA {
 					tooWeakList.add(refinement);
 				} else {
 					// Lösung gefunden
-					if (quality >= 0 && quality <= allowedMisclassifications) {
-						solutions.add(newNode);
+					if (quality >= 0) {
+						if (quality <= allowedMisclassifications) {
+							solutions.put(newNode, getCurrentCpuMillis() / 1000.0);
+
+							if (solutions.size() > maxNrOfResults) {
+								solutions.pollFirstEntry();
+							}
+						}
+
+						if (quality <= allowedMisclassificationsWithinMargin) {
+							if (solutionCandidates.isEmpty()
+								|| (newNode.getAccuracy() > solutionCandidates.firstKey().getAccuracy()
+									&& solutionCandidates.keySet().stream().allMatch(
+										n -> Math.abs(newNode.getAccuracy() - n.getAccuracy()) > solutionCandidatesMinAccuracyDiff
+									)
+								)
+							) {
+								solutionCandidates.put(newNode, getCurrentCpuMillis() / 1000.0);
+							}
+
+							if (solutionCandidates.size() > maxNrOfResultsWithinMargin) {
+								solutionCandidates.pollFirstEntry();
+							}
+						}
 					}
 
 					// we need to make sure that all positives are covered
@@ -983,7 +1111,7 @@ public class OCEL extends AbstractCELA {
 				//noinspection UnusedAssignment
 				currentAccuracy = accuracy;
 
-				if (accuracy > 1 - (noisePercentage / 100)) {
+				if (accuracy > 1 - noise) {
 					logger.info("traversal found " + mc);
 					logger.info("accuracy: " + accuracy);
 					System.exit(0);
@@ -1136,7 +1264,7 @@ public class OCEL extends AbstractCELA {
 			return true;
 		}
 
-		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
+		long totalTimeNeeded = getCurrentCpuMillis();
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
 		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
@@ -1149,7 +1277,7 @@ public class OCEL extends AbstractCELA {
 		else if (maxExecutionTimeAlreadyReached)
 			return true;
 			//test
-		else if (maxMilliSeconds < totalTimeNeeded) {
+		else if (maxMilliSeconds <= totalTimeNeeded) {
 			this.stop();
 			logger.info("Maximum time (" + maxExecutionTimeInSeconds
 					+ " seconds) reached, stopping now...");
@@ -1430,5 +1558,37 @@ public class OCEL extends AbstractCELA {
 
 	public ExampleBasedHeuristic getHeuristic() {
 		return heuristic;
+	}
+
+	public long getCandidateReductionInterval() {
+		return candidateReductionInterval;
+	}
+
+	public void setCandidateReductionInterval(long candidateReductionInterval) {
+		this.candidateReductionInterval = candidateReductionInterval;
+	}
+
+	public double getNoisePercentageMargin() {
+		return noisePercentageMargin;
+	}
+
+	public void setNoisePercentageMargin(double noisePercentageMargin) {
+		this.noisePercentageMargin = noisePercentageMargin;
+	}
+
+	public double getMaxNrOfResults() {
+		return maxNrOfResults;
+	}
+
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+
+	public double getMaxNrOfResultsWithinMargin() {
+		return maxNrOfResultsWithinMargin;
+	}
+
+	public void setMaxNrOfResultsWithinMargin(int maxNrOfResultsWithinMargin) {
+		this.maxNrOfResultsWithinMargin = maxNrOfResultsWithinMargin;
 	}
 }

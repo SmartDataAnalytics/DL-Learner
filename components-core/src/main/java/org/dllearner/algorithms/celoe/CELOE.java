@@ -27,10 +27,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
@@ -50,6 +47,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -171,6 +170,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private boolean stopOnFirstDefinition = false;
 	
 	private int expressionTestCountLastImprovement;
+
+	OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
+
+	private TreeMap<OENode, Double> solutionCandidates;
+	private final double solutionCandidatesMinAccuracyDiff = 0.0001;
+
+	@ConfigOption(defaultValue = "0.0", description = "determines a lower bound on noisiness of an expression with respect to noisePercentage " +
+		"in order to be considered a reasonable solution candidate (must be non-negative), e.g. for noisePercentage = 15 and noisePercentageMargin = 5, " +
+		"the algorithm will suggest expressions with the number of misclassified positives less than or equal to 20% of all examples " +
+		"as solution candidates as well; note: difference between accuracies of any two candidates must be at least 0.01% to ensure diversity")
+	private double noisePercentageMargin = 0.0;
+
+	@ConfigOption(defaultValue = "20", description = "the number of solution candidates within margin to be presented, sorted in descending order by accuracy")
+	private int maxNrOfResultsWithinMargin = 20;
+
+	private double noiseWithMargin;
 	
 	
 	@SuppressWarnings("unused")
@@ -228,6 +243,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		setWriteSearchTree(celoe.writeSearchTree);
 		setReplaceSearchTree(celoe.replaceSearchTree);
+
+		setMaxNrOfResultsWithinMargin(celoe.maxNrOfResultsWithinMargin);
+		setNoisePercentageMargin(celoe.noisePercentageMargin);
 	}
 	
 	public CELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -313,6 +331,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if (!((AbstractRefinementOperator) operator).isInitialized())
 			operator.init();
+
+		operator.setLengthMetric(lengthMetric);
+
+		AccuracyBasedComparator solutionComparator = new AccuracyBasedComparator(lengthMetric);
+		solutionCandidates = new TreeMap<>(solutionComparator);
+
+		if (noisePercentageMargin < 0) {
+			noisePercentageMargin = 0.0;
+		}
+
+		noiseWithMargin = (noisePercentage + noisePercentageMargin) / 100.0;
 		
 		initialized = true;
 	}
@@ -327,6 +356,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		currentHighestAccuracy = 0.0;
 		OENode nextNode;
 
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
 		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
@@ -372,9 +403,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// print some stats
 		printAlgorithmRunStats();
+
+		printSolutionCandidates();
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
+
+		if (learningProblem instanceof PosNegLP) {
+			((PosNegLP) learningProblem).printTestEvaluation(bestEvaluatedDescriptions.getBest().getDescription());
+		}
+
+		printBestConceptsTimesAndAccuracies();
 		
 		isRunning = false;
 	}
@@ -506,7 +545,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		MonitorFactory.getTimeMonitor("refineNode").stop();
 		return refinements;
 	}
-	
+
 	/**
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
@@ -528,27 +567,27 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
-		
+
 		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
 		logger.trace(sparql_debug, sparql_debug_out);
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		logger.trace(sparql_debug, "`acc:"+accuracy);
 		mon.stop();
-		
+
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
 			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
 					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
-		
+
 		expressionTests++;
-		
+
 		// return FALSE if 'too weak'
 		if(accuracy == -1) {
 			return false;
 		}
-		
+
 		OENode node = new OENode(description, accuracy);
 		searchTree.addNode(parentNode, node);
 		
@@ -616,7 +655,23 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
-		
+
+		if (accuracy >= 1 - noiseWithMargin) {
+			if (solutionCandidates.isEmpty()
+				|| (accuracy > solutionCandidates.firstKey().getAccuracy()
+					&& solutionCandidates.keySet().stream().allMatch(
+						n -> Math.abs(accuracy - n.getAccuracy()) > solutionCandidatesMinAccuracyDiff
+					)
+				)
+			) {
+				solutionCandidates.put(node, getCurrentCpuMillis() / 1000.0);
+			}
+
+			if (solutionCandidates.size() > maxNrOfResultsWithinMargin) {
+				solutionCandidates.pollFirstEntry();
+			}
+		}
+
 		return true;
 	}
 	
@@ -747,8 +802,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		stop ||
 		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
-		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L))) ||
-		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L))) ||
+		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((getCurrentCpuMillis() - timeLastImprovement) >= (maxExecutionTimeInSecondsAfterImprovement * 1000L))) ||
+		(maxExecutionTimeInSeconds != 0 && (getCurrentCpuMillis() >= (maxExecutionTimeInSeconds * 1000L))) ||
 		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
 		(stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
 	}
@@ -761,34 +816,82 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		runtimeVsBestScore.clear();
+
+		solutionCandidates.clear();
 	}
 	
 	private void printAlgorithmRunStats() {
+		String timeStamp = new SimpleDateFormat("HH.mm.ss").format(new Date());
+		logger.info("Time " + getCurrentCpuMillis() / 1000.0 + "s; " + timeStamp);
+
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
+			logger.info(reasoner.toString());
 		} else {
-			totalRuntimeNs = System.nanoTime()-nanoStartTime;
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 	}
-	
+
+	private void printSolutionCandidates() {
+		DecimalFormat df = new DecimalFormat();
+
+		if (solutionCandidates.size() > 0) {
+			// we do not need to print the best node if we display the top 20 solutions below anyway
+			logger.info("solutions within margin (at most " + maxNrOfResultsWithinMargin + " are shown):");
+			int show = 1;
+			for (OENode c : solutionCandidates.descendingKeySet()) {
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(c.getDescription())
+					: 0;
+
+				logger.info(show + ": " + renderer.render(c.getDescription())
+					+ " (accuracy " + df.format(100 * c.getAccuracy()) + "% / "
+					+ df.format(100 * computeTestAccuracy(c.getDescription())) + "%"
+					+ ", coverage " + c.getNumberOfCoveredPositiveExamples() + " / " + tpTest
+					+ ", length " + OWLClassExpressionUtils.getLength(c.getDescription())
+					+ ", depth " + OWLClassExpressionUtils.getDepth(c.getDescription())
+					+ ", time " + df.format(solutionCandidates.get(c)) + "s)");
+				if (show >= maxNrOfResultsWithinMargin) {
+					break;
+				}
+				show++;
+			}
+		} else {
+			logger.info("no appropriate solutions within margin found (try increasing the noisePercentageMargin)");
+		}
+	}
+
 	private void showIfBetterSolutionsFound() {
 		if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
 			currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 			expressionTestCountLastImprovement = expressionTests;
-			timeLastImprovement = System.nanoTime();
+			timeLastImprovement = getCurrentCpuMillis();
 			long durationInMillis = getCurrentRuntimeInMilliSeconds();
 			String durationStr = getDurationAsString(durationInMillis);
+
+			double cpuTime = getCurrentCpuMillis() / 1000.0;
+
+			OWLClassExpression bestDescription = bestEvaluatedDescriptions.getBest().getDescription();
+			double testAccuracy = computeTestAccuracy(bestDescription);
 
 			// track new best accuracy if enabled
 			if(keepTrackOfBestScore) {
 				runtimeVsBestScore.put(getCurrentRuntimeInMilliSeconds(), currentHighestAccuracy);
 			}
-			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+
+			logger.info(
+				"Time " + cpuTime +
+				"s: more accurate (training: " + dfPercent.format(currentHighestAccuracy) +
+				", test: " + dfPercent.format(testAccuracy) +
+				") class expression found after " + durationStr + ": " +
+				descriptionToString(bestEvaluatedDescriptions.getBest().getDescription())
+			);
+
+			recordBestConceptTimeAndAccuracy(cpuTime, currentHighestAccuracy, testAccuracy);
 		}
 	}
-	
+
 	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
 		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
 		if (refinements.size() > 1) {
@@ -1098,6 +1201,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 
 		return map;
+	}
+
+	public int getMaxNrOfResultsWithinMargin() {
+		return maxNrOfResultsWithinMargin;
+	}
+
+	public void setMaxNrOfResultsWithinMargin(int maxNrOfResultsWithinMargin) {
+		this.maxNrOfResultsWithinMargin = maxNrOfResultsWithinMargin;
+	}
+
+	public double getNoisePercentageMargin() {
+		return noisePercentageMargin;
+	}
+
+	public void setNoisePercentageMargin(double noisePercentageMargin) {
+		this.noisePercentageMargin = noisePercentageMargin;
 	}
 
 	/* (non-Javadoc)

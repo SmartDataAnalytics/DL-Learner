@@ -165,7 +165,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 					newOperands.remove(op2);
 				} else if(isSubClassOf(op1, op2)){
 					newOperands.remove(op1);
-				} else if(isSubClassOf(op1, df.getOWLObjectComplementOf(op2)) || isSubClassOf(op2, df.getOWLObjectComplementOf(op1))) {
+				} else if(reasoner.isEquivalentClass(op1, df.getOWLObjectComplementOf(op2))) {
 					// check for C or not C
 					return df.getOWLThing();
 				}

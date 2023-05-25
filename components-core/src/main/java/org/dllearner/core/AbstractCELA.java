@@ -18,6 +18,7 @@
  */
 package org.dllearner.core;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -27,6 +28,7 @@ import org.dllearner.accuracymethods.AccMethodFMeasure;
 import org.dllearner.accuracymethods.AccMethodPredAcc;
 import org.dllearner.accuracymethods.AccMethodTwoValued;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
@@ -46,9 +48,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -127,6 +131,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected Set<OWLDataProperty> allowedDataProperties = null;
 	@ConfigOption(description="List of data properties to ignore")
 	protected Set<OWLDataProperty> ignoredDataProperties = null;
+
+	private List<Double> bestConceptsTimes = new ArrayList<>();
+	private List<Double> bestConceptsTrainingAccuracies = new ArrayList<>();
+	private List<Double> bestConceptsTestAccuracies = new ArrayList<>();
+
+	private final OperatingSystemMXBean osBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     /**
      * Default Constructor
@@ -353,9 +363,18 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				Set<OWLIndividual> positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
 				Set<OWLIndividual> negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
 				ReasoningUtils reasoningUtil = learningProblem.getReasoningUtil();
-				
+
+				int tp = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getCoverage(description)
+					: 0;
+				int tpTest = learningProblem instanceof PosNegLP
+					? ((PosNegLP) learningProblem).getTestCoverage(description)
+					: 0;
+
 				str += current + ": " + descriptionString + " (pred. acc.: "
 						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
+						+ " / " + dfPercent.format(computeTestAccuracy(description))
+						+ ", coverage " + tp + " / " + tpTest
 						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1));
 
 				AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
@@ -372,7 +391,32 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		}
 		return str;
 	}
-	
+
+	protected double computeTestAccuracy(OWLClassExpression description) {
+		if (learningProblem instanceof PosNegLPStandard) {
+			return ((PosNegLPStandard) learningProblem).getTestAccuracyOrTooWeak(description, 1);
+		}
+
+		return 0.0;
+	}
+
+	protected void recordBestConceptTimeAndAccuracy(double seconds, double trainingAccuracy, double testAccuracy) {
+		bestConceptsTimes.add(seconds);
+		bestConceptsTrainingAccuracies.add(trainingAccuracy);
+		bestConceptsTestAccuracies.add(testAccuracy);
+	}
+
+	protected void printBestConceptsTimesAndAccuracies() {
+		String times = bestConceptsTimes.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Times: [" + times + "]");
+
+		String trainingAccuracies = bestConceptsTrainingAccuracies.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Acc: [" + trainingAccuracies + "]");
+
+		String testAccuracies = bestConceptsTestAccuracies.stream().map(Object::toString).collect(Collectors.joining(", "));
+		logger.info("Test Acc: [" + testAccuracies + "]");
+	}
+
 	/**
 	 * Computes an internal class hierarchy that only contains classes
 	 * that are allowed.
@@ -456,6 +500,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
 	}
+
+	// beware that this includes the setup time as well
+	protected long getCurrentCpuMillis() {
+		return osBean.getProcessCpuTime() / 1_000_000;
+	}
 	
 	protected boolean isTimeExpired() {
 		return getCurrentRuntimeInMilliSeconds() >= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds);
@@ -494,7 +543,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		
-		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
+//		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
 		
 		return niceDescription;
 	}

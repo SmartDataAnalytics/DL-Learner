@@ -63,6 +63,16 @@ public class CrossValidation {
 	protected Stat fMeasure = new Stat();
 	protected Stat fMeasureTraining = new Stat();
 
+	protected Stat trainingCompletenessStat;
+	protected Stat trainingCorrectnessStat;
+
+	protected Stat testingCompletenessStat;
+	protected Stat testingCorrectnessStat;
+
+	protected Stat totalNumberOfDescriptions;
+	protected Stat minimalDescriptionNeeded;
+	protected Stat learningTimeForBestDescription;
+
 	public static boolean writeToFile = false;
 	public static File outputFile;
 	public static boolean multiThreaded = false;
