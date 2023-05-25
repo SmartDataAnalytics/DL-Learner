@@ -12,18 +12,18 @@ h1, h2 { font-family: "Droid Serif", Serif; font-weight: 800; color: #c33; }
 h2 small.default-hidden { visibility: hidden; }
 a:hover h2 small.default-hidden, a:active h2 small.default-hidden { visibility: visible; }
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script type="text/javascript" language="javascript">
+<script type="text/javascript" language="javascript">
 //<![CDATA[
 function showOnlyCat(className){
-	 $('div.type').show(); $('div.type').not('.'+className).hide(); }
-function showAllCat(){
-  $('div.type').show() };
+    document.querySelectorAll('div.type').forEach((e) => { e.style.display='block'; })
+    if (className){document.querySelectorAll('div.type:not(.'+className+')').forEach((e) => { e.style.display='none' })}
+}
 //]]>
 </script>
 </head><body><div class="container-fluid">
 <h1>DL-Learner Components</h1>
 <p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>
-<a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('AccMethod')">AccMethod</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
+<a href="#" onClick="showOnlyCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('AccMethod')">AccMethod</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodAMeasure">AMeasure</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.accuracymethods.AccMethodAMeasureApprox">AMeasure Approximate</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.core.probabilistic.unife.BUNDLE">BUNDLE</a></li></div>
